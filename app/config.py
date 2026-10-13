@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import tomllib
 from pathlib import Path
 from typing import Any
@@ -126,19 +127,45 @@ class Settings:
 
     # ---- 解释器 / 编译器挑选 ----
     def interpreter_path(self, name: str | None) -> str:
-        """name 形如 py313 / py314；认不出就回退 default。"""
+        """name 形如 py313 / py314；认不出就回退 default。
+
+        配置里的路径在原机器上可能是对的，但克隆到别的机器就失效了。
+        所以这里做一层**兜底探测**：配置的路径不存在时，自动去找
+        `python` / `python3` / 本机常见安装位置，找到就用，避免「配置写死了
+        某个人的路径 → 别人克隆下来跑不了」。
+        """
         interps = self.interpreters
         chosen = name or str(interps.get("default") or "py313")
         path = str(interps.get(chosen) or "")
         if not path:
             path = str(interps.get(str(interps.get("default"))) or "")
-        return path
+        if path and Path(path).exists():
+            return path
+        return _probe_python(path)
 
     def compiler_path(self, name: str) -> str:
+        """gcc / g++ 路径。同样带兜底探测（Windows 上常见 mingw64 位置）。"""
         comps = self.compilers
         if name in ("c", "gcc"):
-            return str(comps.get("gcc") or "")
-        return str(comps.get("gpp") or "")
+            want = "gcc"
+        elif name in ("cpp", "g++", "gpp"):
+            want = "gpp"
+        else:
+            return ""
+        path = str(comps.get(want) or "")
+        if path and Path(path).exists():
+            return path
+
+        exe = "gcc.exe" if want == "gcc" else "g++.exe"
+        cands = [shutil.which(want), shutil.which("gcc" if want == "gcc" else "g++")]
+        for drive in ("C:", "D:", "E:"):
+            for pat in ("Programs/mingw64/bin/", "mingw64/bin/", "msys64/mingw64/bin/",
+                        "Program Files/mingw64/bin/"):
+                cands.append(str(Path(drive + "/") / pat / exe))
+        for c in cands:
+            if c and Path(c).exists():
+                return c
+        return path
 
     # ---- AI key 解析：环境变量优先 ----
     def resolve_api_key(self, stored_key: str = "", stored_env: str = "") -> str:
@@ -151,6 +178,53 @@ class Settings:
 
     def to_dict(self) -> dict[str, Any]:
         return self._data
+
+
+# --------------------------------------------------------------------- #
+# 解释器探测：配置里的路径失效时找本机的 Python
+# --------------------------------------------------------------------- #
+_probe_cache: dict[str, str] = {}
+
+
+def _probe_python(configured: str = "") -> str:
+    """配置里的解释器不可用时，在本机找一个能用的。
+
+    顺序：PATH 上的 python / python3 → Windows 常见安装位置 → 本机 Python 工具目录。
+    找到就返回，都找不到就原样返回配置值（上层会报「解释器不存在」，信息更明确）。
+    """
+    key = configured or "__auto__"
+    if key in _probe_cache:
+        return _probe_cache[key]
+
+    cands: list[str] = []
+
+    # 1) PATH 里能直接调起来的
+    for exe in ("python", "python3"):
+        p = shutil.which(exe)
+        if p:
+            cands.append(p)
+
+    # 2) Windows 常见位置 / py launcher
+    launcher = shutil.which("py")
+    if launcher:
+        cands.append(launcher)
+    local = Path(os.environ.get("LOCALAPPDATA") or "")
+    if local:
+        cands += sorted(str(p) for p in (local / "Programs" / "Python").glob("Python*/python.exe"))
+    for drive in ("C:", "D:", "E:"):
+        cands += sorted(str(p) for p in Path(drive + "/").glob("Pythontools/Python/python.exe"))
+        cands += sorted(str(p) for p in Path(drive + "/").glob("Python*/python.exe"))
+
+    if configured:
+        cands.append(configured)          # 保底：还是用它，报错更明确
+
+    for c in cands:
+        if c and Path(c).exists():
+            _probe_cache[key] = c
+            return c
+
+    _probe_cache[key] = configured
+    return configured
 
 
 def _deep_merge(base: dict, over: dict) -> dict:

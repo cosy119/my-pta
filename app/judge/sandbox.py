@@ -182,6 +182,25 @@ def kill_tree(proc: subprocess.Popen) -> None:
         pass
 
 
+# stderr 里出现这些字样，基本可以确认是「被内存掐住」而不是别的崩溃。
+# 覆盖 Python（MemoryError）与 C/C++（分配失败信息），P2 接 gcc 后也用得上。
+_OOM_MARKERS = (
+    b"MemoryError",
+    b"can't allocate memory",
+    b"cannot allocate memory",
+    b"Cannot allocate memory",
+    b"std::bad_alloc",
+    b"Out of memory",
+    b"out of memory",
+)
+
+
+def _looks_like_oom(stderr: bytes) -> bool:
+    if not stderr:
+        return False
+    return any(m in stderr for m in _OOM_MARKERS)
+
+
 def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = None,
         env: dict[str, str] | None = None, time_limit_ms: int = 1000,
         memory_limit_mb: int = 256, max_output_bytes: int = 1048576,
@@ -245,13 +264,18 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
 
         # 实测结论（别改成 `peak >= limit`）：Job Object 的进程内存限额**不会**直接杀进程，
         # 而是让那次分配失败 —— 于是 Python 抛 MemoryError、以退出码 1 结束，
-        # 峰值稳定停在限额的 ~99%。所以判据是「峰值接近限额」+「进程异常结束」。
-        # 纯 `peak >= limit` 永远差一点点，会漏判成一无是处的 RE。
-        mem_exceeded = bool(
-            job and mem_bytes
-            and peak_bytes >= mem_bytes * 0.9
-            and (exit_code != 0 or timed_out)
-        )
+        # 峰值稳定停在限额的 ~99%，stdout 为空、stderr 里有 MemoryError。
+        #
+        # 判据要用三条**互相印证**的证据，不能只看峰值比例：
+        # 机器有负载时进程可能没跑到峰值就被别的原因带崩，
+        # 单看「峰值 >= 限额×0.9」会偶发漏判（实测在自检并发跑时踩到过）。
+        #   ① 峰值确实顶到限额附近      —— 内存真的被用满了
+        #   ② 进程异常结束             —— 不是正常跑完
+        #   ③ 没产生预期输出 / stderr 提到内存 —— 印证是「被内存掐住」而不是别的崩溃
+        near_limit = bool(mem_bytes) and peak_bytes >= mem_bytes * 0.9
+        abnormal = (exit_code != 0) or timed_out
+        mem_signal = (not out.strip()) or _looks_like_oom(err)
+        mem_exceeded = bool(job and mem_bytes and near_limit and abnormal and mem_signal)
 
         truncated = False
         if max_output_bytes:
