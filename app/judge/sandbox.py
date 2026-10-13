@@ -11,10 +11,14 @@
 - **Windows**：Job Object 限内存（`JOB_OBJECT_LIMIT_PROCESS_MEMORY`）+ `taskkill /F /T`
 - **Linux**：`resource.setrlimit` 在子进程里自限内存（preexec_fn）+
   `os.killpg` 杀整个进程组（配合 `start_new_session=True` → setsid）
-- 内存峰值：Windows 从 Job Object 读；Linux 读 `/proc/<pid>/status` 的 VmHWM
+- 内存峰值：Windows 从 Job Object 读；Linux **运行期间用采样线程**读
+  `/proc/<pid>/status` 的 VmHWM（进程退出后 /proc 条目消失，事后读只会得到 0
+  → 三条证据里的 `near_limit` 永远不成立 → **MLE 被误判成 RE**）
 
 Linux 上 setrlimit 的效果和 Windows 不同：超限时分配失败会让 Python 抛
 MemoryError（跟 Windows 那条实测结论一样），所以 MLE 的三条证据判据通用。
+而且正因为它是**软限制**（进程自己抛异常退出，不是被内核秒杀），
+退出前有充裕的采样窗口，5ms 的采样几乎不会漏。
 """
 from __future__ import annotations
 
@@ -23,6 +27,7 @@ import os
 import shutil
 import signal
 import subprocess
+import threading
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -235,10 +240,10 @@ def _linux_rlimit_fn(mem_bytes: int | None):
 
 
 def _linux_peak_kb(pid: int) -> int:
-    """读 /proc/<pid>/status 的 VmHWM（峰值常驻内存），单位 KB。
+    """读 /proc/<pid>/status 的 VmHWM（进程自身的历史峰值常驻内存），单位 KB。
 
-    进程已经退出就读不到了 —— 所以调用方要在 wait 之前读，或者接受读到 0。
-    这里也用 process.wait4 / getrusage 的路子兜底。
+    ★ 进程一退出 `/proc/<pid>` 就没了，**事后读只会得到 0**。
+    所以调用方必须在进程存活期间采，见下面的 `_PeakSampler`。
     """
     try:
         with open("/proc/%d/status" % pid, "r", encoding="utf-8", errors="replace") as f:
@@ -248,6 +253,60 @@ def _linux_peak_kb(pid: int) -> int:
     except Exception:
         pass
     return 0
+
+
+def _children_rss_kb() -> int:
+    """所有**已回收**子进程里出现过的最大 RSS，单位 KB。
+
+    Linux 上 `ru_maxrss` 的单位是 KB（macOS 是字节，别搞混）。
+    它是单调不减的「历史最大值」，所以只能当兜底、不能单独用作某次运行的峰值。
+    """
+    try:
+        import resource
+        return int(resource.getrusage(resource.RUSAGE_CHILDREN).ru_maxrss)
+    except Exception:
+        return 0
+
+
+_SAMPLE_INTERVAL_S = 0.005
+
+
+class _PeakSampler(threading.Thread):
+    """在子进程运行期间不停采 `/proc/<pid>/status` 的 VmHWM，记住最大值。
+
+    ★ 为什么必须采样，而不是运行前/后各读一次（这是踩过的真坑）：
+      - 运行**前**读：进程刚 exec，还没分配内存 → 读到极小值
+      - 运行**后**读：进程已退出，`/proc/<pid>` 条目消失 → 读到 0
+      两者取 max 仍是 0 → MLE 判据的 `near_limit` 永远不成立
+      → **内存超限被误判成 RE**（CI 上实测：`RE 峰值 0 MB / 限额 128 MB`）
+
+    ★ 为什么 5ms 的采样间隔也够（不会漏掉中间尖峰）：
+      VmHWM 是进程**自身的历史峰值**、单调不减，不是瞬时值。
+      只要进程存活期间采到**任意一次**，拿到的就是「截至那一刻的历史最高」。
+      再加上 Linux 的 `RLIMIT_AS` 是软限制 —— 分配失败时进程会自己抛
+      MemoryError 后正常退出（不是被内核秒杀），退出前有充裕的采样窗口。
+
+    进程存活短于一个采样间隔的极端情况，由 `run()` 里的 rusage 兜底补上。
+    """
+
+    def __init__(self, pid: int, interval: float = _SAMPLE_INTERVAL_S) -> None:
+        super().__init__(daemon=True)
+        self.pid = pid
+        self.interval = interval
+        self.peak_kb = 0
+        self._stop = threading.Event()
+
+    def run(self) -> None:  # pragma: no cover - 线程体
+        while not self._stop.is_set():
+            kb = _linux_peak_kb(self.pid)
+            if kb > self.peak_kb:
+                self.peak_kb = kb
+            self._stop.wait(self.interval)
+
+    def stop(self) -> int:
+        self._stop.set()
+        self.join(timeout=1.0)
+        return self.peak_kb
 
 
 # stderr 里出现这些字样，基本可以确认是「被内存掐住」而不是别的崩溃。
@@ -308,6 +367,8 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
 
     job: JobObject | None = None
     note = ""
+    sampler: _PeakSampler | None = None
+    rss_before = 0
     try:
         mem_bytes = memory_limit_mb * 1024 * 1024 if memory_limit_mb else None
 
@@ -321,8 +382,12 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
                 job = None
                 note = f"Job Object 不可用（{e}），本次无内存上限"
 
-        # 趁进程还活着，先记一次峰值（Linux 的进程退出后 /proc 就没了）
-        early_peak_kb = _linux_peak_kb(proc.pid) if not _IS_WINDOWS else 0
+        # Linux：进程一退出 /proc/<pid> 就没了，必须从这一刻起持续采样。
+        # （运行前/后各读一次会双双读到 0，见 _PeakSampler 的说明）
+        if not _IS_WINDOWS:
+            rss_before = _children_rss_kb()
+            sampler = _PeakSampler(proc.pid)
+            sampler.start()
 
         timed_out = False
         out = err = b""
@@ -346,8 +411,17 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
         if _IS_WINDOWS:
             peak_bytes = job.peak_memory_bytes() if job else 0
         else:
-            # 优先读 /proc（进程可能已经退出，那就只能用之前抓到的）
-            peak_bytes = max(_linux_peak_kb(proc.pid), early_peak_kb) * 1024
+            peak_kb = sampler.stop() if sampler is not None else _linux_peak_kb(proc.pid)
+            # 兜底：采样一次都没赶上（进程存活时间短于采样间隔）时，
+            # 看本次是否**刷新了**「子进程最大 RSS」记录：
+            #   - 刷新了（after > before）→ 这一次的历史峰值就是它，采信
+            #   - 没刷新 → 读到的是别的用例留下的旧值，必须丢掉
+            #     （否则会拿上一个用例的峰值来判这一个用例，造成假 MLE）
+            if peak_kb == 0:
+                rss_after = _children_rss_kb()
+                if rss_after > rss_before:
+                    peak_kb = rss_after
+            peak_bytes = peak_kb * 1024
         exit_code = proc.returncode if proc.returncode is not None else -1
 
         # 实测结论（别改成 `peak >= limit`）：Job Object 的进程内存限额**不会**直接杀进程，
@@ -386,6 +460,9 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
             raw_note=note,
         )
     finally:
+        if sampler is not None and sampler.is_alive():
+            # 异常路径上采样线程可能还在转（正常路径已经 stop 过了）
+            sampler.stop()
         if job:
             # KILL_ON_JOB_CLOSE：关句柄时连带清掉残留子孙进程
             job.close()

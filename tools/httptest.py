@@ -11,6 +11,10 @@ import sys
 import time
 import urllib.error
 import urllib.request
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))     # 为了能 import _console
+import _console                                               # noqa: E402
 
 BASE = "http://127.0.0.1:8765"
 _ok: list[str] = []

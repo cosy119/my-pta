@@ -15,6 +15,10 @@ import json
 import sys
 import time
 import urllib.request
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))     # 为了能 import _console
+import _console                                               # noqa: E402
 
 PORT = sys.argv[1] if len(sys.argv) > 1 else "8792"
 BASE = f"http://127.0.0.1:{PORT}"

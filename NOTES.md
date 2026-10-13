@@ -1,0 +1,400 @@
+# 本地 PTA 平台 · 实现笔记
+
+> 这份文件是 `E:\学习\001\pta\` 的**实现细节备忘**，随仓库走。
+> 面向「下次改这个项目时要先知道什么」——每条都是踩过坑之后写下来的结论。
+> 工作区长期记忆 `E:\学习\001\.workbuddy\memory\MEMORY.md` 里只留操作要点，细节看这里。
+
+## 架构与部署
+
+```
+GitHub Pages（docs/ 静态前端）
+        │  X-User-Token 请求头，跨源
+        ▼
+免费云后端（Render，FastAPI + uvicorn）
+        │  云盘 PTA_DB=/data/pta.db
+        ▼
+SQLite（题库 + 提交记录 + 进度）
+```
+
+- 仓库 <https://github.com/cosy119/my-pta>（公开，main）；Pages 源 = `main` / `/docs`。
+- 在线地址 <https://cosy119.github.io/my-pta/>；本地双击 `run.bat` → <http://127.0.0.1:8765>。
+- `data/` **零文件被跟踪**（`.gitignore` 覆盖 `data/`、`__pycache__/`）。
+- ★ **Render 必须挂持久化 Disk 到 `/data`**，否则每次重新部署进度全丢。
+- 静态快照 `docs/problems.json` **不覆盖库里已有的题**（seed 只补新的）——改了题面记得重新导出。
+
+### 推送机制（别再踩）
+
+- token 在 `C:\Users\Lijh\.git-credentials`（账号那栏写 `2029691715-dot`，实际登录 `cosy119`，`gho_` 开头 40 字符）。
+- ★ **直接 `git push` 会挂到 SIGTERM**。必须：把 token 内联进 push URL + `GIT_TERMINAL_PROMPT=0` + `-c credential.helper=`。
+- 推完 `git remote set-url` 还原（用内联 URL 时其实没改 remote，但养成习惯）。
+- 输出里有 token，重定向到文件后 `sed` 打码再打印。
+
+### 改了东西之后的固定动作
+
+```bat
+python tools\export_static.py      &rem ★ 改题库/前端后必须重跑，重新生成 docs/
+python tools\verify_bank.py        &rem 204 题 / 532 点，双实现对拍
+python tools\selftest_cpp.py       &rem 9 项
+python tools\selftest_theory.py    &rem 14 项
+python tools\selfcheck.py          &rem 62 项
+git add -A && git commit && git push（用上面的内联 token 姿势）
+```
+
+`export_static.py` 的 `_STRIP_FIELDS` 会剥掉 `reference_solution` / `ref_interpreter` / `ai_meta` / `ai_model` —— 静态站上绝不出现参考解。验收时要复查这一条。
+
+## CI（`.github/workflows/ci.yml`）
+
+两个 job：`linux`（ubuntu-latest）、`windows`（windows-latest），都跑 sandbox → cpp → theory → selfcheck → verify_bank。
+
+- ★ **顶层钉了 `PYTHONUTF8: "1"` + `PYTHONIOENCODING: utf-8`**。
+  没有这两行时，Windows job 在**第一步就崩**（打印中文撞 cp1252），后面全部 skip —— 等于所有自检白加。
+- 查 CI 结果：本机 **`gh` 不可用**（报 `mise-shim: failed to execute mise`）→ 走 GitHub API + token 的 curl。
+  - job 列表：`GET /repos/{o}/{r}/actions/runs/{id}/jobs`
+  - 某个 job 的日志：`GET /repos/{o}/{r}/actions/jobs/{job_id}/logs`，**用 `curl -sL`**：该接口 302 到 blob 存储，curl 在跨主机重定向时**会自动丢掉 Authorization**，正好是需要的；用 Python urllib 会因为把 token 带过去而 401。
+- 本机测不到的只有 **Linux 沙箱分支**（本机是 Windows；`/proc` 是模拟的；Docker 未装）→ 靠这个 workflow 验证。
+
+## 控制台编码（`tools/_console.py`）
+
+工具脚本全程打印中文。Windows 的 Python 默认按**系统 ANSI 代码页**写 stdout：
+
+| 环境 | 代码页 | 打印中文的后果 |
+|---|---|---|
+| 中文 Windows（用户本机） | cp936 | 能编码，最多乱码 |
+| **英文 Windows（GitHub runner）** | **cp1252** | **`UnicodeEncodeError` 当场崩** |
+| 本机开了 `PYTHONUTF8=1` | utf-8 | 一切正常 → 所以本机一直没暴露 |
+
+修法两层：
+
+1. CI 顶层钉 `PYTHONUTF8`（覆盖所有 Python 步骤）
+2. `tools/_console.py` —— **导入即生效**，把所有脚本的 stdout/stderr `reconfigure(encoding="utf-8", errors="replace")`。新写工具脚本记得加 `import _console`。
+
+`errors="replace"` 是刻意的：宁可某个字符显示成问号，也**绝不让整个自检脚本崩在打印上**（自检的价值在结论）。
+
+## 身份机制（无账号密码）
+
+- 前端首开用 `crypto.getRandomValues()` 生成 32 位 hex token → `localStorage['pta.userToken']` → 每个请求带 `X-User-Token` 头。
+- 后端 `users.resolve()` **首见即注册**。
+- `_TOKEN_RE = ^[0-9a-f]{16,64}$`；非法 / 缺失 token 一律归到 `local-default-user`（界面显示「本机用户」）。
+- 自动昵称：`"学习者-" + sha1(token)[:6]`。
+- 所有读接口按 `user_id` 过滤；越权访问返回 **404**（不泄露「这个 id 存不存在」）。
+
+## 数据隔离与迁移
+
+- `mastery` 主键从 `problem_id` 单列改成 **`(user_id, problem_id)` 复合**；`submissions` 加 `user_id`。
+- **SQLite 不能改主键** → `_rebuild_mastery()`：建 `mastery_new` → `INSERT OR REPLACE ... SELECT` → `DROP` 旧表 → `RENAME`。
+- ★★ **顺序不能错**：`executescript(schema.sql)` → `_migrate()` → `executescript(index.sql)`。
+  坑：schema 里带着 `CREATE INDEX ... ON mastery(user_id)`，老库还没补上 `user_id` 列就建索引 → `no such column: user_id`。**索引必须拆到独立的 `app/index.sql`**。
+- `_update_mastery` 要加空 uid 兜底 `users.user_id_of(None)`，否则 selfcheck 裸 insert 会触发外键崩。
+- ★ `db.py` 的 `_with_retry`（6 次退避重试）覆盖 `execute` / `executemany`。
+  起因：**这台机器的杀软会在 .db 被改写的一瞬间锁住文件**，症状是判题中途所有提交变 IE、`attempt to write a readonly database`，而同进程的 Web 线程插新提交却成功（文件权限、磁盘、WAL 全都正常，同一路径连写 300 次也没事）。
+
+## 沙箱：两个平台两套实现
+
+| | Windows | Linux |
+|---|---|---|
+| 限内存 | Job Object | `preexec_fn` 设 `RLIMIT_AS` → 退 `RLIMIT_DATA` → `RLIMIT_FSIZE` |
+| 杀进程树 | `taskkill /F /T` | `os.killpg` + `start_new_session=True` |
+| 内存峰值 | Job Object 查询 | ★ **运行期间起采样线程**读 `/proc/<pid>/status` 的 VmHWM |
+
+### ★★ Linux 峰值必须采样（2026-10-13 修）
+
+原来的写法是**运行前读一次 + 运行后读一次，取 max** —— 两条路都读 0：
+
+- 运行前：进程刚 exec，还没分配内存
+- 运行后：进程已退出，`/proc/<pid>` 条目消失
+
+结果 `near_limit`（峰值 ≥ 限额×0.9）永远不成立 → **内存超限被判成 RE**。
+CI 上实测的报错就是 `[FAIL] 判 MLE -- RE 峰值 0 MB / 限额 128 MB`。
+
+修法：起一个 5ms 间隔的采样线程，进程存活期间不停读 VmHWM 记最大值。
+
+- 为什么 5ms 也够（不会漏中间尖峰）：**VmHWM 是进程自身的历史峰值、单调不减**，存活期间采到**任意一次**就拿到了截至那一刻的最高值。
+- 为什么一定有采样窗口：Linux 的 `RLIMIT_AS` 是**软限制** —— 分配失败时进程自己抛 `MemoryError` 后正常退出，不是被内核秒杀。
+- 兜底：采样全为 0 时用 `getrusage(RUSAGE_CHILDREN).ru_maxrss`，但**必须要求本次刷新了历史记录**（`after > before`）才采信 —— 否则会拿上一个用例的峰值来判这一个，造成假 MLE。
+  （`ru_maxrss` 在 Linux 是 KB，macOS 是字节。）
+
+### ★ MLE 判据 = 三条互相印证的证据
+
+```python
+near_limit = peak >= limit * 0.9      # ① 内存真的顶满了
+abnormal   = exit_code != 0 or timed_out   # ② 不是正常跑完
+mem_signal = not out.strip() or OOM_MARKER in err   # ③ 印证是"被内存掐住"
+mem_exceeded = near_limit and abnormal and mem_signal
+```
+
+- 背景：**Job Object 的进程内存限额不杀进程** —— 它让那次分配失败，于是 Python 抛 `MemoryError`、以退出码 1 结束，峰值稳定停在限额的 ~99.7%（实测 65340/65536 KB）。
+- 为什么必须三条：曾经只用两条，**机器有负载时会偶发漏判成 RE**（自检并发跑时踩到过）。
+- `_OOM_MARKERS` = `MemoryError` / `can't allocate memory` / `cannot allocate memory` / `std::bad_alloc` / `out of memory`
+- 反向验证过：正常程序、普通崩溃、`exit(1)`（峰值 13 MB）都**不**误判。
+
+### 另两条坑
+
+1. 超时必须杀**整棵进程树**，否则子进程残留、临时目录删不掉。
+2. **`-I` 不能用**：3.11+ 的 `-I` 隐含 `-P`，会把脚本所在目录移出 `sys.path`。只用 `-X utf8=1 -u`。
+
+### ★ 本机进程启动开销：160~400 ms（做性能题必须知道）
+
+2026-10-13 实测（本机 Windows + Kaspersky + 金山毒霸两套杀软）：
+
+| 场景 | 耗时 |
+|---|---|
+| 空 C 程序（`int main(void){return 0;}`），**裸** `subprocess` 跑 | **164 ~ 179 ms** |
+| 同一个空程序，走沙箱（多一个 Job Object） | **180 ~ 310 ms** |
+| Python 解释器起一下（`-c pass`） | **362 ~ 396 ms** |
+
+**结论：这台机器上「启动一个进程」本身就是几百毫秒。** 一个什么都不做的程序都要 164 ms，
+所以量出来的 `time_ms` 里有一大块根本不是被测量代码的耗时。
+
+后果：
+
+1. **本机判题时，1000 ms 的题目限制里学生代码实际只剩 600~800 ms**。
+   临界题会**偶发 TLE**（实测撞到过一次：204 题全量对拍里「循环队列操作模拟」的 alt 解在
+   测试点 3 报 `TLE 1918 ms`，单独重跑同一份解 **5/5 通过**）。
+2. **云端 / CI 不受影响**（Linux、无杀软），所以**不要去调题库的时间限制** ——
+   那是给学生的题目约束，应该基于干净环境。改了反而让题目对学生放水。
+3. 对拍工具里给 TLE 加了一次重试（只有两次都 TLE 才算真 TLE，真死循环照样抓得住）。
+   **真实判题绝不这么做** —— 学生提交超时就该判超时。
+
+写性能相关题解、或跟用户解释「为什么你这题在本机 TLE 但交上去 AC」时，记得这条。
+
+## 云适配与启动器
+
+- `config.path(key)` 支持 `PTA_<KEY>` 环境变量覆盖（`PTA_DB` / `PTA_LOGS` / `PTA_TMP_JUDGE`）。
+- `run.py` 探测 `$PORT` 或 `$PTA_CLOUD` → 绑 `0.0.0.0:$PORT`、不开浏览器、不 pause。
+- CORS 默认 `["*"]` + `allow_origin_regex=r"https://.*\.github\.io"`，`allow_credentials=False`（身份走头不走 cookie）。
+- ★ **启动逻辑全在 `run.py`，`.bat` 只是纯 ASCII 入口**（防 GBK 解析破坏 bat 结构）。
+
+  `run.py` 的四种情形都要处理：
+
+  | 情形 | 行为 |
+  |---|---|
+  | 端口空闲 | 起服务 + **轮询 `/api/health` 就绪后自动开默认浏览器** |
+  | 端口被占且 health 通 | 判「已在跑」，直接开浏览器 |
+  | 端口被占但 health 不通 | 报「被别的程序占了」+ 三条出路 + pause |
+  | 启动崩溃 | traceback + pause |
+
+  全程写 `data\logs\server.log`。**给用户的「一键启动」必须自己处理端口冲突并把界面送到眼前。**
+
+- `run.bat` 必须保持**非 ASCII 字节数 0**：
+  `[System.IO.File]::ReadAllBytes($f) | ? { $_ -gt 127 }` 计数要为 0。
+
+## 判题与评分
+
+- 架构：FastAPI + uvicorn → API 只入队 → **独立后台单线程**（concurrency=1）→ 每个用例独立子进程 → 限内存 + 墙钟看门狗。
+- ★ **评分模型对齐 PTA「测试点」**：每个点单独带分值，**得分 = 通过点的分值之和**（不是通过个数 × 均分）。
+  `points` 没写就按满分均分、余数给前面（求和恒等于满分）；拿分没满 = **部分正确**；进度取**历史最高分**。核心在 `app/scoring.py`。
+- **每题三个指针**：`best_submission_id`（最高分）/ `last_submission_id`（**打开题目时自动回填其代码**）/ `solved_at`。
+- **老库升级全自动**：`MIGRATIONS` 用 `PRAGMA table_info` 查完再 `ALTER TABLE ADD COLUMN`；
+  `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
+- ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
+
+## 题库（204 题 / 2615 分 / 532 测试点）
+
+| subject | 题库文件 | 题数 | 分 | line | 语言 |
+|---|---|---|---|---|---|
+| `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(53) | 56 | 860 | python | Python |
+| `ds` | `problems_bank_ds.py` | 31 | 595 | cpp | **C 或 C++ 任选** |
+| `linux` | `problems_bank_linux.py` | 117 | 1160 | text | 理论题（选择/判断/填空） |
+
+- ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
+  **CORE 那 3 题连单撞都没有**。现在 `LINES` 用的是 `CORE_PROBLEMS + BANK_PROBLEMS`。
+  **加题库时先确认对拍覆盖到了。**
+- Python 讲次分布：02→4 / 03→7 / 04→5 / 05→7 / 06→6 / 07→4 / 08→6 / 09→5 / 10→5 / 11→7。⏳ 第 12 讲及以后尚无题。
+- `seed.py`：`SEED_PROBLEMS = CORE + BANK + DS + LINUX`；`SUBJECT_LABELS` 给三科目中文名；
+  `_seed_specs()` 返回四元组 `(total, pts, section, subject)`，`backfill_points()` 同步 `subject`。
+
+### ★ 加题铁律「三件套」
+
+1. `expected_stdout` 必须**由另一套独立实现预先算出** —— 绝不拿参考解现跑现填（那是自己给自己判卷，永远满分、毫无意义）。
+2. 每题必带 `alt_solution`（第二套独立实现），**两套都要撞过全部测试点**。
+3. `tools/verify_bank.py` 逐字节对拍。
+
+- ⚠️ `alt_solution` **不入库** —— `seed.ensure()` 必须 `spec.pop("alt_solution", None)`。
+- ⚠️ `verify_bank.py` 里**同一套解复用同一目录**，整轮只删 4 次 —— 若每题都删目录会累计 100+ 次 > 阈值 50，被 `SAFE_DELETE_BULK_CONFIRM_REQUIRED` 拦停。
+- ⚠️ `verify_bank` 的临时目录**必须落在判题根目录之外**（用 `data/tmp/verify_bank/`）。
+  若住在 `data/tmp/judge/` 下，服务启动时的 `clean_tmp_root()` 会把编译产物顺手删掉，表现为一连串 `can't open file ... main.py` RE。
+  **别把对拍和判题服务同时跑。**
+
+### 生成器
+
+`tools/gen_ds_bank.py` / `tools/gen_linux_bank.py`，各带 `_sanity()` 把关（必填字段 / 标题重复 / `line` / `checker` / **理论题样例必须为 0**）。
+
+- `_dump()` 输出 Python 字面量（把 JSON 的 `null`/`true`/`false` 换掉）。
+- ⚠️ 生成器里**不能把 `def oracle` 写进 `add(...)` 的实参列表** —— `def` 是语句不是表达式，整份文件一行都跑不了。
+
+### 理论题样板工厂 `app/bank_kit.py`
+
+- `mc()` / `tf()` / `fill()`；分值 `SCORE_CHOICE=10` / `SCORE_JUDGE=8` / `SCORE_FILL=12`。
+- 理论题 `is_sample` **恒为 0** —— 样例会在静态站公开，对选择题来说就是**把答案印在题面上**。
+
+### ★ 补 `alt_solution` 的可靠姿势
+
+2026-10-13 用这套流程给 14 道老题补上了第二套实现，值得复用：
+
+1. 先写一份 `{标题: 源码}` 表放在 `data/`（不进 git），**逐测试点验证对齐现有期望输出**；
+2. 全部对齐后，再按 `"title": "..."` 正则定位到本题字典，在 `"cases": [` 之前插入用 `json.dumps` 生成的字面量；
+3. 跑第二遍确认**幂等**（已有 `alt_solution` 的跳过）。
+
+⚠️ 定位正则必须 `ensure_ascii=False`，否则中文标题会被转成 `\uXXXX` 而匹配不到。
+
+「独立」的判断标准（写 alt 时逐题自查）：
+
+| 题目 | 参考解 | 第二套实现 | 独立在哪 |
+|---|---|---|---|
+| 区间求和 | 等差数列公式 | 前缀和相减 | 不同推导（暴力 `sum(range())` 在 2e9 宽度上会 TLE，不能用） |
+| 判断闰年 | 手写四条判断 | `calendar.isleap` | 换实现来源（标准库） |
+| 素数判断 | `while` 试除 + break | `all()` + `int(n**0.5)` 上界 | 换控制结构 |
+| 单词计数 | `str.split()` | 正则 `\S+` | 换 API |
+| 去重保序 | `set` + 循环 append | `dict.fromkeys` | 换数据结构 |
+| 第 k 大 | 整体降序排序取 `[k-1]` | `heapq.nlargest` | 换算法 |
+| 词频统计 | 单趟 `sorted(key=(-次数, 单词))` | **两趟稳定排序** | 复合键 vs 稳定性利用（⚠️ **不能用 `Counter.most_common()`**：它同频时按插入顺序，第 5 个测试点会挂） |
+| 最大公约数 | 手写欧几里得 | `math.gcd` | 换实现来源 |
+| 斐波那契 | 双变量迭代滚动 | `lru_cache` 记忆化递归 | 自底向上 vs 自顶向下 |
+
+## C / C++ 双通道（数据结构线）
+
+- 同一道题 **C 与 C++ 任选提交**：按提交里的 `lang` 选编译器与源文件后缀。
+  `c → gcc + main.c + -std=gnu11`，`cpp → g++ + main.cpp + -std=c++17`。
+- ★ **两条路的可执行文件必须分开命名**（`main_c` / `main_cpp`）——
+  否则同一目录里先编 C 再编 C++，第二次会「跑了上一次的产物」。`selftest_cpp.py` 有一项专门盯这个：先编 C++ 跑、再编 C 跑、再跑 C++ 的产物，必须还是 `I_AM_CPP`。
+- **编译阶段单独给额度**：`COMPILE_MEMORY_MB = 1024` / `COMPILE_TIME_MS = 20000`。
+  **不能套用题目的 256 MB** —— g++ 自己就要吃几十上百 MB，会表现为莫名其妙的 CE。
+- `app/judge/runner_cpp.py`：`LANG_SPECS` + `LANG_ALIAS`（`c++`/`g++`/`c99`/`c11`/`gnu11`… 全收敛）+ `canon_lang()`；`CppRunner = CompileRunner` 保留旧名。
+- `worker.build_runner()` 按 `python | text | canon_lang` 三分支分发。
+- `Dockerfile` 里必须装 `gcc g++ libc6-dev` —— 原来的基础镜像没有编译器，云端数据结构题会全部 CE。
+
+## 理论题判题（Linux 线）
+
+- `app/judge/runner_text.py`：`TextRunner` **不启子进程**，把提交文本当 stdout 交回，
+  后面的 compare / scoring / 历史 / 进度**全部复用**，判题逻辑一行没另写。空答案**不报 CE**（判 WA 更诚实）。
+- `normalize_answer()`：去首尾空白与标点 → 判断题收成「对/错」→ 单 ASCII 字母转大写 → 剥掉「选 B」「答案：B」的**前缀**。
+- **`oneof` checker**：期望值里以 `|` 开头的每一行都是可接受答案，命中任意一个即通过。
+  `_uses_oneof()` 要求**必须真的有 `|` 行**（否则空备选清单会把所有答案都判错）。
+  `seed.backfill_choice_alts()` 把选择题的**选项正文**也补成可接受答案 → 前端交字母、交正文两条路都通。
+
+### ★★ 命令题宽容口径：ASCII 标点绝不能剥
+
+`_norm_cmd()`：空白折叠 + 相邻短选项合并（`-l -a` → `-la`）+ 簇内字母排序去重（`-lah` → `-ahl`）。
+**刻意不碰**长选项、带数字的、带参数的 —— 合并会改语义。
+
+踩过的坑：`runner_text._EDGE` 里含 ASCII 的 `.` `'` `"`，`normalize_answer` 统一 `strip()` 掉，于是
+
+| 参考答案 | 被判成 | 少了什么 |
+|---|---|---|
+| `cd ../..` | `cd ../` | 末字符 |
+| `echo -n "hello everyone!"` | 少了结尾的 `"` | 引号 |
+| `dnf provides '*/ls'` | 少了结尾的 `'` | 单引号 |
+
+**这三个字符在命令行里是有意义的。** 修法：
+
+- `_EDGE` 只用来**识别「这是不是一个选项字母」**，识别完只返回那个字母，绝不拿它裁长答案；
+- 宽容挪到 `compare.answer_forms()`，只剥**排版类**标点（全角、中文引号、顿号…），且作为**额外**形式加进去，不在原答案上裁。
+
+### ★ 反方向测试必须有
+
+`verify_bank` 只证明「正确答案判得**过**」—— 一个过宽的 checker 会让所有题都满分而它依然报「全部通过」。
+
+`tools/selftest_theory.py`（14 项）负责证明「错误答案判得**错**」：
+
+- 逐题试**单选题其余每一个选项**（72 道）
+- 判断题双向
+- 命令填空的宽容度
+- **全库扫三条**：每道题的参考答案都判得过自己 / 期望值里每条可接受答案都判得过 / 乱写加料仍判错
+
+## 自检脚本
+
+| 脚本 | 项数 | 说明 |
+|---|---|---|
+| `selfcheck.py` | **62/62** | 内核 41 + 评分 21 |
+| `selftest_sandbox.py` | **12/12** | 超时杀孙进程、爆内存判 MLE、`exit(1)` 反向不误判 |
+| `selftest_cpp.py` | **9/9** | C/C++ AC·CE·WA·TLE、**同目录产物不串**、编译器路径无效给人话、别名收敛 |
+| `selftest_theory.py` | **14/14** | 72 道单选其余选项全判错、判断题双向、命令宽容度、全库扫 |
+| `e2e_ui.py` | **33/33** | 端到端过 HTTP（**需先起服务**） |
+| `ui_smoke.mjs` | **41/41** | jsdom 真渲染前端（离线 + 假后端两遍） |
+| `httptest_users.py` | **23/23** | 多用户隔离、越权 404、CORS |
+| `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
+| `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
+| `verify_bank.py` | **204 题 / 532 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
+
+跑 `e2e_ui` 的正确姿势（**用测试库，绝不碰真实库**）：
+
+```bat
+set PTA_DB=E:\学习\001\pta\data\_bank_test.db
+D:\Pythontools\Python\python.exe -m uvicorn app.main:app --port 8792
+D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
+```
+
+它每轮用**新通行证**（进度是按人存的，复用同一个 token 会让断言被上一轮污染）。
+
+### ★★ `selfcheck.py` 默认改用测试库（2026-10-13 修）
+
+`selfcheck.py` 会 `db.insert` 一批测试提交（AC / WA / RE / TLE / CE / MLE 各一条，共 **11 条**）。
+它原来默认连的是**真实库** `data/pta.db` —— 于是每跑一次就往用户记录里多 11 条假提交。
+
+真踩了：一天里跑了三次自检，真实库的 `submissions` 从 11 涨到 **33**。
+三批数据的指纹一模一样（verdict 顺序、code 长度逐一对应、时间戳都在十几秒内连续），
+一眼能认出不是人做题的节奏 —— **但用户打开「我的提交」会莫名其妙多出一堆自己没写过的代码。**
+
+修法：在 `config.get()` **之前**（配置是读取时定格的）把 `PTA_DB` 指到 `data/_bank_test.db`；
+要对着真实库跑就显式加 `--live`，脚本会在表头把数据库路径和警告打出来。
+
+只改了 `selfcheck.py` —— `selftest_cpp` / `selftest_theory` / `selftest_sandbox` 都是
+**只编译只运行、不碰数据库**的，已核对过。`httptest*.py` 走真服务，写哪个库取决于服务连的库
+（起服务时用 `PTA_DB` 指过去就行）。
+
+## 环境与工具的注意事项
+
+其它注意事项：
+
+- ⚠️ `ui_smoke.mjs` 用 `createRequire` + `NODE_MODULES_DIR` 环境变量定位 jsdom（ESM `import` 找不到）。
+- ⚠️ 日志**不要写 `/tmp`**（触发安全策略 SIGTERM），写项目目录（如 `data/vb.log`）。
+- ⚠️ 后台跑的脚本**重定向到文件时输出是全缓冲**，跑完才落盘 —— 别拿「日志还是 0 行」当失败。
+- ⚠️ 本机 curl 报 `CRYPT_E_REVOCATION_OFFLINE` → 加 `--ssl-no-revoke`。
+- ⚠️ 本机有 `HTTP_PROXY`（`127.0.0.1:61969`）；curl 测本机端口要用 `--noproxy '*'`（`"*"` 在 Git Bash 里会被 glob 展开，用单引号）。Python urllib 实测能直连，不受影响。
+
+## 前端（PTA 风格）
+
+- **三层 hash 路由**：`#/` 题集广场（hero 总分进度 + 科目卡片）→ `#/set/<subject>` 题集内（状态筛选 + 搜索 + 按 `source_section` 分组折叠表格）→ `#/p/<id>` 题目页（左题面右编辑区）。另有 `#/subs` 我的提交。
+- 题目页按 `is_choice` 分支：选择题渲染可点选项圆标（**提交选项字母**）、判断题提交「对/错」正文、填空题 textarea、编程题按 `langs` 给 C/C++ 下拉。
+- **`GET /api/catalog`** 一次请求给出「科目 → 分组 → 题数 + 我的进度 + 总分」，前端不用拉全库自己聚合。
+- **离线降级**：连不上后端就读 `problems.json` + `localStorage`，拼成和在线一样的 CATALOG。
+  - ⚠️ 静态快照**不含 `langs`** → 前端有一份 `LANG_OPTIONS` 本地副本，否则离线时语言下拉是空的。
+  - ⚠️ 启动必须 `loadMeta → loadProblems → loadCatalog` **串行** —— 离线兜底要从题库现聚合，并行会拿到空题库（首页 0 张卡片）。
+- 分组折叠用**下标传参**（`toggleGroup(i)` + `GNAMES`），避免题目名字里的引号打断内联 JS。
+- `prefers-color-scheme` 双主题。
+- ⚠️ `Write` 工具对**未 Read 过的已有文件**会报 `File has not been read yet` —— 要么先 Read，要么先 `cp` 备份再 `rm` 腾路径。
+
+## 数据工具
+
+- `tools/backup_db.py`：`backup` / `export -o x.json` / `import <json|db>` / `list`。
+  **去重键 = 题目 + `created_at` + `verdict` + `code.strip()`**。`_import_db()` 用 `ATTACH DATABASE`；题目按**标题**跨库对应。
+- `tools/reset_progress.py`：清空做题记录（只删 submissions / submission_cases / mastery，题目保留；默认预览，加 `--yes` 才真删）。
+
+### ★★ 血的教训（2026-10-09）
+
+用户报「重启 `run.bat` 后记录没了」—— 排查发现**启动流程全程没有任何 DELETE**。
+**真凶是收尾时误跑的 `reset_progress.py --yes`，把用户真实刷题记录当自测垃圾清了。**
+
+> **用户库里有真实数据时，绝不在收尾自动清空；要清必须先问。**
+
+## 解释器
+
+- **Thonny 装在 `D:\Thonny\Thonny\`，自带 Python 3.14.4** —— 用户平时做题的环境。
+- 讲义实测用的是 `D:\Pythontools\Python\python.exe`（3.13.14）。
+- **两者是不同解释器**：4 条报错原文有差异，3 个 3.14 独有语法（t-string / 无括号多异常 / 注解延迟求值）。
+- Thonny 的 `thonny.exe` **没有**跑完即退的 CLI 模式 —— 「接入 Thonny」的正确做法是用它自带的 `python.exe`。
+
+## 进度
+
+**P0 + P1 + 评分系统 + 三科目题库(204 道) + C/C++ 双通道 + 理论题判题 + PTA 风格前端 + 数据备份 + 多用户隔离 + Pages 发布** 已完成。
+
+待做：
+
+- **P3** AI 出题管线
+- **P4** Shell（SSH）runner —— 需用户提供 SSH 目标（`hosts` 里没有 `fedora`；`wsl.exe` 被安全策略列入程序黑名单）
+- **P5** AI 讲解 + 双解释器对拍 + Obsidian 导出
+
+**待用户操作**：
+
+1. 在 Render 部署后端（连 GitHub → 读 `render.yaml` → ★ **挂 Disk 到 `/data`**）
+2. 回 Pages 点「设置」填后端地址（或 `?api=` 一步到位）

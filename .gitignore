@@ -6,16 +6,22 @@ __pycache__/
 venv/
 env/
 
-# ---- 本地运行数据（不进仓库）----
-# 题库数据与做题记录是「本地状态」，换机器重新 seed 就能重建题目；
-# 想跟着自己走的话见 README 的「备份与迁移」一节。
-data/pta.db
-data/pta.db-wal
-data/pta.db-shm
-data/*.bak*
-data/tmp/
-data/logs/
-data/media/
+# ---- 本地运行数据（整个目录不进仓库）----
+# data/ 里全是「本地状态」：
+#   pta.db            题库数据 + 做题记录（换机器重新 seed 就能重建题目；
+#                     想带着记录走见 README 的「备份与迁移」一节）
+#   _bank_test.db     测试库 —— 跑 selfcheck / e2e_ui 时用它，就不碰真实进度
+#   tmp/              判题临时目录（判完即删）
+#   logs/             启动日志
+#   ci_logs/ *.log    CI 排查时抓下来的日志
+#   *.py *.txt        验证用的一次性脚本与中间产物（如补 alt_solution 的那两个）
+#
+# ★ 为什么是整目录忽略，而不是逐项列举：
+#   逐项列举**漏过一次**（2026-10-13）—— 新加了 data/ci_logs/ 和 data/*.py 之后，
+#   它们不匹配既有的 `data/_*` / `data/*.log` 规则，`git status` 里就悄悄冒出
+#   待提交的临时产物，差一点把 CI 日志和中间 dump 推进公开仓库。
+#   仓库里 data/ 下本来就没有任何需要跟踪的文件（`git ls-files data` 为空）。
+data/
 
 # ---- 编辑器/系统 ----
 .vscode/
@@ -29,14 +35,6 @@ desktop.ini
 # ---- 备份 ----
 backups/
 *.zip
-
-# ---- 测试残留 ----
-# 下划线开头的都是「验证用的临时产物」：测试库、抓下来的接口 JSON、抽出来的前端脚本…
-# 测试库（_bank_test.db）留着有用 —— 跑 selfcheck / e2e_ui 时用它，就不会碰真实进度
-data/_*
-# 自检日志（verify_bank / 各种 selftest 的输出）
-data/vb*.log
-data/*.log
 
 # 注意：docs/ 下的 index.html / problems.json / .nojekyll 都是**要**提交的
 # （GitHub Pages 靠它们发布静态站；problems.json 由 tools/export_static.py 生成，

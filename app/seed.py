@@ -48,6 +48,12 @@ CORE_PROBLEMS: list[dict] = [
             "a, b = map(int, sys.stdin.read().split())\n"
             "print(a + b)\n"
         ),
+        "alt_solution": (
+            "import sys\n"
+            "\n"
+            "v = sys.stdin.readline().split()\n"
+            "sys.stdout.write(str(int(v[0]) + int(v[1])) + \"\\n\")\n"
+        ),
         "cases": [
             {"stdin": "1 2\n", "expected_stdout": "3\n", "is_sample": 1,
              "kind": "sample", "explanation": "1 + 2 = 3"},
@@ -104,6 +110,27 @@ CORE_PROBLEMS: list[dict] = [
             "    sys.stdout.write('\\n'.join(map(str, out)) + '\\n')\n\n\n"
             "main()\n"
         ),
+        "alt_solution": (
+            "import sys\n"
+            "\n"
+            "\n"
+            "def main():\n"
+            "    d = sys.stdin.read().split()\n"
+            "    if not d:\n"
+            "        return\n"
+            "    n = int(d[0])\n"
+            "    out = []\n"
+            "    i = 1\n"
+            "    while i < 1 + 2 * n:\n"
+            "        a = int(d[i])\n"
+            "        b = int(d[i + 1])\n"
+            "        i += 2\n"
+            "        out.append(b * (b + 1) // 2 - (a - 1) * a // 2)\n"
+            "    sys.stdout.write(\"\\n\".join(map(str, out)) + \"\\n\")\n"
+            "\n"
+            "\n"
+            "main()\n"
+        ),
         "cases": [
             {"stdin": "1\n3 5\n", "expected_stdout": "12\n", "is_sample": 1,
              "kind": "sample", "explanation": "3 + 4 + 5 = 12"},
@@ -143,6 +170,15 @@ CORE_PROBLEMS: list[dict] = [
             "n = int(data[0])\n"
             "nums = [int(x) for x in data[1:1 + n]]\n"
             "print(sum(nums) / n)\n"
+        ),
+        "alt_solution": (
+            "import sys\n"
+            "from functools import reduce\n"
+            "\n"
+            "d = sys.stdin.read().split()\n"
+            "n = int(d[0])\n"
+            "total = reduce(lambda acc, x: acc + int(x), d[1:1 + n], 0)\n"
+            "sys.stdout.write(str(total / n) + \"\\n\")\n"
         ),
         "cases": [
             {"stdin": "3\n1 2 3\n", "expected_stdout": "2\n", "is_sample": 1,

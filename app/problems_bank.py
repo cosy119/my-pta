@@ -40,6 +40,12 @@ BANK_PROBLEMS: list[dict] = [
             "r = int(sys.stdin.read().strip())\n"
             "print('%.2f' % (3.14 * r * r))\n"
         ),
+        "alt_solution": (
+            "import sys\n"
+            "\n"
+            "r = int(sys.stdin.readline().strip())\n"
+            "sys.stdout.write(format(3.14 * (r ** 2), \".2f\") + \"\\n\")\n"
+        ),
         "cases": [
             {"stdin": "1\n", "expected_stdout": "3.14\n", "is_sample": 1,
              "kind": "sample", "explanation": "3.14 × 1 × 1 = 3.14"},
@@ -83,6 +89,13 @@ BANK_PROBLEMS: list[dict] = [
             "else:\n"
             "    print('no')\n"
         ),
+        "alt_solution": (
+            "import sys\n"
+            "import calendar\n"
+            "\n"
+            "y = int(sys.stdin.readline().strip())\n"
+            "sys.stdout.write((\"yes\" if calendar.isleap(y) else \"no\") + \"\\n\")\n"
+        ),
         "cases": [
             {"stdin": "2024\n", "expected_stdout": "yes\n", "is_sample": 1,
              "kind": "sample", "explanation": "2024 能被 4 整除、不能被 100 整除 → 闰年"},
@@ -124,6 +137,13 @@ BANK_PROBLEMS: list[dict] = [
             "for i in range(1, n + 1):\n"
             "    out.append(' '.join(str(x) for x in range(1, i + 1)))\n"
             "print('\\n'.join(out))\n"
+        ),
+        "alt_solution": (
+            "import sys\n"
+            "\n"
+            "n = int(sys.stdin.readline().strip())\n"
+            "rows = [str(list(range(1, i + 1)))[1:-1].replace(\",\", \"\") for i in range(1, n + 1)]\n"
+            "sys.stdout.write(\"\\n\".join(rows) + \"\\n\")\n"
         ),
         "cases": [
             {"stdin": "3\n", "expected_stdout": "1\n1 2\n1 2 3\n", "is_sample": 1,
@@ -175,6 +195,13 @@ BANK_PROBLEMS: list[dict] = [
             "        i += 1\n"
             "    print(ans)\n"
         ),
+        "alt_solution": (
+            "import sys\n"
+            "\n"
+            "n = int(sys.stdin.readline().strip())\n"
+            "ok = n >= 2 and all(n % i for i in range(2, int(n ** 0.5) + 1))\n"
+            "sys.stdout.write((\"prime\" if ok else \"not prime\") + \"\\n\")\n"
+        ),
         "cases": [
             {"stdin": "17\n", "expected_stdout": "prime\n", "is_sample": 1,
              "kind": "sample", "explanation": "17 只有 1 和它本身两个因子"},
@@ -218,6 +245,14 @@ BANK_PROBLEMS: list[dict] = [
             "print(s[::-1])\n"
             "print('yes' if s == s[::-1] else 'no')\n"
         ),
+        "alt_solution": (
+            "import sys\n"
+            "\n"
+            "s = sys.stdin.readline().rstrip(\"\\n\").rstrip(\"\\r\")\n"
+            "rev = \"\".join(reversed(s))\n"
+            "sys.stdout.write(rev + \"\\n\")\n"
+            "sys.stdout.write((\"yes\" if s == rev else \"no\") + \"\\n\")\n"
+        ),
         "cases": [
             {"stdin": "abc\n", "expected_stdout": "cba\nno\n", "is_sample": 1,
              "kind": "sample"},
@@ -255,6 +290,12 @@ BANK_PROBLEMS: list[dict] = [
             "import sys\n\n"
             "data = sys.stdin.read().split()\n"
             "print(len(data))\n"
+        ),
+        "alt_solution": (
+            "import sys\n"
+            "import re\n"
+            "\n"
+            "sys.stdout.write(str(len(re.findall(r\"\\S+\", sys.stdin.read()))) + \"\\n\")\n"
         ),
         "cases": [
             {"stdin": "hello world\n", "expected_stdout": "2\n", "is_sample": 1,
@@ -304,6 +345,15 @@ BANK_PROBLEMS: list[dict] = [
             "        out.append(x)\n"
             "print(' '.join(map(str, out)))\n"
         ),
+        "alt_solution": (
+            "import sys\n"
+            "\n"
+            "d = sys.stdin.read().split()\n"
+            "n = int(d[0])\n"
+            "nums = [int(x) for x in d[1:1 + n]]\n"
+            "uniq = list(dict.fromkeys(nums))\n"
+            "sys.stdout.write(\" \".join(map(str, uniq)) + \"\\n\")\n"
+        ),
         "cases": [
             {"stdin": "5\n1 2 2 3 1\n", "expected_stdout": "1 2 3\n", "is_sample": 1,
              "kind": "sample"},
@@ -341,6 +391,15 @@ BANK_PROBLEMS: list[dict] = [
             "nums = [int(x) for x in data[2:2 + n]]\n"
             "nums.sort(reverse=True)\n"
             "print(nums[k - 1])\n"
+        ),
+        "alt_solution": (
+            "import sys\n"
+            "import heapq\n"
+            "\n"
+            "d = sys.stdin.read().split()\n"
+            "n, k = int(d[0]), int(d[1])\n"
+            "nums = [int(x) for x in d[2:2 + n]]\n"
+            "sys.stdout.write(str(heapq.nlargest(k, nums)[-1]) + \"\\n\")\n"
         ),
         "cases": [
             {"stdin": "5 1\n3 1 4 1 5\n", "expected_stdout": "5\n", "is_sample": 1,
@@ -388,6 +447,18 @@ BANK_PROBLEMS: list[dict] = [
             "for w, c in sorted(cnt.items(), key=lambda kv: (-kv[1], kv[0])):\n"
             "    print(w, c)\n"
         ),
+        "alt_solution": (
+            "import sys\n"
+            "from collections import Counter\n"
+            "\n"
+            "d = sys.stdin.read().split()\n"
+            "n = int(d[0])\n"
+            "cnt = Counter(d[1:1 + n])\n"
+            "words = sorted(cnt)\n"
+            "words.sort(key=lambda w: cnt[w], reverse=True)\n"
+            "for w in words:\n"
+            "    sys.stdout.write(\"%s %d\\n\" % (w, cnt[w]))\n"
+        ),
         "cases": [
             {"stdin": "5\napple\nbanana\napple\ncherry\nbanana\n",
              "expected_stdout": "apple 2\nbanana 2\ncherry 1\n", "is_sample": 1,
@@ -431,6 +502,13 @@ BANK_PROBLEMS: list[dict] = [
             "while b:\n"
             "    a, b = b, a % b\n"
             "print(a)\n"
+        ),
+        "alt_solution": (
+            "import sys\n"
+            "import math\n"
+            "\n"
+            "a, b = map(int, sys.stdin.read().split())\n"
+            "sys.stdout.write(str(math.gcd(a, b)) + \"\\n\")\n"
         ),
         "cases": [
             {"stdin": "12 18\n", "expected_stdout": "6\n", "is_sample": 1,
@@ -476,6 +554,21 @@ BANK_PROBLEMS: list[dict] = [
             "for _ in range(n):\n"
             "    a, b = b, a + b\n"
             "print(a)\n"
+        ),
+        "alt_solution": (
+            "import sys\n"
+            "from functools import lru_cache\n"
+            "\n"
+            "sys.setrecursionlimit(10000)\n"
+            "\n"
+            "\n"
+            "@lru_cache(maxsize=None)\n"
+            "def fib(n):\n"
+            "    return n if n < 2 else fib(n - 1) + fib(n - 2)\n"
+            "\n"
+            "\n"
+            "n = int(sys.stdin.readline().strip())\n"
+            "sys.stdout.write(str(fib(n)) + \"\\n\")\n"
         ),
         "cases": [
             {"stdin": "0\n", "expected_stdout": "0\n", "is_sample": 1,

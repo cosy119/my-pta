@@ -1,19 +1,37 @@
 # -*- coding: utf-8 -*-
-"""P0 自检：不开 Web 服务，直接验证判题内核。
+"""判题内核 + 评分 自检：不开 Web 服务，直接验证。
 
 跑法：
-  D:\\Pythontools\\Python\\python.exe -X utf8 tools\\selfcheck.py
+  D:\\Pythontools\\Python\\python.exe -X utf8 tools\\selfcheck.py          &rem 默认用测试库
+  D:\\Pythontools\\Python\\python.exe -X utf8 tools\\selfcheck.py --live    &rem ★ 对真实库跑
 
 这是一份「真跑出证据」的脚本 —— 它不假设任何东西，全部靠真实进程的输出说话。
+
+★ 它会**往库里插测试提交**（AC / WA / RE / TLE / CE / MLE 各一条，共 11 条）。
+  所以**默认只对着测试库跑**，绝不碰用户的真实进度。详见下面的说明。
 """
 from __future__ import annotations
 
+import os
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+# ★★ 必须在 `config.get()` **之前**把 PTA_DB 指过去（配置是读取时定格的）。
+#
+# 起因（2026-10-13）：这个脚本用 db.insert 灌了一批 AC/WA/RE/TLE/CE/MLE 的测试提交，
+# 而它默认连的是**真实库** data/pta.db —— 于是每跑一次就往用户记录里多 11 条假提交，
+# 一天跑了三次就是 33 条。用户的「我的提交」页面会莫名其妙多出一堆自己没写过的代码。
+#
+# 修法：默认改用测试库 `data/_bank_test.db`（跑挂了也无所谓，它是专门用来被蹂躏的）；
+# 真要对着真实库跑（上线前验收之类）就显式加 `--live`，脚本会把这件事喊出来。
+_TEST_DB = ROOT / "data" / "_bank_test.db"
+if "--live" not in sys.argv and not os.environ.get("PTA_DB"):
+    os.environ["PTA_DB"] = str(_TEST_DB)
+
+import _console                                                   # noqa: E402
 from app import config, db, seed, scoring              # noqa: E402
 from app.judge import sandbox                          # noqa: E402
 from app.judge.compare import compare                  # noqa: E402
@@ -38,7 +56,12 @@ cfg = config.get()
 PY313 = cfg.interpreter_path("py313")
 PY314 = cfg.interpreter_path("py314")
 
+_LIVE = Path(str(cfg.db_path)).resolve() == (ROOT / "data" / "pta.db").resolve()
 print("=" * 72)
+print("  判题内核 + 评分 自检")
+print("  数据库：%s%s" % (cfg.db_path, "   ★★ 这是真实库，本脚本会往里插测试提交！" if _LIVE else "   （测试库，随便插）"))
+print("=" * 72)
+
 print("P0 自检 | pta 根 =", ROOT)
 print("=" * 72)
 

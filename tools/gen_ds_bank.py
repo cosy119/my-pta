@@ -26,6 +26,9 @@ import json
 import sys
 from pathlib import Path
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))     # 为了能 import _console
+import _console                                               # noqa: E402
+
 ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = ROOT / "app" / "problems_bank_ds.py"
 

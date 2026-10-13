@@ -212,13 +212,14 @@ pta/
 │  ├─ selftest_sandbox.py  ★ 沙箱跨平台自检（12 项，部署后在容器里跑它）
 │  ├─ selftest_cpp.py      ★ C/C++ 双通道自检（9 项：AC/CE/WA/TLE/产物不串/别名）
 │  ├─ selftest_theory.py   ★ 理论题判题自检（14 项：含「错答案必须判错」的反向验证）
-│  ├─ e2e_ui.py            ★ 端到端过 HTTP（30 项：前端真正走的那条路）
+│  ├─ e2e_ui.py            ★ 端到端过 HTTP（33 项：前端真正走的那条路）
 │  ├─ httptest_users.py    ★ 多用户隔离自检（23 项，自己起服务）
 │  ├─ httptest_split.py    ★ 跨源（Pages + 后端）自检（18 项，含 CORS 预检）
 │  ├─ httptest.py          HTTP 层自检（18 项，需服务在跑）
 │  ├─ gen_ds_bank.py       ★ 数据结构题库生成器（含 _sanity 把关）
 │  ├─ gen_linux_bank.py    ★ Linux 题库生成器（含 _sanity 把关）
 │  ├─ verify_bank.py       题库校验（三线双实现撞独立算出的期望输出）
+│  ├─ _console.py          ★ 把控制台切成 UTF-8（被上面这些脚本 import）
 │  ├─ export_static.py     ★ 导出静态题库 + 生成 docs/ 站点
 │  ├─ backup_db.py         数据备份 / 导出 JSON / 恢复
 │  └─ reset_progress.py    清空做题记录（保留题目；加 --yes 才真删）
@@ -238,10 +239,10 @@ D:\Pythontools\Python\python.exe -X utf8 tools\selfcheck.py         &rem 62 项�
 D:\Pythontools\Python\python.exe -X utf8 tools\selftest_sandbox.py  &rem 12 项：沙箱（跨平台）
 D:\Pythontools\Python\python.exe -X utf8 tools\selftest_cpp.py      &rem  9 项：C/C++ 双通道
 D:\Pythontools\Python\python.exe -X utf8 tools\selftest_theory.py   &rem 14 项：理论题正反双向
-D:\Pythontools\Python\python.exe -X utf8 tools\e2e_ui.py 8792       &rem 30 项：端到端过 HTTP（需服务）
+D:\Pythontools\Python\python.exe -X utf8 tools\e2e_ui.py 8792       &rem 33 项：端到端过 HTTP（需服务）
 D:\Pythontools\Python\python.exe -X utf8 tools\httptest_users.py    &rem 23 项：多用户隔离（自起服务）
 D:\Pythontools\Python\python.exe -X utf8 tools\httptest_split.py    &rem 18 项：跨源 CORS（自起两个源）
-D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py       &rem 532 个测试点：三线双实现对拍
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py       &rem 204 题 / 532 个测试点：三线双实现对拍
 D:\Pythontools\Python\python.exe -X utf8 tools\httptest.py          &rem 18 项：HTTP（需服务已在跑）
 D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py    &rem 清空记录（加 --yes 才真删）
 ```
@@ -252,13 +253,20 @@ D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py    &rem 清空�
 CI（`.github/workflows/ci.yml`）在 Ubuntu 和 Windows 上各跑一遍 ——
 **Linux 那份专门用来验证沙箱的 setrlimit + killpg 分支**（本机是 Windows，测不到）。
 
-★ 两条实操注意：
+★ 三条实操注意：
 
 - `verify_bank.py` 会**编译 / 运行**东西，别跟一个正在跑的服务同时跑
   （早期两者共用判题临时目录，服务启动时的崩溃兜底清理会把对拍编译出来的文件删掉，
   表现成一串 `can't open file ... main.py` 的 RE。现在对拍用独立目录，不会再撞）。
-- `selfcheck.py` 和 `httptest.py` 会往题库里写测试提交（也就改变了进度）。
-  **刷题前先跑自检**；已经做了题就别再跑这两个脚本，或者跑完用 `backup_db.py import` 导回来。
+- `selfcheck.py` 会往库里**插 11 条测试提交**（AC / WA / RE / TLE / CE / MLE 各一条）。
+  ★ 所以它**默认只对着测试库** `data/_bank_test.db` 跑，**不会碰你的真实进度**；
+  真要对着真实库跑（上线前验收之类）显式加 `--live`，脚本会把这件事喊出来。
+  `httptest.py` 走的是真服务，它写哪个库取决于服务连的库 —— 起服务时用 `PTA_DB` 指到测试库就好。
+- ★ **这台机器启动进程本身要 160~400 ms**（两套杀软的实时扫描；实测一个立刻 `return 0` 的
+  空 C 程序也要 164 ms）。所以本机量出来的运行时间有一大块不是代码耗时，
+  1000 ms 的题目限制里学生代码实际只剩 600~800 ms，临界题会偶发 TLE。
+  **云端和 CI 没这个问题** —— 所以别去调题库的时间限制（那是给学生的约束）。
+  想自己复核这个数：编译一个空 C 程序，`tools/` 下的沙箱跑十遍看 `time_ms`。
 
 ## 备份与迁移（你的记录不会丢）
 

@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parent.parent
 os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
+import _console                                                   # noqa: E402
 from app import db  # noqa: E402
 
 

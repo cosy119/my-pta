@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parent.parent
 DOCS = ROOT / "docs"
 sys.path.insert(0, str(ROOT))
 
+import _console                                                   # noqa: E402
 API_PORT = 8799
 WEB_PORT = 8888
 API = f"http://127.0.0.1:{API_PORT}"

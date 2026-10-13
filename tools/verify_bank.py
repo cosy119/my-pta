@@ -36,6 +36,7 @@ ROOT = Path(__file__).resolve().parent.parent
 os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
+import _console                                                   # noqa: E402
 from app import config                                       # noqa: E402
 from app.judge import sandbox                                # noqa: E402
 from app.judge.compare import compare                        # noqa: E402
@@ -45,14 +46,18 @@ from app.judge.runner_python import PythonRunner             # noqa: E402
 from app.judge.runner_text import TextRunner                 # noqa: E402
 from app.problems_bank import BANK_PROBLEMS                  # noqa: E402
 from app.problems_bank_ds import DS_PROBLEMS                 # noqa: E402
+from app.seed import CORE_PROBLEMS                           # noqa: E402
 
 try:                                                         # Linux 线可能还没写
     from app.problems_bank_linux import LINUX_PROBLEMS
 except ImportError:                                          # pragma: no cover
     LINUX_PROBLEMS = []
 
+# ★ CORE 必须并进来。它住在 `app/seed.py` 而不是 `problems_bank.py`，
+#   曾经因此完全落在对拍范围之外 —— SEED_PROBLEMS = CORE + BANK + DS + LINUX，
+#   而这里只验了 BANK，于是 CORE 那几道题**连单撞都没有**（2026-10-13 发现）。
 LINES = (
-    ("py", "Python 线", BANK_PROBLEMS),
+    ("py", "Python 线", CORE_PROBLEMS + BANK_PROBLEMS),
     ("ds", "数据结构线（C/C++）", DS_PROBLEMS),
     ("linux", "Linux 线（理论题）", LINUX_PROBLEMS),
 )
@@ -98,7 +103,27 @@ def run_one_solution(solution: str, prob: dict, cfg, workdir: Path,
 
     passed, fails = 0, []
     for i, c in enumerate(prob["cases"]):
-        res = runner.run_case(workdir, c["stdin"].encode("utf-8"), limits)
+        stdin_bytes = c["stdin"].encode("utf-8")
+        res = runner.run_case(workdir, stdin_bytes, limits)
+
+        # ★ TLE 给一次重试 —— 只在**对拍工具**里，真实判题绝不这么做。
+        #
+        #   理由：本机（Windows + 两套杀软）**启动一个进程本身就要 160~400 ms**
+        #   （实测：一个立刻 return 0 的空 C 程序也要 164 ms，Python 起解释器要 362 ms）。
+        #   于是时间限制卡在临界的题会偶发 TLE，那是环境的锅、不是解法的锅 ——
+        #   曾经在 204 题全量对拍里随机撞到一次（同一份解单独重跑 5/5 通过）。
+        #
+        #   只有**两次都 TLE** 才算真 TLE（真死循环照样抓得住），
+        #   重试通过会打一行提示，免得把「环境抖动」和「真超时」混为一谈。
+        if res.verdict == "TLE":
+            retry = runner.run_case(workdir, stdin_bytes, limits)
+            if retry.verdict != "TLE":
+                print("    [%s] 测试点 %d：首次 TLE（%d ms）→ 重试通过（%d ms）"
+                      "，属本机进程启动开销，非解法问题"
+                      % (tag, i + 1, res.time_ms, retry.time_ms))
+                sys.stdout.flush()
+                res = retry
+
         if res.verdict != "OK":
             fails.append("    [%s] 测试点 %d：运行异常 %s  %s"
                          % (tag, i + 1, res.verdict, (res.detail or "")[:120]))

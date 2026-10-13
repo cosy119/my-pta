@@ -6,6 +6,14 @@
 # 2. 顺便守护题库：加题时参考解必须全过，不然 CI 红
 name: ci
 
+# ★ 这些脚本全程打印中文。Windows runner 是**英文系统**，stdout 默认走 cp1252，
+#   打印中文会当场 UnicodeEncodeError 崩掉（2026-10-13 实测踩到，
+#   selftest_sandbox 连表头都没打完就 traceback，后面所有步骤全被 skip）。
+#   这里统一把 Python 的 I/O 编码钉成 UTF-8；脚本内部另有 tools/_console.py 兜底。
+env:
+  PYTHONUTF8: "1"
+  PYTHONIOENCODING: utf-8
+
 on:
   push:
     branches: [main]

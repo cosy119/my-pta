@@ -38,6 +38,7 @@ ROOT = Path(__file__).resolve().parent.parent
 OUT_PATH = ROOT / "app" / "problems_bank_linux.py"
 sys.path.insert(0, str(ROOT))
 
+import _console                                                   # noqa: E402
 from app.bank_kit import fill, mc, tf                          # noqa: E402
 
 SUBJ = "linux"

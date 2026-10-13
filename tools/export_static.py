@@ -31,6 +31,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+import _console                                                   # noqa: E402
 from app import db, scoring                                   # noqa: E402
 
 WEB = ROOT / "web"
