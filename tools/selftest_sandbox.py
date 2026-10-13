@@ -120,6 +120,46 @@ def main() -> int:
         ok = sandbox.rmtree_force(work)
         check("rmtree_force 能删干净", ok and not work.exists())
 
+        # ---------- 7 MLE 判据矩阵（纯函数，跨平台都能测） ----------
+        #
+        # ★ 这一节不跑进程，直接对判据本身下断言。
+        #   起因：判据在 Linux 上漏判过一次 —— Linux 的 RLIMIT_AS 限的是**地址空间**，
+        #   而峰值量的是**实际驻留 RSS**，地址空间打满时 RSS 只到 ~80%，
+        #   「峰值 ≥ 限额×0.9」那条链不成立 → 内存超限被判成 RE。
+        #   这种错只在特定平台暴露，光靠「跑一遍」很容易漏掉 ——
+        #   所以把判据抽成纯函数 sandbox.memory_exceeded() 直接测矩阵。
+        print("\n[7] MLE 判据矩阵（纯函数）")
+        MB = 1024 * 1024
+        limit = 64 * MB
+        oom = b"Traceback (most recent call last):\nMemoryError\n"
+        segv = b"Segmentation fault\n"
+        cases: list[tuple[str, bool, dict]] = [
+            ("Linux 实测：RSS 只到 80%，但 stderr 说了 MemoryError → MLE",
+             True, dict(peak_bytes=51 * MB, mem_bytes=limit, exit_code=1,
+                        timed_out=False, stdout=b"", stderr=oom)),
+            ("Windows 实测：峰值 99% + 无输出 → MLE",
+             True, dict(peak_bytes=63 * MB, mem_bytes=limit, exit_code=1,
+                        timed_out=False, stdout=b"", stderr=oom)),
+            ("★ 反向：无 OOM 字样且峰值只有 80% → 不判 MLE（修复前 Linux 的漏判场景）",
+             False, dict(peak_bytes=51 * MB, mem_bytes=limit, exit_code=1,
+                         timed_out=False, stdout=b"", stderr=segv)),
+            ("反向：正常跑完（exit 0）永不判 MLE",
+             False, dict(peak_bytes=64 * MB, mem_bytes=limit, exit_code=0,
+                         timed_out=False, stdout=b"ok\n", stderr=b"")),
+            ("反向：exit(1) 但峰值远没到限额 → RE",
+             False, dict(peak_bytes=13 * MB, mem_bytes=limit, exit_code=1,
+                         timed_out=False, stdout=b"", stderr=b"")),
+            ("反向：峰值顶满但有正常输出 → 不是 MLE",
+             False, dict(peak_bytes=64 * MB, mem_bytes=limit, exit_code=1,
+                         timed_out=False, stdout=b"answer\n", stderr=b"")),
+            ("没设限额 → 无从判超限",
+             False, dict(peak_bytes=700 * MB, mem_bytes=None, exit_code=1,
+                         timed_out=False, stdout=b"", stderr=oom)),
+        ]
+        for desc, want, kw in cases:
+            got = sandbox.memory_exceeded(**kw)
+            check(desc, got == want, f"期望 {want}，得到 {got}")
+
     finally:
         if work.exists():
             sandbox.rmtree_force(work)

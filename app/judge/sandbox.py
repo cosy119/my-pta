@@ -328,6 +328,39 @@ def _looks_like_oom(stderr: bytes) -> bool:
     return any(m in stderr for m in _OOM_MARKERS)
 
 
+def memory_exceeded(*, peak_bytes: int, mem_bytes: int | None, exit_code: int,
+                    timed_out: bool, stdout: bytes, stderr: bytes) -> bool:
+    """这次运行算不算**内存超限（MLE）**。纯函数 —— 输入即全部依据，不碰进程。
+
+    ★ 为什么单独抽出来：判据本身很容易写错，而它错了的表现是「静默判错 verdict」，
+    只在特定平台的特定场景下暴露（Linux 上就漏判过一次）。
+    抽成纯函数之后，`tools/selftest_sandbox.py` 可以直接对判据矩阵下断言，
+    不必依赖「真跑到那个平台」。
+
+    两条**独立**的证据链，任一条成立即判 MLE：
+
+    - **链 A（直接）**：stderr 里明确说了内存不够。
+      Linux 的 RLIMIT_AS 触发时 Python 抛 MemoryError 并打印 traceback —— 最硬的证据。
+      ⚠️ 不能只靠峰值比例：Linux 限的是**地址空间**（RLIMIT_AS），
+      而 VmHWM 量的是**实际驻留**（RSS），两个不是同一个量纲 ——
+      地址空间打满时 RSS 往往只到八成就上不去了
+      （CI 实测 51 MB / 64 MB 限额，比值 0.80 < 0.9，只靠比例会漏判成 RE）。
+
+    - **链 B（间接）**：峰值顶到限额附近 + 异常结束 + 没有正常输出。
+      这一条是为 Windows 准备的：Job Object 的进程内存限额**不杀进程**，
+      而是让那次分配失败 —— Python 抛 MemoryError、以退出码 1 结束，
+      峰值稳定停在限额的 ~99%，stdout 为空。
+      ⚠️「没有输出」必须一起看：机器有负载时进程可能没跑到峰值就被别的原因带崩。
+    """
+    if not mem_bytes:
+        return False                      # 没设限额就无从谈超限
+    if not ((exit_code != 0) or timed_out):
+        return False                      # 正常跑完的不算
+    if _looks_like_oom(stderr):
+        return True                       # 链 A
+    return peak_bytes >= mem_bytes * 0.9 and not stdout.strip()   # 链 B
+
+
 def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = None,
         env: dict[str, str] | None = None, time_limit_ms: int = 1000,
         memory_limit_mb: int = 256, max_output_bytes: int = 1048576,
@@ -424,20 +457,11 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
             peak_bytes = peak_kb * 1024
         exit_code = proc.returncode if proc.returncode is not None else -1
 
-        # 实测结论（别改成 `peak >= limit`）：Job Object 的进程内存限额**不会**直接杀进程，
-        # 而是让那次分配失败 —— 于是 Python 抛 MemoryError、以退出码 1 结束，
-        # 峰值稳定停在限额的 ~99%，stdout 为空、stderr 里有 MemoryError。
-        #
-        # 判据要用三条**互相印证**的证据，不能只看峰值比例：
-        # 机器有负载时进程可能没跑到峰值就被别的原因带崩，
-        # 单看「峰值 >= 限额×0.9」会偶发漏判（实测在自检并发跑时踩到过）。
-        #   ① 峰值确实顶到限额附近      —— 内存真的被用满了
-        #   ② 进程异常结束             —— 不是正常跑完
-        #   ③ 没产生预期输出 / stderr 提到内存 —— 印证是「被内存掐住」而不是别的崩溃
-        near_limit = bool(mem_bytes) and peak_bytes >= mem_bytes * 0.9
-        abnormal = (exit_code != 0) or timed_out
-        mem_signal = (not out.strip()) or _looks_like_oom(err)
-        mem_exceeded = bool(mem_bytes and near_limit and abnormal and mem_signal)
+        # 判 MLE —— 判据在 `memory_exceeded()` 里（纯函数，可被直接断言），
+        # 两条独立证据链的推导与踩坑记录都写在那个函数的 docstring 里。
+        mem_exceeded = memory_exceeded(
+            peak_bytes=peak_bytes, mem_bytes=mem_bytes, exit_code=exit_code,
+            timed_out=timed_out, stdout=out, stderr=err)
 
         truncated = False
         if max_output_bytes:

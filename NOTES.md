@@ -113,19 +113,35 @@ CI 上实测的报错就是 `[FAIL] 判 MLE -- RE 峰值 0 MB / 限额 128 MB`�
 - 兜底：采样全为 0 时用 `getrusage(RUSAGE_CHILDREN).ru_maxrss`，但**必须要求本次刷新了历史记录**（`after > before`）才采信 —— 否则会拿上一个用例的峰值来判这一个，造成假 MLE。
   （`ru_maxrss` 在 Linux 是 KB，macOS 是字节。）
 
-### ★ MLE 判据 = 三条互相印证的证据
+### ★ MLE 判据 = 两条**独立**的证据链，任一条成立即判
+
+抽取成纯函数 `sandbox.memory_exceeded()`（可被直接断言，见下面「自检脚本」里的判据矩阵）：
 
 ```python
-near_limit = peak >= limit * 0.9      # ① 内存真的顶满了
-abnormal   = exit_code != 0 or timed_out   # ② 不是正常跑完
-mem_signal = not out.strip() or OOM_MARKER in err   # ③ 印证是"被内存掐住"
-mem_exceeded = near_limit and abnormal and mem_signal
+if not mem_bytes or not (exit_code != 0 or timed_out):
+    return False                     # 没设限额 / 正常跑完 → 一律不算
+if OOM_MARKER in stderr:
+    return True                      # 链 A（直接证据）
+return peak >= mem_bytes * 0.9 and not stdout.strip()   # 链 B（间接证据）
 ```
 
-- 背景：**Job Object 的进程内存限额不杀进程** —— 它让那次分配失败，于是 Python 抛 `MemoryError`、以退出码 1 结束，峰值稳定停在限额的 ~99.7%（实测 65340/65536 KB）。
-- 为什么必须三条：曾经只用两条，**机器有负载时会偶发漏判成 RE**（自检并发跑时踩到过）。
-- `_OOM_MARKERS` = `MemoryError` / `can't allocate memory` / `cannot allocate memory` / `std::bad_alloc` / `out of memory`
-- 反向验证过：正常程序、普通崩溃、`exit(1)`（峰值 13 MB）都**不**误判。
+**链 A（直接）**：stderr 里明确出现内存不足的字样。Linux 的 `RLIMIT_AS` 触发时
+Python 抛 `MemoryError` 并打印 traceback —— 最硬的证据，不需要再拿峰值去凑比例。
+
+> ★★ 为什么不能只靠峰值比例（2026-10-13 踩到）：Linux 限的是**地址空间**（`RLIMIT_AS`），
+> 而 `VmHWM` 量的是**实际驻留 RSS**，两个不是同一个量纲。地址空间打满时 RSS 往往只到八成就上不去了。
+> CI 上实测 **51 MB / 64 MB 限额（比值 0.80 < 0.9）**，只靠比例那条链必然漏判成 RE。
+> 这个错只有 Linux 会暴露，本机（Windows）怎么跑都是对的。
+
+**链 B（间接）**：峰值顶到限额附近 **且** 异常结束 **且** 没有正常输出。
+这一条是为 Windows 准备的：**Job Object 的进程内存限额不杀进程** ——
+它让那次分配失败，于是 Python 抛 `MemoryError`、以退出码 1 结束，峰值稳定停在限额的 ~99.7%
+（实测 65340/65536 KB）。「没有输出」必须一起看：机器有负载时进程可能没跑到峰值就被别的原因带崩。
+
+- `_OOM_MARKERS` = `MemoryError` / `can't allocate memory` / `cannot allocate memory` /
+  `std::bad_alloc` / `out of memory`
+- **反向验证必须一直成立**：正常程序、普通崩溃、`exit(1)`（峰值 13 MB）两条链都不成立 → 判 RE，不误判成 MLE。
+  这 7 种组合现在是 `selftest_sandbox` 的 [7] 节，逐条断言。
 
 ### 另两条坑
 
@@ -306,7 +322,7 @@ mem_exceeded = near_limit and abnormal and mem_signal
 | 脚本 | 项数 | 说明 |
 |---|---|---|
 | `selfcheck.py` | **62/62** | 内核 41 + 评分 21 |
-| `selftest_sandbox.py` | **12/12** | 超时杀孙进程、爆内存判 MLE、`exit(1)` 反向不误判 |
+| `selftest_sandbox.py` | **19/19** | 超时杀孙进程、爆内存判 MLE、`exit(1)` 反向不误判、**MLE 判据矩阵（7 项纯函数断言）** |
 | `selftest_cpp.py` | **9/9** | C/C++ AC·CE·WA·TLE、**同目录产物不串**、编译器路径无效给人话、别名收敛 |
 | `selftest_theory.py` | **14/14** | 72 道单选其余选项全判错、判断题双向、命令宽容度、全库扫 |
 | `e2e_ui.py` | **33/33** | 端到端过 HTTP（**需先起服务**） |

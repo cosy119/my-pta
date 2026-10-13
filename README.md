@@ -209,7 +209,7 @@ pta/
 │  └─ .nojekyll            别让 Jekyll 处理
 ├─ tools/
 │  ├─ selfcheck.py         判题内核 + 评分 自检（62 项）
-│  ├─ selftest_sandbox.py  ★ 沙箱跨平台自检（12 项，部署后在容器里跑它）
+│  ├─ selftest_sandbox.py  ★ 沙箱跨平台自检（19 项，部署后在容器里跑它）
 │  ├─ selftest_cpp.py      ★ C/C++ 双通道自检（9 项：AC/CE/WA/TLE/产物不串/别名）
 │  ├─ selftest_theory.py   ★ 理论题判题自检（14 项：含「错答案必须判错」的反向验证）
 │  ├─ e2e_ui.py            ★ 端到端过 HTTP（33 项：前端真正走的那条路）
@@ -236,7 +236,7 @@ pta/
 ```bat
 cd /d E:\学习\001\pta
 D:\Pythontools\Python\python.exe -X utf8 tools\selfcheck.py         &rem 62 项：判题内核 + 评分
-D:\Pythontools\Python\python.exe -X utf8 tools\selftest_sandbox.py  &rem 12 项：沙箱（跨平台）
+D:\Pythontools\Python\python.exe -X utf8 tools\selftest_sandbox.py  &rem 19 项：沙箱（跨平台）
 D:\Pythontools\Python\python.exe -X utf8 tools\selftest_cpp.py      &rem  9 项：C/C++ 双通道
 D:\Pythontools\Python\python.exe -X utf8 tools\selftest_theory.py   &rem 14 项：理论题正反双向
 D:\Pythontools\Python\python.exe -X utf8 tools\e2e_ui.py 8792       &rem 33 项：端到端过 HTTP（需服务）
