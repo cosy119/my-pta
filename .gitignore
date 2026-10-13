@@ -1,0 +1,31 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# ---- 本地运行数据（不进仓库）----
+# 题库数据与做题记录是「本地状态」，换机器重新 seed 就能重建题目；
+# 想跟着自己走的话见 README 的「备份与迁移」一节。
+data/pta.db
+data/pta.db-wal
+data/pta.db-shm
+data/*.bak*
+data/tmp/
+data/logs/
+data/media/
+
+# ---- 编辑器/系统 ----
+.vscode/
+.idea/
+*.swp
+*~
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# ---- 备份 ----
+backups/
+*.zip

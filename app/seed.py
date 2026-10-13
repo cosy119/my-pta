@@ -1,0 +1,275 @@
+"""首次启动写入种子题（幂等，按标题判重）。
+
+这些题的期望输出全是手算核过的，不是「应该输出」。
+P0 阶段它们同时也是判题器的自检样本。
+
+分值模型（对齐 PTA）：
+- 每题有 `total_score`（满分）
+- 每个测试点有 `points`；不写就按满分**均分**（余数给前面的测试点）
+- 得分 = 通过的测试点分值之和
+"""
+from __future__ import annotations
+
+from . import db, scoring
+from .problems_bank import BANK_PROBLEMS
+
+# 核心题（平台自检用，也当入门题）
+CORE_PROBLEMS: list[dict] = [
+    {
+        "title": "A+B 问题",
+        "line": "python",
+        "difficulty": 1,
+        "total_score": 10,
+        "source_section": "第 02 讲 · 编程基础",
+        "tags": ["入门", "算术", "标准输入"],
+        "statement_md": "读入两个整数，输出它们的和。\n\n这是最经典的入门题，用来确认输入输出通道是否通了。",
+        "input_format": "一行，两个整数 `a` 和 `b`，用空格分隔。",
+        "output_format": "一行，一个整数，表示 `a + b`。",
+        "constraints_md": "-10^9 ≤ a, b ≤ 10^9",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "origin": "manual",
+        "status": "published",
+        "reference_solution": (
+            "import sys\n\n"
+            "a, b = map(int, sys.stdin.read().split())\n"
+            "print(a + b)\n"
+        ),
+        "cases": [
+            {"stdin": "1 2\n", "expected_stdout": "3\n", "is_sample": 1,
+             "kind": "sample", "explanation": "1 + 2 = 3"},
+            {"stdin": "-5 3\n", "expected_stdout": "-2\n", "is_sample": 1,
+             "kind": "sample", "explanation": "负数相加：-5 + 3 = -2"},
+            {"stdin": "0 0\n", "expected_stdout": "0\n", "kind": "manual"},
+            {"stdin": "1000000000 1000000000\n", "expected_stdout": "2000000000\n",
+             "kind": "manual", "explanation": "上界：Python 整数无上限，不会溢出"},
+            {"stdin": "-1000000000 -1000000000\n", "expected_stdout": "-2000000000\n",
+             "kind": "manual"},
+        ],
+    },
+    {
+        "title": "区间求和",
+        "line": "python",
+        "difficulty": 2,
+        "total_score": 20,
+        "source_section": "第 03 讲 · 流程控制语句",
+        "tags": ["数学", "公式", "性能"],
+        "statement_md": (
+            "给定若干组整数区间，对每组求区间内所有整数的和。\n\n"
+            "看着简单，但**直接用循环累加会超时** —— 区间可能有 10^9 个数。"
+        ),
+        "input_format": (
+            "第一行一个整数 `n`，表示区间个数。\n\n"
+            "随后 `n` 行，每行两个整数 `a` `b`（保证 `a ≤ b`）。\n\n"
+            "输入中可能有空行，按空白字符分割处理即可。"
+        ),
+        "output_format": "`n` 行，每行一个整数，表示区间 [a, b] 内所有整数之和。",
+        "constraints_md": (
+            "- n ≤ 10^5\n"
+            "- -10^9 ≤ a ≤ b ≤ 10^9\n"
+            "- 时间限制 400 ms —— 提示：用等差数列求和公式"
+        ),
+        "time_limit_ms": 400,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "origin": "manual",
+        "status": "published",
+        "reference_solution": (
+            "import sys\n\n\n"
+            "def main():\n"
+            "    data = sys.stdin.read().split()\n"
+            "    if not data:\n"
+            "        return\n"
+            "    n = int(data[0])\n"
+            "    p = 1\n"
+            "    out = []\n"
+            "    for _ in range(n):\n"
+            "        a = int(data[p])\n"
+            "        b = int(data[p + 1])\n"
+            "        p += 2\n"
+            "        out.append((a + b) * (b - a + 1) // 2)\n"
+            "    sys.stdout.write('\\n'.join(map(str, out)) + '\\n')\n\n\n"
+            "main()\n"
+        ),
+        "cases": [
+            {"stdin": "1\n3 5\n", "expected_stdout": "12\n", "is_sample": 1,
+             "kind": "sample", "explanation": "3 + 4 + 5 = 12"},
+            {"stdin": "1\n-5 -3\n", "expected_stdout": "-12\n", "is_sample": 1,
+             "kind": "sample", "explanation": "(-5) + (-4) + (-3) = -12"},
+            {"stdin": "2\n1 1\n-3 -1\n", "expected_stdout": "1\n-6\n", "kind": "manual",
+             "explanation": "单元素区间 1；以及 (-3)+(-2)+(-1) = -6"},
+            {"stdin": "1\n0 0\n", "expected_stdout": "0\n", "kind": "manual"},
+            {"stdin": "1\n-1000000000 1000000000\n", "expected_stdout": "0\n",
+             "kind": "manual", "explanation": "对称区间，正负抵消得 0"},
+        ],
+    },
+    {
+        "title": "求平均值",
+        "line": "python",
+        "difficulty": 1,
+        "total_score": 10,
+        "source_section": "第 05 讲 · 列表与元组",
+        "tags": ["算术", "浮点", "容差判题"],
+        "statement_md": (
+            "读入 `n` 个整数，输出它们的平均值。\n\n"
+            "这题**不限制小数位数** —— 判题时按容差（1e-6）比较，"
+            "你输出 `2`、`2.0` 还是 `2.000000` 都算对。"
+        ),
+        "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数，用空格分隔。",
+        "output_format": "一行，平均值。小数位数不限。",
+        "constraints_md": "- 1 ≤ n ≤ 1000\n- 每个数的绝对值 ≤ 10^9",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "float",
+        "float_eps": 1e-6,
+        "origin": "manual",
+        "status": "published",
+        "reference_solution": (
+            "import sys\n\n"
+            "data = sys.stdin.read().split()\n"
+            "n = int(data[0])\n"
+            "nums = [int(x) for x in data[1:1 + n]]\n"
+            "print(sum(nums) / n)\n"
+        ),
+        "cases": [
+            {"stdin": "3\n1 2 3\n", "expected_stdout": "2\n", "is_sample": 1,
+             "kind": "sample", "explanation": "1+2+3 = 6，6/3 = 2"},
+            {"stdin": "3\n1 1 2\n", "expected_stdout": "1.3333333333333333\n",
+             "is_sample": 1, "kind": "sample", "explanation": "4/3 = 1.333333…（看你保留几位）"},
+            {"stdin": "1\n-5\n", "expected_stdout": "-5\n", "kind": "manual"},
+            {"stdin": "4\n-1 -2 -3 -4\n", "expected_stdout": "-2.5\n", "kind": "manual"},
+            {"stdin": "2\n0 0\n", "expected_stdout": "0\n", "kind": "manual"},
+        ],
+    },
+]
+
+
+# 全部种子题 = 核心题 + 题库（题库按讲义顺序，见 problems_bank.py）
+SEED_PROBLEMS: list[dict] = CORE_PROBLEMS + BANK_PROBLEMS
+
+
+def ensure() -> int:
+    """写种子题。返回新增条数（已存在则跳过，可反复调用）。"""
+    added = 0
+    for raw in SEED_PROBLEMS:
+        spec = dict(raw)
+        cases = spec.pop("cases", [])
+        # alt_solution 是「第二套独立实现」，只在 tools/verify_bank.py 里对拍用，
+        # 平台运行不需要，所以不入库。
+        spec.pop("alt_solution", None)
+        title = spec["title"]
+        if db.query_one("SELECT id FROM problems WHERE title = ?", (title,)):
+            continue
+
+        spec["tags"] = db.jdumps(spec.get("tags", []))
+        spec["created_at"] = db.now_iso()
+        spec.setdefault("status", "published")
+        spec.setdefault("origin", "manual")
+        spec.setdefault("checker", "standard")
+        spec.setdefault("ref_interpreter", "py313")
+        spec["total_score"] = int(spec.get("total_score") or 100)
+
+        # 测试点分值：写了就用写的；没写就按满分均分（余数给前面的测试点）
+        pts = scoring.normalize_points([c.get("points", 0) for c in cases],
+                                       spec["total_score"])
+
+        pid = db.insert("problems", spec)
+        for i, c in enumerate(cases):
+            db.insert("testcases", {
+                "problem_id": pid,
+                "ord": i,
+                "kind": c.get("kind", "manual"),
+                "stdin": c.get("stdin", ""),
+                "expected_stdout": c.get("expected_stdout", ""),
+                "is_sample": c.get("is_sample", 0),
+                "points": int(pts[i] if i < len(pts) else 0),
+                "explanation": c.get("explanation", ""),
+            })
+        added += 1
+    return added
+
+
+def _seed_specs() -> dict[str, tuple[int, list[int], str]]:
+    """把 SEED_PROBLEMS 整理成 {标题: (满分, 逐点分值, 对应讲次)}，供升级时对账。"""
+    out: dict[str, tuple[int, list[int], str]] = {}
+    for raw in SEED_PROBLEMS:
+        spec = dict(raw)
+        cases = spec.pop("cases", [])
+        total = int(spec.get("total_score") or 100)
+        pts = scoring.normalize_points([c.get("points", 0) for c in cases], total)
+        out[spec["title"]] = (total, pts, spec.get("source_section", ""))
+    return out
+
+
+def backfill_points() -> int:
+    """老库升级：让每道题的满分 / 测试点分值 / 对应讲次与 SEED 保持一致（幂等）。
+
+    分两种情况：
+    - **种子题**（标题在 SEED_PROBLEMS 里）：SEED 是权威，满分、逐点分值、讲次都按它同步。
+      这样我改了题库设计（加题、调分值、改顺序），老库重启后就能跟上。
+    - **其它题**：只在测试点分值**全为 0**（建题时没写）时，按满分均分兜底；
+      已经有分值的一律不动，免得把人工设定冲掉。
+
+    返回本次调整过的题目数。
+    """
+    fixed = 0
+    specs = _seed_specs()
+
+    for p in db.query("SELECT id, title, total_score, source_section FROM problems"):
+        rows = db.query(
+            "SELECT id, points FROM testcases WHERE problem_id=? ORDER BY ord, id",
+            (p["id"],))
+        if not rows:
+            continue
+        raw = [int(r["points"] or 0) for r in rows]
+
+        if p["title"] in specs:
+            want_total, want_pts, want_section = specs[p["title"]]
+            if len(want_pts) != len(rows):
+                # 测试点数变了（SEED 增删了用例），按新数量重新均分
+                want_pts = scoring.distribute_points(want_total, len(rows))
+            same = (int(p["total_score"] or 0) == want_total
+                    and raw == want_pts
+                    and (p["source_section"] or "") == want_section)
+            if same:
+                continue
+            db.execute("UPDATE problems SET total_score=?, source_section=? WHERE id=?",
+                       (want_total, want_section, p["id"]))
+            for r, pt in zip(rows, want_pts):
+                db.execute("UPDATE testcases SET points=? WHERE id=?", (pt, r["id"]))
+            fixed += 1
+            continue
+
+        total = int(p["total_score"] or 0)
+        if total <= 0:
+            total = 100
+            db.execute("UPDATE problems SET total_score=? WHERE id=?", (total, p["id"]))
+        if sum(raw) > 0:
+            continue
+        for r, pt in zip(rows, scoring.distribute_points(total, len(rows))):
+            db.execute("UPDATE testcases SET points=? WHERE id=?", (pt, r["id"]))
+        fixed += 1
+    return fixed
+
+
+def backfill_legacy_scores() -> int:
+    """把「打分制之前」的老提交换算成新口径（幂等）。
+
+    老记录里 `score` 存的是**通过个数**、`max_score` 是 0。
+    这里按当时的 passed/total 比例换算成得分，`max_score` 取题目当前满分 ——
+    纯换算，不改判定，也不动 passed/total 本身。
+    """
+    rows = db.query("""
+        SELECT s.id, s.passed, s.total, p.total_score
+        FROM submissions s JOIN problems p ON p.id = s.problem_id
+        WHERE COALESCE(s.max_score, 0) = 0 AND COALESCE(s.total, 0) > 0
+    """)
+    for r in rows:
+        full = int(r["total_score"] or 100)
+        total = int(r["total"] or 0)
+        passed = int(r["passed"] or 0)
+        score = int(round(full * passed / total)) if total else 0
+        db.execute("UPDATE submissions SET max_score=?, score=? WHERE id=?",
+                   (full, score, r["id"]))
+    return len(rows)

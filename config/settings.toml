@@ -1,0 +1,51 @@
+# 本地 AI 出题 + 批改平台 · 平台配置
+# 改完重启服务生效。这个文件由人手维护，平台只读不写。
+
+[server]
+host = "127.0.0.1"
+port = 8765
+
+[paths]
+# 以下路径都相对于 pta 根目录
+db        = "data/pta.db"
+tmp_judge = "data/tmp/judge"
+media     = "data/media"
+logs      = "data/logs"
+
+[interpreters]
+# 讲义实测环境（3.13.14）
+py313 = "D:/Pythontools/Python/python.exe"
+# 你平时在 Thonny 里做题的环境（3.14.4）
+py314 = "D:/Thonny/Thonny/python.exe"
+default = "py313"
+
+[compilers]
+gcc = "D:/Programs/mingw64/bin/gcc.exe"
+gpp = "D:/Programs/mingw64/bin/g++.exe"
+
+[judge]
+# 内存紧张，这个值别改大：判题一次只跑一份提交
+concurrency = 1
+default_time_limit_ms = 1000
+default_memory_limit_mb = 256
+# 输出上限（字节），超出判 OLE，防止刷屏把内存吃光
+max_output_bytes = 1048576
+# 超时后给进程树的宽限时间
+kill_grace_ms = 300
+
+[shell]
+# P4 用。留空 = shell 题优雅降级（提示未配置，不算判错）
+ssh_target = ""
+ssh_key = ""
+remote_tmp = "/tmp/pta-judge"
+ssh_timeout_s = 15
+
+[ai]
+# 优先从这个环境变量取 key；取不到再用 ai_config 表里存的
+key_env = "OPENAI_API_KEY"
+default_base_url = "https://api.deepseek.com/v1"
+default_model = "deepseek-chat"
+temperature = 0.3
+timeout_s = 120
+# 出题时给 AI 的讲义片段最大字符数
+slice_max_chars = 6000
