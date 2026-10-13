@@ -17,17 +17,40 @@ from .. import config, db, scoring, users
 from . import sandbox
 from .compare import compare
 from .runner_base import Limits
+from .runner_cpp import LANG_SPECS, CompileRunner, canon_lang
 from .runner_python import PythonRunner
+from .runner_text import TextRunner
 
 # stdout/stderr 落库时的截断长度（完整的没地方放，样例一般很小）
 _STORE_LIMIT = 8000
 
 
 def build_runner(lang: str, interpreter: str, cfg):
-    """按语言挑 runner。P0 只有 Python；C/C++ 与 Shell 在 P2/P4 接。"""
-    if lang in ("python", "py"):
+    """按语言挑 runner。
+
+    四种形态：
+    - `python`  解释器直接跑
+    - `cpp`     先 g++ 编译再跑（-std=c++17）
+    - `c`       先 gcc 编译再跑（-std=gnu11）—— 数据结构教材是 C 语言版，
+                所以同一道题允许 C / C++ 任选其一提交（见 runner_cpp 的说明）
+    - `text`    理论题（选择/判断/填空）：提交内容即答案，不启子进程
+
+    `interpreter` 这一栏对编译型语言放的是「用哪个编译器」的键
+    （c/gcc → gcc，cpp/g++ → gpp），对 text 来说无意义。
+    """
+    key = str(lang or "").strip().lower()
+    if key in ("python", "py", "python3"):
         label = interpreter or "py313"
         return PythonRunner(cfg.interpreter_path(label), label)
+    if key in ("text", "choice", "theory"):
+        return TextRunner()
+
+    canon = canon_lang(key)
+    if canon:
+        spec = LANG_SPECS[canon]
+        # interpreter 里存的是编译器键；没写就按语言取默认（cpp→gpp，c→gcc）
+        compiler = cfg.compiler_path(interpreter or spec["compiler_key"])
+        return CompileRunner(canon, compiler, spec["title"])
     raise ValueError(f"暂不支持的语言：{lang}")
 
 
@@ -128,8 +151,31 @@ class JudgeWorker:
         db.update("submissions", {"verdict": "judging"}, "id=?", (sid,))
 
         rows: list[tuple] = []
+        flushed = False
+
+        def flush_cases() -> None:
+            """把逐测试点明细落库。★ **必须在写最终结论之前调用。**
+
+            顺序反了会出现一个真实可见的竞态：结论（verdict / score）已经写进
+            `submissions`，但明细还没插完 —— 前端这时候轮询到的就是
+            「结论有了、逐测试点列表却是空的」，得手动刷新才补上。
+            """
+            nonlocal flushed
+            if flushed or not rows:
+                return
+            flushed = True
+            db.executemany(
+                "INSERT INTO submission_cases "
+                "(submission_id, case_id, ord, verdict, points, earned, time_ms, mem_kb, "
+                " stdout, stderr, expected, stdin, exit_code, detail) "
+                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                rows)
+
         try:
             ok, msg = runner.prepare(sub["code"] or "", workdir)
+            # 编译成功时 msg 里放的是**编译器警告** —— 别丢掉：
+            # 很多「本机跑对、交上去错」的根因就写在警告里
+            prep_warn = msg if ok else ""
             if not ok:
                 # 编译/语法错：所有测试点统一 CE，一分不给；错误原文放 message
                 g = scoring.grade([c["points"] for c in cases], [], total_score)
@@ -137,6 +183,7 @@ class JudgeWorker:
                     rows.append((sid, c["id"], i, "CE", g["points"][i], 0,
                                  0, 0, "", msg[:_STORE_LIMIT],
                                  c["expected_stdout"] or "", c["stdin"] or "", -1, msg[:1000]))
+                flush_cases()          # ★ 明细先落，结论后落
                 self._finish(sid, "CE", 0, total, 0, 0, msg[:1500], prob, t0,
                              score=0, max_score=g["max_score"])
             else:
@@ -195,15 +242,14 @@ class JudgeWorker:
                     ))
 
                 message = first_fail or ce_or_ie
+                if prep_warn:
+                    message = ("【编译器警告】\n" + prep_warn + "\n\n" + (message or "")).strip()
+                flush_cases()          # ★ 明细先落，结论后落（见 flush_cases 的注释）
                 self._finish(sid, overall, passed, total, total_ms, max_mem, message, prob, t0,
                              score=g["score"], max_score=g["max_score"])
         finally:
-            db.executemany(
-                "INSERT INTO submission_cases "
-                "(submission_id, case_id, ord, verdict, points, earned, time_ms, mem_kb, "
-                " stdout, stderr, expected, stdin, exit_code, detail) "
-                "VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-                rows)
+            # 兜底：中途抛异常时也把已经算出来的明细留下（flush_cases 是幂等的）
+            flush_cases()
             sandbox.rmtree_force(workdir)
 
     # ---------- 汇总写回 ----------

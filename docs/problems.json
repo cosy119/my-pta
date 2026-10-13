@@ -1,11 +1,12 @@
 {
- "generated_at": "2026-10-13 10:42:18",
- "count": 56,
- "total_score": 860,
- "total_testcases": 230,
+ "generated_at": "2026-10-13 17:37:00",
+ "count": 204,
+ "total_score": 2615,
+ "total_testcases": 532,
  "items": [
   {
    "id": 1,
+   "subject": "python",
    "line": "python",
    "title": "A+B 问题",
    "difficulty": 1,
@@ -15,6 +16,7 @@
     "算术",
     "标准输入"
    ],
+   "choices": [],
    "statement_md": "读入两个整数，输出它们的和。\n\n这是最经典的入门题，用来确认输入输出通道是否通了。",
    "input_format": "一行，两个整数 `a` 和 `b`，用空格分隔。",
    "output_format": "一行，一个整数，表示 `a + b`。",
@@ -27,6 +29,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -56,6 +59,7 @@
   },
   {
    "id": 2,
+   "subject": "python",
    "line": "python",
    "title": "区间求和",
    "difficulty": 2,
@@ -65,6 +69,7 @@
     "公式",
     "性能"
    ],
+   "choices": [],
    "statement_md": "给定若干组整数区间，对每组求区间内所有整数的和。\n\n看着简单，但**直接用循环累加会超时** —— 区间可能有 10^9 个数。",
    "input_format": "第一行一个整数 `n`，表示区间个数。\n\n随后 `n` 行，每行两个整数 `a` `b`（保证 `a ≤ b`）。\n\n输入中可能有空行，按空白字符分割处理即可。",
    "output_format": "`n` 行，每行一个整数，表示区间 [a, b] 内所有整数之和。",
@@ -77,6 +82,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -106,6 +112,7 @@
   },
   {
    "id": 3,
+   "subject": "python",
    "line": "python",
    "title": "求平均值",
    "difficulty": 1,
@@ -115,6 +122,7 @@
     "浮点",
     "容差判题"
    ],
+   "choices": [],
    "statement_md": "读入 `n` 个整数，输出它们的平均值。\n\n这题**不限制小数位数** —— 判题时按容差（1e-6）比较，你输出 `2`、`2.0` 还是 `2.000000` 都算对。",
    "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数，用空格分隔。",
    "output_format": "一行，平均值。小数位数不限。",
@@ -127,6 +135,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -156,6 +165,7 @@
   },
   {
    "id": 4,
+   "subject": "python",
    "line": "python",
    "title": "圆的面积",
    "difficulty": 1,
@@ -165,6 +175,7 @@
     "类型转换",
     "格式化"
    ],
+   "choices": [],
    "statement_md": "给定圆的半径 `r`，输出圆的面积，**保留 2 位小数**。\n\n本题 π 取 **3.14**（不要用 `math.pi`，那会差一点点）。\n\n这题练的是最基础的一环：`input()` 拿到的是**字符串**，必须先 `int()` 转成数字才能算。",
    "input_format": "一行，一个整数 `r`。",
    "output_format": "一行，面积，保留 2 位小数（例如 `3.14`、`314.00`）。",
@@ -177,6 +188,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -206,6 +218,7 @@
   },
   {
    "id": 5,
+   "subject": "python",
    "line": "python",
    "title": "判断闰年",
    "difficulty": 1,
@@ -214,6 +227,7 @@
     "条件判断",
     "逻辑运算"
    ],
+   "choices": [],
    "statement_md": "判断给定的年份是不是闰年。\n\n闰年的规则：**能被 4 整除但不能被 100 整除**，或者**能被 400 整除**。\n\n最容易写错的是世纪年：1900 年能被 4 整除，但它不是闰年 —— 因为「能被 100 整除」这一条把它拦掉了。",
    "input_format": "一行，一个整数 `y`（年份）。",
    "output_format": "一行，闰年输出 `yes`，否则输出 `no`。",
@@ -226,6 +240,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -255,6 +270,7 @@
   },
   {
    "id": 6,
+   "subject": "python",
    "line": "python",
    "title": "数字三角形",
    "difficulty": 2,
@@ -264,6 +280,7 @@
     "嵌套循环",
     "字符串拼接"
    ],
+   "choices": [],
    "statement_md": "输入 `n`，输出 `n` 行数字三角形：第 `i` 行是从 1 到 `i`，数字之间用**一个空格**分隔。\n\n```text\n1\n1 2\n1 2 3\n```\n\n考点是**嵌套循环**，以及行末不要多出一个空格。",
    "input_format": "一行，一个整数 `n`。",
    "output_format": "`n` 行，第 `i` 行为 `1 2 … i`。",
@@ -276,6 +293,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -305,6 +323,7 @@
   },
   {
    "id": 7,
+   "subject": "python",
    "line": "python",
    "title": "素数判断",
    "difficulty": 3,
@@ -315,6 +334,7 @@
     "边界",
     "性能"
    ],
+   "choices": [],
    "statement_md": "判断给定整数是不是素数（质数）。\n\n两个坑：\n\n1. **1 不是素数**，也不是合数\n2. 直接试除到 `n-1` 会超时 —— 试到 **√n** 就够（如果 n 有因子，必有一个 ≤ √n）",
    "input_format": "一行，一个整数 `n`。",
    "output_format": "一行，`prime` 或 `not prime`。",
@@ -327,6 +347,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 6,
    "samples": [
     {
@@ -357,6 +378,7 @@
   },
   {
    "id": 8,
+   "subject": "python",
    "line": "python",
    "title": "字符串反转与回文",
    "difficulty": 1,
@@ -365,6 +387,7 @@
     "字符串",
     "切片"
    ],
+   "choices": [],
    "statement_md": "读入一行字符串，输出两行：\n\n1. 它的**反转**\n2. 它是不是**回文**（正着读反着读一样），是输出 `yes`，不是输出 `no`\n\nPython 里反转一个字符串只要 `s[::-1]` —— 切片第三个参数是步长，写成 `-1` 就是从后往前一个个取。",
    "input_format": "一行字符串 `s`（可能为空，可能含空格）。",
    "output_format": "第一行是反转后的字符串；第二行是 `yes` 或 `no`。",
@@ -377,6 +400,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 6,
    "samples": [
     {
@@ -407,6 +431,7 @@
   },
   {
    "id": 9,
+   "subject": "python",
    "line": "python",
    "title": "单词计数",
    "difficulty": 2,
@@ -416,6 +441,7 @@
     "split",
     "空白处理"
    ],
+   "choices": [],
    "statement_md": "统计输入里一共有多少个单词（**按空白字符分割**，连续多个空格算一个分隔）。\n\n关键点：`s.split()` **不带参数**时会自动把连续空白压缩掉；而 `s.split(' ')` 会老老实实按每一个空格切，连出空串 —— 两者行为完全不同。\n\n输入可能是多行，也可能全是空白。",
    "input_format": "若干行文本。",
    "output_format": "一行，一个整数：单词总数。",
@@ -428,6 +454,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 6,
    "samples": [
     {
@@ -458,6 +485,7 @@
   },
   {
    "id": 10,
+   "subject": "python",
    "line": "python",
    "title": "去重保序",
    "difficulty": 2,
@@ -467,6 +495,7 @@
     "集合",
     "顺序"
    ],
+   "choices": [],
    "statement_md": "给 `n` 个整数，去掉重复的，**保持第一次出现的顺序**输出。\n\n直接用 `set()` 会丢顺序（集合是无序的），所以要么手动记录「见过没」，要么用 `dict.fromkeys()`（3.7 起字典保序）。",
    "input_format": "第一行一个整数 `n`；第二行 `n` 个整数，空格分隔。",
    "output_format": "一行，去重后的整数，空格分隔。",
@@ -479,6 +508,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -508,6 +538,7 @@
   },
   {
    "id": 11,
+   "subject": "python",
    "line": "python",
    "title": "第 k 大的数",
    "difficulty": 2,
@@ -517,6 +548,7 @@
     "排序",
     "索引"
    ],
+   "choices": [],
    "statement_md": "给 `n` 个整数，求**第 k 大**的数。\n\n第 1 大就是最大值。**重复的数各算一个**（例如 `3 1 4 1 5` 第 3 大是 3）。\n\n最省事的写法是降序排序后取第 `k-1` 个 —— 注意列表下标从 **0** 开始。",
    "input_format": "第一行两个整数 `n` 和 `k`；第二行 `n` 个整数。",
    "output_format": "一行，第 `k` 大的数。",
@@ -529,6 +561,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -558,6 +591,7 @@
   },
   {
    "id": 12,
+   "subject": "python",
    "line": "python",
    "title": "词频统计",
    "difficulty": 2,
@@ -567,6 +601,7 @@
     "排序",
     "多关键字排序"
    ],
+   "choices": [],
    "statement_md": "统计每个单词出现的次数，按下面的规则输出：\n\n- **次数多的在前**\n- 次数相同，**按字典序（字母序）排**\n- 每行 `单词 次数`\n\n这是「多关键字排序」：先比次数、再比单词。写成 `sorted(d.items(), key=lambda kv: (-kv[1], kv[0]))` 一次搞定。",
    "input_format": "第一行一个整数 `n`；随后 `n` 行，每行一个单词（不含空格）。",
    "output_format": "每行 `单词 次数`，按上面的规则排序。",
@@ -579,6 +614,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -608,6 +644,7 @@
   },
   {
    "id": 13,
+   "subject": "python",
    "line": "python",
    "title": "最大公约数",
    "difficulty": 2,
@@ -618,6 +655,7 @@
     "欧几里得算法",
     "边界"
    ],
+   "choices": [],
    "statement_md": "求两个非负整数的最大公约数。\n\n用**辗转相除法**：`gcd(a, b) = gcd(b, a % b)`，直到 `b` 为 0，此时 `a` 就是答案。\n\n边界要留意：`gcd(0, 5) = 5`、`gcd(0, 0) = 0`。",
    "input_format": "一行，两个非负整数 `a` 和 `b`，空格分隔。",
    "output_format": "一行，最大公约数。",
@@ -630,6 +668,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 6,
    "samples": [
     {
@@ -660,6 +699,7 @@
   },
   {
    "id": 14,
+   "subject": "python",
    "line": "python",
    "title": "斐波那契数列",
    "difficulty": 2,
@@ -669,6 +709,7 @@
     "迭代",
     "大整数"
    ],
+   "choices": [],
    "statement_md": "求斐波那契数列第 `n` 项。定义：`F(0) = 0`，`F(1) = 1`，`F(n) = F(n-1) + F(n-2)`。\n\n**注意 `n = 200` 时结果有 42 位** —— Python 的整数没有上限，直接算就好；但**不要用朴素递归**（`F(200)` 要算 10^41 次，永远跑不完），要用循环或记忆化。",
    "input_format": "一行，一个整数 `n`。",
    "output_format": "一行，`F(n)`。",
@@ -681,6 +722,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 6,
    "samples": [
     {
@@ -711,6 +753,7 @@
   },
   {
    "id": 15,
+   "subject": "python",
    "line": "python",
    "title": "温度转换",
    "difficulty": 1,
@@ -721,6 +764,7 @@
     "格式化",
     "浮点"
    ],
+   "choices": [],
    "statement_md": "读入一个摄氏温度 `C`，输出对应的华氏温度，**保留 2 位小数**。\n\n换算公式：`F = C × 9 / 5 + 32`。\n\n两个考点：\n\n1. **整数除法陷阱** —— 在 Python 3 里 `9 / 5` 得 `1.8`（真除法），所以直接写就行；要是写成别的语言那样 `9 // 5` 就变成 `1` 了\n2. `-40` 是摄氏和华氏**相等**的那个温度，可以拿来自检公式对不对",
    "input_format": "一行，一个整数 `C`。",
    "output_format": "一行，华氏温度，保留 2 位小数。",
@@ -733,6 +777,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -762,6 +807,7 @@
   },
   {
    "id": 16,
+   "subject": "python",
    "line": "python",
    "title": "三位数拆分",
    "difficulty": 1,
@@ -771,6 +817,7 @@
     "整除",
     "取余"
    ],
+   "choices": [],
    "statement_md": "读入一个三位数，输出它**各位数字之和**。\n\n两种典型写法：\n\n- **算术法**：`n // 100` 取百位，`n // 10 % 10` 取十位，`n % 10` 取个位\n- **字符串法**：`str(n)` 拆开，逐个转回 `int` 再加\n\n这题看着简单，但**整除和取余的优先级**（`//` 与 `%` 同级，从左往右算）是初学最容易写错的地方。",
    "input_format": "一行，一个三位数 `n`。",
    "output_format": "一行，各位数字之和。",
@@ -783,6 +830,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -812,6 +860,7 @@
   },
   {
    "id": 17,
+   "subject": "python",
    "line": "python",
    "title": "九九乘法表",
    "difficulty": 2,
@@ -821,6 +870,7 @@
     "格式化",
     "字符串拼接"
    ],
+   "choices": [],
    "statement_md": "输出完整的九九乘法表，共 9 行。\n\n第 `i` 行包含 `j` 从 1 到 `i` 的每一项，格式为 `i*j=积`，同一行内用**一个空格**分隔：\n\n```text\n1*1=1\n2*1=2 2*2=4\n3*1=3 3*2=6 3*3=9\n```\n\n**要点**\n\n- 外层循环控制「第几行」，内层循环控制「这一行有几项」\n- 内层上界跟着外层走（`j` 从 1 到 `i`），这是嵌套循环的典型形状\n- 行末**不能**多出空格 —— 用 `' '.join(...)` 天然不会多",
    "input_format": "无输入（可以直接不读）。",
    "output_format": "9 行，如上格式。",
@@ -833,6 +883,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 1,
    "samples": [
     {
@@ -851,6 +902,7 @@
   },
   {
    "id": 18,
+   "subject": "python",
    "line": "python",
    "title": "成绩等级",
    "difficulty": 1,
@@ -860,6 +912,7 @@
     "边界",
     "区间的开闭"
    ],
+   "choices": [],
    "statement_md": "给出百分制分数，输出对应等级：\n\n| 分数 | 等级 |\n|---|---|\n| 90 ~ 100 | `A` |\n| 80 ~ 89 | `B` |\n| 70 ~ 79 | `C` |\n| 60 ~ 69 | `D` |\n| 0 ~ 59 | `E` |\n\n**考点是边界**：89 和 90 挨着，59 和 60 挨着。用 `if s >= 90` 从上往下写就不会错；要是写成 `if s > 90`，90 分就会掉到 `B` 去。",
    "input_format": "一行，一个整数 `s`。",
    "output_format": "一行，一个大写字母等级。",
@@ -872,6 +925,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 6,
    "samples": [
     {
@@ -902,6 +956,7 @@
   },
   {
    "id": 19,
+   "subject": "python",
    "line": "python",
    "title": "水仙花数",
    "difficulty": 2,
@@ -911,6 +966,7 @@
     "区间",
     "数位拆分"
    ],
+   "choices": [],
    "statement_md": "**水仙花数**：一个三位数，它的各位数字的**三次方之和**等于它本身。\n\n例如 153：`1³ + 5³ + 3³ = 1 + 125 + 27 = 153`，所以 153 是水仙花数。\n\n请找出 100 ~ 999 之间**所有**水仙花数，从小到大输出，同一行内用空格分隔。\n\n这题把「遍历区间 + 拆位 + 条件判断」串在一起，是这个阶段最经典的综合小练习。",
    "input_format": "无输入。",
    "output_format": "一行，所有水仙花数，空格分隔。",
@@ -923,6 +979,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 1,
    "samples": [
     {
@@ -941,6 +998,7 @@
   },
   {
    "id": 20,
+   "subject": "python",
    "line": "python",
    "title": "统计字符类型",
    "difficulty": 2,
@@ -950,6 +1008,7 @@
     "遍历",
     "分类统计"
    ],
+   "choices": [],
    "statement_md": "读入一行文本，统计其中**字母**、**数字**、**空格**、**其他字符**各有多少个，按这个顺序输出四个整数。\n\nPython 的字符串有现成的判断方法：\n\n- `ch.isalpha()` —— 是不是字母（只算 ASCII 字母时用 `'a' <= ch <= 'z'` 更保险）\n- `ch.isdigit()` —— 是不是数字\n\n**注意**：`isalpha()` 对中文字符也会返回 `True`。本题输入只含可见 ASCII 字符，两种写法结果一样。",
    "input_format": "一行文本（可能为空）。",
    "output_format": "一行，四个整数，依次是 字母数 数字数 空格数 其他数。",
@@ -962,6 +1021,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -991,6 +1051,7 @@
   },
   {
    "id": 21,
+   "subject": "python",
    "line": "python",
    "title": "大小写互换",
    "difficulty": 1,
@@ -1000,6 +1061,7 @@
     "内置方法",
     "遍历"
    ],
+   "choices": [],
    "statement_md": "读入一行文本，把**大写字母变小写、小写字母变大写**，其他字符原样保留。\n\nPython 字符串有个一步到位的方法：`s.swapcase()`。\n\n不过建议你也手写一遍循环版本 —— 面试和考试里更常考「怎么判断一个字符是大写」。",
    "input_format": "一行文本（可能为空）。",
    "output_format": "一行，转换后的文本。",
@@ -1012,6 +1074,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1040,6 +1103,7 @@
   },
   {
    "id": 22,
+   "subject": "python",
    "line": "python",
    "title": "查找子串",
    "difficulty": 2,
@@ -1049,6 +1113,7 @@
     "find",
     "重叠匹配"
    ],
+   "choices": [],
    "statement_md": "读入两行：第一行是**主串**，第二行是**模式串**。输出模式串在主串中出现的次数。\n\n**关键：允许重叠。**\n\n比如主串 `aaaa`、模式串 `aa`，答案是 **3** 而不是 2 —— 因为起点 0、1、2 各能匹配一次，它们互相重叠。\n\n如果直接用 `s.count(p)`，**也可以**，它默认就是按重叠起点数的；但面试里更常让你用 `str.find()` 循环实现：\n每次找到后从「上次位置 + 1」继续找，而不是 + 模式串长度。",
    "input_format": "两行，第一行主串 `t`（长度 ≥ 1），第二行模式串 `p`（长度 ≥ 1）。",
    "output_format": "一行，一个整数，出现次数（可重叠）。",
@@ -1061,6 +1126,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -1090,6 +1156,7 @@
   },
   {
    "id": 23,
+   "subject": "python",
    "line": "python",
    "title": "极差",
    "difficulty": 1,
@@ -1099,6 +1166,7 @@
     "max",
     "min"
    ],
+   "choices": [],
    "statement_md": "读入 `n` 个整数，输出它们的**极差**（最大值减最小值）。\n\n`max()` 和 `min()` 是 Python 内置函数，对列表直接用；也可以先 `sort()` 再取首尾 —— 后者能顺便把列表排好序。",
    "input_format": "第一行一个整数 `n`；第二行 `n` 个整数，空格分隔。",
    "output_format": "一行，一个整数：最大值 − 最小值。",
@@ -1111,6 +1179,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -1138,6 +1207,7 @@
   },
   {
    "id": 24,
+   "subject": "python",
    "line": "python",
    "title": "成绩统计",
    "difficulty": 2,
@@ -1147,6 +1217,7 @@
     "聚合",
     "格式化"
    ],
+   "choices": [],
    "statement_md": "读入 `n` 个成绩（整数），在同一行输出三个值：\n\n```text\n最高分 最低分 平均分\n```\n\n其中**平均分保留 2 位小数**，其余两个按整数输出。\n\n**易错点**：`sum(nums) / n` 在 Python 3 里是真除法，不会把小数截掉；`n = 0` 的情况本题不会出现。",
    "input_format": "第一行一个整数 `n`；第二行 `n` 个整数，空格分隔。",
    "output_format": "一行，`最高分 最低分 平均分`（平均分 2 位小数）。",
@@ -1159,6 +1230,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1187,6 +1259,7 @@
   },
   {
    "id": 25,
+   "subject": "python",
    "line": "python",
    "title": "合并有序列表",
    "difficulty": 3,
@@ -1197,6 +1270,7 @@
     "归并",
     "边界"
    ],
+   "choices": [],
    "statement_md": "给定两个**升序排列**的整数序列，把它们合并成一个仍然升序的序列并输出。\n\n```text\n输入：1 3 5  和  2 4 6\n输出：1 2 3 4 5 6\n```\n\n两种写法：\n\n- **省事**：`sorted(a + b)` —— 直接拼起来全排序，O((n+m)log(n+m))\n- **正统**：双指针归并 —— 每次比较两个序列的队首，取小的那个，O(n + m)；这是归并排序的核心步骤\n\n**边界**：任一序列可以是空的（`n = 0` 时第二行是空行，也要读掉）。",
    "input_format": "第一行一个整数 `n`；第二行 `n` 个升序整数（n = 0 时为空行）。\n\n第三行一个整数 `m`；第四行 `m` 个升序整数（m = 0 时为空行）。",
    "output_format": "一行，合并后的升序序列，空格分隔。",
@@ -1209,6 +1283,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1237,6 +1312,7 @@
   },
   {
    "id": 26,
+   "subject": "python",
    "line": "python",
    "title": "矩阵转置",
    "difficulty": 3,
@@ -1246,6 +1322,7 @@
     "嵌套列表",
     "zip"
    ],
+   "choices": [],
    "statement_md": "读入一个 `n` 行 `m` 列的整数矩阵，输出它的**转置**（行列互换，变成 `m` 行 `n` 列）。\n\n```text\n输入：      输出：\n1 2 3       1 4\n4 5 6       2 5\n            3 6\n```\n\n两种写法：\n\n- 下标法：`new[j][i] = old[i][j]`\n- Python 味：`zip(*mat)` —— `*` 把行拆开，`zip` 再按列打包，一行搞定\n\n**注意**：这不是方阵，`n ≠ m` 是常态，别写死成对称交换。",
    "input_format": "第一行两个整数 `n` 和 `m`。\n\n随后 `n` 行，每行 `m` 个整数。",
    "output_format": "`m` 行，每行 `n` 个整数，空格分隔。",
@@ -1258,6 +1335,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1286,6 +1364,7 @@
   },
   {
    "id": 27,
+   "subject": "python",
    "line": "python",
    "title": "两数之和",
    "difficulty": 3,
@@ -1295,6 +1374,7 @@
     "哈希表",
     "复杂度"
    ],
+   "choices": [],
    "statement_md": "给定 `n` 个整数和一个目标值 `t`，找出**一对**下标 `i < j`，使得 `nums[i] + nums[j] == t`。输出 `i j`；找不到输出 `-1`。\n\n**如果有多个答案，输出「第二个数的下标最小」的那一组。**\n\n两种写法：\n\n- **暴力**：两层循环试所有组合，O(n²)，n = 10⁵ 时会超时\n- **哈希表**：从左往右扫，边扫边把「值 → 下标」记进字典；对当前数 `v`，只要查 `t - v` 在不在字典里，O(n)\n\n这就是字典最典型的用途：**用空间换时间**。",
    "input_format": "第一行两个整数 `n` 和 `t`；第二行 `n` 个整数，空格分隔。",
    "output_format": "一行：`i j`（0 开始的下标），或 `-1`。",
@@ -1307,6 +1387,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1335,6 +1416,7 @@
   },
   {
    "id": 28,
+   "subject": "python",
    "line": "python",
    "title": "集合运算",
    "difficulty": 2,
@@ -1345,6 +1427,7 @@
     "并集",
     "排序"
    ],
+   "choices": [],
    "statement_md": "读入两个整数集合（每行一个，元素可能重复、行可能为空），输出两行：\n\n1. 它们的**交集**（两个集合都有的元素）\n2. 它们的**并集**（去重后的所有元素）\n\n两行都要求元素**从小到大**排列，空格分隔；如果结果为空，输出一个空行。\n\nPython 的集合运算符：`a & b` 交集、`a | b` 并集、`a - b` 差集、`a ^ b` 对称差。注意集合本身是**无序**的，要保证输出顺序必须自己 `sorted()`。",
    "input_format": "两行，每行若干个整数（可为空行）。",
    "output_format": "第一行交集，第二行并集，均升序、空格分隔。",
@@ -1357,6 +1440,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1385,6 +1469,7 @@
   },
   {
    "id": 29,
+   "subject": "python",
    "line": "python",
    "title": "首字母分组",
    "difficulty": 2,
@@ -1394,6 +1479,7 @@
     "分组",
     "排序"
    ],
+   "choices": [],
    "statement_md": "读入 `n` 个单词，按**首字母**分组输出，每组一行，格式：\n\n```text\n首字母: 单词1 单词2 …\n```\n\n- 组与组之间按**首字母升序**\n- 组内按**单词字典序**\n\n```text\n输入：apple banana avocado blueberry cherry\n输出：a: apple avocado\n      b: banana blueberry\n      c: cherry\n```\n\n用字典做「分组」是最常见套路：`groups.setdefault(key, []).append(w)`，比每次都 `if key not in groups` 简洁。",
    "input_format": "第一行一个整数 `n`；随后 `n` 行，每行一个小写单词。",
    "output_format": "每组一行，`首字母: 单词…`。",
@@ -1406,6 +1492,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -1433,6 +1520,7 @@
   },
   {
    "id": 30,
+   "subject": "python",
    "line": "python",
    "title": "众数",
    "difficulty": 2,
@@ -1442,6 +1530,7 @@
     "计数",
     "并列处理"
    ],
+   "choices": [],
    "statement_md": "读入 `n` 个整数，输出**出现次数最多**的那个数。\n\n**如果并列，输出最小的那个。**\n\n例如 `1 1 2 2` 里 1 和 2 都出现 2 次，答案是 `1`。\n\n**并列规则是这题唯一的坑**：`max(cnt, key=cnt.get)` 在并列时返回的是「字典里先出现的键」，而字典的顺序取决于插入顺序，**不可靠**。显式写出比较规则才稳。",
    "input_format": "第一行一个整数 `n`；第二行 `n` 个整数。",
    "output_format": "一行，众数。",
@@ -1454,6 +1543,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -1481,6 +1571,7 @@
   },
   {
    "id": 31,
+   "subject": "python",
    "line": "python",
    "title": "缺失的最小正整数",
    "difficulty": 3,
@@ -1490,6 +1581,7 @@
     "边界",
     "思维题"
    ],
+   "choices": [],
    "statement_md": "给定 `n` 个整数（可能有负数、有重复），找出其中**没有出现**的**最小正整数**。\n\n```text\n输入：1 2 0        输出：3\n输入：3 4 -1 1     输出：2\n输入：7 8 9 11 12  输出：1\n```\n\n**思路**：把所有正数丢进集合，然后从 `1` 开始一个个试 —— `1` 在不在？在；`2` 在不在？不在 → 答案 2。\n\n看着简单，但**负数、0、重复值**这三样都容易让人绕晕，用集合一把过滤掉最省心。",
    "input_format": "第一行一个整数 `n`；第二行 `n` 个整数。",
    "output_format": "一行，一个正整数。",
@@ -1502,6 +1594,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1530,6 +1623,7 @@
   },
   {
    "id": 32,
+   "subject": "python",
    "line": "python",
    "title": "海伦公式",
    "difficulty": 2,
@@ -1540,6 +1634,7 @@
     "浮点",
     "合法性判断"
    ],
+   "choices": [],
    "statement_md": "给定三角形三边长 `a` `b` `c`，能构成三角形就输出面积（**保留 2 位小数**），否则输出 `invalid`。\n\n**海伦公式**（记 `p = (a+b+c)/2`）：\n\n```text\n面积 = √( p × (p-a) × (p-b) × (p-c) )\n```\n\n**构成条件**：三边都大于 0，且**任意两边之和大于第三边**（只要检查三组，别只查一组）。\n\n这题很适合封装成一个函数 `area(a, b, c)`，边界检查放函数开头。",
    "input_format": "一行，三个数 `a` `b` `c`（可能是小数）。",
    "output_format": "一行，面积（2 位小数）或 `invalid`。",
@@ -1552,6 +1647,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -1581,6 +1677,7 @@
   },
   {
    "id": 33,
+   "subject": "python",
    "line": "python",
    "title": "可变默认参数的陷阱",
    "difficulty": 3,
@@ -1591,6 +1688,7 @@
     "可变对象",
     "★坑"
    ],
+   "choices": [],
    "statement_md": "这是 Python 最著名的坑之一，**请亲手跑一遍看看**。\n\n```python\ndef collect_bad(x, lst=[]):    # 默认值是个列表\n    lst.append(x)\n    return lst\n```\n\n每次调用看起来都会新建一个空列表？**并不会。** 默认参数只在**函数定义时求值一次**，所以那个 `[]` 是**所有调用共享的同一个对象**，会一直累积。\n\n正解是默认写成 `None`，在函数体里现建：\n\n```python\ndef collect_ok(x, lst=None):\n    if lst is None:\n        lst = []\n    ...\n```\n\n**本题要求**：读入 `n` 和一个数列，依次做两件事：\n\n1. 用上面的 `collect_bad` 把每个数依次传进去，最后输出它返回的列表\n2. 再用 `collect_ok` 把每个数依次传进去，**每次的结果单独输出一行**",
    "input_format": "第一行一个整数 `n`（≥1）；第二行 `n` 个整数。",
    "output_format": "第一行：`collect_bad` 最后一次返回的列表（标准 Python 列表格式）。\n\n随后 `n` 行：`collect_ok` 每次调用的返回值。",
@@ -1603,6 +1701,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 2,
    "samples": [
     {
@@ -1622,6 +1721,7 @@
   },
   {
    "id": 34,
+   "subject": "python",
    "line": "python",
    "title": "哥德巴赫猜想",
    "difficulty": 3,
@@ -1632,6 +1732,7 @@
     "复用",
     "循环"
    ],
+   "choices": [],
    "statement_md": "**哥德巴赫猜想**：任一大于 2 的偶数都可以写成两个素数之和。\n\n给定一个偶数 `n`（≥ 4），输出一对素数 `a b`，满足 `a + b = n` 且 **`a` 尽可能小**（`a ≤ b`）。\n\n```text\n10 → 3 7\n20 → 3 17\n100 → 3 97\n```\n\n**思路**：`a` 从 2 开始往上试，只要 `a` 和 `n - a` 都是素数就输出。\n\n这题是「函数复用」的好例子：把「判断素数」单独写成函数，主逻辑就只剩几行了。",
    "input_format": "一行，一个偶数 `n`。",
    "output_format": "一行，`a b`，其中 `a ≤ b` 且 `a` 最小。",
@@ -1644,6 +1745,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1672,6 +1774,7 @@
   },
   {
    "id": 35,
+   "subject": "python",
    "line": "python",
    "title": "递归求阶乘",
    "difficulty": 2,
@@ -1681,6 +1784,7 @@
     "大整数",
     "边界"
    ],
+   "choices": [],
    "statement_md": "用**递归**求 `n!`（n 的阶乘）。\n\n定义：`0! = 1`，`n! = n × (n-1)!`。\n\n**递归三要素**（对照着看）：\n\n1. **出口**：`n <= 1` 时返回 1\n2. **递推**：`n × fact(n-1)`\n3. **规模变小**：每层 `n` 减 1，必然到出口\n\nPython 整数无上限，`20!`（19 位）直接算，不会溢出。",
    "input_format": "一行，一个整数 `n`。",
    "output_format": "一行，`n!`。",
@@ -1693,6 +1797,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -1722,6 +1827,7 @@
   },
   {
    "id": 36,
+   "subject": "python",
    "line": "python",
    "title": "汉诺塔",
    "difficulty": 3,
@@ -1731,6 +1837,7 @@
     "经典问题",
     "步骤输出"
    ],
+   "choices": [],
    "statement_md": "汉诺塔：`n` 个盘子从柱子 `A` 借助 `B` 全部移到 `C`。\n\n每次只能移动一个盘子，且**大盘不能压在小盘上**。\n\n输出完整移动步骤，每行形如 `A->C`；最后一行输出总步数 `total=步数`。\n\n**递归思路**（把大问题拆成三小步）：\n\n1. 把上面 `n-1` 个从 `A` 移到 `B`（借助 `C`）\n2. 把最大的那个从 `A` 移到 `C`\n3. 把那 `n-1` 个从 `B` 移到 `C`（借助 `A`）\n\n三条语句，就是这个算法的全部。总步数 = `2ⁿ - 1`。",
    "input_format": "一行，一个整数 `n`。",
    "output_format": "每行一步（`A->C`），最后一行 `total=步数`。",
@@ -1743,6 +1850,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -1770,6 +1878,7 @@
   },
   {
    "id": 37,
+   "subject": "python",
    "line": "python",
    "title": "数位之和",
    "difficulty": 2,
@@ -1779,6 +1888,7 @@
     "取余",
     "整除"
    ],
+   "choices": [],
    "statement_md": "用**递归**求一个非负整数的各位数字之和。\n\n```text\n123 → 1 + 2 + 3 = 6\n```\n\n**关键是把「拆最后一位」和「剩下的数」分开**：\n\n```python\ndef digit_sum(k):\n    if k < 10:\n        return k          # 出口：只剩一位\n    return k % 10 + digit_sum(k // 10)\n```\n\n`k % 10` 拿个位，`k // 10` 把个位丢掉。**别用 `str()`** —— 这题就是要练数位运算。",
    "input_format": "一行，一个非负整数 `n`。",
    "output_format": "一行，各位数字之和。",
@@ -1791,6 +1901,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1819,6 +1930,7 @@
   },
   {
    "id": 38,
+   "subject": "python",
    "line": "python",
    "title": "爬楼梯",
    "difficulty": 3,
@@ -1829,6 +1941,7 @@
     "斐波那契",
     "重复子问题"
    ],
+   "choices": [],
    "statement_md": "有 `n` 级楼梯，每次可以走 **1 级或 2 级**，问有多少种走法。\n\n设 `f(n)` 为走法数，则 `f(n) = f(n-1) + f(n-2)`，`f(1) = 1`、`f(2) = 2`。\n\n**递归树的坑**：直接写朴素递归，`f(n)` 会重复计算大量子问题 —— `f(40)` 就要算十亿次以上。两种解法：\n\n- **记忆化**：算过的存进字典，下次直接取\n- **自底向上**：从 `f(1)` 开始往上推，只用两个变量\n\n这就是「动态规划」的雏形：**用缓存消掉重复子问题**。",
    "input_format": "一行，一个整数 `n`。",
    "output_format": "一行，走法总数。",
@@ -1841,6 +1954,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -1870,6 +1984,7 @@
   },
   {
    "id": 39,
+   "subject": "python",
    "line": "python",
    "title": "二分查找",
    "difficulty": 2,
@@ -1879,6 +1994,7 @@
     "下标",
     "边界"
    ],
+   "choices": [],
    "statement_md": "给定一个**升序**整数序列和一个目标值，输出目标值的下标（从 0 开始）；不存在输出 `-1`。\n\n**二分查找**：每次取中间元素比大小，比目标小就去右半边，大就去左半边。每次砍掉一半，所以是 O(log n)。\n\n**最容易写错的三处**：\n\n- `while lo <= hi` 还是 `<` —— 用闭区间就写 `<=`\n- 中点 `mid = (lo + hi) // 2`，别写成 `/`\n- 移动时 `lo = mid + 1` / `hi = mid - 1`，**必须 ±1**，否则区间不缩小 → 死循环",
    "input_format": "第一行两个整数 `n` 和 `t`；第二行 `n` 个升序整数。",
    "output_format": "一行，下标或 `-1`。",
@@ -1891,6 +2007,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -1920,6 +2037,7 @@
   },
   {
    "id": 40,
+   "subject": "python",
    "line": "python",
    "title": "math 模块",
    "difficulty": 1,
@@ -1930,6 +2048,7 @@
     "math",
     "格式化"
    ],
+   "choices": [],
    "statement_md": "读入一个浮点数 `n`，在同一行输出三个值：\n\n```text\n√n（保留 3 位小数）  ⌈n⌉（向上取整）  ⌊n⌋（向下取整）\n```\n\n**三种 import 写法**，效果一样但用法不同：\n\n```python\nimport math                 # 用的时候写 math.sqrt(n)\nfrom math import sqrt       # 直接写 sqrt(n)\nimport math as m            # 写 m.sqrt(n)\n```\n\n**注意取整函数的返回值是整数**：`math.ceil(2.1)` 得 `3`（int），打印出来没有小数点。",
    "input_format": "一行，一个非负浮点数 `n`。",
    "output_format": "一行，`√n(3位小数) 向上取整 向下取整`。",
@@ -1942,6 +2061,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -1970,6 +2090,7 @@
   },
   {
    "id": 41,
+   "subject": "python",
    "line": "python",
    "title": "日期相差天数",
    "difficulty": 3,
@@ -1980,6 +2101,7 @@
     "闰年",
     "日期计算"
    ],
+   "choices": [],
    "statement_md": "读入两个日期（格式 `YYYY-MM-DD`），输出**第二个日期减去第一个日期**相差的天数（可能为负）。\n\n标准库 `datetime` 让这件事变得非常简单：\n\n```python\nfrom datetime import date\nd1 = date(2024, 1, 1)\nd2 = date(2024, 12, 31)\nprint((d2 - d1).days)     # 365\n```\n\n**自己手算的话要注意闰年**：2024 能被 4 整除且不是世纪年 → 闰年，2 月 29 天；2023 是平年。`date` 对象相减会自动处理这些。",
    "input_format": "两行，每行一个日期，格式 `YYYY-MM-DD`。",
    "output_format": "一行，整数天数（`d2 - d1`，可为负）。",
@@ -1992,6 +2114,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -2021,6 +2144,7 @@
   },
   {
    "id": 42,
+   "subject": "python",
    "line": "python",
    "title": "均值与中位数",
    "difficulty": 2,
@@ -2031,6 +2155,7 @@
     "中位数",
     "奇偶"
    ],
+   "choices": [],
    "statement_md": "读入 `n` 个整数，输出**平均值**和**中位数**，都用 2 位小数，空格分隔。\n\n**中位数的定义**（这题的核心）：\n\n- 先排序\n- `n` 为**奇数**：正中间那个\n- `n` 为**偶数**：中间两个的**平均值**\n\n标准库 `statistics` 两个函数就够：`statistics.mean(xs)` 和 `statistics.median(xs)`。",
    "input_format": "第一行一个整数 `n`；第二行 `n` 个整数。",
    "output_format": "一行，`平均值 中位数`（各 2 位小数）。",
@@ -2043,6 +2168,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2070,6 +2196,7 @@
   },
   {
    "id": 43,
+   "subject": "python",
    "line": "python",
    "title": "累乘",
    "difficulty": 2,
@@ -2080,6 +2207,7 @@
     "reduce",
     "大整数"
    ],
+   "choices": [],
    "statement_md": "读入 `n` 个整数，输出它们的**连乘积**。\n\n```text\n1 2 3 4 5 → 120\n```\n\n两种标准库写法：\n\n- `math.prod(nums)` —— Python 3.8+ 新增，最直接\n- `functools.reduce(lambda a, b: a * b, nums, 1)` —— 老牌做法，「把二元操作不停地往序列上套」\n\n注意初始值 `1` 不能省 —— 少写初始值，`n = 1` 时会直接把那个数当结果返回（恰好对），但 `n = 0` 就会报错。",
    "input_format": "第一行一个整数 `n`；第二行 `n` 个整数。",
    "output_format": "一行，连乘积。",
@@ -2092,6 +2220,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -2120,6 +2249,7 @@
   },
   {
    "id": 44,
+   "subject": "python",
    "line": "python",
    "title": "最高分学生",
    "difficulty": 2,
@@ -2130,6 +2260,7 @@
     "key",
     "并列规则"
    ],
+   "choices": [],
    "statement_md": "读入 `n` 行「名字 分数」，输出**分数最高**的学生名字。\n\n**并列时取名字字典序最小的那个。**\n\n```text\nalice 90\nbob 95\ncarol 95\n→ bob（并列 95，bob < carol）\n```\n\n一个 `key` 就把两个规则写清楚：\n\n```python\nrows.sort(key=lambda r: (-r[1], r[0]))\n#                            ↑ 分数降序（取负）   ↑ 名字升序\n```\n\n这就是「多关键字排序」的固定套路：**要降序的字段取负号**。",
    "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `名字 分数`。",
    "output_format": "一行，名字。",
@@ -2142,6 +2273,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2169,6 +2301,7 @@
   },
   {
    "id": 45,
+   "subject": "python",
    "line": "python",
    "title": "矩形类",
    "difficulty": 1,
@@ -2179,6 +2312,7 @@
     "self",
     "__init__"
    ],
+   "choices": [],
    "statement_md": "定义一个 `Rectangle` 类：\n\n- `__init__(self, w, h)` 接收长和宽\n- `area()` 返回面积\n- `perimeter()` 返回周长\n\n读入长和宽，输出 `面积=xx 周长=xx`。\n\n**`self` 是什么**：它是「这个对象自己」。`self.w` 表示「我这个对象的 w 属性」，和别的对象互不干扰。定义方法时 `self` 必须写在第一个参数位，但**调用时不用传**。",
    "input_format": "一行，两个整数 `w` 和 `h`。",
    "output_format": "一行，`面积=xx 周长=xx`。",
@@ -2191,6 +2325,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2218,6 +2353,7 @@
   },
   {
    "id": 46,
+   "subject": "python",
    "line": "python",
    "title": "对象计数器",
    "difficulty": 2,
@@ -2228,6 +2364,7 @@
     "★坑",
     "self vs 类名"
    ],
+   "choices": [],
    "statement_md": "**类属性和实例属性的区别**，这题就是要让你亲眼看见。\n\n```python\nclass Item:\n    total = 0                 # ← 类属性：所有对象共享一份\n    def __init__(self, idx):\n        Item.total += 1       # ← 必须写类名（或 type(self)），不能写 self.total\n        self.idx = idx        # ← 实例属性：每个对象各有一份\n```\n\n**★ 关键坑**：如果写成 `self.total += 1`，Python 会理解为「给**这个实例**新建一个 total 属性」，类属性 `Item.total` 永远停在 0。\n\n**本题要求**：读入 `n`，创建 `n` 个对象（编号 1 ~ n），输出 `total=总创建数 last=最后一个对象的编号`。",
    "input_format": "一行，一个整数 `n`。",
    "output_format": "一行，`total=x last=y`。",
@@ -2240,6 +2377,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2267,6 +2405,7 @@
   },
   {
    "id": 47,
+   "subject": "python",
    "line": "python",
    "title": "银行账户",
    "difficulty": 3,
@@ -2277,6 +2416,7 @@
     "方法",
     "模拟"
    ],
+   "choices": [],
    "statement_md": "定义 `Account` 类，模拟一个银行账户。\n\n**输入**\n\n```text\n第一行：owner balance     （户主 初始余额，都是整数）\n第二行：m                 （操作条数）\n随后 m 行，每行是下面三种之一：\n  d 金额     存款\n  w 金额     取款\n  q          查询余额\n```\n\n**输出**：每个 `q` 输出一行当前余额；没有查询就什么都不输出。\n\n这题的关键是**对象的状态会被方法改变**：`deposit` 和 `withdraw` 改的是 `self.balance`，所以后面的 `q` 能看到累积效果。",
    "input_format": "第一行 `owner balance`；第二行 `m`；随后 `m` 行操作。",
    "output_format": "每个 `q` 一行余额；无 `q` 则无输出。",
@@ -2289,6 +2429,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2316,6 +2457,7 @@
   },
   {
    "id": 48,
+   "subject": "python",
    "line": "python",
    "title": "两点距离",
    "difficulty": 2,
@@ -2326,6 +2468,7 @@
     "math",
     "浮点"
    ],
+   "choices": [],
    "statement_md": "定义 `Point` 类，方法 `dist(other)` 返回和另一个点的**欧氏距离**，保留 3 位小数。\n\n```text\n距离 = √( (x₁-x₂)² + (y₁-y₂)² )\n```\n\n读入 4 个数 `x1 y1 x2 y2`，输出 `p1` 到 `p2` 的距离。\n\n**注意方法参数**：`p1.dist(p2)` 里，`self` 是 `p1`、`other` 是 `p2`，所以方法里写 `self.x - other.x`。`math.hypot(dx, dy)` 一步到位。",
    "input_format": "一行，四个整数 `x1 y1 x2 y2`。",
    "output_format": "一行，距离（3 位小数）。",
@@ -2338,6 +2481,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 4,
    "samples": [
     {
@@ -2366,6 +2510,7 @@
   },
   {
    "id": 49,
+   "subject": "python",
    "line": "python",
    "title": "成绩管理器",
    "difficulty": 3,
@@ -2376,6 +2521,7 @@
     "聚合",
     "综合"
    ],
+   "choices": [],
    "statement_md": "定义两个类：\n\n- `Student(name, score)` —— 存一个学生的信息\n- `GradeBook()` —— 管一群学生，有 `add(s)` 加人、`top()` 找最高分、`average()` 算平均分\n\n读入 `n` 行「名字 分数」，输出 `最高分学生名 平均分`（平均分 2 位小数）。\n\n**并列取先出现的那个**（本题保证分数并列时按输入顺序取第一个）。\n\n这题是「一个类装数据、另一个类管集合」的典型结构 —— 把 `Student` 想成一行记录，`GradeBook` 想成一张表。",
    "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `名字 分数`。",
    "output_format": "一行，`名字 平均分`（平均分 2 位小数）。",
@@ -2388,6 +2534,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2415,6 +2562,7 @@
   },
   {
    "id": 50,
+   "subject": "python",
    "line": "python",
    "title": "形状面积（继承）",
    "difficulty": 3,
@@ -2424,6 +2572,7 @@
     "方法重写",
     "多态"
    ],
+   "choices": [],
    "statement_md": "定义基类 `Shape`，以及两个子类：\n\n- `Circle(r)` —— 面积 `3.14 × r²`\n- `Rect(w, h)` —— 面积 `w × h`\n\n两者都实现 `area()` 方法。\n\n读入 `n` 行形状描述（`circle r` 或 `rect w h`），**每行输出对应面积**（2 位小数）。\n\n**继承的意义**：`Shape` 定义了「所有形状都有 `area()` 这个方法」，子类各自**重写**（override）成自己的算法。调用方只管写 `s.area()`，不用管 `s` 到底是圆还是矩形 —— 这就是**多态**。\n\n本题 π 取 **3.14**（和前面圆面积题保持一致，别用 `math.pi`）。",
    "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `circle r` 或 `rect w h`。",
    "output_format": "`n` 行，每行一个面积（2 位小数）。",
@@ -2436,6 +2585,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2463,6 +2613,7 @@
   },
   {
    "id": 51,
+   "subject": "python",
    "line": "python",
    "title": "动物叫声（多态）",
    "difficulty": 2,
@@ -2472,6 +2623,7 @@
     "多态",
     "方法重写"
    ],
+   "choices": [],
    "statement_md": "定义基类 `Animal` 和子类 `Dog`、`Cat`，各自实现 `sound()` 方法：\n\n- `Dog.sound()` 返回 `woof`\n- `Cat.sound()` 返回 `meow`\n\n读入 `n` 行「动物名 次数」，对每一行输出该叫声**重复对应次数**（用**一个空格**分隔）。\n\n```text\ndog 2  →  woof woof\ncat 3  →  meow meow meow\n```\n\n**多态的写法**：主循环里只写 `a.sound()`，不写 `if 是狗…elif 是猫…`。以后再加 `Cow`，主循环**一行都不用改** —— 这就是继承 + 多态的价值。",
    "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `动物名 次数`（动物名是 `dog` 或 `cat`）。",
    "output_format": "`n` 行，每行是重复的叫声。",
@@ -2484,6 +2636,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 2,
    "samples": [
     {
@@ -2510,6 +2663,7 @@
   },
   {
    "id": 52,
+   "subject": "python",
    "line": "python",
    "title": "初始化顺序（super）",
    "difficulty": 3,
@@ -2520,6 +2674,7 @@
     "MRO",
     "★坑"
    ],
+   "choices": [],
    "statement_md": "三层继承链：`C` 继承 `B`，`B` 继承 `A`。\n\n每个类的 `__init__` 先调 `super().__init__()` 再把自己的名字追加到 `self.trace` 列表。\n\n```python\nclass B(A):\n    def __init__(self):\n        super().__init__()        # ← 先去初始化父类\n        self.trace.append('B')    # ← 再记自己\n```\n\n读入 `n`（1 ~ 3），创建对应的那一层对象，输出 `trace` 里的内容（空格分隔）。\n\n**`super()` 到底是什么**：它不是「父类」的字面意思，而是「**MRO 里的下一个类**」。所以 `super().__init__()` 会顺着继承链一路往上跑，最终得到 `A B C` 这样的顺序。",
    "input_format": "一行，一个整数 `n`（1 = A，2 = B，3 = C）。",
    "output_format": "一行，空格分隔的初始化顺序。",
@@ -2532,6 +2687,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2559,6 +2715,7 @@
   },
   {
    "id": 53,
+   "subject": "python",
    "line": "python",
    "title": "点的排序",
    "difficulty": 3,
@@ -2569,6 +2726,7 @@
     "排序",
     "自定义比较"
    ],
+   "choices": [],
    "statement_md": "定义 `Point` 类，实现 `__lt__` 方法，让点之间可以**直接比大小**，规则是「先比 `x`，`x` 相同再比 `y`」。\n\n```python\ndef __lt__(self, other):\n    return (self.x, self.y) < (other.x, other.y)\n```\n\n读入 `n` 个点，**按升序排序后**输出，每行一个点（`x y`）。\n\n**为什么要有 `__lt__`**：`sorted()` 和 `.sort()` 靠的就是 `<` 运算符。自定义类默认不支持和 `<` 比较，实现 `__lt__` 后就能直接丢给 `sorted()` 用了 —— 这叫**运算符重载**。\n\n*（也可以用 `sorted(pts, key=lambda p: (p.x, p.y))` 绕过，但那不算「让对象自己会排序」。）*",
    "input_format": "第一行一个整数 `n`；随后 `n` 行，每行两个整数 `x y`。",
    "output_format": "`n` 行，排序后的点，每行 `x y`。",
@@ -2581,6 +2739,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2608,6 +2767,7 @@
   },
   {
    "id": 54,
+   "subject": "python",
    "line": "python",
    "title": "向量相加",
    "difficulty": 3,
@@ -2617,6 +2777,7 @@
     "__add__",
     "运算符重载"
    ],
+   "choices": [],
    "statement_md": "定义 `Vector2D` 类，实现 `__add__`，让两个向量能**直接用 `+` 相加**：\n\n```python\ndef __add__(self, other):\n    return Vector2D(self.x + other.x, self.y + other.y)\n```\n\n顺便实现 `__str__`，让 `print(v)` 输出 `x y`。\n\n读入两行，每行两个整数（两个向量），输出它们的和。\n\n**运算符重载的意义**：`a + b` 本质上是 `a.__add__(b)`。给自定义类实现 `__add__` 之后，`+` 就有意义了，写出来跟数学公式一模一样。",
    "input_format": "两行，每行两个整数 `x y`。",
    "output_format": "一行，`x y`（两个向量的和）。",
@@ -2629,6 +2790,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2656,6 +2818,7 @@
   },
   {
    "id": 55,
+   "subject": "python",
    "line": "python",
    "title": "年龄校验",
    "difficulty": 3,
@@ -2666,6 +2829,7 @@
     "封装",
     "异常"
    ],
+   "choices": [],
    "statement_md": "用 `@property` + `@age.setter` 给年龄加一道**校验关卡**：\n\n```python\nclass Person:\n    @property\n    def age(self):\n        return self._age\n\n    @age.setter\n    def age(self, v):\n        if v < 0 or v > 150:\n            raise ValueError('bad age')\n        self._age = v\n```\n\n读入一个整数年龄。合法（0 ≤ 年龄 ≤ 150）就输出年龄；否则输出 `invalid`。\n\n**为什么不能直接写 `self.age = v`**：那样赋值时会**无限递归** —— setter 里再调 setter。所以真正存值用的是另一个名字 `_age`。\n\n**property 的价值**：外部代码写起来还是 `p.age = 25`（像普通属性），但赋值时会自动过校验，**用法不变、安全性提高**。",
    "input_format": "一行，一个整数。",
    "output_format": "一行，合法的年龄或 `invalid`。",
@@ -2678,6 +2842,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 5,
    "samples": [
     {
@@ -2707,6 +2872,7 @@
   },
   {
    "id": 56,
+   "subject": "python",
    "line": "python",
    "title": "形状总面积（多态）",
    "difficulty": 3,
@@ -2717,6 +2883,7 @@
     "综合",
     "聚合"
    ],
+   "choices": [],
    "statement_md": "在「形状面积（继承）」的基础上再往前走一步：\n\n读入 `n` 个形状，把它们**都放进同一个列表**，然后遍历这个列表求**总面积**（2 位小数）。\n\n```python\nshapes = []\nshapes.append(Circle(1))\nshapes.append(Rect(2, 3))\ntotal = sum(s.area() for s in shapes)   # ← 不用管 s 是什么类型\n```\n\n**这就是多态真正的用处**：列表里混着不同类型，但循环体一句 `s.area()` 就够了 —— 因为每个对象都「知道自己该怎么算面积」。\n\n本题 π 取 **3.14**。",
    "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `circle r` 或 `rect w h`。",
    "output_format": "一行，总面积（2 位小数）。",
@@ -2729,6 +2896,7 @@
    "source_anchor": "",
    "origin": "manual",
    "status": "published",
+   "is_choice": false,
    "testcase_count": 3,
    "samples": [
     {
@@ -2753,6 +2921,6294 @@
     6
    ],
    "points_sum": 20
+  },
+  {
+   "id": 57,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "顺序表按位插入",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "顺序表",
+    "插入",
+    "位序"
+   ],
+   "choices": [],
+   "statement_md": "在一个顺序表中，把 `x` 插入到**位序 `i`** 的位置上（原来的第 `i` 个及以后的元素统统后移一位）。\n\n★ 教材里的**位序从 1 开始**，而 C 数组下标从 0 开始 —— 位序 `i` 对应下标 `i-1`。这是本讲最容易出错的地方。\n\n搬移必须**从后往前**做。反过来写（`j` 从小到大）会把后面的元素一路覆盖掉，而且编译器一个警告都不会给。",
+   "input_format": "第一行一个整数 `n`（当前表长）。\n\n第二行 `n` 个整数，顺序表的元素。\n\n第三行一个整数 `i`，插入位置（位序，1 ≤ i ≤ n+1）。\n\n第四行一个整数 `x`，要插入的值。",
+   "output_format": "一行，插入后的顺序表，元素之间用一个空格分隔。",
+   "constraints_md": "- 1 ≤ n ≤ 1000\n- 1 ≤ i ≤ n+1",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 231,
+     "ord": 0,
+     "stdin": "5\n1 2 3 4 5\n1\n9\n",
+     "expected_stdout": "9 1 2 3 4 5\n",
+     "explanation": ""
+    },
+    {
+     "id": 232,
+     "ord": 1,
+     "stdin": "5\n1 2 3 4 5\n6\n9\n",
+     "expected_stdout": "1 2 3 4 5 9\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 58,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "顺序表删除所有值为 x 的元素",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "顺序表",
+    "删除",
+    "双指针"
+   ],
+   "choices": [],
+   "statement_md": "删除顺序表中**所有**值为 `x` 的元素，剩下的元素保持原来的相对次序。\n\n要求 O(n) 时间、O(1) 额外空间 —— 也就是用一个写指针 `k` 把「该留下的」往前压，不要每次都搬一整个数组。\n\n若删完表为空，输出 `empty`。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数。\n\n第三行一个整数 `x`。",
+   "output_format": "一行，删除后的顺序表（空格分隔）；若为空则输出 `empty`。",
+   "constraints_md": "- 1 ≤ n ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 236,
+     "ord": 0,
+     "stdin": "5\n1 2 3 2 4\n2\n",
+     "expected_stdout": "1 3 4\n",
+     "explanation": ""
+    },
+    {
+     "id": 237,
+     "ord": 1,
+     "stdin": "3\n2 2 2\n2\n",
+     "expected_stdout": "empty\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 59,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "顺序表删除区间元素",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "顺序表",
+    "删除",
+    "区间"
+   ],
+   "choices": [],
+   "statement_md": "删除顺序表中**位序**从 `i` 到 `j`（含两端）的所有元素，后面的元素整体前移。\n\n搬移方向跟插入**正好相反**：这里是**从前往后**搬（把 `j` 后面的元素往前填），写反了同样会静默出错。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数。\n\n第三行两个整数 `i` `j`（1 ≤ i ≤ j ≤ n）。",
+   "output_format": "一行，删除后的顺序表（空格分隔）；若为空则输出 `empty`。",
+   "constraints_md": "- 1 ≤ n ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 241,
+     "ord": 0,
+     "stdin": "6\n10 20 30 40 50 60\n2 4\n",
+     "expected_stdout": "10 50 60\n",
+     "explanation": ""
+    },
+    {
+     "id": 242,
+     "ord": 1,
+     "stdin": "5\n1 2 3 4 5\n1 5\n",
+     "expected_stdout": "empty\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 60,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "顺序表原地逆置",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "顺序表",
+    "逆置",
+    "首尾交换"
+   ],
+   "choices": [],
+   "statement_md": "把顺序表**原地**逆置（不借第二个数组），用首尾交换向中间收拢的写法。\n\n这是考研高频题：O(n) 时间、O(1) 空间。\n\n注意循环条件是 `i < j` 而不是 `i <= j` —— 写成 `<=` 时中间那个元素会自己跟自己换一次，结果**碰巧还是对的**，于是这个错误永远暴露不出来。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数。",
+   "output_format": "一行，逆置后的顺序表（空格分隔）。",
+   "constraints_md": "- 1 ≤ n ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 246,
+     "ord": 0,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "5 4 3 2 1\n",
+     "explanation": ""
+    },
+    {
+     "id": 247,
+     "ord": 1,
+     "stdin": "4\n1 2 3 4\n",
+     "expected_stdout": "4 3 2 1\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 61,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "合并两个有序顺序表",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "顺序表",
+    "归并",
+    "双指针"
+   ],
+   "choices": [],
+   "statement_md": "把两个**非递减**顺序表合并成一个非递减顺序表。\n\n标准做法是双指针归并：谁小先输出谁，一个走完就把另一个整段接上。\n\n要求 O(n+m) —— 把两段拼起来再排序虽然结果也对，但那是 O((n+m)log)。",
+   "input_format": "第一行一个整数 `n`，第二行 `n` 个非递减整数。\n\n第三行一个整数 `m`，第四行 `m` 个非递减整数。\n\n（`n` 和 `m` 都可能为 0，此时对应的那行为空行。）",
+   "output_format": "一行，合并后的非递减序列（空格分隔）；两者都空则输出 `empty`。",
+   "constraints_md": "- 0 ≤ n, m ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 251,
+     "ord": 0,
+     "stdin": "3\n1 3 5\n3\n2 4 6\n",
+     "expected_stdout": "1 2 3 4 5 6\n",
+     "explanation": ""
+    },
+    {
+     "id": 252,
+     "ord": 1,
+     "stdin": "4\n1 2 3 4\n0\n\n",
+     "expected_stdout": "1 2 3 4\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 62,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "单链表尾插建表并遍历",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "单链表",
+    "尾插法",
+    "遍历"
+   ],
+   "choices": [],
+   "statement_md": "用**尾插法**建立带头结点的单链表，然后从头到尾遍历输出。\n\n尾插法的关键在于**始终维护一个尾指针 `rear`**：\n\n```c\ns->next = NULL;   /* 新结点自己就是尾巴，next 必须先置空 */\nrear->next = s;   /* 挂到尾巴后面 */\nrear = s;         /* 尾巴挪到新结点 */\n```\n\n★ 第一句 `s->next = NULL` **不能省**。少了它，最后一个结点的 `next` 就是 malloc 拿到的随机地址，遍历时不是打印垃圾就是段错误 —— 而且**有时正常、有时崩**，是最难查的一类 bug。\n\n输出格式：每个结点后面跟 ` -> `，最后以 `NULL` 结尾。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数（`n` 可以为 0）。",
+   "output_format": "一行，形如 `1 -> 2 -> 3 -> NULL`；空表输出 `NULL`。",
+   "constraints_md": "- 0 ≤ n ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 256,
+     "ord": 0,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "1 -> 2 -> 3 -> NULL\n",
+     "explanation": ""
+    },
+    {
+     "id": 257,
+     "ord": 1,
+     "stdin": "5\n10 20 30 40 50\n",
+     "expected_stdout": "10 -> 20 -> 30 -> 40 -> 50 -> NULL\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 63,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "单链表删除所有值为 x 的结点",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "单链表",
+    "删除",
+    "双指针"
+   ],
+   "choices": [],
+   "statement_md": "删除带头结点单链表中**所有**值为 `x` 的结点，保持其余结点次序不变。\n\n★ 关键在 `else`：**只有没删的时候 `p` 才前进**。\n\n```c\nif (p->next->data == x) { q = p->next; p->next = q->next; free(q); }\nelse p = p->next;          /* ← 删了就在原地再查一次 */\n```\n\n写成「每次都 `p = p->next`」，遇到**连续两个 `x`** 时会漏删后面那个。\n\n输出格式与上一题一致。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数。\n\n第三行一个整数 `x`。",
+   "output_format": "一行，形如 `1 -> 3 -> NULL`；删空则输出 `NULL`。",
+   "constraints_md": "- 0 ≤ n ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 261,
+     "ord": 0,
+     "stdin": "6\n1 2 3 2 4 2\n2\n",
+     "expected_stdout": "1 -> 3 -> 4 -> NULL\n",
+     "explanation": ""
+    },
+    {
+     "id": 262,
+     "ord": 1,
+     "stdin": "3\n5 5 5\n5\n",
+     "expected_stdout": "NULL\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 64,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "单链表就地逆置",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "单链表",
+    "逆置",
+    "指针"
+   ],
+   "choices": [],
+   "statement_md": "把带头结点的单链表**就地**逆置（不新建结点、不借数组）。\n\n经典三指针写法：`p` 走原链，`q` 攒新链，`r` 提前记住下一个。\n\n```c\nwhile (p) { r = p->next; p->next = q; q = p; p = r; }\nhead->next = q;\n```\n\n★ 顺序不能乱：**先存 `r = p->next` 再改 `p->next`**。反过来写的话，改完之后 `p->next` 已经指向新链，原来的后续结点就找不回来了。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数。",
+   "output_format": "一行，形如 `3 -> 2 -> 1 -> NULL`；空表输出 `NULL`。",
+   "constraints_md": "- 0 ≤ n ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 266,
+     "ord": 0,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "5 -> 4 -> 3 -> 2 -> 1 -> NULL\n",
+     "explanation": ""
+    },
+    {
+     "id": 267,
+     "ord": 1,
+     "stdin": "1\n9\n",
+     "expected_stdout": "9 -> NULL\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 65,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "括号匹配",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "栈",
+    "括号匹配",
+    "基础应用"
+   ],
+   "choices": [],
+   "statement_md": "给定一个只由 `()[]{}` 组成的字符串，判断括号是否**正确配对**。\n\n栈的教科书应用。三条判据缺一不可：\n\n1. 遇到**左**括号 → 压栈\n2. 遇到**右**括号 → 栈必须非空，且栈顶是**对应的左**括号\n3. 扫完之后栈必须**空**\n\n★ 最容易漏的是第 3 条：`(()` 在第 2 条上一点问题都没有，只有在收尾检查栈时才会暴露。\n\n配对输出 `yes`，否则 `no`。",
+   "input_format": "一行，一个不含空格的字符串，只由 `()[]{}` 组成。",
+   "output_format": "一行，`yes` 或 `no`。",
+   "constraints_md": "- 字符串长度不超过 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 271,
+     "ord": 0,
+     "stdin": "()\n",
+     "expected_stdout": "yes\n",
+     "explanation": ""
+    },
+    {
+     "id": 272,
+     "ord": 1,
+     "stdin": "(]\n",
+     "expected_stdout": "no\n",
+     "explanation": ""
+    },
+    {
+     "id": 273,
+     "ord": 2,
+     "stdin": "([{}])\n",
+     "expected_stdout": "yes\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 66,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "用栈实现进制转换",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "栈",
+    "进制转换",
+    "取余"
+   ],
+   "choices": [],
+   "statement_md": "把十进制非负整数 `n` 转换成 `r` 进制（2 ≤ r ≤ 16）。\n\n转换过程是**除 r 取余、倒着读**：「倒着读」正好就是栈的后进先出，所以一边算一边压栈，最后依次弹出即可。\n\n10~15 用**大写**字母 `A`~`F` 表示。",
+   "input_format": "一行，两个整数 `n` 和 `r`。",
+   "output_format": "一行，`n` 的 `r` 进制表示（不含前导零；`n = 0` 输出 `0`）。",
+   "constraints_md": "- 0 ≤ n ≤ 2^31-1\n- 2 ≤ r ≤ 16",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 277,
+     "ord": 0,
+     "stdin": "10 2\n",
+     "expected_stdout": "1010\n",
+     "explanation": ""
+    },
+    {
+     "id": 278,
+     "ord": 1,
+     "stdin": "255 16\n",
+     "expected_stdout": "FF\n",
+     "explanation": ""
+    },
+    {
+     "id": 279,
+     "ord": 2,
+     "stdin": "0 2\n",
+     "expected_stdout": "0\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 67,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "判断出栈序列是否合法",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "栈",
+    "出栈序列",
+    "模拟"
+   ],
+   "choices": [],
+   "statement_md": "入栈序列固定为 `1, 2, 3, …, n`（按此顺序推进去），中途可以随时出栈。判断给定的序列**有没有可能**是出栈序列。\n\n判定方法是「跟着走一遍」：\n\n```c\nint p = 1;                /* 下一个要入栈的数 */\nfor (每个目标值 v) {\n    while (p <= n && (栈空 || 栈顶 != v)) 压入 p++;\n    if (栈顶 == v) 弹出; else 非法;\n}\n```\n\n结论记牢：**`n` 个元素出栈序列的个数是卡特兰数**，`n = 3` 时只有 5 种合法。\n\n合法输出 `yes`，否则 `no`。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数，是待判断的出栈序列。",
+   "output_format": "一行，`yes` 或 `no`。",
+   "constraints_md": "- 1 ≤ n ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 283,
+     "ord": 0,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "yes\n",
+     "explanation": ""
+    },
+    {
+     "id": 284,
+     "ord": 1,
+     "stdin": "3\n3 2 1\n",
+     "expected_stdout": "yes\n",
+     "explanation": ""
+    },
+    {
+     "id": 285,
+     "ord": 2,
+     "stdin": "3\n3 1 2\n",
+     "expected_stdout": "no\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    2
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 68,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "循环队列操作模拟",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "队列",
+    "循环队列",
+    "队满队空"
+   ],
+   "choices": [],
+   "statement_md": "循环队列容量为 `m`，按给定顺序处理入队 / 出队操作。\n\n★ 循环队列用「牺牲一个存储单元」区分队空与队满，这是教材的经典设计：\n\n```c\n队空：(rear + 1) % m == front   /* 不对，这里容易记反 */\n队空：front == rear\n队满：(rear + 1) % m == front   /* 尾指针再走一格就顶上头指针 */\n```\n\n因为要用一个空位来区分，所以**容量 `m` 的循环队列最多只能存 `m-1` 个元素**。这点想通了，队满条件就不会记反。\n\n本机模拟时可以直接用「长度计数」，只要**输出与判据一致**即可。\n\n> [!warning] 一个专治流式输入的坑\n> `in x` 里那个 `x`，**不管队满没满都得先读进来**。\n> 只在不满的分支里读，队满时 `x` 就留在输入流里，> 下一次读操作符会把它读走 —— 后面整段输出错位，> 而现象只是「莫名其妙多打了几个 full」，极难 debug。",
+   "input_format": "第一行一个整数 `m`（队列容量）。\n\n随后若干行，每行是下面三种之一：\n\n- `in x` —— 把 `x` 入队\n- `out` —— 出队\n- `end` —— 结束\n\n`out` 时若队空，输出 `empty`；`in` 时若队满，输出 `full`。",
+   "output_format": "对每个 `out` 输出出队元素、对每个失败的 `in` 输出 `full`（各占一行）；\n\n最后一行输出队列中剩余元素（空格分隔），队空则输出 `empty`。",
+   "constraints_md": "- 1 ≤ m ≤ 100\n- 操作数不超过 500",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 290,
+     "ord": 0,
+     "stdin": "3\nin 1\nin 2\nout\nin 3\nin 4\nin 5\nout\nout\nout\nend\n",
+     "expected_stdout": "1\nfull\nfull\n2\n3\nempty\nempty\n",
+     "explanation": ""
+    },
+    {
+     "id": 291,
+     "ord": 1,
+     "stdin": "2\nout\nend\n",
+     "expected_stdout": "empty\nempty\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 69,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "后缀表达式求值",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "栈",
+    "表达式求值",
+    "后缀表达式"
+   ],
+   "choices": [],
+   "statement_md": "计算一个**后缀表达式**（也叫逆波兰式）的值。\n\n规则很简单：遇到操作数就压栈；遇到运算符就弹出**两个**操作数算一下再压回去。\n\n★ 弹出顺序不能反：**先弹出来的是右操作数**。写成 `a - b`（先弹的在前）做减法／除法时结果就错了，而加法乘法恰好看不出来 —— 这是后缀求值最隐蔽的坑。\n\n除法按 **C 语言整数除法**（向零取整，如 `-7 / 2 = -3`），保证除数非 0。",
+   "input_format": "一行，若干 token 用空格分隔。token 是整数或 `+ - * /` 之一。",
+   "output_format": "一行，一个整数，表达式的值。",
+   "constraints_md": "- token 数不超过 1000\n- 中间结果在 64 位整数范围内",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 295,
+     "ord": 0,
+     "stdin": "3 4 +\n",
+     "expected_stdout": "7\n",
+     "explanation": ""
+    },
+    {
+     "id": 296,
+     "ord": 1,
+     "stdin": "5 1 2 + 4 * + 3 -\n",
+     "expected_stdout": "14\n",
+     "explanation": ""
+    },
+    {
+     "id": 297,
+     "ord": 2,
+     "stdin": "7 2 /\n",
+     "expected_stdout": "3\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    2
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 70,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "用栈判断回文串",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "栈",
+    "回文",
+    "字符串"
+   ],
+   "choices": [],
+   "statement_md": "判断一个字符串是不是**回文**（正着读和倒着读一样）。\n\n用栈的做法：把整个串压栈，再依次弹出与原串逐字符比较。\n弹出的顺序正好是倒序，所以这就是「倒着读」。\n\n★ **大小写敏感**：`Aba` 不是回文（`A` 与 `a` 是不同的字符）。",
+   "input_format": "一行，一个不含空格的字符串。",
+   "output_format": "一行，`yes` 或 `no`。",
+   "constraints_md": "- 串长不超过 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 302,
+     "ord": 0,
+     "stdin": "abcba\n",
+     "expected_stdout": "yes\n",
+     "explanation": ""
+    },
+    {
+     "id": 303,
+     "ord": 1,
+     "stdin": "abba\n",
+     "expected_stdout": "yes\n",
+     "explanation": ""
+    },
+    {
+     "id": 304,
+     "ord": 2,
+     "stdin": "abc\n",
+     "expected_stdout": "no\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    2,
+    2,
+    2,
+    1,
+    1,
+    1,
+    1
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 71,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "汉诺塔的移动序列",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "递归",
+    "汉诺塔",
+    "栈"
+   ],
+   "choices": [],
+   "statement_md": "`n` 个盘子在 `A` 柱上，要全部移到 `C` 柱，`B` 柱当辅助。每次只能移动一个盘，且大盘不能压在小盘上。\n\n递归三步（`n` 个盘从 `from` 经 `via` 到 `to`）：\n\n```c\nHanoi(n-1, from, to, via);   /* 上面 n-1 个先挪到辅助柱 */\nmove(n, from, to);           /* 最大的那个直接到位 */\nHanoi(n-1, via, from, to);   /* 再从那根辅助柱挪到目标 */\n```\n\n最少步数是 `2ⁿ - 1` —— 这是递归式 `T(n) = 2T(n-1) + 1` 的解。\n\n**递归和栈的关系**：整个递归过程完全可以用一个显式栈模拟出来，`n = 64` 时调用的深度也才 64 层，这就是「递归之所以能用栈实现」的直观例子。",
+   "input_format": "一行，一个整数 `n`。",
+   "output_format": "第一行一个整数，最少移动步数 `2ⁿ - 1`。\n\n随后每行一步，格式为 `X->Y`（`X`、`Y` 为 `A`/`B`/`C`）。",
+   "constraints_md": "- 1 ≤ n ≤ 12",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 309,
+     "ord": 0,
+     "stdin": "1\n",
+     "expected_stdout": "1\nA->C\n",
+     "explanation": ""
+    },
+    {
+     "id": 310,
+     "ord": 1,
+     "stdin": "2\n",
+     "expected_stdout": "3\nA->B\nA->C\nB->C\n",
+     "explanation": ""
+    },
+    {
+     "id": 311,
+     "ord": 2,
+     "stdin": "3\n",
+     "expected_stdout": "7\nA->C\nA->B\nC->B\nA->C\nB->A\nB->C\nA->C\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 72,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "约瑟夫环的出列顺序",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "队列",
+    "约瑟夫环",
+    "模拟"
+   ],
+   "choices": [],
+   "statement_md": "`n` 个人围成一圈，编号 `1` 到 `n`。从 1 号开始报数，报到 `k` 的人出列，然后**从他的下一个人重新从 1 报数**，直到所有人出列。\n\n用队列模拟最直观：\n\n```c\nfor (报数到 k-1 的人) { 出队 → 再从队尾入队; }   /* 报 1..k-1 的跳过 */\n第 k 个：出队 → 直接输出（不再入队）\n```\n\n★ 队列判空有两种写法：`front == rear`（不带头结点、不牺牲单元）和「牺牲一个单元」的循环队列写法。**同一个程序里不能混用**，混了就会出现「少输出一个」或「多输出一个」的静默错误。",
+   "input_format": "一行，两个整数 `n` 和 `k`。",
+   "output_format": "一行，`n` 个整数，按出列先后排列，空格分隔。",
+   "constraints_md": "- 1 ≤ n ≤ 1000\n- 1 ≤ k ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 314,
+     "ord": 0,
+     "stdin": "5 2\n",
+     "expected_stdout": "2 4 1 5 3\n",
+     "explanation": ""
+    },
+    {
+     "id": 315,
+     "ord": 1,
+     "stdin": "7 3\n",
+     "expected_stdout": "3 6 2 7 5 1 4\n",
+     "explanation": ""
+    },
+    {
+     "id": 316,
+     "ord": 2,
+     "stdin": "1 1\n",
+     "expected_stdout": "1\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 73,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "BF 模式匹配求首次位置",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "串",
+    "BF算法",
+    "模式匹配"
+   ],
+   "choices": [],
+   "statement_md": "朴素模式匹配（BF，Brute Force）：在主串 `S` 中找模式串 `T` **第一次**出现的位置。\n\n找不到输出 `0`。**位置从 1 开始数**（教材口径）。\n\n★ BF 的写法里最容易错的是**失配后的回退**：\n\n```c\ni = i - j + 2;   /* 主串回到本轮起点的下一个字符 */\nj = 1;           /* 模式串从头来 */\n```\n\n写成 `i = i - j + 1` 的话，失配时会原地打转 → **死循环**。",
+   "input_format": "第一行主串 `S`（不含空格）。\n\n第二行模式串 `T`（不含空格，非空）。",
+   "output_format": "一行，`T` 在 `S` 中首次出现的起始位置（1 起）；不存在输出 `0`。",
+   "constraints_md": "- 1 ≤ |S|, |T| ≤ 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 320,
+     "ord": 0,
+     "stdin": "abcabc\nbc\n",
+     "expected_stdout": "2\n",
+     "explanation": ""
+    },
+    {
+     "id": 321,
+     "ord": 1,
+     "stdin": "aaaa\naa\n",
+     "expected_stdout": "1\n",
+     "explanation": ""
+    },
+    {
+     "id": 322,
+     "ord": 2,
+     "stdin": "abc\nd\n",
+     "expected_stdout": "0\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    3,
+    2,
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 74,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "求模式串的 next 数组",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "串",
+    "KMP",
+    "next数组"
+   ],
+   "choices": [],
+   "statement_md": "求模式串的 `next` 数组。这里用的是**教材（严蔚敏）的经典定义**，下标从 1 开始：\n\n- `next[1] = 0`\n- `next[j]` = 「`p[1..j-1]` 的**最长相等前后缀**长度」`+ 1`（长度可以为 0）\n\n拿 `abaabc` 手算一遍就懂了：\n\n| j | p[1..j-1] | 最长相等前后缀 | next[j] |\n|---|---|---|---|\n| 1 | — | — | 0 |\n| 2 | `a` | 无 | 1 |\n| 3 | `ab` | 无 | 1 |\n| 4 | `aba` | `a` | 2 |\n| 5 | `abaa` | `a` | 2 |\n| 6 | `abaab` | `ab` | 3 |\n\n★ 别和 `nextval`（优化后的数组）搞混 —— 那是两道题。本机实测过：`nextval` 并不是万能优化，某些串上反而会多比较几次。",
+   "input_format": "一行，模式串（不含空格）。",
+   "output_format": "一行，`m` 个整数，用空格分隔，依次是 `next[1]` 到 `next[m]`。",
+   "constraints_md": "- 1 ≤ m ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 327,
+     "ord": 0,
+     "stdin": "abaabc\n",
+     "expected_stdout": "0 1 1 2 2 3\n",
+     "explanation": ""
+    },
+    {
+     "id": 328,
+     "ord": 1,
+     "stdin": "aaaa\n",
+     "expected_stdout": "0 1 2 3\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 5,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 75,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "KMP 统计不重叠出现次数",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "串",
+    "KMP",
+    "计数"
+   ],
+   "choices": [],
+   "statement_md": "统计模式串 `T` 在主串 `S` 中出现了多少次，**两次出现不允许重叠**（匹配成功后从下一个位置继续找）。\n\nKMP 的核心好处是**主串指针 `i` 永不回退**，串越长优势越明显：本机实测同一个任务 BF 比较 91001 次、KMP 只要 1901 次。\n\n★ 但 KMP 也**不是总更快**：本机实测过 `\"ab\"×400` 去匹配 `aaab`，BF 比较 1200 次、KMP 反而 1600 次 —— 因为模式串里根本没有值得跳过的前后缀。别把「KMP 一定更快」当定理记。",
+   "input_format": "第一行主串 `S`（不含空格）。\n\n第二行模式串 `T`（不含空格，非空）。",
+   "output_format": "一行，一个整数，不重叠出现的次数。",
+   "constraints_md": "- 1 ≤ |S|, |T| ≤ 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 334,
+     "ord": 0,
+     "stdin": "aaaaa\naa\n",
+     "expected_stdout": "2\n",
+     "explanation": ""
+    },
+    {
+     "id": 335,
+     "ord": 1,
+     "stdin": "abcabcabc\nabc\n",
+     "expected_stdout": "3\n",
+     "explanation": ""
+    },
+    {
+     "id": 336,
+     "ord": 2,
+     "stdin": "abababa\naba\n",
+     "expected_stdout": "2\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 76,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "稀疏矩阵三元组快速转置",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "数组",
+    "稀疏矩阵",
+    "快速转置"
+   ],
+   "choices": [],
+   "statement_md": "把稀疏矩阵的三元组顺序表**转置**：把每个元素的「行、列」对调，并且结果仍然是**行优先**排列的三元组表。\n\n朴素做法要扫两遍（对每一列都从头扫一遍全表），复杂度 `O(n·t)`。\n**快速转置**只扫一遍，靠两张辅助表：\n\n- `num[col]` —— 原矩阵第 `col` 列有几个非零元\n- `cpot[col]` —— 该列的第一个非零元在转置结果里应该放的**起始位置**\n\n```c\ncpot[1] = 1;\ncpot[col] = cpot[col-1] + num[col-1];   /* 前缀和 */\n```\n\n★ 最隐蔽的错误是**忘了 `cpot[col]++`** —— 同一列有多个元素时它们会挤在同一个位置，后写的把先写的**静默覆盖**掉，输出少几行、一个报错都没有。",
+   "input_format": "第一行三个整数 `r` `c` `t`：原矩阵行数、列数、非零元个数。\n\n随后 `t` 行，每行三个整数 `row col value`（行列下标从 **1** 开始，按**行优先**顺序给出，`value` 非零）。",
+   "output_format": "第一行三个整数 `c` `r` `t`：转置后矩阵的列数、行数、非零元个数。\n\n随后 `t` 行，每行 `row col value`，按**行优先**排列。",
+   "constraints_md": "- 1 ≤ r, c ≤ 1000\n- 0 ≤ t ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 341,
+     "ord": 0,
+     "stdin": "3 4 3\n1 1 5\n2 3 7\n3 2 9\n",
+     "expected_stdout": "4 3 3\n1 1 5\n2 3 9\n3 2 7\n",
+     "explanation": ""
+    },
+    {
+     "id": 342,
+     "ord": 1,
+     "stdin": "3 3 4\n1 1 1\n1 3 2\n2 2 3\n3 1 4\n",
+     "expected_stdout": "3 3 4\n1 1 1\n1 3 4\n2 2 3\n3 1 2\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    5,
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 77,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "对称矩阵压缩存储的下标计算",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "数组",
+    "对称矩阵",
+    "压缩存储",
+    "下标计算"
+   ],
+   "choices": [],
+   "statement_md": "`n` 阶**对称矩阵** `A`，满足 `A[i][j] = A[j][i]`，只需要存**下三角（含对角线）**，共 `n(n+1)/2` 个元素，按**行优先**塞进一维数组 `sa`。\n\n已知 `i`、`j`（都从 1 开始），求对应的一维下标 `k`（也从 1 开始）：\n\n```c\nif (i >= j) k = i * (i - 1) / 2 + j;   /* 在下三角，直接算 */\nelse        k = j * (j - 1) / 2 + i;   /* 在上三角，用对称性换成 A[j][i] */\n```\n\n★ 理解的关键是 `i(i-1)/2` 这一项：它是**前面 `i-1` 行元素的总个数**（第 1 行 1 个、第 2 行 2 个……累加起来就是 `1+2+…+(i-1)`）。\n\n注意 `i` 和 `j` 谁大谁小：写反了不会报错，只会静默算出一个错的 `k`。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行一个整数 `q`（查询个数）。\n\n随后 `q` 行，每行两个整数 `i` `j`（1 ≤ i, j ≤ n）。",
+   "output_format": "`q` 行，每行一个整数，表示对应的一维下标 `k`。",
+   "constraints_md": "- 1 ≤ n ≤ 1000\n- 1 ≤ q ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 347,
+     "ord": 0,
+     "stdin": "4\n6\n3 2\n2 3\n1 1\n4 4\n1 4\n2 2\n",
+     "expected_stdout": "5\n5\n1\n10\n7\n3\n",
+     "explanation": ""
+    },
+    {
+     "id": 348,
+     "ord": 1,
+     "stdin": "1\n1\n1 1\n",
+     "expected_stdout": "1\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    5,
+    5,
+    5,
+    5
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 78,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "求广义表的深度",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "广义表",
+    "深度",
+    "递归"
+   ],
+   "choices": [],
+   "statement_md": "求广义表的**深度**。教材口径：\n\n- **原子**（单个元素）的深度是 `0`\n- **空表** `()` 的深度是 `1`\n- 表的深度 = `1 + 各元素的深度的最大值`\n\n举例：\n\n| 广义表 | 深度 | 理由 |\n|---|---|---|\n| `a` | 0 | 原子 |\n| `()` | 1 | 空表 |\n| `(a)` | 1 | 1 + max(0) |\n| `(a,b)` | 1 | 1 + max(0,0) |\n| `((a))` | 2 | 1 + (1 + 0) |\n| `(a,(b,c))` | 2 | 1 + max(0, 1) |\n\n★ 换算成一个**等价判据**：广义表的深度正好等于**括号的最大嵌套层数**。`(())` 嵌套 2 层、深度 2；`()` 嵌套 1 层、深度 1 —— 因为空表算 1 层。内部用递归解析也行，但两条路都得走通才算真懂。",
+   "input_format": "一行，一个合法的广义表（元素为单个字母，表用逗号分隔、用括号括起）。",
+   "output_format": "一行，一个整数，广义表的深度。",
+   "constraints_md": "- 长度不超过 1000\n- 嵌套层数不超过 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 8,
+   "samples": [
+    {
+     "id": 351,
+     "ord": 0,
+     "stdin": "a\n",
+     "expected_stdout": "0\n",
+     "explanation": ""
+    },
+    {
+     "id": 352,
+     "ord": 1,
+     "stdin": "()\n",
+     "expected_stdout": "1\n",
+     "explanation": ""
+    },
+    {
+     "id": 353,
+     "ord": 2,
+     "stdin": "(a)\n",
+     "expected_stdout": "1\n",
+     "explanation": ""
+    },
+    {
+     "id": 354,
+     "ord": 3,
+     "stdin": "(a,b)\n",
+     "expected_stdout": "1\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    4,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 79,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "反复删除所有指定子串",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "串",
+    "删除子串",
+    "循环处理"
+   ],
+   "choices": [],
+   "statement_md": "从主串 `S` 中删除**所有**出现的子串 `T`。\n\n★ 注意是**反复删**：删完之后如果又拼出了新的 `T`，还要接着删，一直删到不再出现为止。\n\n例如 `S = aabbcc`、`T = ab`：\n第一次删掉中间的 `ab` 得到 `abcc`（这里又出现了一个 `ab`）→ 删掉得到 `cc` → 结束。\n\n删空则输出 `empty`。",
+   "input_format": "第一行主串 `S`（不含空格）。\n\n第二行子串 `T`（不含空格，非空）。",
+   "output_format": "一行，删除后的字符串；若为空输出 `empty`。",
+   "constraints_md": "- 1 ≤ |S|, |T| ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 359,
+     "ord": 0,
+     "stdin": "aaa\naa\n",
+     "expected_stdout": "a\n",
+     "explanation": ""
+    },
+    {
+     "id": 360,
+     "ord": 1,
+     "stdin": "aabbaabb\naabb\n",
+     "expected_stdout": "empty\n",
+     "explanation": ""
+    },
+    {
+     "id": 361,
+     "ord": 2,
+     "stdin": "abcabc\nabc\n",
+     "expected_stdout": "empty\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3,
+    3,
+    2
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 80,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "前序建二叉树并输出中序",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "二叉树",
+    "前序建树",
+    "中序遍历"
+   ],
+   "choices": [],
+   "statement_md": "按**带空标记的前序序列**建立二叉树（`#` 表示空子树），然后输出**中序**遍历。\n\n例如 `AB#D##C##`：\n\n```text\n        A\n       / \\\n      B   C\n       \\\n        D\n```\n\n中序（左-根-右）得到 `BDAC`。\n\n★ 建树时最容易踩的坑：递归里**每个 `#` 也要吃掉一个字符位置**（`i` 必须往后走），否则整棵树会错位 —— 而且错得很隐蔽，本机实测过：漏了它重建出来的是一棵**看起来很像、其实完全不同**的树。",
+   "input_format": "一行，带空标记的前序序列（结点为大写字母，`#` 表示空）。",
+   "output_format": "一行，中序遍历的结点序列（无分隔符）；空树输出 `empty`。",
+   "constraints_md": "- 序列长度不超过 2000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 366,
+     "ord": 0,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "BDAC\n",
+     "explanation": ""
+    },
+    {
+     "id": 367,
+     "ord": 1,
+     "stdin": "A##\n",
+     "expected_stdout": "A\n",
+     "explanation": ""
+    },
+    {
+     "id": 368,
+     "ord": 2,
+     "stdin": "AB##C##\n",
+     "expected_stdout": "BAC\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 81,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "求二叉树的深度",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "二叉树",
+    "深度",
+    "递归"
+   ],
+   "choices": [],
+   "statement_md": "求二叉树的**深度**（根到最远叶子的结点层数，只有根时深度为 1，空树为 0）。\n\n递归式：`depth(t) = 1 + max(depth(左), depth(右))`，空树返回 0。\n\n★ **空树的深度是 0，不是 1** —— 这一点只在输入就是 `#` 的时候才会暴露。本机实测过：把这个基准情况写成 1，所有非空树的答案照样正确，只有空树悄悄多出 1，非常容易漏测。",
+   "input_format": "一行，带空标记的前序序列。",
+   "output_format": "一行，一个整数，树的深度。",
+   "constraints_md": "- 序列长度不超过 2000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 372,
+     "ord": 0,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "3\n",
+     "explanation": ""
+    },
+    {
+     "id": 373,
+     "ord": 1,
+     "stdin": "A##\n",
+     "expected_stdout": "1\n",
+     "explanation": ""
+    },
+    {
+     "id": 374,
+     "ord": 2,
+     "stdin": "#\n",
+     "expected_stdout": "0\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 82,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "统计二叉树的结点数与叶子数",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "二叉树",
+    "结点数",
+    "叶子"
+   ],
+   "choices": [],
+   "statement_md": "统计二叉树的**结点总数**和**叶子结点数**。\n\n叶子 = 左、右孩子都为空的结点。\n\n★ 别忘了空树：空树的结点数和叶子数**都是 0**，而且 0 个结点的树也没有叶子 —— 这两句话看着像废话，但写成代码时把「根为空」的基准情况漏掉，空输入就会崩。",
+   "input_format": "一行，带空标记的前序序列。",
+   "output_format": "一行，两个整数，用空格分隔：结点总数 叶子数。",
+   "constraints_md": "- 序列长度不超过 2000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 378,
+     "ord": 0,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "4 2\n",
+     "explanation": ""
+    },
+    {
+     "id": 379,
+     "ord": 1,
+     "stdin": "A##\n",
+     "expected_stdout": "1 1\n",
+     "explanation": ""
+    },
+    {
+     "id": 380,
+     "ord": 2,
+     "stdin": "#\n",
+     "expected_stdout": "0 0\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 83,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "二叉树的层次遍历",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "二叉树",
+    "层次遍历",
+    "队列"
+   ],
+   "choices": [],
+   "statement_md": "输出二叉树的**层次遍历**序列（从上到下、从左到右，逐层输出）。\n\n层次遍历靠的是**队列**：根入队 → 出队一个就把它**非空**的左右孩子入队 → 直到队空。\n\n★ 这里再次体现「队列判空」的重要性：入队时如果**把空结点也塞进去**，队就会一直非空，程序**永远停不下来**。所以要么入队前判空，要么出队后跳过空结点并额外记录「已产出几个」。",
+   "input_format": "一行，带空标记的前序序列。",
+   "output_format": "一行，层次遍历的结点序列（无分隔符）；空树输出 `empty`。",
+   "constraints_md": "- 序列长度不超过 2000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 384,
+     "ord": 0,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "ABCD\n",
+     "explanation": ""
+    },
+    {
+     "id": 385,
+     "ord": 1,
+     "stdin": "AB##C##\n",
+     "expected_stdout": "ABC\n",
+     "explanation": ""
+    },
+    {
+     "id": 386,
+     "ord": 2,
+     "stdin": "#\n",
+     "expected_stdout": "empty\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 84,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "由先序和中序序列求后序",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "二叉树",
+    "重建",
+    "遍历序列"
+   ],
+   "choices": [],
+   "statement_md": "给定二叉树的**先序**和**中序**遍历序列（结点互不相同），求**后序**序列。\n\n核心只有一句话：**先序的第一个元素就是根**，拿着这个根去中序里一劈两半，左边是左子树、右边是右子树，然后递归。\n\n```text\n先序: A B D E C\n中序: D B E A C\n根 A → 中序里 A 左边是 DBE（左子树）、右边是 C（右子树）\n后序: D E B C A\n```\n\n★ 只给「先序 + 后序」是**推不出唯一二叉树**的；必须是「先序 + 中序」或者「后序 + 中序」。",
+   "input_format": "第一行先序序列。\n\n第二行中序序列。\n\n（两行都是不含分隔符的字符串，长度相同。）",
+   "output_format": "一行，后序遍历的结点序列。",
+   "constraints_md": "- 结点数不超过 1000\n- 结点用不重复的大写字母表示",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 390,
+     "ord": 0,
+     "stdin": "ABDEC\nDBEAC\n",
+     "expected_stdout": "DEBCA\n",
+     "explanation": ""
+    },
+    {
+     "id": 391,
+     "ord": 1,
+     "stdin": "A\nA\n",
+     "expected_stdout": "A\n",
+     "explanation": ""
+    },
+    {
+     "id": 392,
+     "ord": 2,
+     "stdin": "ABC\nBAC\n",
+     "expected_stdout": "BCA\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 85,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "判断一棵二叉树是否为完全二叉树",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "二叉树",
+    "完全二叉树",
+    "层次遍历"
+   ],
+   "choices": [],
+   "statement_md": "判断给定的二叉树是不是**完全二叉树**。\n\n完全二叉树的定义：**按层序编号后，编号与满二叉树一一对应，中间不能缺号**。\n\n判定方法是层次遍历的一个小改造：\n\n1. 把结点**连同空孩子一起**按层序排开\n2. 一旦遇到第一个空结点，**后面不允许再出现非空结点**\n\n这个判据一句话就够用：**空结点出现之后，全是空结点**。\n\n举例：`A(∅, B)`（结点 B 只有右孩子，左边是空的）—— 排开后 `A, ∅, B`，空结点后面又冒出 B，所以**不是**完全二叉树。",
+   "input_format": "一行，带空标记的前序序列。",
+   "output_format": "一行，`yes` 或 `no`（空树视为完全二叉树）。",
+   "constraints_md": "- 序列长度不超过 2000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 397,
+     "ord": 0,
+     "stdin": "A##\n",
+     "expected_stdout": "yes\n",
+     "explanation": ""
+    },
+    {
+     "id": 398,
+     "ord": 1,
+     "stdin": "AB##C##\n",
+     "expected_stdout": "yes\n",
+     "explanation": ""
+    },
+    {
+     "id": 399,
+     "ord": 2,
+     "stdin": "A#B##\n",
+     "expected_stdout": "no\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 86,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "哈夫曼树的带权路径长度",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "哈夫曼树",
+    "WPL",
+    "贪心"
+   ],
+   "choices": [],
+   "statement_md": "给定 `n` 个权值，求构造出的**哈夫曼树**的**带权路径长度 WPL**。\n\n构造方法是贪心：**每次取两个最小的合并**，新结点权值为两者之和，再放回去，重复到只剩一个结点。\n\n求 WPL 有个**非常省事的等价算法**：\n\n> WPL = **所有内部结点（新合成的结点）权值之和**\n\n因为每合并一次，那个新结点就代表「这批叶子整体多走一层」，累加起来正好等于 Σ(权值 × 层数)。不用去建树、也不用算每个叶子的深度。\n\n本机实测过：`1 2 3 4 5` → 合并过程 3、6、9、15，WPL = 3+6+9+15 = **33**。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个正整数，表示各叶子结点的权值。",
+   "output_format": "一行，一个整数，WPL。（`n = 1` 时 WPL 为 `0`。）",
+   "constraints_md": "- 1 ≤ n ≤ 1000\n- 权值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 7,
+   "samples": [
+    {
+     "id": 404,
+     "ord": 0,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "33\n",
+     "explanation": ""
+    },
+    {
+     "id": 405,
+     "ord": 1,
+     "stdin": "1\n7\n",
+     "expected_stdout": "0\n",
+     "explanation": ""
+    },
+    {
+     "id": 406,
+     "ord": 2,
+     "stdin": "2\n3 5\n",
+     "expected_stdout": "8\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 87,
+   "subject": "ds",
+   "line": "cpp",
+   "title": "并查集统计连通块",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "并查集",
+    "连通块",
+    "路径压缩"
+   ],
+   "choices": [],
+   "statement_md": "`n` 个点和 `m` 条无向边，求**连通块个数**，并回答若干「两点是否连通」的询问。\n\n并查集的两个优化（本机实测差距很大）：\n\n| 做法 | 找一次根要走几步 |\n|---|---|\n| 朴素合并（总把后一个挂到前一个） | 平均 **91** 步，最深 13 层 |\n| 按大小合并 | **13** 步，深 1 层 |\n| 只做路径压缩 | **25** 步，深 1 层 |\n| 两个都做 | **13** 步，深 1 层 |\n\n★ **路径压缩只在查找时把路径压平**，所以第一次查还是会长；**按大小合并**才是让树一开始就矮的关键。两者都做效果最好。\n\n输出：第一行连通块个数；随后每个询问输出 `yes` / `no`。",
+   "input_format": "第一行两个整数 `n` `m`。\n\n随后 `m` 行，每行两个整数 `u` `v`，表示一条无向边（可能有自环或重复边）。\n\n接着一行一个整数 `q`（询问个数）。\n\n随后 `q` 行，每行两个整数 `u` `v`。",
+   "output_format": "第一行连通块个数；随后 `q` 行，每行 `yes` 或 `no`。",
+   "constraints_md": "- 1 ≤ n ≤ 1000\n- 0 ≤ m ≤ 2000\n- 1 ≤ q ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 411,
+     "ord": 0,
+     "stdin": "5 3\n1 2\n2 3\n4 5\n2\n1 3\n1 4\n",
+     "expected_stdout": "2\nyes\nno\n",
+     "explanation": ""
+    },
+    {
+     "id": 412,
+     "ord": 1,
+     "stdin": "1 0\n1\n1 1\n",
+     "expected_stdout": "1\nyes\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 88,
+   "subject": "linux",
+   "line": "text",
+   "title": "tar 的 -Z 到底压什么",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "tar",
+    "压缩",
+    "大小写",
+    "课程纠错"
+   ],
+   "choices": [
+    "调用 gzip 压缩",
+    "调用 compress（老式 .Z 格式）压缩",
+    "调用 zip 压缩",
+    "调用 zstd 压缩"
+   ],
+   "statement_md": "你在网上抄到一条备份命令 `tar -Zcvf bak.tar.gz dir/`，想用它做 **gzip** 压缩。\n\n问题出在 `-Z` 上：它**不是** gzip。那 `-Z` 是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · 先纠正六处",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 89,
+   "subject": "linux",
+   "line": "text",
+   "title": "tar 里「显示处理过程」是哪个选项",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "tar",
+    "verbose",
+    "大小写",
+    "课程纠错"
+   ],
+   "choices": [
+    "-V（大写）",
+    "-v（小写）",
+    "-x",
+    "-t"
+   ],
+   "statement_md": "打包一个几 GB 的目录时，你想看到 tar 正在处理哪些文件。应该加哪个选项？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · 先纠正六处",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 90,
+   "subject": "linux",
+   "line": "text",
+   "title": "tar 里「创建归档」是哪个选项",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "tar",
+    "create",
+    "大小写",
+    "课程纠错"
+   ],
+   "choices": [
+    "-C（大写）",
+    "-c（小写）",
+    "-x",
+    "-j"
+   ],
+   "statement_md": "下面四个 tar 选项，哪一个表示「**创建**一个新的归档文件」？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · 先纠正六处",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 91,
+   "subject": "linux",
+   "line": "text",
+   "title": "从第 1000 行开始显示的正确写法",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "head",
+    "tail",
+    "coreutils",
+    "课程纠错"
+   ],
+   "choices": [
+    "head -n +1000 file",
+    "head -n -1000 file",
+    "tail -n +1000 file",
+    "tail -n -1000 file"
+   ],
+   "statement_md": "课程提纲里写「`head -n +1000 file` 从 1000 行开始显示」。\n\n这条命令**会直接报错**。从第 1000 行显示到末尾，正确写法是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · 先纠正六处",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 92,
+   "subject": "linux",
+   "line": "text",
+   "title": "统计文件有多少行的正确命令",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "wc",
+    "cat",
+    "统计",
+    "课程纠错"
+   ],
+   "choices": [
+    "cat -n file1",
+    "wc -l file1",
+    "tail -n file1",
+    "ls -l file1"
+   ],
+   "statement_md": "提纲里写「`cat -n file1` 表示文件的行数」。这个说法**不准确**。\n\n想**统计**一个文件有多少行，正确命令是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · 先纠正六处",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 93,
+   "subject": "linux",
+   "line": "text",
+   "title": "列出「名字里含数字」的文件",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "ls",
+    "通配符",
+    "glob",
+    "课程纠错"
+   ],
+   "choices": [
+    "方括号是正则语法，ls 不支持",
+    "[0-9] 只匹配「名字恰好是一个数字」的条目",
+    "必须先 cd 到目标目录才行",
+    "要写成 [0-9]* 才有用"
+   ],
+   "statement_md": "提纲里写「`ls [0-9]` 显示包含数字的文件名」。\n\n实际敲下去，你会发现 `report2.txt`、`log2026` 一个都没列出来。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · 先纠正六处",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 94,
+   "subject": "linux",
+   "line": "text",
+   "title": "cd - 与 cd .. 效果相同吗",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "cd",
+    "OLDPWD",
+    "易混"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`cd -` 和 `cd ..` 是同一个意思，都用来回到上一级目录。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 95,
+   "subject": "linux",
+   "line": "text",
+   "title": "查看目录本身（而不是里面）的权限",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "ls",
+    "-d",
+    "权限",
+    "高频错点"
+   ],
+   "choices": [
+    "ls -l /etc",
+    "ls -ld /etc",
+    "ls -a /etc",
+    "ls -R /etc"
+   ],
+   "statement_md": "你想看 `/etc` **这个目录自己**的权限信息，输出只要一行。哪条命令对？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 96,
+   "subject": "linux",
+   "line": "text",
+   "title": "ls -a 与 ls -A 输出一样吗",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "ls",
+    "-a",
+    "-A",
+    "隐藏文件"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`ls -a` 和 `ls -A` 的输出完全一样，都能列出隐藏文件。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 97,
+   "subject": "linux",
+   "line": "text",
+   "title": "复制目录并保留符号链接与权限时间",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "cp",
+    "-a",
+    "权限",
+    "备份"
+   ],
+   "choices": [
+    "cp -r ~/docs /backup/",
+    "cp -a ~/docs /backup/",
+    "cp -p ~/docs /backup/",
+    "cp -f ~/docs /backup/"
+   ],
+   "statement_md": "把 `~/docs` 整个目录复制到备份盘，要求**保留权限、属主、时间戳，并且符号链接原样照搬**。用哪个？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 98,
+   "subject": "linux",
+   "line": "text",
+   "title": "rm -rf 删掉的文件能从回收站找回吗",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "rm",
+    "回收站",
+    "安全",
+    "高频错点"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "在终端里用 `rm -rf` 删掉的文件，可以从「回收站」里找回来。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 99,
+   "subject": "linux",
+   "line": "text",
+   "title": "tail -n +5 输出什么",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "tail",
+    "+N",
+    "取行"
+   ],
+   "choices": [
+    "最后 5 行",
+    "前 5 行",
+    "从第 5 行到文件末尾",
+    "除最后 5 行外的全部"
+   ],
+   "statement_md": "文件 `a.txt` 有 20 行，`tail -n +5 a.txt` 输出什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 100,
+   "subject": "linux",
+   "line": "text",
+   "title": "head -n -3 是语法错误吗",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "head",
+    "负数",
+    "易混"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`head -n -3 f` 是非法的写法，head 不接受负数。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 101,
+   "subject": "linux",
+   "line": "text",
+   "title": "tar -zcvf 里的 z 是什么",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "tar",
+    "gzip",
+    "压缩格式"
+   ],
+   "choices": [
+    "compress（.Z 老格式）",
+    "gzip",
+    "zip",
+    "zstd"
+   ],
+   "statement_md": "`tar -zcvf a.tar.gz dir/` 里的 `z` 表示什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 102,
+   "subject": "linux",
+   "line": "text",
+   "title": "touch 已存在的文件会清空内容吗",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "touch",
+    "时间戳",
+    "清空",
+    "易混"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "对一个已经存在且有内容的文件执行 `touch`，会把它的内容清空。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 103,
+   "subject": "linux",
+   "line": "text",
+   "title": "mkdir -p 里的 p 是什么",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "mkdir",
+    "-p",
+    "多级目录"
+   ],
+   "choices": [
+    "permission（指定权限）",
+    "protect（保护，存在就不覆盖）",
+    "parents（缺失的父目录一并创建）",
+    "print（打印创建了哪些）"
+   ],
+   "statement_md": "`mkdir -p a/b/c` 里的 `-p` 表示什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 104,
+   "subject": "linux",
+   "line": "text",
+   "title": "tar xf 不写 z 会解压失败吗",
+   "difficulty": 4,
+   "total_score": 8,
+   "tags": [
+    "tar",
+    "自动识别",
+    "解压"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`tar xf a.tar.gz`（不写 `z`）会解压失败，必须写成 `tar xzf a.tar.gz`。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 105,
+   "subject": "linux",
+   "line": "text",
+   "title": "只看 zip 包里有什么，不解压",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "unzip",
+    "zip",
+    "查看内容"
+   ],
+   "choices": [
+    "unzip a.zip",
+    "unzip -l a.zip",
+    "unzip -d a.zip",
+    "zip -l a.zip"
+   ],
+   "statement_md": "你想先看看 `a.zip` 里装了哪些文件，**不想真的解压**。用哪条命令？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 106,
+   "subject": "linux",
+   "line": "text",
+   "title": "less 比 more 强在哪",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "less",
+    "more",
+    "分页器"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`less` 可以往回翻页，`more` 不能。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 107,
+   "subject": "linux",
+   "line": "text",
+   "title": "删掉符号链接会删掉真实目录吗",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "ln",
+    "符号链接",
+    "rm",
+    "安全"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "用 `rm /myshare` 删掉一个指向目录的符号链接，那个真实目录也会被删掉。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 108,
+   "subject": "linux",
+   "line": "text",
+   "title": "/etc/shells 是什么",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "shells",
+    "chsh",
+    "shell"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`/etc/shells` 文件登记的是系统上「合法的登录 shell」白名单。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 109,
+   "subject": "linux",
+   "line": "text",
+   "title": "用相对路径切到子目录，`cd share` 与 `cd ../share` 等价吗",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "cd",
+    "相对路径",
+    "pwd",
+    "易混"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "当前在 `/usr/local`，`cd share` 和 `cd ../share` 会到达同一个目录。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · A 组 认命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 110,
+   "subject": "linux",
+   "line": "text",
+   "title": "一步回到上一个目录",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "cd",
+    "OLDPWD"
+   ],
+   "choices": [],
+   "statement_md": "你现在的提示符在某处，先执行了 `cd /etc`，现在想**用一条命令**回到进 `/etc` 之前的位置。写出这条命令。\n\n提示：用的是 shell 记录历史的那个变量，只要两个字符。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 111,
+   "subject": "linux",
+   "line": "text",
+   "title": "列出目录下所有条目（含隐藏）的长格式",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "ls",
+    "-l",
+    "-a"
+   ],
+   "choices": [],
+   "statement_md": "用 `ls` 列出 `/etc` 下所有条目（**包括隐藏文件**）的详细长格式。\n\n提示：两个短选项组合，长格式 + 全部。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 112,
+   "subject": "linux",
+   "line": "text",
+   "title": "复制目录并保留权限与时间戳",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "cp",
+    "-a",
+    "归档模式"
+   ],
+   "choices": [],
+   "statement_md": "把 `~/docs` 整个目录复制到 `/tmp/` 下，要求**保留权限、属主和时间戳**。写出这条命令。\n\n提示：一个选项就能全搞定，首字母是「归档」的那个。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 113,
+   "subject": "linux",
+   "line": "text",
+   "title": "只看目录本身的一行信息",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "ls",
+    "-d"
+   ],
+   "choices": [],
+   "statement_md": "只想看 `/etc` **目录自己**（不是它里面的内容）的信息，输出一行。写出命令。\n\n提示：加一个「别展开目录」的选项。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 114,
+   "subject": "linux",
+   "line": "text",
+   "title": "取文件的前 50 行",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "head",
+    "-n"
+   ],
+   "choices": [],
+   "statement_md": "取 `a.log` 的前 50 行。写出这条命令（用现代写法）。\n\n提示：head + -n + 数字 + 文件名。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 115,
+   "subject": "linux",
+   "line": "text",
+   "title": "取从第 100 行到末尾",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "tail",
+    "+N",
+    "取行"
+   ],
+   "choices": [],
+   "statement_md": "取 `a.log` 从第 100 行开始、一直到文件末尾的内容。写出这条命令。\n\n提示：从中间取到末尾，用的是 tail 的特殊写法（带加号）。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 116,
+   "subject": "linux",
+   "line": "text",
+   "title": "取除最后 10 行外的全部内容",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "head",
+    "负数",
+    "取行"
+   ],
+   "choices": [],
+   "statement_md": "取 `a.log` 中**除最后 10 行之外**的所有行。写出这条命令。\n\n提示：和「从第 N 行开始」正好相反 —— 这次 `-` 号归 head 用。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 117,
+   "subject": "linux",
+   "line": "text",
+   "title": "打包并 gzip 压缩",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "tar",
+    "gzip",
+    "打包"
+   ],
+   "choices": [],
+   "statement_md": "把 `~/project` 目录打包并用 gzip 压缩，生成 `project.tar.gz`。写出这条命令（**不需要**显示处理过程）。\n\n提示：tar + 创建 + gzip + 指定文件名。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 118,
+   "subject": "linux",
+   "line": "text",
+   "title": "查看压缩包里有哪些文件",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "tar",
+    "-t",
+    "查看归档"
+   ],
+   "choices": [],
+   "statement_md": "查看 `bak.tar.gz` 里包含哪些文件，**但不要解压**。写出这条命令。\n\n提示：tar + 一个表示「列出」的选项。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 119,
+   "subject": "linux",
+   "line": "text",
+   "title": "把压缩包解压到指定目录",
+   "difficulty": 4,
+   "total_score": 15,
+   "tags": [
+    "tar",
+    "-C",
+    "解压",
+    "目录"
+   ],
+   "choices": [],
+   "statement_md": "把 `bak.tar.gz` 解压到 `/tmp/out` 目录下。写出完整的命令序列（`/tmp/out` **可能还不存在**）。\n\n提示：先建目录（可能要多级），再用 `-C` 指定解压目标。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    15
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 120,
+   "subject": "linux",
+   "line": "text",
+   "title": "一次性创建多级目录",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "mkdir",
+    "-p"
+   ],
+   "choices": [],
+   "statement_md": "一次性创建多级目录 `data/2026/10/report`（中间几层都还不存在）。写出命令。\n\n提示：mkdir + 一个选项。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 121,
+   "subject": "linux",
+   "line": "text",
+   "title": "一次建三个空文件",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "touch",
+    "多文件",
+    "花括号展开"
+   ],
+   "choices": [],
+   "statement_md": "在 `/tmp` 下**用一条命令**创建三个空文件 `a.txt`、`b.txt`、`c.txt`。写出这条命令。\n\n提示：touch 可以一次接好几个文件名；bash 还支持花括号简写。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · B 组 写命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 122,
+   "subject": "linux",
+   "line": "text",
+   "title": "用 gzip 压缩，哪条对",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "tar",
+    "gzip",
+    "找错"
+   ],
+   "choices": [
+    "tar -Zcvf bak.tar.gz dir/",
+    "tar -zcvf bak.tar.gz dir/",
+    "tar -jcvf bak.tar.gz dir/",
+    "tar -Jcvf bak.tar.gz dir/"
+   ],
+   "statement_md": "下面四条都想「用 **gzip** 把 `dir/` 打包成 `bak.tar.gz`」，只有一条是对的。",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 123,
+   "subject": "linux",
+   "line": "text",
+   "title": "从第 100 行开始显示，哪条对",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "head",
+    "tail",
+    "找错",
+    "取行"
+   ],
+   "choices": [
+    "head -n +100 a.log",
+    "head -n -100 a.log",
+    "tail -n +100 a.log",
+    "tail -n -100 a.log"
+   ],
+   "statement_md": "下面四条都想「从 `a.log` 的**第 100 行**开始显示到末尾」，只有一条能跑通。",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 124,
+   "subject": "linux",
+   "line": "text",
+   "title": "想统计行数，哪条对",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "wc",
+    "cat",
+    "找错"
+   ],
+   "choices": [
+    "cat -n a.log",
+    "wc -l a.log",
+    "tail -n a.log",
+    "head -n a.log"
+   ],
+   "statement_md": "你想知道 `a.log` 一共有多少行。下面哪条的命令**用途正确**？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 125,
+   "subject": "linux",
+   "line": "text",
+   "title": "想删掉一个目录，哪条对",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "rm",
+    "-rf",
+    "找错",
+    "安全"
+   ],
+   "choices": [
+    "rm -rf /tmp/lab *",
+    "rm -rf /tmp/lab",
+    "rm /tmp/lab",
+    "rm -r /tmp/lab *"
+   ],
+   "statement_md": "你想删掉 `/tmp/lab` 这个目录，**不要**影响当前目录里的其他文件。下面哪条是对的？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 126,
+   "subject": "linux",
+   "line": "text",
+   "title": "备份 ssh 私钥，哪条对",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "cp",
+    "-a",
+    "ssh",
+    "权限",
+    "找错"
+   ],
+   "choices": [
+    "cp -r ~/.ssh /tmp/ssh_backup",
+    "cp -a ~/.ssh /tmp/ssh_backup",
+    "cp ~/.ssh /tmp/ssh_backup",
+    "mv ~/.ssh /tmp/ssh_backup"
+   ],
+   "statement_md": "你要把 `~/.ssh` 备份到 `/tmp/ssh_backup`，备份出来**必须**还能被 ssh 直接用（私钥权限不能被改宽）。哪条对？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 127,
+   "subject": "linux",
+   "line": "text",
+   "title": "复制目录，哪条对",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "cp",
+    "-r",
+    "找错",
+    "递归"
+   ],
+   "choices": [
+    "cp ~/docs /tmp/",
+    "cp -r ~/docs /tmp/",
+    "cp -u ~/docs /tmp/",
+    "cp -i ~/docs /tmp/"
+   ],
+   "statement_md": "把 `~/docs` 整个目录复制到 `/tmp/` 下。下面哪条**真的会复制成功**？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 128,
+   "subject": "linux",
+   "line": "text",
+   "title": "解压到指定目录，哪条对",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "tar",
+    "-C",
+    "找错",
+    "解压"
+   ],
+   "choices": [
+    "tar -xzvf dir/ bak.tar.gz",
+    "tar -xzvf bak.tar.gz -C dir/",
+    "tar -xzvf bak.tar.gz dir/",
+    "tar -xzvf -C bak.tar.gz dir/"
+   ],
+   "statement_md": "把 `bak.tar.gz` 解压到 `dir/` 目录下。下面哪条对？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 129,
+   "subject": "linux",
+   "line": "text",
+   "title": "父目录不存在时建多级目录，哪条对",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "mkdir",
+    "-p",
+    "找错"
+   ],
+   "choices": [
+    "mkdir data/2026/10",
+    "mkdir -p data/2026/10",
+    "mkdir -r data/2026/10",
+    "mkdir -a data/2026/10"
+   ],
+   "statement_md": "当前目录下**没有** `data`，你要建出 `data/2026/10`。哪条对？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 130,
+   "subject": "linux",
+   "line": "text",
+   "title": "zip 压缩目录，哪条对",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "zip",
+    "-r",
+    "找错",
+    "递归"
+   ],
+   "choices": [
+    "zip doc.zip doc/",
+    "zip -r doc.zip doc/",
+    "zip -a doc.zip doc/",
+    "zip -x doc.zip doc/"
+   ],
+   "statement_md": "你要把一个**目录** `doc/` 连同里面的文件一起压缩成 `doc.zip`。哪条对？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 131,
+   "subject": "linux",
+   "line": "text",
+   "title": "取最后 5 行，哪条对",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "tail",
+    "找错",
+    "取行"
+   ],
+   "choices": [
+    "tail -n -5 a.log",
+    "tail -n 5 a.log",
+    "head -n -5 a.log",
+    "head -n 5 a.log"
+   ],
+   "statement_md": "取 `a.log` 的**最后 5 行**。下面哪条对？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 132,
+   "subject": "linux",
+   "line": "text",
+   "title": "列出名字里含数字的文件，哪条对",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "ls",
+    "通配符",
+    "找错",
+    "glob"
+   ],
+   "choices": [
+    "ls [0-9]",
+    "ls *[0-9]*",
+    "ls [0-9]*",
+    "ls ?[0-9]?"
+   ],
+   "statement_md": "当前目录里有 `1`、`report2.txt`、`log2026`、`notes`。你要列出**名字里含数字**的全部条目。哪条对？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "基础命令 · C 组 找错",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 133,
+   "subject": "linux",
+   "line": "text",
+   "title": "用相对路径往上走两级",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "cd",
+    "相对路径",
+    "实验 2"
+   ],
+   "choices": [],
+   "statement_md": "当前在 `/usr/local/bin`，要求**只用相对路径**切换到 `/usr`。写出这条命令。\n\n提示：往上两级，每一级两个点。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 134,
+   "subject": "linux",
+   "line": "text",
+   "title": "查看系统支持哪些 shell 类型",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "shells",
+    "shell",
+    "实验 2"
+   ],
+   "choices": [],
+   "statement_md": "查看**当前系统支持的 shell 类型**有哪些。写出这条命令。\n\n提示：这个清单是个文件，直接看它就行。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 135,
+   "subject": "linux",
+   "line": "text",
+   "title": "查看当前默认使用的 shell",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "SHELL",
+    "环境变量",
+    "实验 2"
+   ],
+   "choices": [],
+   "statement_md": "查看**终端当前默认使用**的 shell。写出这条命令。\n\n提示：SHELL 是个大写环境变量。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 136,
+   "subject": "linux",
+   "line": "text",
+   "title": "su 后面那个减号到底管什么",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "su",
+    "环境变量",
+    "$HOME",
+    "实验 2"
+   ],
+   "choices": [
+    "su 然后 pwd",
+    "su - 然后 pwd",
+    "sudo pwd",
+    "su root 然后 echo $HOME"
+   ],
+   "statement_md": "实验里要求「切到 root，**打印 root 主目录的绝对路径**」。\n\n下面哪条能拿到**正确**结果？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 137,
+   "subject": "linux",
+   "line": "text",
+   "title": "把目录列表重定向到文件并带行号查看",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "重定向",
+    "cat",
+    "wc",
+    "实验 2"
+   ],
+   "choices": [],
+   "statement_md": "把 `/usr/local` 下的文件列表输出重定向到家目录的 `test1.txt`，然后用 `cat` 查看并**显示行号**。写出这两条命令（用 `&&` 或 `;` 连起来）。\n\n提示：一个重定向符号 + cat 的加行号选项。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 138,
+   "subject": "linux",
+   "line": "text",
+   "title": "仅列出 /etc 下名字含 pass 的文件",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "ls",
+    "-d",
+    "通配符",
+    "实验 2"
+   ],
+   "choices": [],
+   "statement_md": "切换到 `/etc` 目录后，**仅显示名字里包含字符串 `pass` 的文件**。写出命令。\n\n提示：通配符匹配名字里含 pass，再加一个「别展开目录」的选项。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 139,
+   "subject": "linux",
+   "line": "text",
+   "title": "把目录复制到 /usr 需要什么",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "cp",
+    "sudo",
+    "权限",
+    "实验 3"
+   ],
+   "choices": [
+    "cp -r /tmp/a1 /usr/",
+    "sudo cp /tmp/a1 /usr/",
+    "sudo cp -r /tmp/a1 /usr/",
+    "cp -a /tmp/a1 /usr/"
+   ],
+   "statement_md": "把 `/tmp/a1`（含多级子目录）复制到 `/usr` 下。普通的 `cp /tmp/a1 /usr/` 会失败。下面哪条**能成功**？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 140,
+   "subject": "linux",
+   "line": "text",
+   "title": "vi 里把内容存下来并退出",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "vi",
+    "vim",
+    "编辑器",
+    "实验 3"
+   ],
+   "choices": [
+    "Esc 然后 :q!",
+    "Esc 然后 :wq",
+    "直接 :wq",
+    "Ctrl+S 然后 Ctrl+Q"
+   ],
+   "statement_md": "用 `vi ~/hello` 打开一个文件，按 `i` 输入了内容之后，**要保存并退出**，接下来敲什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 141,
+   "subject": "linux",
+   "line": "text",
+   "title": "mv 到底是「改名」还是「移进去」",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "mv",
+    "改名",
+    "移动",
+    "实验 3"
+   ],
+   "choices": [
+    "两条都是改名",
+    "前者把 /test7 移进 /test8 目录，后者改名成 tmp",
+    "前者改名为 /test8，后者移进 /tmp 目录",
+    "两条都是移动"
+   ],
+   "statement_md": "`mv /test7 /test8` 和 `mv /test7 /tmp/` 这两条命令分别做了什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 142,
+   "subject": "linux",
+   "line": "text",
+   "title": "把 /boot 下 vmlinuz 开头的文件拷到家目录",
+   "difficulty": 4,
+   "total_score": 15,
+   "tags": [
+    "cp",
+    "通配符",
+    "mkdir",
+    "实验 3"
+   ],
+   "choices": [],
+   "statement_md": "把 `/boot` 下所有以 `vmlinuz` 开头的文件，拷贝到 `~/abc` 目录下（`abc` 不存在就先建）。写出这一串命令（用 `&&` 或 `;` 连起来）。\n\n提示：先建目录（用幂等的那版），再用通配符一次拷多个。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    15
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 143,
+   "subject": "linux",
+   "line": "text",
+   "title": "ll 在脚本里也能用吗",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "alias",
+    "ll",
+    "交互式",
+    "实验 3"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`ll` 是 `ls -l` 的**别名**，所以写在 `.sh` 脚本里也能正常执行。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 144,
+   "subject": "linux",
+   "line": "text",
+   "title": "tar 打包时那句 Removing leading / 警告",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "tar",
+    "警告",
+    "绝对路径",
+    "实验 4"
+   ],
+   "choices": [
+    "压缩失败了，要重来",
+    "只是警告，压缩正常完成，包内路径是相对路径",
+    "要加 -P 选项才能去掉这个警告",
+    "说明 /usr/test5 不存在"
+   ],
+   "statement_md": "执行 `sudo tar czvf ~/test5.tar.gz /usr/test5` 时，屏幕上出现：\n\n```\ntar: Removing leading `/' from member names\n```\n\n这说明什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 145,
+   "subject": "linux",
+   "line": "text",
+   "title": "ln -s 的两个参数谁在前",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "ln",
+    "-s",
+    "符号链接",
+    "实验 4"
+   ],
+   "choices": [
+    "ln -s /myshare /usr/local/sdutshare",
+    "ln -s /usr/local/sdutshare /myshare",
+    "ln /usr/local/sdutshare /myshare",
+    "ln -s myshare /usr/local/sdutshare"
+   ],
+   "statement_md": "要在根目录建一个名为 `myshare` 的符号链接，指向 `/usr/local/sdutshare`。正确的命令是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 146,
+   "subject": "linux",
+   "line": "text",
+   "title": "按字典逆序排序文件内容",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "sort",
+    "-r",
+    "排序",
+    "实验 4"
+   ],
+   "choices": [],
+   "statement_md": "`~/mysort1` 里有四行：`is` / `this` / `excellent` / `my`。把它按**字典逆序**排序显示。写出这条命令。\n\n提示：sort 加一个表示「反过来」的选项。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 147,
+   "subject": "linux",
+   "line": "text",
+   "title": "输出字符串但不换行",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "echo",
+    "-n",
+    "printf",
+    "实验 4"
+   ],
+   "choices": [],
+   "statement_md": "用 `echo` 输出字符串 `hello everyone!`，要求**输出后不换行**。写出命令。\n\n提示：echo 有个选项专门管「结尾不加换行」。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 148,
+   "subject": "linux",
+   "line": "text",
+   "title": "man 手册的章节号",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "man",
+    "章节",
+    "文档",
+    "实验 4"
+   ],
+   "choices": [
+    "第 1 章",
+    "第 5 章",
+    "第 8 章",
+    "第 9 章"
+   ],
+   "statement_md": "`man grep` 打开的是第 1 章。那么 **`/etc/passwd` 这种配置文件的说明**在第几章？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 149,
+   "subject": "linux",
+   "line": "text",
+   "title": "在终端启动当前目录下的程序",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "PATH",
+    "./",
+    "可执行文件",
+    "实验 4"
+   ],
+   "choices": [
+    "eclipse",
+    "./eclipse",
+    "/eclipse",
+    "sudo eclipse"
+   ],
+   "statement_md": "你把 Eclipse 解压到 `~/eclipse`，用 `cd ~/eclipse` 进去了。想启动里面的 `eclipse` 可执行文件，怎么写？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 150,
+   "subject": "linux",
+   "line": "text",
+   "title": "装 MySQL 到底装哪个包",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "dnf",
+    "mysql",
+    "服务",
+    "实验 4"
+   ],
+   "choices": [
+    "服务名写错了，应该是 mysql.service",
+    "mysql 是客户端包，服务端在 mysql-server 里",
+    "要先 systemctl daemon-reload",
+    "MariaDB 把端口占了，得先停掉它"
+   ],
+   "statement_md": "实验要求「用 `dnf` 安装 mysql，然后启动它」。\n\n如果你直接敲 `sudo dnf install mysql`，装完之后 `sudo systemctl start mysqld` 会报 `Unit mysqld.service not found.`。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 151,
+   "subject": "linux",
+   "line": "text",
+   "title": "把两个文件的内容拼进第三个文件",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "cat",
+    "重定向",
+    "mv",
+    "实验 4"
+   ],
+   "choices": [],
+   "statement_md": "`file11` 内容为 `sdut11`、`file12` 内容为 `sdut12`，`dir1` 目录已建好。把两者的内容依次写进 `dir1/file13`。写出命令。\n\n提示：cat 可以接多个文件，最后用重定向写进新文件。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 152,
+   "subject": "linux",
+   "line": "text",
+   "title": "反查一个命令属于哪个包",
+   "difficulty": 4,
+   "total_score": 12,
+   "tags": [
+    "dnf",
+    "provides",
+    "排错",
+    "实验 4"
+   ],
+   "choices": [],
+   "statement_md": "你在 Fedora 上敲某个命令，报 `command not found`。想查「这个命令由哪个软件包提供」，用 `dnf` 的哪个子命令？（写出完整命令，命令名用 `ls` 举例即可）\n\n提示：dnf 的一个子命令，查「文件属于哪个包」；命令名前要加通配符路径。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 153,
+   "subject": "linux",
+   "line": "text",
+   "title": "你敲一条命令，中间经过了什么",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "体系结构",
+    "shell",
+    "内核",
+    "第 01 讲"
+   ],
+   "choices": [
+    "内核 → Shell → ls 程序 → 终端",
+    "Shell 解析并找到 ls → 内核 fork/exec → ls 运行 → 结果回终端",
+    "ls 程序 → 内核 → Shell → 终端",
+    "终端直接调用内核，Shell 只是显示界面"
+   ],
+   "statement_md": "在终端敲下 `ls` 并回车，从你按下回车到看见输出，中间的顺序是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 01 讲 · Linux 概述",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 154,
+   "subject": "linux",
+   "line": "text",
+   "title": "Linux 的分层结构，Shell 在哪一层",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "体系结构",
+    "shell",
+    "第 01 讲"
+   ],
+   "choices": [
+    "第 1 层，和内核并列",
+    "第 2 层，和文件系统同层",
+    "第 3 层，在文件系统之上、应用程序之下",
+    "第 4 层，就是应用程序"
+   ],
+   "statement_md": "教材把 Linux 系统从下往上分成四层。**Shell 位于哪一层**？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 01 讲 · Linux 概述",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 155,
+   "subject": "linux",
+   "line": "text",
+   "title": "哪个目录放配置文件",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "目录结构",
+    "/etc",
+    "第 01 讲"
+   ],
+   "choices": [
+    "/bin",
+    "/etc",
+    "/var",
+    "/lib"
+   ],
+   "statement_md": "Linux 的**所有系统配置文件**（比如 `passwd`、`fstab`、`sshd_config`）统一放在哪个目录下？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 01 讲 · Linux 概述",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 156,
+   "subject": "linux",
+   "line": "text",
+   "title": "root 的家目录在哪",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "目录结构",
+    "/root",
+    "第 01 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "root 用户的家目录是 `/home/root`，和其他普通用户放在一起。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 01 讲 · Linux 概述",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 157,
+   "subject": "linux",
+   "line": "text",
+   "title": "Linux 的文件系统是几棵树",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "文件系统",
+    "根目录",
+    "挂载",
+    "第 01 讲"
+   ],
+   "choices": [
+    "也是多个并列的盘符",
+    "单根倒树，一切都在 / 之下",
+    "按设备分树，每块盘一棵",
+    "没有固定结构，看发行版"
+   ],
+   "statement_md": "和 Windows 的 C: / D: / E: 相比，Linux 的文件系统结构特点是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 01 讲 · Linux 概述",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 158,
+   "subject": "linux",
+   "line": "text",
+   "title": "X Window 是什么角色",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "XWindow",
+    "GNOME",
+    "分层",
+    "第 03 讲"
+   ],
+   "choices": [
+    "它就是 GNOME 桌面本身",
+    "底层显示服务：管画面输出、键盘鼠标输入",
+    "管文件管理的那部分",
+    "管软件安装的那部分"
+   ],
+   "statement_md": "在 Linux 桌面里，**X Window 系统**负责的是哪一层？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · X Window 的使用",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 159,
+   "subject": "linux",
+   "line": "text",
+   "title": "自建的应用菜单项放哪里",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "desktop",
+    "GNOME",
+    "应用菜单",
+    "第 03 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "想让自建的程序出现在 GNOME 的应用程序菜单里，可以往 `~/.local/share/applications/` 放一个 `.desktop` 文件。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · X Window 的使用",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 160,
+   "subject": "linux",
+   "line": "text",
+   "title": "LibreOffice 的三个主力组件",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "LibreOffice",
+    "办公软件",
+    "第 04 讲"
+   ],
+   "choices": [
+    "Writer / Calc / Impress",
+    "Word / Excel / PowerPoint",
+    "Docs / Sheets / Slides",
+    "Text / Grid / Show"
+   ],
+   "statement_md": "LibreOffice 里，**文档、表格、演示**分别对应哪三个组件？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 常用软件",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 161,
+   "subject": "linux",
+   "line": "text",
+   "title": "Flatpak 装的软件能在 dnf 里看到吗",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "Flatpak",
+    "dnf",
+    "包管理",
+    "第 04 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "用 Flatpak 安装的软件，可以用 `dnf list installed` 查到。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 常用软件",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 162,
+   "subject": "linux",
+   "line": "text",
+   "title": "装本地 rpm 包的正确姿势",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "rpm",
+    "dnf",
+    "依赖",
+    "第 05 讲"
+   ],
+   "choices": [
+    "rpm -ivh x.rpm",
+    "sudo rpm -ivh x.rpm",
+    "sudo dnf install ./x.rpm",
+    "sudo dnf localinstall ./x.rpm"
+   ],
+   "statement_md": "你下载了一个 `x.rpm` 到当前目录，它**有一堆依赖**需要一并装上。推荐用哪条命令？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 硬件与软件安装",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 163,
+   "subject": "linux",
+   "line": "text",
+   "title": "编译时提示找不到头文件，该装什么包",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "编译",
+    "devel",
+    "头文件",
+    "第 05 讲"
+   ],
+   "choices": [
+    "xxx",
+    "xxx-devel",
+    "xxx-libs",
+    "xxx-headers"
+   ],
+   "statement_md": "你编译一个程序，报错 `fatal error: xxx.h: No such file or directory`。应该装哪个包？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 硬件与软件安装",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 164,
+   "subject": "linux",
+   "line": "text",
+   "title": "DNF5 里怎么装一个软件包组",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "dnf5",
+    "group",
+    "版本差异",
+    "第 05 讲"
+   ],
+   "choices": [
+    "sudo dnf groupinstall development-tools",
+    "sudo dnf group install development-tools",
+    "sudo dnf install group development-tools",
+    "sudo dnf install @group development-tools"
+   ],
+   "statement_md": "在 Fedora 44（DNF5）里，想安装一个「软件包组」（比如开发工具组），正确写法是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 硬件与软件安装",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 165,
+   "subject": "linux",
+   "line": "text",
+   "title": "装完显卡驱动能不能立刻重启",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "nvidia",
+    "akmod",
+    "显卡驱动",
+    "第 05 讲"
+   ],
+   "choices": [
+    "直接重启，装完就能用",
+    "先 `modinfo -F version nvidia` 确认模块编好了",
+    "先 `dnf remove` 卸掉 nouveau",
+    "先 `setsebool` 放行显卡"
+   ],
+   "statement_md": "你 `sudo dnf install akmod-nvidia` 装完闭源显卡驱动，想立刻重启看看效果。**先做什么**更安全？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 硬件与软件安装",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 166,
+   "subject": "linux",
+   "line": "text",
+   "title": "Fedora 上有 dpkg 吗",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "dpkg",
+    "deb",
+    "包管理",
+    "第 05 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "Fedora 上可以用 `dpkg -i xxx.deb` 来安装 Debian 系的 deb 软件包。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 硬件与软件安装",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 167,
+   "subject": "linux",
+   "line": "text",
+   "title": "一键回滚上一次软件安装",
+   "difficulty": 4,
+   "total_score": 12,
+   "tags": [
+    "dnf",
+    "history",
+    "回滚",
+    "第 05 讲"
+   ],
+   "choices": [],
+   "statement_md": "你刚用 `dnf` 装了一堆东西，结果把系统搞坏了。想**撤销刚才那次操作**，用哪条命令？（先要查到操作编号）\n\n提示：dnf 的子命令，配合 `undo` 和事务编号。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 硬件与软件安装",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 168,
+   "subject": "linux",
+   "line": "text",
+   "title": "教材让你敲 ifconfig，但机器上没这个命令",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "ifconfig",
+    "ip",
+    "net-tools",
+    "第 06 讲"
+   ],
+   "choices": [
+    "装回 net-tools 包，恢复 ifconfig",
+    "改用 ip addr",
+    "用 sudo 提权就能用",
+    "先 systemctl start network 启动网络服务"
+   ],
+   "statement_md": "教材 6.2.4 节讲用 `ifconfig` 看网卡信息。你在 Fedora 44 上敲，报 `command not found`。怎么办？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 网络的基本配置",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 169,
+   "subject": "linux",
+   "line": "text",
+   "title": "nmcli 改完 IP 为什么不生效",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "nmcli",
+    "网络配置",
+    "第 06 讲"
+   ],
+   "choices": [
+    "命令写错了，要加 sudo",
+    "modify 只写配置文件，必须再 con down 再 con up 才生效",
+    "要先重启 NetworkManager 服务",
+    "必须改 /etc/resolv.conf"
+   ],
+   "statement_md": "你用 `nmcli con modify 连接名 ipv4.addresses 192.168.1.100/24` 改了 IP，但 `ip addr` 看还是老地址。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 网络的基本配置",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 170,
+   "subject": "linux",
+   "line": "text",
+   "title": "能 ping 通 IP 但打不开网页",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "DNS",
+    "resolv.conf",
+    "排错",
+    "第 06 讲"
+   ],
+   "choices": [
+    "网卡坏了，要换硬件",
+    "IP 地址配错了",
+    "DNS 解析有问题",
+    "防火墙把 80 端口封了"
+   ],
+   "statement_md": "`ping 8.8.8.8` 通，但 `ping www.baidu.com` 报 `Name or service not known`，浏览器也打不开网页。问题最可能在哪？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 网络的基本配置",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 171,
+   "subject": "linux",
+   "line": "text",
+   "title": "查看网卡的「真实名字」",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "网卡名",
+    "ip",
+    "第 06 讲"
+   ],
+   "choices": [],
+   "statement_md": "你照教材写 `ifconfig eth0`，报 `Device not found`。不确定这台机器的网卡到底叫什么名字 —— 用哪条命令**一眼看出所有网卡名**？\n\n提示：ip 命令的简洁模式，只看链路（link）不看地址。",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 网络的基本配置",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 172,
+   "subject": "linux",
+   "line": "text",
+   "title": "替代 netstat 看端口",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "ss",
+    "netstat",
+    "端口",
+    "第 06 讲"
+   ],
+   "choices": [
+    "sudo lsof -i",
+    "ss -tulpn",
+    "netstat -tulpn",
+    "ip port show"
+   ],
+   "statement_md": "教材用 `netstat -anp` 查看监听端口。Fedora 44 上应该用哪条？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 网络的基本配置",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 173,
+   "subject": "linux",
+   "line": "text",
+   "title": "scp 和 ssh 的端口参数大小写",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "scp",
+    "ssh",
+    "端口",
+    "第 06 讲"
+   ],
+   "choices": [
+    "scp -p 2222 文件 远端:",
+    "scp -P 2222 文件 远端:",
+    "scp -port 2222 文件 远端:",
+    "scp --port=2222 文件 远端:"
+   ],
+   "statement_md": "SSH 服务跑在 2222 端口（不是默认的 22）。用 `scp` 传文件时，指定端口应该怎么写？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 网络的基本配置",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 174,
+   "subject": "linux",
+   "line": "text",
+   "title": "改主机名的正确方式",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "hostname",
+    "hostnamectl",
+    "第 06 讲"
+   ],
+   "choices": [
+    "要用 sudo hostname mypc",
+    "hostname 只改当前运行时的值，永久生效要用 hostnamectl set-hostname",
+    "还得改 /etc/resolv.conf",
+    "主机名不能改，只能重装"
+   ],
+   "statement_md": "你想把主机名从 `fedora` 改成 `mypc`。用 `hostname mypc` 改完，**重启后变回去了**。怎么回事？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 网络的基本配置",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 175,
+   "subject": "linux",
+   "line": "text",
+   "title": "ping 不通就一定是网络故障",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "ping",
+    "ICMP",
+    "排错",
+    "第 06 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`ping 某台主机` 不通，就可以确定是网络有问题。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 网络的基本配置",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 176,
+   "subject": "linux",
+   "line": "text",
+   "title": "systemctl enable 之后服务在跑吗",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "systemctl",
+    "enable",
+    "服务",
+    "第 07 讲"
+   ],
+   "choices": [
+    "Apache 装错了",
+    "enable 只是「设为开机自启」，不会启动服务。要用 enable --now",
+    "要重启机器才生效",
+    "防火墙没放行"
+   ],
+   "statement_md": "你执行了 `sudo systemctl enable httpd`，以为网站已经能访问了。结果浏览器打不开。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 常用网络服务",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 177,
+   "subject": "linux",
+   "line": "text",
+   "title": "四个服务的「户口本」",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "httpd",
+    "smb",
+    "named",
+    "服务名",
+    "第 07 讲"
+   ],
+   "choices": [
+    "包名和服务名全都一样",
+    "Apache 包 httpd 服务 httpd；Samba 包 samba 服务 smb；BIND 包 bind 服务 named；vsFTPd 两者都叫 vsftpd",
+    "Apache 包 apache2 服务 httpd；Samba 包 smbd 服务 samba；BIND 包 named 服务 named",
+    "全都得用 systemctl list-unit-files 现查才知道"
+   ],
+   "statement_md": "在 Fedora 上，**Apache / vsFTPd / Samba / BIND 这四个服务**，各自的**包名**和**服务名**对应关系是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 常用网络服务",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 178,
+   "subject": "linux",
+   "line": "text",
+   "title": "服务配好了，外面还是访问不到",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "firewalld",
+    "SELinux",
+    "双重门禁",
+    "第 07 讲"
+   ],
+   "choices": [
+    "先看 SELinux，再看防火墙",
+    "先查 firewall-cmd，再查 SELinux",
+    "先重装 Apache",
+    "先看 /var/log/messages"
+   ],
+   "statement_md": "你把 Apache 配好了，`systemctl status httpd` 显示 `active (running)`，但**从别的机器访问不到**。按第 07 讲的经验，应该**按什么顺序**排查？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 常用网络服务",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 179,
+   "subject": "linux",
+   "line": "text",
+   "title": "chcon 和 semanage 的区别",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "SELinux",
+    "semanage",
+    "chcon",
+    "第 07 讲"
+   ],
+   "choices": [
+    "chcon，它是标准做法",
+    "semanage fcontext + restorecon，chcon 是临时的会被冲掉",
+    "两个完全等价，随便用",
+    "两个都不用，改文件权限就行"
+   ],
+   "statement_md": "要给一个自建目录打上正确的 SELinux 标签，`chcon` 和 `semanage fcontext` 应该用哪个？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 常用网络服务",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 180,
+   "subject": "linux",
+   "line": "text",
+   "title": "改完 unit 文件为什么没生效",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "systemd",
+    "drop-in",
+    "ExecStart",
+    "第 07 讲"
+   ],
+   "choices": [
+    "少写一行空的 ExecStart= 先把原值清掉",
+    "drop-in 应该写在 /usr/lib 下",
+    "要加 --force 参数",
+    "要先 systemctl daemon-reload —— 重载了就没事"
+   ],
+   "statement_md": "你用 `systemctl edit myservice` 写了 drop-in 覆盖 `ExecStart`，然后 `systemctl restart myservice` 却报 `multiple ExecStart`。少了什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 常用网络服务",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 181,
+   "subject": "linux",
+   "line": "text",
+   "title": "disable 和 mask 有什么不同",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "systemctl",
+    "disable",
+    "mask",
+    "第 07 讲"
+   ],
+   "choices": [
+    "完全一样",
+    "disable 只取消自启（还能手动 start）；mask 彻底禁死（连手动都起不来）",
+    "disable 是临时的，mask 是永久的",
+    "mask 会卸载软件包"
+   ],
+   "statement_md": "`systemctl disable X` 和 `systemctl mask X` 的区别是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 常用网络服务",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 182,
+   "subject": "linux",
+   "line": "text",
+   "title": "useradd 之后为什么登录不了",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "useradd",
+    "passwd",
+    "用户管理",
+    "第 08 讲"
+   ],
+   "choices": [
+    "要先 usermod 加 shell",
+    "useradd 建的账号是锁死的（shadow 里是 !!），必须再 passwd 设密码",
+    "要重启系统",
+    "要先 useradd -m 建家目录"
+   ],
+   "statement_md": "你执行了 `sudo useradd zhang`，然后用 `su - zhang` 却进不去。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 183,
+   "subject": "linux",
+   "line": "text",
+   "title": "usermod 加附加组，-G 还是 -aG",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "usermod",
+    "附加组",
+    "-aG",
+    "第 08 讲"
+   ],
+   "choices": [
+    "sudo usermod -G wheel zhang",
+    "sudo usermod -aG wheel zhang",
+    "sudo usermod -g wheel zhang",
+    "sudo groupadd -a wheel zhang"
+   ],
+   "statement_md": "你要把用户 `zhang` 加进 `wheel` 组，**同时保留他原来已经在的所有组**。正确的是哪条？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 184,
+   "subject": "linux",
+   "line": "text",
+   "title": "想看系统日志，该打开哪个文件",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "journalctl",
+    "日志",
+    "rsyslog",
+    "第 08 讲"
+   ],
+   "choices": [
+    "装 rsyslog 才有这个文件",
+    "用 journalctl",
+    "改用 /var/log/syslog",
+    "改用 dmesg"
+   ],
+   "statement_md": "照教材敲 `cat /var/log/messages` 想看系统日志，结果报 `No such file or directory`。应该用什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 185,
+   "subject": "linux",
+   "line": "text",
+   "title": "chmod -R 644 目录的后果",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "chmod",
+    "目录权限",
+    "x 位",
+    "第 08 讲"
+   ],
+   "choices": [
+    "要 sudo",
+    "目录失去 x 权限就进不去了 —— 目录要 755、文件才 644",
+    "要 chown 一下",
+    "644 的 6 太少了"
+   ],
+   "statement_md": "你执行了 `chmod -R 644 /home/zhang/project`，想把文件权限统一。结果 `cd` 进那个目录都报 Permission denied。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 186,
+   "subject": "linux",
+   "line": "text",
+   "title": "杀进程该用哪个信号",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "kill",
+    "SIGTERM",
+    "SIGKILL",
+    "第 08 讲"
+   ],
+   "choices": [
+    "直接 kill -9，一步到位",
+    "先 kill（默认 15），等几秒不行再 kill -9",
+    "先 kill -1，再 kill -9",
+    "用 killall -9 批量杀"
+   ],
+   "statement_md": "一个进程卡住了，你要杀掉它。第 08 讲的建议是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 187,
+   "subject": "linux",
+   "line": "text",
+   "title": "给脚本设 SUID 想以 root 运行",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "SUID",
+    "脚本",
+    "权限",
+    "第 08 讲"
+   ],
+   "choices": [
+    "要 chown root 才行",
+    "内核直接忽略脚本的 SUID 位，SUID 只对二进制程序生效",
+    "要放到 /usr/bin 下才行",
+    "要 chmod 6755"
+   ],
+   "statement_md": "你写了个 shell 脚本，`chmod 4755 script.sh` 设了 SUID 位，想让普通用户执行时以 root 身份运行。结果没有效果。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 188,
+   "subject": "linux",
+   "line": "text",
+   "title": "wheel 组能限制 su 吗",
+   "difficulty": 4,
+   "total_score": 8,
+   "tags": [
+    "su",
+    "wheel",
+    "pam",
+    "第 08 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "把用户从 `wheel` 组里移除，他就无法使用 `su` 命令了。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 189,
+   "subject": "linux",
+   "line": "text",
+   "title": "free 显示的内存很小，是不是不够用",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "free",
+    "内存",
+    "available",
+    "第 08 讲"
+   ],
+   "choices": [
+    "是的，要赶紧关程序",
+    "看 available 那一列才是真实可用内存，cache 是可回收的",
+    "要加内存条",
+    "free 输出不准"
+   ],
+   "statement_md": "`free -h` 输出里 `free` 那一列只有 500 MB，但机器是 16 GB 内存。是不是内存要满了？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 190,
+   "subject": "linux",
+   "line": "text",
+   "title": "cron 任务里为什么找不到命令",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "cron",
+    "PATH",
+    "计划任务",
+    "第 08 讲"
+   ],
+   "choices": [
+    "cron 没有权限跑 python",
+    "cron 的 PATH 极小，必须写绝对路径 /usr/bin/python3",
+    "要加 sudo",
+    "要写 python 而不是 python3"
+   ],
+   "statement_md": "你在 `crontab -e` 里写了个任务 `* * * * * python3 /home/zhang/x.py`，但日志里报 `python3: command not found`。手动执行却没问题。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 系统管理与监视",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 191,
+   "subject": "linux",
+   "line": "text",
+   "title": "/etc/hosts.allow 能限制 SSH 来源吗",
+   "difficulty": 4,
+   "total_score": 8,
+   "tags": [
+    "TCPWrappers",
+    "hosts.allow",
+    "sshd",
+    "第 09 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "在 `/etc/hosts.allow` 里配置规则，可以限制哪些 IP 能连 SSH。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 192,
+   "subject": "linux",
+   "line": "text",
+   "title": "手动加的 iptables 规则为什么消失了",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "iptables",
+    "firewalld",
+    "nftables",
+    "第 09 讲"
+   ],
+   "choices": [
+    "被系统自动清理了",
+    "firewalld 重载时会冲掉手写的规则",
+    "iptables 有超时机制",
+    "要 iptables-save 才生效"
+   ],
+   "statement_md": "你用 `iptables -A INPUT ...` 手动加了几条规则，测试时是好的。过了一阵再看，规则没了。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 193,
+   "subject": "linux",
+   "line": "text",
+   "title": "setsebool 忘了加什么会失效",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "setsebool",
+    "-P",
+    "SELinux",
+    "第 09 讲"
+   ],
+   "choices": [
+    "漏了 sudo -i",
+    "漏了 -P 参数，改动没写进策略",
+    "漏了 systemctl reload httpd",
+    "漏了 semanage"
+   ],
+   "statement_md": "你执行 `sudo setsebool httpd_can_network_connect on` 让 Apache 能连网络，测试通了。**重启之后又不通了**。漏了什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 194,
+   "subject": "linux",
+   "line": "text",
+   "title": "semanage 报 command not found",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "semanage",
+    "SELinux",
+    "安装",
+    "第 09 讲"
+   ],
+   "choices": [
+    "semanage 命令不存在，用 chcon 代替",
+    "sudo dnf install policycoreutils-python-utils",
+    "要 sudo 才有这个命令",
+    "要先启动 SELinux"
+   ],
+   "statement_md": "你在 Fedora 44 上敲 `semanage fcontext ...`，报 `command not found`。怎么办？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 195,
+   "subject": "linux",
+   "line": "text",
+   "title": "SELINUX=disabled 有什么代价",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "SELinux",
+    "disabled",
+    "permissive",
+    "第 09 讲"
+   ],
+   "choices": [
+    "没什么代价，只是省事",
+    "新建的文件全都没有标签；日后想再启用要全盘 relabel，可能开不了机",
+    "只影响防火墙",
+    "会让系统变慢"
+   ],
+   "statement_md": "嫌 SELinux 麻烦，把 `/etc/selinux/config` 改成 `SELINUX=disabled`。会有什么代价？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 196,
+   "subject": "linux",
+   "line": "text",
+   "title": "firewall-cmd --permanent 之后立刻生效吗",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "firewall-cmd",
+    "permanent",
+    "reload",
+    "第 09 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`sudo firewall-cmd --permanent --add-service=http` 执行后，规则会立刻生效。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 197,
+   "subject": "linux",
+   "line": "text",
+   "title": "改 sshd_config 的正确流程",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "sshd_config",
+    "sshd -t",
+    "reload",
+    "第 09 讲"
+   ],
+   "choices": [
+    "直接 systemctl restart sshd",
+    "先 sudo sshd -t 校验语法，再 systemctl reload sshd",
+    "直接 reboot",
+    "不用做什么，自动生效"
+   ],
+   "statement_md": "你想改 SSH 端口并禁用密码登录。改完 `/etc/ssh/sshd_config` 之后，正确的下一步是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 198,
+   "subject": "linux",
+   "line": "text",
+   "title": "pam_tally2 在新系统上还能用吗",
+   "difficulty": 5,
+   "total_score": 10,
+   "tags": [
+    "pam",
+    "authselect",
+    "faillock",
+    "第 09 讲"
+   ],
+   "choices": [
+    "正常生效",
+    "pam_tally2 已被移除，要用 pam_faillock（authselect enable-feature with-faillock）",
+    "要装 pam-tally2 包",
+    "参数要改成新格式"
+   ],
+   "statement_md": "你想做「登录失败多次就锁定账号」，照老教程配 `pam_tally2`。在 Fedora 44 上会怎样？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 199,
+   "subject": "linux",
+   "line": "text",
+   "title": "setenforce 0 是不是解决方案",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "setenforce",
+    "SELinux",
+    "诊断",
+    "第 09 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "服务被 SELinux 拦住了，执行 `setenforce 0` 让它跑起来，问题就解决了。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 系统安全管理",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 200,
+   "subject": "linux",
+   "line": "text",
+   "title": "make install 之后为什么 GRUB 里没有新内核",
+   "difficulty": 5,
+   "total_score": 10,
+   "tags": [
+    "内核编译",
+    "make install",
+    "kernel-install",
+    "第 10 讲"
+   ],
+   "choices": [
+    "编译失败了",
+    "make install 在 Fedora 上不会建启动项 —— 它是给 LILO 时代写的",
+    "要 sudo 才行",
+    "GRUB_TIMEOUT 太短看不见"
+   ],
+   "statement_md": "你编译完内核，跑了 `make install`，屏幕上最后出现一句：\n\n```\nCannot find LILO.\n```\n\n重启后 GRUB 菜单里**没有新内核**。为什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · Linux 系统的定制",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 201,
+   "subject": "linux",
+   "line": "text",
+   "title": "编译内核该用哪个用户",
+   "difficulty": 4,
+   "total_score": 8,
+   "tags": [
+    "内核编译",
+    "权限",
+    "-j2",
+    "第 10 讲"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "编译内核需要用 root 身份，否则会有权限问题。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · Linux 系统的定制",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 202,
+   "subject": "linux",
+   "line": "text",
+   "title": "编译内核第一步该做什么",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "内核配置",
+    "olddefconfig",
+    "第 10 讲"
+   ],
+   "choices": [
+    "直接 make menuconfig，从头配",
+    "cp /boot/config-$(uname -r) .config 然后 make olddefconfig",
+    "先 make mrproper",
+    "先 make modules_install"
+   ],
+   "statement_md": "你下载了内核源码，解压后进了目录。**配置菜单（menuconfig）之前**第一步应该做什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · Linux 系统的定制",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 203,
+   "subject": "linux",
+   "line": "text",
+   "title": "编译到 80% 报 Killed signal terminated program cc1",
+   "difficulty": 4,
+   "total_score": 10,
+   "tags": [
+    "内核编译",
+    "OOM",
+    "-j2",
+    "第 10 讲"
+   ],
+   "choices": [
+    "代码有语法错误",
+    "内存不足，cc1 被 OOM killer 杀了",
+    "gcc 版本太老",
+    "硬盘坏了"
+   ],
+   "statement_md": "编译内核时突然报：\n\n```\ngcc: fatal error: Killed signal terminated program cc1\n```\n\n看起来像编译器崩了。真实原因最可能是？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · Linux 系统的定制",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 204,
+   "subject": "linux",
+   "line": "text",
+   "title": "uname -r 没变，是编译失败了吗",
+   "difficulty": 5,
+   "total_score": 10,
+   "tags": [
+    "内核",
+    "grubby",
+    "启动项",
+    "第 10 讲"
+   ],
+   "choices": [
+    "是的，要重新编译",
+    "不一定 —— 新内核可能装了，但默认启动项还是旧的",
+    "是因为没跑 depmod",
+    "是因为没生成 initramfs"
+   ],
+   "statement_md": "你编译安装了新内核，重启后 `uname -r` 显示的还是旧版本号。说明编译失败了？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · Linux 系统的定制",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
   }
  ]
 }

@@ -7,6 +7,9 @@
 
 CREATE INDEX IF NOT EXISTS idx_users_token ON users(token);
 
+-- 题集分类：按学科 + 提交形态筛选，是主界面最常走的查询
+CREATE INDEX IF NOT EXISTS idx_prob_subject ON problems(subject, line);
+
 CREATE INDEX IF NOT EXISTS idx_tc_problem ON testcases(problem_id, ord);
 
 CREATE INDEX IF NOT EXISTS idx_sub_problem ON submissions(problem_id, created_at);

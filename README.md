@@ -69,18 +69,20 @@ run.bat
 | 能力 | 状态 |
 |---|---|
 | Python 判题（AC / WA / PE / TLE / MLE / RE / CE / OLE） | ✅ |
+| **C 与 C++ 判题（同一道题任选一种交）** | ✅ |
+| **Linux 理论题（单选 / 判断 / 命令填空）** | ✅ |
+| **三科目分类（Python / 数据结构 / Linux）+ PTA 风格界面** | ✅ |
 | 双解释器可选（3.13.14 讲义环境 / 3.14.4 Thonny 环境） | ✅ |
 | 限时（看门狗 + 杀整棵进程树） | ✅ |
 | 限内存（Job Object，峰值可见） | ✅ |
-| 4 种输出比对口径（standard / ignore_trailing / token / float） | ✅ |
+| 5 种输出比对口径（standard / ignore_trailing / token / float / **oneof**） | ✅ |
 | 运行自测（不判题，直接看输出） | ✅ |
 | **每个测试点独立分值 · 部分正确** | ✅ |
 | **每题进度（最高分 / 最后一次 / 首次满分时间）** | ✅ |
 | **提交历史 + 一键回填某次代码** | ✅ |
 | **打开题目自动回填上次提交的代码** | ✅ |
-| **题库 56 道 / 860 分 / 230 个测试点（第 02~11 讲）** | ✅ |
+| **题库 204 道 / 2615 分 / 532 个测试点（三科目）** | ✅ |
 | **数据备份 / 导出 JSON / 恢复** | ✅ |
-| C / C++ 判题 | ⏳ P2 |
 | AI 按讲义出题 | ⏳ P3 |
 | Linux Shell 判题（SSH 到 Fedora） | ⏳ P4 |
 | AI 讲解 / 双解释器对拍 / 导出 Obsidian | ⏳ P5 |
@@ -105,40 +107,63 @@ PTA 的模型是「**测试点**」：一道题由若干测试点组成，**每�
 老库升级不用手动做什么：启动时会自动补列（`ALTER TABLE ADD COLUMN`，不动老数据）、
 同步种子题的分值与讲次、把旧口径的提交换算成得分制。
 
-## 题库（按讲义进度循序渐进）
+## 题库（三个科目，共 204 道 / 2615 分 / 532 个测试点）
 
-题目列表**按讲义讲次排序**（同讲次按难度），学习顺序就是列表顺序。
-共 **56 道 / 860 分 / 230 个测试点**：
+主页是**题集广场**（三张科目卡片 + 进度条），点进去是**题集内页**（按讲次 / 实验分组，
+带状态筛选与搜索），再点题目进**答题页**（左题面右编辑区）。三层都比较贴近 PTA。
 
-| 讲次 | 题数 | 分 | 题目 |
+| 科目 | 题数 | 分 | 语言 | 题库文件 |
+|---|---|---|---|---|
+| **Python 快乐编程基础入门** | 56 | 860 | Python | `problems_bank.py` + `problems_bank_ext.py` |
+| **数据结构（C 语言版）** | 31 | 595 | **C 或 C++ 任选** | `problems_bank_ds.py` |
+| **Linux 系统应用与开发** | 117 | 1160 | 理论题（选择 / 判断 / 填空） | `problems_bank_linux.py` |
+
+### 数据结构线：同一道题 C 与 C++ 都能交
+
+教材是 C 语言版，但很多人日常写 C++。所以提交时自己选语言：
+
+| 语言 | 编译器 | 源文件 | 标准 |
 |---|---|---|---|
-| 第 02 讲 · 编程基础 | 4 | 40 | A+B 问题(10) · 圆的面积(10) · 温度转换(10) · 三位数拆分(10) |
-| 第 03 讲 · 流程控制 | 7 | 100 | 判断闰年(10) · 区间求和(20) · 数字三角形(10) · 素数判断(15) · 成绩等级(10) · 九九乘法表(15) · 水仙花数(15) |
-| 第 04 讲 · 字符串 | 5 | 60 | 字符串反转与回文(10) · 单词计数(10) · 大小写互换(10) · 统计字符类型(15) · 查找子串(15) |
-| 第 05 讲 · 列表与元组 | 7 | 105 | 求平均值(10) · 去重保序(15) · 第 k 大的数(15) · 极差(10) · 成绩统计(15) · 合并有序列表(20) · 矩阵转置(20) |
-| 第 06 讲 · 字典与集合 | 6 | 105 | 词频统计(20) · 两数之和(20) · 集合运算(15) · 首字母分组(15) · 众数(15) · 缺失的最小正整数(20) |
-| 第 07 讲 · 函数 | 4 | 65 | 最大公约数(10) · 海伦公式(15) · 可变默认参数的陷阱(20) · 哥德巴赫猜想(20) |
-| 第 08 讲 · 函数（递归） | 6 | 105 | 斐波那契数列(15) · 递归求阶乘(15) · 汉诺塔(20) · 数位之和(15) · 爬楼梯(20) · 二分查找(15) |
-| 第 09 讲 · 模块与包 | 5 | 75 | math 模块(10) · 日期相差天数(20) · 均值与中位数(15) · 累乘(15) · 最高分学生(15) |
-| 第 10 讲 · 面向对象（上） | 5 | 80 | 矩形类(10) · 对象计数器(15) · 银行账户(20) · 两点距离(15) · 成绩管理器(20) |
-| 第 11 讲 · 面向对象（下） | 7 | 125 | 形状面积（继承）(20) · 动物叫声（多态）(15) · 初始化顺序（super）(20) · 点的排序(20) · 向量相加(20) · 年龄校验(20) · 形状总面积（多态）(20) |
+| C++ | `g++` | `main.cpp` | `-std=c++17` |
+| C | `gcc` | `main.c` | `-std=gnu11` |
 
-题库定义在 `app/problems_bank.py`（第一批）和 `app/problems_bank_ext.py`（第二批）。
+两条路的可执行文件**分别命名**（`main_c` / `main_cpp`），否则同一个目录里先编 C 再编 C++ 会
+「跑了上一次的产物」（`selftest_cpp.py` 有一项专门盯这个）。
+另外**编译阶段单独给额度**（1 GB / 20 秒）：g++ 自己就要吃几十上百 MB，
+套用题目的 256 MB 会变成莫名其妙的 CE。
 
-**加题的两条铁律**：
+### Linux 线：理论题走同一条判题管道
+
+选择 / 判断 / 填空没有可执行的东西，但**不另开一条判题链路** ——
+`TextRunner` 把提交内容直接当作「输出」交回，后面的比对 / 计分 / 历史 / 进度**全部复用**。
+一只答案写法的差异交给 `oneof` checker：期望值里以 `|` 开头的每一行都是一个可接受答案。
+
+命令题还额外宽容：空白多少无所谓，`ls -l -a /` 与 `ls -la /`（相邻短选项合并 + 簇内排序）
+算同一条；但**刻意不碰** `--long`、带数字的、带参数的写法 —— 合并它们会改语义。
+
+### 加题的两条铁律
 
 1. **期望输出先独立算好**，再让参考解去撞它 —— 拿参考解现跑现填，就是自己给自己判卷，永远满分。
-   本项目的 `expected_stdout` 全部由 **node 独立实现**预先算出（另一门语言、另一套算法）。
+   本项目的 `expected_stdout` 全部由**另一套独立实现**预先算出（换语言 / 换算法）。
 2. **第二套独立实现要对拍**（`alt_solution` 字段）。两套实现必须**各自都撞过全部测试点**，
    才能排除「单套实现有共同盲区」。
+
+> 只有「正确答案判得过」还不够：`tools/selftest_theory.py` 专门反向验证
+> **错误答案判得错** —— 否则 checker 过宽会让所有题都满分，而正面对拍依然报「全部通过」。
 
 校验工具（改完题库必跑，全过才入库）：
 
 ```bat
-D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py          &rem 全部
-D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py 素数      &rem 只验标题含「素数」的
-D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py --quiet  &rem 只看汇总和失败项
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py           &rem 三线全跑
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py --ds      &rem 只跑数据结构线
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py --linux   &rem 只跑 Linux 线
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py 素数       &rem 只验标题含「素数」的
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py --quiet   &rem 只看汇总和失败项
 ```
+
+题库生成器（题目多，用脚本写比手写可靠）：`tools/gen_ds_bank.py` / `tools/gen_linux_bank.py`，
+各自带 `_sanity()` 把关（必填字段 / 标题重复 / `line` / `checker` / **理论题的样例必须为 0** ——
+样例会在静态站公开，对选择题来说就是**把答案印在题面上**）。
 
 ## 目录
 
@@ -163,27 +188,37 @@ pta/
 │  ├─ db.py / schema.sql   数据库（含老库自动补列迁移）+ index.sql（迁移后建索引）
 │  ├─ users.py             ★ 轻量身份：浏览器生成的 token 就是账号，首见即注册
 │  ├─ scoring.py           评分：分值分配 / 计分 / 部分正确判定
-│  ├─ seed.py              种子题（核心题 + 题库）与老库升级
-│  ├─ problems_bank.py     题库第一批（11 道）
-│  ├─ problems_bank_ext.py 题库第二批（42 道，带第二套实现对拍字段）
-│  ├─ api/                 HTTP 接口（problems / submissions / progress / me）
+│  ├─ seed.py              种子题（核心题 + 三个题库）与老库升级
+│  ├─ bank_kit.py          ★ 理论题工厂（mc / tf / fill）：选项、答案、分值一次配好
+│  ├─ problems_bank.py     题库：Python 第一批（11 道）
+│  ├─ problems_bank_ext.py 题库：Python 第二批（42 道）
+│  ├─ problems_bank_ds.py  题库：数据结构 31 道（C / C++，由 gen_ds_bank.py 生成）
+│  ├─ problems_bank_linux.py 题库：Linux 117 道理论题（由 gen_linux_bank.py 生成）
+│  ├─ api/                 HTTP 接口（problems / submissions / progress / me / catalog）
 │  └─ judge/               判题内核
 │     ├─ sandbox.py        进程沙箱（★ 跨平台：Windows Job Object / Linux setrlimit+killpg）
-│     ├─ compare.py        输出比对
+│     ├─ compare.py        输出比对（★ 5 种口径，含 oneof 多答案与命令宽容）
 │     ├─ runner_python.py  Python runner
+│     ├─ runner_cpp.py     ★ C / C++ runner（同一目录下两套产物分开命名）
+│     ├─ runner_text.py    ★ 理论题 runner（提交内容即输出，复用整条管道）
 │     └─ worker.py         判题队列（单线程，按测试点分值计分，按用户记账）
-├─ web/index.html          前端（单文件，无构建工具）
+├─ web/index.html          前端（单文件，无构建工具；三层 hash 路由）
 ├─ docs/                   ★ GitHub Pages 发布目录（由 export_static.py 生成）
 │  ├─ index.html           前端副本
-│  ├─ problems.json        题库快照（不含参考解）
+│  ├─ problems.json        题库快照（含 subject / choices，**不含参考答案**）
 │  └─ .nojekyll            别让 Jekyll 处理
 ├─ tools/
 │  ├─ selfcheck.py         判题内核 + 评分 自检（62 项）
 │  ├─ selftest_sandbox.py  ★ 沙箱跨平台自检（12 项，部署后在容器里跑它）
+│  ├─ selftest_cpp.py      ★ C/C++ 双通道自检（9 项：AC/CE/WA/TLE/产物不串/别名）
+│  ├─ selftest_theory.py   ★ 理论题判题自检（14 项：含「错答案必须判错」的反向验证）
+│  ├─ e2e_ui.py            ★ 端到端过 HTTP（30 项：前端真正走的那条路）
 │  ├─ httptest_users.py    ★ 多用户隔离自检（23 项，自己起服务）
 │  ├─ httptest_split.py    ★ 跨源（Pages + 后端）自检（18 项，含 CORS 预检）
 │  ├─ httptest.py          HTTP 层自检（18 项，需服务在跑）
-│  ├─ verify_bank.py       题库校验（双实现撞独立算出的期望输出）
+│  ├─ gen_ds_bank.py       ★ 数据结构题库生成器（含 _sanity 把关）
+│  ├─ gen_linux_bank.py    ★ Linux 题库生成器（含 _sanity 把关）
+│  ├─ verify_bank.py       题库校验（三线双实现撞独立算出的期望输出）
 │  ├─ export_static.py     ★ 导出静态题库 + 生成 docs/ 站点
 │  ├─ backup_db.py         数据备份 / 导出 JSON / 恢复
 │  └─ reset_progress.py    清空做题记录（保留题目；加 --yes 才真删）
@@ -199,24 +234,31 @@ pta/
 
 ```bat
 cd /d E:\学习\001\pta
-D:\Pythontools\Python\python.exe -X utf8 tools\selfcheck.py        &rem 62 项：判题内核 + 评分
-D:\Pythontools\Python\python.exe -X utf8 tools\selftest_sandbox.py &rem 12 项：沙箱（跨平台）
-D:\Pythontools\Python\python.exe -X utf8 tools\httptest_users.py   &rem 23 项：多用户隔离（自起服务）
-D:\Pythontools\Python\python.exe -X utf8 tools\httptest_split.py   &rem 18 项：跨源 CORS（自起两个源）
-D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py      &rem 215 个测试点：题库双实现对拍
-D:\Pythontools\Python\python.exe -X utf8 tools\httptest.py         &rem 18 项：HTTP（需服务已在跑）
-D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py   &rem 清空记录（加 --yes 才真删）
+D:\Pythontools\Python\python.exe -X utf8 tools\selfcheck.py         &rem 62 项：判题内核 + 评分
+D:\Pythontools\Python\python.exe -X utf8 tools\selftest_sandbox.py  &rem 12 项：沙箱（跨平台）
+D:\Pythontools\Python\python.exe -X utf8 tools\selftest_cpp.py      &rem  9 项：C/C++ 双通道
+D:\Pythontools\Python\python.exe -X utf8 tools\selftest_theory.py   &rem 14 项：理论题正反双向
+D:\Pythontools\Python\python.exe -X utf8 tools\e2e_ui.py 8792       &rem 30 项：端到端过 HTTP（需服务）
+D:\Pythontools\Python\python.exe -X utf8 tools\httptest_users.py    &rem 23 项：多用户隔离（自起服务）
+D:\Pythontools\Python\python.exe -X utf8 tools\httptest_split.py    &rem 18 项：跨源 CORS（自起两个源）
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py       &rem 532 个测试点：三线双实现对拍
+D:\Pythontools\Python\python.exe -X utf8 tools\httptest.py          &rem 18 项：HTTP（需服务已在跑）
+D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py    &rem 清空记录（加 --yes 才真删）
 ```
 
-后三个（`selftest_sandbox` / `httptest_users` / `httptest_split`）会**自己起服务、测完自己关**，
-不依赖外部状态，适合部署后在容器里立刻确认环境。
+`selftest_sandbox` / `selftest_cpp` / `selftest_theory` / `httptest_users` / `httptest_split`
+会**自己起服务、测完自己关**，不依赖外部状态，适合部署后在容器里立刻确认环境。
 
 CI（`.github/workflows/ci.yml`）在 Ubuntu 和 Windows 上各跑一遍 ——
 **Linux 那份专门用来验证沙箱的 setrlimit + killpg 分支**（本机是 Windows，测不到）。
 
-注意：`selfcheck.py` 和 `httptest.py` 会往题库里写测试提交（也就改变了进度）。
-**刷题前先跑自检，跑完再开始做题**；已经做了题就别再跑这两个脚本，
-或者跑完用 `backup_db.py import` 把记录导回来。
+★ 两条实操注意：
+
+- `verify_bank.py` 会**编译 / 运行**东西，别跟一个正在跑的服务同时跑
+  （早期两者共用判题临时目录，服务启动时的崩溃兜底清理会把对拍编译出来的文件删掉，
+  表现成一串 `can't open file ... main.py` 的 RE。现在对拍用独立目录，不会再撞）。
+- `selfcheck.py` 和 `httptest.py` 会往题库里写测试提交（也就改变了进度）。
+  **刷题前先跑自检**；已经做了题就别再跑这两个脚本，或者跑完用 `backup_db.py import` 导回来。
 
 ## 备份与迁移（你的记录不会丢）
 

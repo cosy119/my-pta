@@ -47,7 +47,9 @@ print("\n[1] 配置与解释器")
 check("settings.toml 存在", cfg.config_path.exists(), cfg.config_path)
 check("py313 解释器存在", Path(PY313).exists(), PY313)
 check("py314 解释器存在", Path(PY314).exists(), PY314)
-check("数据库路径可定位", str(cfg.db_path).endswith("pta.db"), cfg.db_path)
+# 注意是 endswith(".db") 而不是 "pta.db" —— 测试库会叫 _bank_test.db，
+# 卡死具体文件名会让「换库跑自检」这条路直接失败（那才是真正要保障的能力）
+check("数据库路径可定位", str(cfg.db_path).endswith(".db"), cfg.db_path)
 check("临时判题目录可定位", str(cfg.tmp_judge).endswith("judge"), cfg.tmp_judge)
 
 # ---------------------------------------------------------------- 2 数据库

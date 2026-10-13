@@ -49,6 +49,12 @@ async def lifespan(app: FastAPI):
     if fixed:
         log.info("同步了 %d 道题的测试点分值", fixed)
 
+    # 选择题的期望值原本只有选项字母；把选项正文也加成可接受答案，
+    # 这样「点选项」和「填字母」两种提交都判得过
+    choice_alts = seed.backfill_choice_alts()
+    if choice_alts:
+        log.info("给 %d 道选择题补上了「选项正文」这种答案写法", choice_alts)
+
     n_legacy = seed.backfill_legacy_scores()
     if n_legacy:
         log.info("换算 %d 条老提交的分数（旧口径 → 得分制）", n_legacy)

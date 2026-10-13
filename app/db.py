@@ -8,15 +8,45 @@ from __future__ import annotations
 
 import json
 import sqlite3
+import time
 from contextlib import contextmanager
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Iterable, Iterator, Sequence
+from typing import Any, Callable, Iterable, Iterator, Sequence, TypeVar
 
 from . import config
 
 SCHEMA_PATH = Path(__file__).resolve().parent / "schema.sql"
 INDEX_SQL = (Path(__file__).resolve().parent / "index.sql").read_text(encoding="utf-8")
+
+T = TypeVar("T")
+
+# 会**自己好**的 SQLite 报错。
+#
+# ★ 为什么需要：这个环境里装着实时扫描的杀软（卡巴斯基 / 金山毒霸），
+#   它会在 .db 被改写的一瞬间锁住文件，SQLite 就抛
+#   `attempt to write a readonly database` —— 看着像权限炸了，其实等几十毫秒就好。
+#   实测现象：一次判题跑到一半，worker 线程突然连写 submissions 都失败、提交全变 IE，
+#   而同一个进程的 Web 线程插新提交却是成功的；文件权限、磁盘空间、WAL 都正常。
+#   所以写操作统一加一层短重试，别让瞬时抖动毁掉一次提交。
+_TRANSIENT = ("database is locked", "readonly database", "database table is locked",
+              "disk i/o error", "unable to open database")
+_RETRY_TIMES = 6
+_RETRY_SLEEP = 0.12
+
+
+def _with_retry(fn: Callable[[], T]) -> T:
+    last: sqlite3.OperationalError | None = None
+    for i in range(_RETRY_TIMES):
+        try:
+            return fn()
+        except sqlite3.OperationalError as e:
+            if not any(k in str(e).lower() for k in _TRANSIENT):
+                raise
+            last = e
+            time.sleep(_RETRY_SLEEP * (i + 1))
+    assert last is not None
+    raise last
 
 
 def now_iso() -> str:
@@ -29,10 +59,16 @@ def connect(db_path: Path | None = None) -> sqlite3.Connection:
     path.parent.mkdir(parents=True, exist_ok=True)
     conn = sqlite3.connect(str(path), timeout=5.0, isolation_level=None)
     conn.row_factory = sqlite3.Row
-    # 每个连接都要设：WAL 是库级属性，busy_timeout 是连接级
-    conn.execute("PRAGMA journal_mode=WAL")
-    conn.execute("PRAGMA busy_timeout=5000")
-    conn.execute("PRAGMA foreign_keys=ON")
+    # 每个连接都要设：WAL 是库级属性，busy_timeout 是连接级。
+    # ★ 这层 PRAGMA 也要容忍瞬时失败 —— `journal_mode=WAL` 本身要写库头，
+    #   杀软恰好锁着文件时它会抛 readonly，但连接其实是好的（退回 rollback journal，
+    #   只是并发差一点，结果依然正确）。别为一个「优化项」把整次请求干掉。
+    for stmt in ("PRAGMA journal_mode=WAL", "PRAGMA busy_timeout=5000",
+                 "PRAGMA foreign_keys=ON"):
+        try:
+            conn.execute(stmt)
+        except sqlite3.OperationalError:
+            pass
     return conn
 
 
@@ -85,6 +121,11 @@ MIGRATIONS: tuple[tuple[str, str, str], ...] = (
     # ---- 多用户改造（2026-10-13）----
     # 老库的 submissions 没有 user_id，补上后统一归到「本机用户」
     ("submissions", "user_id", "INTEGER"),
+    # ---- 分类体系（2026-10-13）----
+    # subject = 学科线（python / ds / linux），用来做「题集」分类
+    # choices = 选择题选项（JSON 数组），空表示不是选择题
+    ("problems", "subject", "TEXT DEFAULT 'python'"),
+    ("problems", "choices", "TEXT DEFAULT '[]'"),
 )
 
 
@@ -235,9 +276,11 @@ def query_one(sql: str, params: Sequence[Any] = (), db_path: Path | None = None)
 
 def execute(sql: str, params: Sequence[Any] = (), db_path: Path | None = None) -> int:
     """执行写操作，返回 lastrowid（INSERT）或受影响行数。"""
-    with connect_ctx(db_path) as conn:
-        cur = conn.execute(sql, params)
-        return cur.lastrowid if cur.lastrowid else cur.rowcount
+    def once() -> int:
+        with connect_ctx(db_path) as conn:
+            cur = conn.execute(sql, params)
+            return cur.lastrowid if cur.lastrowid else cur.rowcount
+    return _with_retry(once)
 
 
 def insert(table: str, data: dict[str, Any], db_path: Path | None = None) -> int:
@@ -255,8 +298,12 @@ def update(table: str, data: dict[str, Any], where: str, params: Sequence[Any] =
 
 
 def executemany(sql: str, seq: Iterable[Sequence[Any]], db_path: Path | None = None) -> None:
-    with connect_ctx(db_path) as conn:
-        conn.executemany(sql, list(seq))
+    items = list(seq)
+
+    def once() -> None:
+        with connect_ctx(db_path) as conn:
+            conn.executemany(sql, items)
+    _with_retry(once)
 
 
 # ---------------- 小工具 ----------------

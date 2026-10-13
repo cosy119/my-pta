@@ -87,14 +87,19 @@
 
 ## 四、加题之后要做什么
 
-改了题库（`app/problems_bank*.py`）之后：
+改了题库（`app/problems_bank*.py`、或重新跑了 `tools/gen_ds_bank.py` / `tools/gen_linux_bank.py`）之后：
 
 ```bash
-python tools/export_static.py     # 重新导出 docs/problems.json
+python tools/export_static.py     # 重新导出 docs/problems.json ★ 忘了这步，线上还是旧题库
 git add docs/ && git commit -m "加题" && git push
 ```
 
 Render 会自动重新部署，Pages 也会更新。
+
+> 线上题库是 `docs/problems.json` 那份**静态快照**（离线浏览 + 没连后端时用）。
+> 后端自己的题库则来自启动时的 `seed.ensure()` —— 按标题判重，**已有题不会被覆盖**，
+> 所以改了某道题的题面 / 分值 / 案例，只重新部署是**不生效**的：
+> 要么改标题，要么手动改库。加新题则不受影响。
 
 ---
 
@@ -102,8 +107,9 @@ Render 会自动重新部署，Pages 也会更新。
 
 | 症状 | 原因 | 怎么办 |
 |---|---|---|
-| 页面能开，右上角显示「后端未连接」 | 没填后端地址，或后端在休眠 | 点「设置」填地址；等 30 秒再刷新 |
+| 页面能开，右上角显示「离线浏览」 | 没填后端地址，或后端在休眠 | 点「设置」填地址；等 30 秒再刷新 |
 | 提交后一直「排队中」 | 后端挂了 | 打开 `<后端>/api/health` 看还在不在 |
 | 部署后进度全没了 | **没挂持久化 Disk** | 见上面「★」那一条，挂 Disk 到 `/data` |
-| 判题报 IE | 容器里 Python 路径不对 | 容器用 `python run.py` 起，解释器会自动探测 |
-| 想确认容器判题正常 | — | 在 Render 的 Shell 里跑 `python tools/selftest_sandbox.py` |
+| 判题报 IE | 容器里 Python / 编译器路径不对 | 容器用 `python run.py` 起，会自动探测；C/C++ 需要镜像里有 gcc/g++（`Dockerfile` 已装） |
+| 想确认容器判题正常 | — | 在 Render 的 Shell 里跑 `python tools/selftest_sandbox.py` 和 `tools/selftest_cpp.py` |
+| 数据结构题交上去总是 CE | 语言选错了（C 的写法交给 C++ 编译器，或反过来） | 答题页右上角切换语言；教材里的 `&` 引用用 gcc 编不过，改用 C++ 交即可 |

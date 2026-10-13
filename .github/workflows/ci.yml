@@ -26,13 +26,22 @@ jobs:
       - name: 装依赖
         run: pip install -r requirements.txt
 
+      - name: 装 C/C++ 工具链（数据结构线用，ubuntu 自带 gcc/g++，这里只确认版本）
+        run: gcc --version && g++ --version
+
       - name: 沙箱跨平台自检（★ 这一步验证 Linux 的内存限额与杀进程树）
         run: python tools/selftest_sandbox.py
+
+      - name: C/C++ 双通道自检（AC / CE / WA / TLE / 同目录产物不串）
+        run: python tools/selftest_cpp.py
+
+      - name: 理论题判题自检（对答案判过、错答案判错、全库扫）
+        run: python tools/selftest_theory.py
 
       - name: 判题内核 + 评分回归
         run: python tools/selfcheck.py
 
-      - name: 题库对拍（参考解 vs 期望输出）
+      - name: 题库对拍（三线 · 参考解 vs 独立实现）
         run: python tools/verify_bank.py --quiet
 
   # ---------- Windows 上也跑一遍（本机日常环境） ----------
@@ -51,5 +60,14 @@ jobs:
       - name: 沙箱自检（Windows 分支：Job Object）
         run: python tools/selftest_sandbox.py
 
+      - name: C/C++ 双通道自检
+        run: python tools/selftest_cpp.py
+
+      - name: 理论题判题自检
+        run: python tools/selftest_theory.py
+
       - name: 判题内核 + 评分回归
         run: python tools/selfcheck.py
+
+      - name: 题库对拍（三线全跑一遍）
+        run: python tools/verify_bank.py --quiet

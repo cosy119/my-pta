@@ -12,6 +12,18 @@ from __future__ import annotations
 
 from . import db, scoring
 from .problems_bank import BANK_PROBLEMS
+from .problems_bank_ds import DS_PROBLEMS
+from .problems_bank_linux import LINUX_PROBLEMS
+
+# 三条件学线。`subject` 是**学科维度**（不是语言）：
+#   python → Python 线（解释执行）
+#   ds     → 数据结构线（C / C++ 编译执行，教材是 C 语言版）
+#   linux  → Linux 线（理论题：选择 / 判断 / 命令填空）
+SUBJECT_LABELS = {
+    "python": "Python 快乐编程基础入门",
+    "ds": "数据结构（C 语言版）",
+    "linux": "Linux 系统应用与开发",
+}
 
 # 核心题（平台自检用，也当入门题）
 CORE_PROBLEMS: list[dict] = [
@@ -145,8 +157,10 @@ CORE_PROBLEMS: list[dict] = [
 ]
 
 
-# 全部种子题 = 核心题 + 题库（题库按讲义顺序，见 problems_bank.py）
-SEED_PROBLEMS: list[dict] = CORE_PROBLEMS + BANK_PROBLEMS
+# 全部种子题 = 核心题 + 三条线的题库
+# 顺序就是前端默认展示顺序：Python → 数据结构 → Linux
+SEED_PROBLEMS: list[dict] = (CORE_PROBLEMS + BANK_PROBLEMS
+                             + DS_PROBLEMS + LINUX_PROBLEMS)
 
 
 def ensure() -> int:
@@ -163,7 +177,11 @@ def ensure() -> int:
             continue
 
         spec["tags"] = db.jdumps(spec.get("tags", []))
+        # 选择题的选项也存 JSON（空数组 = 不是选择题，前端据此决定渲染成选项还是编辑器）
+        spec["choices"] = db.jdumps(spec.get("choices", []) or [])
         spec["created_at"] = db.now_iso()
+        # 没写 subject 的一律归 Python 线（核心题与早期题库都没写）
+        spec.setdefault("subject", "python")
         spec.setdefault("status", "published")
         spec.setdefault("origin", "manual")
         spec.setdefault("checker", "standard")
@@ -190,15 +208,62 @@ def ensure() -> int:
     return added
 
 
-def _seed_specs() -> dict[str, tuple[int, list[int], str]]:
-    """把 SEED_PROBLEMS 整理成 {标题: (满分, 逐点分值, 对应讲次)}，供升级时对账。"""
-    out: dict[str, tuple[int, list[int], str]] = {}
+_LETTERS = "ABCDEFGH"
+
+
+def backfill_choice_alts() -> int:
+    """选择题：把**选项正文**补成可接受答案（幂等）。
+
+    为什么需要
+    ----------
+    题库里单选题的期望值只有选项字母（`|B`），但界面上「点选一个选项」这种
+    交互天然会想提交**选项正文**（「调用 compress（老式 .Z 格式）压缩」）。
+    两种写法都是合理的，只认一种必然踩坑：
+    前端点得再对也会被判 WA，而且看起来像判题器坏了。
+
+    所以这里把字母对应的正文作为 `|` 备选追加进去 —— `oneof` 口径下
+    两条路都通；判断题（对/错）的正文本来就是答案，跳过。
+    """
+    n = 0
+    rows = db.query(
+        "SELECT id, choices FROM problems "
+        "WHERE line = 'text' AND COALESCE(choices, '[]') NOT IN ('[]', '')")
+    for r in rows:
+        choices = db.jloads(r["choices"], [])
+        if len(choices) < 2 or choices == ["对", "错"]:
+            continue
+        for c in db.query("SELECT id, expected_stdout FROM testcases WHERE problem_id = ?",
+                          (r["id"],)):
+            expected = c["expected_stdout"] or ""
+            alts = [ln[1:].strip() for ln in expected.splitlines() if ln.startswith("|")]
+            if not alts:
+                continue
+            add: list[str] = []
+            for a in alts:
+                up = a.strip().upper()
+                if len(up) == 1 and up in _LETTERS[:len(choices)]:
+                    txt = str(choices[_LETTERS.index(up)]).strip()
+                    if txt and txt not in alts and txt not in add:
+                        add.append(txt)
+            if not add:
+                continue          # 已经补过 → 幂等
+            new = expected if expected.endswith("\n") else expected + "\n"
+            new += "\n".join("|" + a for a in add) + "\n"
+            db.execute("UPDATE testcases SET expected_stdout = ? WHERE id = ?", (new, c["id"]))
+            n += 1
+    return n
+
+
+def _seed_specs() -> dict[str, tuple[int, list[int], str, str]]:
+    """把 SEED_PROBLEMS 整理成 {标题: (满分, 逐点分值, 讲次, 学科)}，供升级时对账。"""
+    out: dict[str, tuple[int, list[int], str, str]] = {}
     for raw in SEED_PROBLEMS:
         spec = dict(raw)
         cases = spec.pop("cases", [])
         total = int(spec.get("total_score") or 100)
         pts = scoring.normalize_points([c.get("points", 0) for c in cases], total)
-        out[spec["title"]] = (total, pts, spec.get("source_section", ""))
+        out[spec["title"]] = (total, pts, spec.get("source_section", ""),
+                              spec.get("subject", "python"))
     return out
 
 
@@ -216,7 +281,8 @@ def backfill_points() -> int:
     fixed = 0
     specs = _seed_specs()
 
-    for p in db.query("SELECT id, title, total_score, source_section FROM problems"):
+    for p in db.query(
+            "SELECT id, title, total_score, source_section, subject FROM problems"):
         rows = db.query(
             "SELECT id, points FROM testcases WHERE problem_id=? ORDER BY ord, id",
             (p["id"],))
@@ -225,17 +291,19 @@ def backfill_points() -> int:
         raw = [int(r["points"] or 0) for r in rows]
 
         if p["title"] in specs:
-            want_total, want_pts, want_section = specs[p["title"]]
+            want_total, want_pts, want_section, want_subject = specs[p["title"]]
             if len(want_pts) != len(rows):
                 # 测试点数变了（SEED 增删了用例），按新数量重新均分
                 want_pts = scoring.distribute_points(want_total, len(rows))
             same = (int(p["total_score"] or 0) == want_total
                     and raw == want_pts
-                    and (p["source_section"] or "") == want_section)
+                    and (p["source_section"] or "") == want_section
+                    and (p["subject"] or "") == want_subject)
             if same:
                 continue
-            db.execute("UPDATE problems SET total_score=?, source_section=? WHERE id=?",
-                       (want_total, want_section, p["id"]))
+            db.execute(
+                "UPDATE problems SET total_score=?, source_section=?, subject=? WHERE id=?",
+                (want_total, want_section, want_subject, p["id"]))
             for r, pt in zip(rows, want_pts):
                 db.execute("UPDATE testcases SET points=? WHERE id=?", (pt, r["id"]))
             fixed += 1

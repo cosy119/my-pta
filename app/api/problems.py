@@ -10,11 +10,28 @@ import re
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from .. import config, db, users
+from ..seed import SUBJECT_LABELS
 
 router = APIRouter(prefix="/api", tags=["problems"])
 
-# 「第 03 讲 · 流程控制语句」→ 3；匹配不到就排到最后
+# 「第 03 讲 · 流程控制语句」→ 3；匹配不到就是 0（排在该科目的最前面）
 _LECTURE_RE = re.compile(r"第\s*(\d+)\s*讲")
+
+# 科目展示顺序：Python → 数据结构 → Linux
+SUBJECT_ORDER = {"python": 0, "ds": 1, "linux": 2}
+
+# 题目的语言选项：由 `line` 推导出「这道题能用哪些语言提交」
+# ★ 数据结构线是重点：`cpp` 表示**编译型**，学生可以用 C **或** C++ 交，
+#   两条路走不同的编译器（见 app/judge/runner_cpp.py）
+LANG_OPTIONS = {
+    "python": [{"lang": "python", "label": "Python", "hint": "解释执行"}],
+    "cpp": [
+        {"lang": "cpp", "label": "C++ (g++)", "hint": "-std=c++17"},
+        {"lang": "c", "label": "C (gcc)", "hint": "-std=gnu11"},
+    ],
+    "c": [{"lang": "c", "label": "C (gcc)", "hint": "-std=gnu11"}],
+    "text": [],
+}
 
 
 def current_user(request: Request) -> dict:
@@ -22,15 +39,24 @@ def current_user(request: Request) -> dict:
     return users.resolve(request.headers.get("x-user-token")) or {}
 
 
-def _order_key(row: dict) -> tuple:
-    """学习顺序：先按讲义讲次，再按难度，最后按 id。
+def lang_options_for(line: str) -> list[dict]:
+    return LANG_OPTIONS.get(str(line or "python").lower(), LANG_OPTIONS["python"])
 
-    这样题目列表就是「循序渐进」的 —— 第 02 讲的基础题一定排在第 03 讲前面。
+
+def _subject_key(subject) -> int:
+    return SUBJECT_ORDER.get(str(subject or "python"), 9)
+
+
+def _order_key(row: dict) -> tuple:
+    """学习顺序：先按**科目**，再按讲义讲次，最后按录入顺序。
+
+    ★ 最后用 `id` 而不是 `difficulty`：题库是按「由易到难」的编排顺序录进去的，
+      再按难度排一次反而会把精心设计的顺序打乱
+      （而且 Linux 线里「基础命令 / 实验 N」这两组没有讲次号，本来就得靠 id 定序）。
     """
-    m = _LECTURE_RE.search(row.get("source_section") or "")
-    if m:
-        return (0, int(m.group(1)), int(row.get("difficulty") or 0), row["id"])
-    return (1, 0, int(row.get("difficulty") or 0), row["id"])
+    m = _LECTURE_RE.search(str(row.get("source_section") or ""))
+    lec = int(m.group(1)) if m else 0
+    return (_subject_key(row.get("subject")), lec, row["id"])
 
 
 @router.get("/me")
@@ -75,9 +101,36 @@ def meta():
                  "path": interps.get("py314", "")},
             ],
         },
+        {
+            # ★ 数据结构线：同一道题 C 和 C++ 都能交，走不同的编译器
+            "lang": "cpp",
+            "label": "C++ (g++)",
+            "default": "gpp",
+            "interpreters": [
+                {"key": "gpp", "label": "g++ -std=c++17",
+                 "path": cfg.compiler_path("gpp")},
+            ],
+        },
+        {
+            "lang": "c",
+            "label": "C (gcc)",
+            "default": "gcc",
+            "interpreters": [
+                {"key": "gcc", "label": "gcc -std=gnu11",
+                 "path": cfg.compiler_path("gcc")},
+            ],
+        },
+        {
+            # 理论题（选择 / 判断 / 填空）：提交内容即答案，不需要任何运行时
+            "lang": "text",
+            "label": "文本答案",
+            "default": "text",
+            "interpreters": [],
+        },
     ]
     return {
         "langs": langs,
+        "subjects": [{"key": k, "label": v} for k, v in SUBJECT_LABELS.items()],
         "port": cfg.port,
         "db": str(cfg.db_path),
         "paths": {
@@ -92,12 +145,82 @@ def meta():
     }
 
 
+@router.get("/catalog")
+def catalog(user: dict = Depends(current_user)):
+    """科目目录：科目 → 分组（讲次 / 实验 / 基础命令）→ 题数与我的进度。
+
+    前端主界面（题集广场）用它渲染卡片和进度条，一次请求就够，
+    不用把整个题库拉下来再自己聚合。
+    """
+    uid = int(user.get("id") or 0)
+    rows = db.query("""
+        SELECT p.subject, p.line, p.source_section, p.total_score, p.difficulty,
+               COALESCE(m.best_score, 0) AS best_score,
+               m.solved_at               AS solved_at,
+               COALESCE(m.attempts, 0)   AS attempts
+        FROM problems p
+        LEFT JOIN mastery m ON m.problem_id = p.id AND m.user_id = ?
+        WHERE p.status = 'published'
+    """, (uid,))
+
+    subs: dict[str, dict] = {}
+    for r in rows:
+        key = str(r["subject"] or "python")
+        s = subs.setdefault(key, {
+            "key": key,
+            "label": SUBJECT_LABELS.get(key, key),
+            "total": 0, "solved": 0, "attempted": 0,
+            "score": 0, "max_score": 0,
+            "difficulty": {}, "lines": {},
+            "sections": {},
+        })
+        s["total"] += 1
+        s["score"] += int(r["best_score"] or 0)
+        s["max_score"] += int(r["total_score"] or 0)
+        if r["solved_at"]:
+            s["solved"] += 1
+        if int(r["attempts"] or 0) > 0:
+            s["attempted"] += 1
+        s["difficulty"][str(r["difficulty"] or 1)] = \
+            s["difficulty"].get(str(r["difficulty"] or 1), 0) + 1
+        s["lines"][str(r["line"] or "python")] = \
+            s["lines"].get(str(r["line"] or "python"), 0) + 1
+
+        # 分组名：优先用讲义讲次（「第 03 讲 · 流程控制语句」），
+        # 没有讲次号的（基础命令 / 实验 N）就按 section 原文分组
+        sec = str(r["source_section"] or "未分组")
+        g = s["sections"].setdefault(sec, {
+            "name": sec, "total": 0, "solved": 0, "score": 0, "max_score": 0,
+        })
+        g["total"] += 1
+        g["score"] += int(r["best_score"] or 0)
+        g["max_score"] += int(r["total_score"] or 0)
+        if r["solved_at"]:
+            g["solved"] += 1
+
+    out = []
+    for key, s in subs.items():
+        secs = list(s.pop("sections").values())
+        # 组内顺序：跟题库录入顺序一致（讲次号在前、其余按名字）
+        secs.sort(key=lambda x: (
+            int(_LECTURE_RE.search(x["name"]).group(1))
+            if _LECTURE_RE.search(x["name"]) else 0,
+            x["name"]))
+        s["sections"] = secs
+        out.append(s)
+    out.sort(key=lambda x: _subject_key(x["key"]))
+    return {"subjects": out, "user_score": sum(x["score"] for x in out),
+            "user_max_score": sum(x["max_score"] for x in out)}
+
+
 @router.get("/problems")
 def list_problems(line: str | None = None, status: str | None = None,
-                  q: str | None = None, user: dict = Depends(current_user)):
+                  subject: str | None = None, q: str | None = None,
+                  user: dict = Depends(current_user)):
     uid = int(user.get("id") or 0)
     sql = """
-        SELECT p.id, p.line, p.title, p.difficulty, p.tags, p.origin, p.status,
+        SELECT p.id, p.subject, p.line, p.title, p.difficulty, p.tags,
+               p.origin, p.status, p.choices,
                p.total_score,
                p.source_section, p.source_anchor, p.created_at,
                COALESCE(m.attempts, 0)   AS attempts,
@@ -116,6 +239,9 @@ def list_problems(line: str | None = None, status: str | None = None,
     if line:
         sql += " AND p.line = ?"
         params.append(line)
+    if subject:
+        sql += " AND p.subject = ?"
+        params.append(subject)
     if status:
         sql += " AND p.status = ?"
         params.append(status)
@@ -127,8 +253,11 @@ def list_problems(line: str | None = None, status: str | None = None,
     rows = db.query(sql, params)
     for r in rows:
         r["tags"] = db.jloads(r["tags"], [])
+        r["choices"] = db.jloads(r["choices"], [])
+        r["is_choice"] = bool(r["choices"])
         r["score_label"] = "%d/%d" % (r["best_score"] or 0, r["total_score"] or 0)
         r["solved"] = bool(r["solved_at"])
+        r["langs"] = lang_options_for(r["line"])
     rows.sort(key=_order_key)          # ★ 按讲义讲次排序，循序渐进
     return {"items": rows, "total": len(rows)}
 
@@ -141,6 +270,11 @@ def get_problem(pid: int, user: dict = Depends(current_user)):
         raise HTTPException(status_code=404, detail="题目不存在")
 
     p["tags"] = db.jloads(p["tags"], [])
+    p["choices"] = db.jloads(p["choices"], [])
+    p["is_choice"] = bool(p["choices"])
+    # 这道题能用哪些语言提交（数据结构线 = C / C++ 二选一）
+    p["langs"] = lang_options_for(p["line"])
+    p["subject_label"] = SUBJECT_LABELS.get(str(p["subject"] or "python"), "")
     p["samples"] = db.query(
         "SELECT id, ord, stdin, expected_stdout, explanation FROM testcases "
         "WHERE problem_id = ? AND is_sample = 1 ORDER BY ord, id", (pid,))

@@ -1,7 +1,7 @@
 # 判题后端的容器镜像（部署到 Render / Railway / Fly.io 用）
 #
 # 要点：
-# - 只用 Python 标准库 + 4 个纯 Python 包，镜像很小、构建很快
+# - Python 标准库 + 4 个纯 Python 包 + C/C++ 编译器（数据结构线要真编；gcc/g++ 约 200 MB）
 # - 判题要跑用户代码，所以**不能**用 distroless；用 slim 但去掉多余工具
 # - 数据库路径由 PTA_DB 环境变量指向持久化卷（见 render.yaml / 部署说明）
 FROM python:3.13-slim
@@ -13,6 +13,13 @@ ENV PYTHONUNBUFFERED=1 \
     PTA_CLOUD=1
 
 WORKDIR /app
+
+# ★ 数据结构线要真编 C / C++，镜像里必须有编译器。
+#   只用标准库的题目其实只要 gcc；但教材里的 `&` 引用之类写法在 gcc 下编不过，
+#   学生可以改用 C++ 提交 —— 所以 g++ 也得在。
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends gcc g++ libc6-dev \
+    && rm -rf /var/lib/apt/lists/*
 
 # 先装依赖（利用层缓存：只要 requirements 没变，改代码不会重装）
 COPY requirements.txt .

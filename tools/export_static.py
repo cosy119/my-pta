@@ -42,12 +42,15 @@ _STRIP_FIELDS = ("reference_solution", "ref_interpreter", "ai_meta", "ai_model")
 
 def build_bank() -> dict:
     """把库里的题目拼成前端能直接吃的结构。"""
+    # ★ subject / choices 必须一起导：前端要靠它们做「科目分类」和渲染选择题选项。
+    #   选择题的正确答案在 expected_stdout 里（且这些题 is_sample=0），所以给 options 不泄题。
     rows = db.query("""
-        SELECT id, line, title, difficulty, total_score, tags,
+        SELECT id, subject, line, title, difficulty, total_score, tags, choices,
                statement_md, input_format, output_format, constraints_md,
                time_limit_ms, memory_limit_mb, checker, float_eps,
                source_section, source_anchor, origin, status
         FROM problems
+        WHERE status = 'published'
         ORDER BY id ASC
     """)
 
@@ -56,6 +59,9 @@ def build_bank() -> dict:
         for f in _STRIP_FIELDS:
             p.pop(f, None)
         p["tags"] = db.jloads(p["tags"], [])
+        p["choices"] = db.jloads(p["choices"], [])
+        p["is_choice"] = bool(p["choices"])
+        p["subject"] = p.get("subject") or "python"
 
         # 测试点：样例全给（题面要用），隐藏点**只给个数和分值**，内容绝不出库
         cases = db.query(

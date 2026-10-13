@@ -2,18 +2,28 @@
 
 为什么要这一步
 --------------
-题库里的 `expected_stdout` 是先用 **node 独立实现**算好的（另一门语言、另一套写法），
-Python 参考解只是**被验证的一方**。两者对不上，就说明有一边错了 —— 这种题绝不入库。
+题库里的 `expected_stdout` 不是拿参考解跑出来的 —— 它由另一套独立实现预先算好
+（Python 题用 node 写、数据结构题用 Python 的 oracle 写，都是另一门语言、另一套写法）。
+参考解只是**被验证的一方**。两者对不上，就说明有一边错了 —— 这种题绝不入库。
 （如果拿参考解现跑现填，就等于自己给自己判卷，永远是满分。）
 
 `alt_solution` 是**第二套独立实现**（换算法或换 API）：
 参考解和 alt 解必须**各自都撞过全部测试点**才算通过。
 两道独立实现同时和期望值吻合，才能排除「共同盲区」。
 
+支持的语言（按题目 `line` 自动挑 runner）
+----------------------------------------
+- `python` → CPython 解释执行
+- `cpp` / `c` → 先 g++ / gcc 编译再跑（数据结构线：同一道题 C 和 C++ 都能交）
+- `text`   → 理论题（选择 / 判断 / 填空），提交内容即答案，不启子进程
+
 用法
 ----
-    python tools/verify_bank.py              # 验全部题
+    python tools/verify_bank.py              # 验全部题（三条线）
     python tools/verify_bank.py 素数          # 只验标题含「素数」的题
+    python tools/verify_bank.py --ds         # 只验数据结构线
+    python tools/verify_bank.py --py         # 只验 Python 线
+    python tools/verify_bank.py --linux      # 只验 Linux 线
     python tools/verify_bank.py --quiet      # 只打印汇总和失败项
 """
 from __future__ import annotations
@@ -26,25 +36,53 @@ ROOT = Path(__file__).resolve().parent.parent
 os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
-from app import config                               # noqa: E402
-from app.judge import sandbox                        # noqa: E402
-from app.judge.compare import compare                # noqa: E402
-from app.judge.runner_base import Limits             # noqa: E402
-from app.judge.runner_python import PythonRunner     # noqa: E402
-from app.problems_bank import BANK_PROBLEMS          # noqa: E402
+from app import config                                       # noqa: E402
+from app.judge import sandbox                                # noqa: E402
+from app.judge.compare import compare                        # noqa: E402
+from app.judge.runner_base import Limits                     # noqa: E402
+from app.judge.runner_cpp import LANG_SPECS, CompileRunner, canon_lang  # noqa: E402
+from app.judge.runner_python import PythonRunner             # noqa: E402
+from app.judge.runner_text import TextRunner                 # noqa: E402
+from app.problems_bank import BANK_PROBLEMS                  # noqa: E402
+from app.problems_bank_ds import DS_PROBLEMS                 # noqa: E402
+
+try:                                                         # Linux 线可能还没写
+    from app.problems_bank_linux import LINUX_PROBLEMS
+except ImportError:                                          # pragma: no cover
+    LINUX_PROBLEMS = []
+
+LINES = (
+    ("py", "Python 线", BANK_PROBLEMS),
+    ("ds", "数据结构线（C/C++）", DS_PROBLEMS),
+    ("linux", "Linux 线（理论题）", LINUX_PROBLEMS),
+)
+
+
+def make_runner(prob: dict, cfg):
+    """按题目声明挑 runner —— 和 worker.build_runner 同一套判断。"""
+    line = str(prob.get("line") or "python").strip().lower()
+    if line in ("text", "choice", "theory"):
+        return TextRunner()
+    canon = canon_lang(line)
+    if canon:
+        spec = LANG_SPECS[canon]
+        key = prob.get("ref_interpreter") or spec["compiler_key"]
+        return CompileRunner(canon, cfg.compiler_path(key), spec["title"])
+    label = prob.get("ref_interpreter") or "py313"
+    return PythonRunner(cfg.interpreter_path(label), label)
 
 
 def run_one_solution(solution: str, prob: dict, cfg, workdir: Path,
                      tag: str) -> tuple[int, list[str]]:
     """跑一套解，返回 (通过数, 失败说明)。
 
-    注意：**不在这里删目录**。同一套解复用同一个工作目录（prepare 会覆盖 main.py），
+    注意：**不在这里删目录**。同一套解复用同一个工作目录（prepare 会覆盖源文件），
     只在整轮开始/结束时各清一次 —— 否则 50+ 道题会累计上百次删除，
     既慢又容易撞上外层的批量删除保护。
     """
     workdir.mkdir(parents=True, exist_ok=True)
 
-    runner = PythonRunner(cfg.interpreter_path("py313"), "py313")
+    runner = make_runner(prob, cfg)
     ok, msg = runner.prepare(solution, workdir)
     if not ok:
         return 0, ["    [%s] 没跑起来：\n%s" % (tag, msg)]
@@ -98,18 +136,45 @@ def verify_one(idx: int, prob: dict, cfg, ref_dir: Path,
     return ref_ok, alt_ok, n, fails
 
 
+_LANG_TAG = {"python": "py ", "cpp": "c++", "c": "c  ", "text": "问 "}
+
+
+def _lang_tag(p: dict) -> str:
+    return _LANG_TAG.get(str(p.get("line") or "python").lower(), "?  ")
+
+
+def pick_lines() -> list[tuple[str, str, list[dict]]]:
+    """按命令行开关挑要验的线（都不写就全验）。"""
+    want = [t for t, _n, _p in LINES if ("--" + t) in sys.argv]
+    if not want:
+        return list(LINES)
+    return [(t, n, p) for t, n, p in LINES if t in want]
+
+
 def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     quiet = "--quiet" in sys.argv
     key = args[0] if args else ""
 
-    probs = [(i, p) for i, p in enumerate(BANK_PROBLEMS, 1)
-             if not key or key in p["title"]]
+    lines = pick_lines()
+    probs: list[tuple[int, dict]] = []
+    for _tag, _name, bank in lines:
+        for p in bank:
+            if not key or key in p["title"]:
+                probs.append((len(probs) + 1, p))
+    if not probs:
+        print("没有匹配的题目（检查一下筛选参数）")
+        return 1
 
     cfg = config.get()
-    base = Path(cfg.tmp_judge)
-    ref_dir = base / "verify_bank_ref"
-    alt_dir = base / "verify_bank_alt"
+    # ★ 自己的临时目录**必须**落在判题根目录之外。
+    #   原因：服务每次启动都会 `clean_tmp_root()` 把判题根目录下的所有子目录删干净
+    #   （那是崩溃兜底清理）。对拍脚本如果也住在里面，只要此时碰巧有服务在跑
+    #   （或服务在这中间启动过一次），编译出来的 main.py 就会被顺手删掉，
+    #   表现为一连串莫名其妙的 `can't open file ... main.py` RE。
+    base = Path(cfg.tmp_judge).parent / "verify_bank"
+    ref_dir = base / "ref"
+    alt_dir = base / "alt"
     sandbox.rmtree_force(ref_dir)
     sandbox.rmtree_force(alt_dir)
 
@@ -120,6 +185,7 @@ def main() -> int:
 
     print("=" * 82)
     print("题库校验：参考解 / 第二套独立实现  双撞期望输出")
+    print("本次覆盖：" + "、".join("%s（%d 题）" % (n, len(b)) for _t, n, b in lines))
     print("=" * 82)
 
     try:
@@ -131,15 +197,18 @@ def main() -> int:
             ok_all = (ref_ok == n) and (alt_ok in (-1, n))
             flag = "✅" if ok_all else "❌"
             if alt_ok == -1:
-                no_alt.append(p["title"])
+                # 理论题（line=text）的「参考解」就是答案本身，没有第二套实现可言，
+                # 不算「漏了 alt」—— 它们的反向验证在 tools/selftest_theory.py 里做
+                if str(p.get("line") or "") != "text":
+                    no_alt.append(p["title"])
                 alt_txt = "  alt  --"
             else:
                 alt_txt = "  alt %d/%d" % (alt_ok, n)
 
             if not quiet or not ok_all:
-                print("%s [%2d] %-18s 满分 %-3s 参考 %d/%d%s"
-                      % (flag, idx, p["title"], p.get("total_score", 100),
-                         ref_ok, n, alt_txt))
+                print("%s [%3d] %s %-30s 满分 %-4s 参考 %d/%d%s"
+                      % (flag, idx, _lang_tag(p), p["title"],
+                         p.get("total_score", 100), ref_ok, n, alt_txt))
 
             if fails or not ok_all:
                 bad.append(p["title"])

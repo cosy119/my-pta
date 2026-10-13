@@ -31,7 +31,12 @@ backups/
 *.zip
 
 # ---- 测试残留 ----
-data/_migrate_test.db**
+# 下划线开头的都是「验证用的临时产物」：测试库、抓下来的接口 JSON、抽出来的前端脚本…
+# 测试库（_bank_test.db）留着有用 —— 跑 selfcheck / e2e_ui 时用它，就不会碰真实进度
+data/_*
+# 自检日志（verify_bank / 各种 selftest 的输出）
+data/vb*.log
+data/*.log
 
 # 注意：docs/ 下的 index.html / problems.json / .nojekyll 都是**要**提交的
 # （GitHub Pages 靠它们发布静态站；problems.json 由 tools/export_static.py 生成，

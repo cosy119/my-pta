@@ -29,11 +29,13 @@ CREATE TABLE IF NOT EXISTS lectures (
 -- 题目
 CREATE TABLE IF NOT EXISTS problems (
   id                 INTEGER PRIMARY KEY,
-  line               TEXT NOT NULL DEFAULT 'python',   -- python | cpp | shell
+  subject            TEXT NOT NULL DEFAULT 'python',   -- 学科：python | ds | linux
+  line               TEXT NOT NULL DEFAULT 'python',   -- 提交形态：python | cpp | text
   title              TEXT NOT NULL,
   difficulty         INTEGER DEFAULT 2,                -- 1..5
   total_score        INTEGER DEFAULT 100,              -- 本题满分（= 各测试点分值之和）
   tags               TEXT DEFAULT '[]',                -- JSON 数组字符串
+  choices            TEXT DEFAULT '[]',                -- 选择题选项（JSON 数组；空 = 非选择题）
   statement_md       TEXT DEFAULT '',
   input_format       TEXT DEFAULT '',
   output_format      TEXT DEFAULT '',
@@ -42,7 +44,7 @@ CREATE TABLE IF NOT EXISTS problems (
   memory_limit_mb    INTEGER DEFAULT 256,
   reference_solution TEXT DEFAULT '',
   ref_interpreter    TEXT DEFAULT 'py313',
-  checker            TEXT DEFAULT 'standard',          -- standard | ignore_trailing | token | float
+  checker            TEXT DEFAULT 'standard',          -- standard|ignore_trailing|token|float|oneof
   float_eps          REAL DEFAULT 1e-6,
   origin             TEXT DEFAULT 'manual',            -- seed | ai | manual
   source_lecture_id  INTEGER REFERENCES lectures(id),
