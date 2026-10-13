@@ -6,6 +6,15 @@ PRAGMA synchronous = NORMAL;
 PRAGMA busy_timeout = 5000;
 PRAGMA foreign_keys = ON;
 
+-- 用户（无账号密码：浏览器生成的 token 就是身份；首见即注册）
+CREATE TABLE IF NOT EXISTS users (
+  id         INTEGER PRIMARY KEY,
+  token      TEXT NOT NULL UNIQUE,     -- 前端 localStorage 里的那串随机值
+  nickname   TEXT DEFAULT '',
+  created_at TEXT DEFAULT '',
+  last_seen  TEXT DEFAULT ''
+);
+
 -- 讲义索引（供题目回链锚点）
 CREATE TABLE IF NOT EXISTS lectures (
   id         INTEGER PRIMARY KEY,
@@ -57,11 +66,11 @@ CREATE TABLE IF NOT EXISTS testcases (
   points          INTEGER DEFAULT 0,                   -- 本测试点分值（0 = 由题目满分均分）
   explanation     TEXT DEFAULT ''
 );
-CREATE INDEX IF NOT EXISTS idx_tc_problem ON testcases(problem_id, ord);
 
 -- 提交（每次提交都留档；分数按通过的测试点分值累加）
 CREATE TABLE IF NOT EXISTS submissions (
   id            INTEGER PRIMARY KEY,
+  user_id       INTEGER REFERENCES users(id),   -- 谁的提交（进度按它隔离）
   problem_id    INTEGER REFERENCES problems(id),
   lang          TEXT DEFAULT 'python',
   interpreter   TEXT DEFAULT 'py313',
@@ -79,7 +88,6 @@ CREATE TABLE IF NOT EXISTS submissions (
   judged_at     TEXT DEFAULT '',
   judge_ms      INTEGER DEFAULT 0
 );
-CREATE INDEX IF NOT EXISTS idx_sub_problem ON submissions(problem_id, created_at);
 
 -- 单用例明细（记下该测试点是否拿到分，便于回看「差在哪个测试点」）
 CREATE TABLE IF NOT EXISTS submission_cases (
@@ -99,11 +107,11 @@ CREATE TABLE IF NOT EXISTS submission_cases (
   exit_code     INTEGER DEFAULT 0,
   detail        TEXT DEFAULT ''
 );
-CREATE INDEX IF NOT EXISTS idx_sc_sub ON submission_cases(submission_id, ord);
 
--- 掌握度 / 错题本 / 每题进度（单用户，每题一行）
+-- 掌握度 / 错题本 / 每题进度（**每人每题一行**）
 CREATE TABLE IF NOT EXISTS mastery (
-  problem_id         INTEGER PRIMARY KEY REFERENCES problems(id) ON DELETE CASCADE,
+  user_id            INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  problem_id         INTEGER NOT NULL REFERENCES problems(id) ON DELETE CASCADE,
   attempts           INTEGER DEFAULT 0,
   ac_count           INTEGER DEFAULT 0,     -- 满分（AC）次数
   best_score         INTEGER DEFAULT 0,     -- 历史最高得分
@@ -114,7 +122,8 @@ CREATE TABLE IF NOT EXISTS mastery (
   solved_at          TEXT DEFAULT '',       -- 首次满分的时间
   is_starred         INTEGER DEFAULT 0,
   level              INTEGER DEFAULT 0,     -- 0 未掌握 1 薄弱 2 熟练
-  note               TEXT DEFAULT ''
+  note               TEXT DEFAULT '',
+  PRIMARY KEY (user_id, problem_id)
 );
 
 -- AI 配置（可多套，一条 active）

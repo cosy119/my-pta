@@ -1,0 +1,2758 @@
+{
+ "generated_at": "2026-10-13 10:42:18",
+ "count": 56,
+ "total_score": 860,
+ "total_testcases": 230,
+ "items": [
+  {
+   "id": 1,
+   "line": "python",
+   "title": "A+B 问题",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "入门",
+    "算术",
+    "标准输入"
+   ],
+   "statement_md": "读入两个整数，输出它们的和。\n\n这是最经典的入门题，用来确认输入输出通道是否通了。",
+   "input_format": "一行，两个整数 `a` 和 `b`，用空格分隔。",
+   "output_format": "一行，一个整数，表示 `a + b`。",
+   "constraints_md": "-10^9 ≤ a, b ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1,
+     "ord": 0,
+     "stdin": "1 2\n",
+     "expected_stdout": "3\n",
+     "explanation": "1 + 2 = 3"
+    },
+    {
+     "id": 2,
+     "ord": 1,
+     "stdin": "-5 3\n",
+     "expected_stdout": "-2\n",
+     "explanation": "负数相加：-5 + 3 = -2"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 2,
+   "line": "python",
+   "title": "区间求和",
+   "difficulty": 2,
+   "total_score": 20,
+   "tags": [
+    "数学",
+    "公式",
+    "性能"
+   ],
+   "statement_md": "给定若干组整数区间，对每组求区间内所有整数的和。\n\n看着简单，但**直接用循环累加会超时** —— 区间可能有 10^9 个数。",
+   "input_format": "第一行一个整数 `n`，表示区间个数。\n\n随后 `n` 行，每行两个整数 `a` `b`（保证 `a ≤ b`）。\n\n输入中可能有空行，按空白字符分割处理即可。",
+   "output_format": "`n` 行，每行一个整数，表示区间 [a, b] 内所有整数之和。",
+   "constraints_md": "- n ≤ 10^5\n- -10^9 ≤ a ≤ b ≤ 10^9\n- 时间限制 400 ms —— 提示：用等差数列求和公式",
+   "time_limit_ms": 400,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 6,
+     "ord": 0,
+     "stdin": "1\n3 5\n",
+     "expected_stdout": "12\n",
+     "explanation": "3 + 4 + 5 = 12"
+    },
+    {
+     "id": 7,
+     "ord": 1,
+     "stdin": "1\n-5 -3\n",
+     "expected_stdout": "-12\n",
+     "explanation": "(-5) + (-4) + (-3) = -12"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 3,
+   "line": "python",
+   "title": "求平均值",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "算术",
+    "浮点",
+    "容差判题"
+   ],
+   "statement_md": "读入 `n` 个整数，输出它们的平均值。\n\n这题**不限制小数位数** —— 判题时按容差（1e-6）比较，你输出 `2`、`2.0` 还是 `2.000000` 都算对。",
+   "input_format": "第一行一个整数 `n`。\n\n第二行 `n` 个整数，用空格分隔。",
+   "output_format": "一行，平均值。小数位数不限。",
+   "constraints_md": "- 1 ≤ n ≤ 1000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "float",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 11,
+     "ord": 0,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "2\n",
+     "explanation": "1+2+3 = 6，6/3 = 2"
+    },
+    {
+     "id": 12,
+     "ord": 1,
+     "stdin": "3\n1 1 2\n",
+     "expected_stdout": "1.3333333333333333\n",
+     "explanation": "4/3 = 1.333333…（看你保留几位）"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 4,
+   "line": "python",
+   "title": "圆的面积",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "输入输出",
+    "类型转换",
+    "格式化"
+   ],
+   "statement_md": "给定圆的半径 `r`，输出圆的面积，**保留 2 位小数**。\n\n本题 π 取 **3.14**（不要用 `math.pi`，那会差一点点）。\n\n这题练的是最基础的一环：`input()` 拿到的是**字符串**，必须先 `int()` 转成数字才能算。",
+   "input_format": "一行，一个整数 `r`。",
+   "output_format": "一行，面积，保留 2 位小数（例如 `3.14`、`314.00`）。",
+   "constraints_md": "- 0 ≤ r ≤ 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "float",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 16,
+     "ord": 0,
+     "stdin": "1\n",
+     "expected_stdout": "3.14\n",
+     "explanation": "3.14 × 1 × 1 = 3.14"
+    },
+    {
+     "id": 17,
+     "ord": 1,
+     "stdin": "2\n",
+     "expected_stdout": "12.56\n",
+     "explanation": "3.14 × 4 = 12.56"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 5,
+   "line": "python",
+   "title": "判断闰年",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "条件判断",
+    "逻辑运算"
+   ],
+   "statement_md": "判断给定的年份是不是闰年。\n\n闰年的规则：**能被 4 整除但不能被 100 整除**，或者**能被 400 整除**。\n\n最容易写错的是世纪年：1900 年能被 4 整除，但它不是闰年 —— 因为「能被 100 整除」这一条把它拦掉了。",
+   "input_format": "一行，一个整数 `y`（年份）。",
+   "output_format": "一行，闰年输出 `yes`，否则输出 `no`。",
+   "constraints_md": "- 1 ≤ y ≤ 9999",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 21,
+     "ord": 0,
+     "stdin": "2024\n",
+     "expected_stdout": "yes\n",
+     "explanation": "2024 能被 4 整除、不能被 100 整除 → 闰年"
+    },
+    {
+     "id": 22,
+     "ord": 1,
+     "stdin": "1900\n",
+     "expected_stdout": "no\n",
+     "explanation": "1900 能被 100 整除但不能被 400 整除 → 不是闰年（★ 最容易错的一个）"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 6,
+   "line": "python",
+   "title": "数字三角形",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "循环",
+    "嵌套循环",
+    "字符串拼接"
+   ],
+   "statement_md": "输入 `n`，输出 `n` 行数字三角形：第 `i` 行是从 1 到 `i`，数字之间用**一个空格**分隔。\n\n```text\n1\n1 2\n1 2 3\n```\n\n考点是**嵌套循环**，以及行末不要多出一个空格。",
+   "input_format": "一行，一个整数 `n`。",
+   "output_format": "`n` 行，第 `i` 行为 `1 2 … i`。",
+   "constraints_md": "- 1 ≤ n ≤ 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "ignore_trailing",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 26,
+     "ord": 0,
+     "stdin": "3\n",
+     "expected_stdout": "1\n1 2\n1 2 3\n",
+     "explanation": "3 行"
+    },
+    {
+     "id": 27,
+     "ord": 1,
+     "stdin": "1\n",
+     "expected_stdout": "1\n",
+     "explanation": "边界：只有一行"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 7,
+   "line": "python",
+   "title": "素数判断",
+   "difficulty": 3,
+   "total_score": 15,
+   "tags": [
+    "循环",
+    "break",
+    "边界",
+    "性能"
+   ],
+   "statement_md": "判断给定整数是不是素数（质数）。\n\n两个坑：\n\n1. **1 不是素数**，也不是合数\n2. 直接试除到 `n-1` 会超时 —— 试到 **√n** 就够（如果 n 有因子，必有一个 ≤ √n）",
+   "input_format": "一行，一个整数 `n`。",
+   "output_format": "一行，`prime` 或 `not prime`。",
+   "constraints_md": "- 1 ≤ n ≤ 10^9\n- 时间限制 1000 ms —— 提示：试除到 √n",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 31,
+     "ord": 0,
+     "stdin": "17\n",
+     "expected_stdout": "prime\n",
+     "explanation": "17 只有 1 和它本身两个因子"
+    },
+    {
+     "id": 32,
+     "ord": 1,
+     "stdin": "1\n",
+     "expected_stdout": "not prime\n",
+     "explanation": "1 不是素数（★ 最常错）"
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    3,
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 8,
+   "line": "python",
+   "title": "字符串反转与回文",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "字符串",
+    "切片"
+   ],
+   "statement_md": "读入一行字符串，输出两行：\n\n1. 它的**反转**\n2. 它是不是**回文**（正着读反着读一样），是输出 `yes`，不是输出 `no`\n\nPython 里反转一个字符串只要 `s[::-1]` —— 切片第三个参数是步长，写成 `-1` 就是从后往前一个个取。",
+   "input_format": "一行字符串 `s`（可能为空，可能含空格）。",
+   "output_format": "第一行是反转后的字符串；第二行是 `yes` 或 `no`。",
+   "constraints_md": "- 0 ≤ len(s) ≤ 1000\n- 只含可见 ASCII 字符与空格",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 37,
+     "ord": 0,
+     "stdin": "abc\n",
+     "expected_stdout": "cba\nno\n",
+     "explanation": ""
+    },
+    {
+     "id": 38,
+     "ord": 1,
+     "stdin": "aba\n",
+     "expected_stdout": "aba\nyes\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    1,
+    1
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 9,
+   "line": "python",
+   "title": "单词计数",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "字符串",
+    "split",
+    "空白处理"
+   ],
+   "statement_md": "统计输入里一共有多少个单词（**按空白字符分割**，连续多个空格算一个分隔）。\n\n关键点：`s.split()` **不带参数**时会自动把连续空白压缩掉；而 `s.split(' ')` 会老老实实按每一个空格切，连出空串 —— 两者行为完全不同。\n\n输入可能是多行，也可能全是空白。",
+   "input_format": "若干行文本。",
+   "output_format": "一行，一个整数：单词总数。",
+   "constraints_md": "- 输入总长度 ≤ 100000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 43,
+     "ord": 0,
+     "stdin": "hello world\n",
+     "expected_stdout": "2\n",
+     "explanation": ""
+    },
+    {
+     "id": 44,
+     "ord": 1,
+     "stdin": "  a   b  c  \n",
+     "expected_stdout": "3\n",
+     "explanation": "连续空格和首尾空格都不算新单词"
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    1,
+    1
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 10,
+   "line": "python",
+   "title": "去重保序",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "列表",
+    "集合",
+    "顺序"
+   ],
+   "statement_md": "给 `n` 个整数，去掉重复的，**保持第一次出现的顺序**输出。\n\n直接用 `set()` 会丢顺序（集合是无序的），所以要么手动记录「见过没」，要么用 `dict.fromkeys()`（3.7 起字典保序）。",
+   "input_format": "第一行一个整数 `n`；第二行 `n` 个整数，空格分隔。",
+   "output_format": "一行，去重后的整数，空格分隔。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "token",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 49,
+     "ord": 0,
+     "stdin": "5\n1 2 2 3 1\n",
+     "expected_stdout": "1 2 3\n",
+     "explanation": ""
+    },
+    {
+     "id": 50,
+     "ord": 1,
+     "stdin": "3\n5 5 5\n",
+     "expected_stdout": "5\n",
+     "explanation": "全一样 → 只剩一个"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 11,
+   "line": "python",
+   "title": "第 k 大的数",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "列表",
+    "排序",
+    "索引"
+   ],
+   "statement_md": "给 `n` 个整数，求**第 k 大**的数。\n\n第 1 大就是最大值。**重复的数各算一个**（例如 `3 1 4 1 5` 第 3 大是 3）。\n\n最省事的写法是降序排序后取第 `k-1` 个 —— 注意列表下标从 **0** 开始。",
+   "input_format": "第一行两个整数 `n` 和 `k`；第二行 `n` 个整数。",
+   "output_format": "一行，第 `k` 大的数。",
+   "constraints_md": "- 1 ≤ k ≤ n ≤ 100000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 54,
+     "ord": 0,
+     "stdin": "5 1\n3 1 4 1 5\n",
+     "expected_stdout": "5\n",
+     "explanation": "第 1 大 = 最大值"
+    },
+    {
+     "id": 55,
+     "ord": 1,
+     "stdin": "5 5\n3 1 4 1 5\n",
+     "expected_stdout": "1\n",
+     "explanation": "第 5 大 = 最小值（降序最后一个是 1）"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 12,
+   "line": "python",
+   "title": "词频统计",
+   "difficulty": 2,
+   "total_score": 20,
+   "tags": [
+    "字典",
+    "排序",
+    "多关键字排序"
+   ],
+   "statement_md": "统计每个单词出现的次数，按下面的规则输出：\n\n- **次数多的在前**\n- 次数相同，**按字典序（字母序）排**\n- 每行 `单词 次数`\n\n这是「多关键字排序」：先比次数、再比单词。写成 `sorted(d.items(), key=lambda kv: (-kv[1], kv[0]))` 一次搞定。",
+   "input_format": "第一行一个整数 `n`；随后 `n` 行，每行一个单词（不含空格）。",
+   "output_format": "每行 `单词 次数`，按上面的规则排序。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 单词由小写字母组成，长度 ≤ 20",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 59,
+     "ord": 0,
+     "stdin": "5\napple\nbanana\napple\ncherry\nbanana\n",
+     "expected_stdout": "apple 2\nbanana 2\ncherry 1\n",
+     "explanation": "apple 和 banana 都是 2 次，按字母序 apple 在前"
+    },
+    {
+     "id": 60,
+     "ord": 1,
+     "stdin": "3\nb\na\nb\n",
+     "expected_stdout": "b 2\na 1\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 13,
+   "line": "python",
+   "title": "最大公约数",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "函数",
+    "循环",
+    "欧几里得算法",
+    "边界"
+   ],
+   "statement_md": "求两个非负整数的最大公约数。\n\n用**辗转相除法**：`gcd(a, b) = gcd(b, a % b)`，直到 `b` 为 0，此时 `a` 就是答案。\n\n边界要留意：`gcd(0, 5) = 5`、`gcd(0, 0) = 0`。",
+   "input_format": "一行，两个非负整数 `a` 和 `b`，空格分隔。",
+   "output_format": "一行，最大公约数。",
+   "constraints_md": "- 0 ≤ a, b ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 64,
+     "ord": 0,
+     "stdin": "12 18\n",
+     "expected_stdout": "6\n",
+     "explanation": ""
+    },
+    {
+     "id": 65,
+     "ord": 1,
+     "stdin": "7 13\n",
+     "expected_stdout": "1\n",
+     "explanation": "两个素数 → 互质"
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    1,
+    1
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 14,
+   "line": "python",
+   "title": "斐波那契数列",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "递归",
+    "迭代",
+    "大整数"
+   ],
+   "statement_md": "求斐波那契数列第 `n` 项。定义：`F(0) = 0`，`F(1) = 1`，`F(n) = F(n-1) + F(n-2)`。\n\n**注意 `n = 200` 时结果有 42 位** —— Python 的整数没有上限，直接算就好；但**不要用朴素递归**（`F(200)` 要算 10^41 次，永远跑不完），要用循环或记忆化。",
+   "input_format": "一行，一个整数 `n`。",
+   "output_format": "一行，`F(n)`。",
+   "constraints_md": "- 0 ≤ n ≤ 200\n- 时间限制 1000 ms —— 朴素递归必超时",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 70,
+     "ord": 0,
+     "stdin": "0\n",
+     "expected_stdout": "0\n",
+     "explanation": "F(0) = 0"
+    },
+    {
+     "id": 71,
+     "ord": 1,
+     "stdin": "1\n",
+     "expected_stdout": "1\n",
+     "explanation": "F(1) = 1"
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    3,
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 15,
+   "line": "python",
+   "title": "温度转换",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "输入输出",
+    "类型转换",
+    "格式化",
+    "浮点"
+   ],
+   "statement_md": "读入一个摄氏温度 `C`，输出对应的华氏温度，**保留 2 位小数**。\n\n换算公式：`F = C × 9 / 5 + 32`。\n\n两个考点：\n\n1. **整数除法陷阱** —— 在 Python 3 里 `9 / 5` 得 `1.8`（真除法），所以直接写就行；要是写成别的语言那样 `9 // 5` 就变成 `1` 了\n2. `-40` 是摄氏和华氏**相等**的那个温度，可以拿来自检公式对不对",
+   "input_format": "一行，一个整数 `C`。",
+   "output_format": "一行，华氏温度，保留 2 位小数。",
+   "constraints_md": "- -1000 ≤ C ≤ 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 76,
+     "ord": 0,
+     "stdin": "0\n",
+     "expected_stdout": "32.00\n",
+     "explanation": "水的冰点：0℃ = 32℉"
+    },
+    {
+     "id": 77,
+     "ord": 1,
+     "stdin": "100\n",
+     "expected_stdout": "212.00\n",
+     "explanation": "水的沸点：100℃ = 212℉"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 16,
+   "line": "python",
+   "title": "三位数拆分",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "算术运算",
+    "整除",
+    "取余"
+   ],
+   "statement_md": "读入一个三位数，输出它**各位数字之和**。\n\n两种典型写法：\n\n- **算术法**：`n // 100` 取百位，`n // 10 % 10` 取十位，`n % 10` 取个位\n- **字符串法**：`str(n)` 拆开，逐个转回 `int` 再加\n\n这题看着简单，但**整除和取余的优先级**（`//` 与 `%` 同级，从左往右算）是初学最容易写错的地方。",
+   "input_format": "一行，一个三位数 `n`。",
+   "output_format": "一行，各位数字之和。",
+   "constraints_md": "- 100 ≤ n ≤ 999",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 81,
+     "ord": 0,
+     "stdin": "123\n",
+     "expected_stdout": "6\n",
+     "explanation": "1 + 2 + 3 = 6"
+    },
+    {
+     "id": 82,
+     "ord": 1,
+     "stdin": "999\n",
+     "expected_stdout": "27\n",
+     "explanation": "9 × 3 = 27，最大值"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 17,
+   "line": "python",
+   "title": "九九乘法表",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "嵌套循环",
+    "格式化",
+    "字符串拼接"
+   ],
+   "statement_md": "输出完整的九九乘法表，共 9 行。\n\n第 `i` 行包含 `j` 从 1 到 `i` 的每一项，格式为 `i*j=积`，同一行内用**一个空格**分隔：\n\n```text\n1*1=1\n2*1=2 2*2=4\n3*1=3 3*2=6 3*3=9\n```\n\n**要点**\n\n- 外层循环控制「第几行」，内层循环控制「这一行有几项」\n- 内层上界跟着外层走（`j` 从 1 到 `i`），这是嵌套循环的典型形状\n- 行末**不能**多出空格 —— 用 `' '.join(...)` 天然不会多",
+   "input_format": "无输入（可以直接不读）。",
+   "output_format": "9 行，如上格式。",
+   "constraints_md": "- 输出固定，与输入无关",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 1,
+   "samples": [
+    {
+     "id": 86,
+     "ord": 0,
+     "stdin": "\n",
+     "expected_stdout": "1*1=1\n2*1=2 2*2=4\n3*1=3 3*2=6 3*3=9\n4*1=4 4*2=8 4*3=12 4*4=16\n5*1=5 5*2=10 5*3=15 5*4=20 5*5=25\n6*1=6 6*2=12 6*3=18 6*4=24 6*5=30 6*6=36\n7*1=7 7*2=14 7*3=21 7*4=28 7*5=35 7*6=42 7*7=49\n8*1=8 8*2=16 8*3=24 8*4=32 8*5=40 8*6=48 8*7=56 8*8=64\n9*1=9 9*2=18 9*3=27 9*4=36 9*5=45 9*6=54 9*7=63 9*8=72 9*9=81\n",
+     "explanation": "第 i 行有 i 项；两位数从第 4 行开始出现"
+    }
+   ],
+   "hidden_count": 0,
+   "case_points": [
+    15
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 18,
+   "line": "python",
+   "title": "成绩等级",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "if-elif",
+    "边界",
+    "区间的开闭"
+   ],
+   "statement_md": "给出百分制分数，输出对应等级：\n\n| 分数 | 等级 |\n|---|---|\n| 90 ~ 100 | `A` |\n| 80 ~ 89 | `B` |\n| 70 ~ 79 | `C` |\n| 60 ~ 69 | `D` |\n| 0 ~ 59 | `E` |\n\n**考点是边界**：89 和 90 挨着，59 和 60 挨着。用 `if s >= 90` 从上往下写就不会错；要是写成 `if s > 90`，90 分就会掉到 `B` 去。",
+   "input_format": "一行，一个整数 `s`。",
+   "output_format": "一行，一个大写字母等级。",
+   "constraints_md": "- 0 ≤ s ≤ 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 6,
+   "samples": [
+    {
+     "id": 87,
+     "ord": 0,
+     "stdin": "90\n",
+     "expected_stdout": "A\n",
+     "explanation": "90 是 A 的下边界（写成 > 90 就错了）"
+    },
+    {
+     "id": 88,
+     "ord": 1,
+     "stdin": "60\n",
+     "expected_stdout": "D\n",
+     "explanation": "60 是 D 的下边界"
+    }
+   ],
+   "hidden_count": 4,
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    1,
+    1
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 19,
+   "line": "python",
+   "title": "水仙花数",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "循环",
+    "区间",
+    "数位拆分"
+   ],
+   "statement_md": "**水仙花数**：一个三位数，它的各位数字的**三次方之和**等于它本身。\n\n例如 153：`1³ + 5³ + 3³ = 1 + 125 + 27 = 153`，所以 153 是水仙花数。\n\n请找出 100 ~ 999 之间**所有**水仙花数，从小到大输出，同一行内用空格分隔。\n\n这题把「遍历区间 + 拆位 + 条件判断」串在一起，是这个阶段最经典的综合小练习。",
+   "input_format": "无输入。",
+   "output_format": "一行，所有水仙花数，空格分隔。",
+   "constraints_md": "- 输出固定，与输入无关",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "token",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 1,
+   "samples": [
+    {
+     "id": 93,
+     "ord": 0,
+     "stdin": "\n",
+     "expected_stdout": "153 370 371 407\n",
+     "explanation": "★ 一共 4 个：153(1+125+27)、370(27+343+0)、371(27+343+1)、407(64+0+343)"
+    }
+   ],
+   "hidden_count": 0,
+   "case_points": [
+    15
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 20,
+   "line": "python",
+   "title": "统计字符类型",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "字符串",
+    "遍历",
+    "分类统计"
+   ],
+   "statement_md": "读入一行文本，统计其中**字母**、**数字**、**空格**、**其他字符**各有多少个，按这个顺序输出四个整数。\n\nPython 的字符串有现成的判断方法：\n\n- `ch.isalpha()` —— 是不是字母（只算 ASCII 字母时用 `'a' <= ch <= 'z'` 更保险）\n- `ch.isdigit()` —— 是不是数字\n\n**注意**：`isalpha()` 对中文字符也会返回 `True`。本题输入只含可见 ASCII 字符，两种写法结果一样。",
+   "input_format": "一行文本（可能为空）。",
+   "output_format": "一行，四个整数，依次是 字母数 数字数 空格数 其他数。",
+   "constraints_md": "- 0 ≤ 行长 ≤ 10000\n- 只含可见 ASCII 字符与空格",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 94,
+     "ord": 0,
+     "stdin": "Hello World 123\n",
+     "expected_stdout": "10 3 2 0\n",
+     "explanation": "Hello(5) + World(5) = 10 个字母；1 2 3 三个数字；两个空格"
+    },
+    {
+     "id": 95,
+     "ord": 1,
+     "stdin": "a b!\n",
+     "expected_stdout": "2 0 1 1\n",
+     "explanation": "字母 a b，空格 1 个，`!` 归入其他"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 21,
+   "line": "python",
+   "title": "大小写互换",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "字符串",
+    "内置方法",
+    "遍历"
+   ],
+   "statement_md": "读入一行文本，把**大写字母变小写、小写字母变大写**，其他字符原样保留。\n\nPython 字符串有个一步到位的方法：`s.swapcase()`。\n\n不过建议你也手写一遍循环版本 —— 面试和考试里更常考「怎么判断一个字符是大写」。",
+   "input_format": "一行文本（可能为空）。",
+   "output_format": "一行，转换后的文本。",
+   "constraints_md": "- 0 ≤ 行长 ≤ 10000\n- 只含可见 ASCII 字符与空格",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 99,
+     "ord": 0,
+     "stdin": "Hello\n",
+     "expected_stdout": "hELLO\n",
+     "explanation": ""
+    },
+    {
+     "id": 100,
+     "ord": 1,
+     "stdin": "Hello World\n",
+     "expected_stdout": "hELLO wORLD\n",
+     "explanation": "空格不受影响"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    3,
+    3,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 22,
+   "line": "python",
+   "title": "查找子串",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "字符串",
+    "find",
+    "重叠匹配"
+   ],
+   "statement_md": "读入两行：第一行是**主串**，第二行是**模式串**。输出模式串在主串中出现的次数。\n\n**关键：允许重叠。**\n\n比如主串 `aaaa`、模式串 `aa`，答案是 **3** 而不是 2 —— 因为起点 0、1、2 各能匹配一次，它们互相重叠。\n\n如果直接用 `s.count(p)`，**也可以**，它默认就是按重叠起点数的；但面试里更常让你用 `str.find()` 循环实现：\n每次找到后从「上次位置 + 1」继续找，而不是 + 模式串长度。",
+   "input_format": "两行，第一行主串 `t`（长度 ≥ 1），第二行模式串 `p`（长度 ≥ 1）。",
+   "output_format": "一行，一个整数，出现次数（可重叠）。",
+   "constraints_md": "- 1 ≤ len(p) ≤ len(t) ≤ 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 103,
+     "ord": 0,
+     "stdin": "aaaa\naa\n",
+     "expected_stdout": "3\n",
+     "explanation": "★ 下标 0、1、2 各匹配一次 → 3（不是 2）"
+    },
+    {
+     "id": 104,
+     "ord": 1,
+     "stdin": "abcabcabc\nabc\n",
+     "expected_stdout": "3\n",
+     "explanation": "不重叠的重复三次"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 23,
+   "line": "python",
+   "title": "极差",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "列表",
+    "max",
+    "min"
+   ],
+   "statement_md": "读入 `n` 个整数，输出它们的**极差**（最大值减最小值）。\n\n`max()` 和 `min()` 是 Python 内置函数，对列表直接用；也可以先 `sort()` 再取首尾 —— 后者能顺便把列表排好序。",
+   "input_format": "第一行一个整数 `n`；第二行 `n` 个整数，空格分隔。",
+   "output_format": "一行，一个整数：最大值 − 最小值。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 108,
+     "ord": 0,
+     "stdin": "5\n3 1 4 1 5\n",
+     "expected_stdout": "4\n",
+     "explanation": "max 5 − min 1 = 4"
+    },
+    {
+     "id": 109,
+     "ord": 1,
+     "stdin": "1\n7\n",
+     "expected_stdout": "0\n",
+     "explanation": "只有一个数 → 极差 0"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    4,
+    3,
+    3
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 24,
+   "line": "python",
+   "title": "成绩统计",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "列表",
+    "聚合",
+    "格式化"
+   ],
+   "statement_md": "读入 `n` 个成绩（整数），在同一行输出三个值：\n\n```text\n最高分 最低分 平均分\n```\n\n其中**平均分保留 2 位小数**，其余两个按整数输出。\n\n**易错点**：`sum(nums) / n` 在 Python 3 里是真除法，不会把小数截掉；`n = 0` 的情况本题不会出现。",
+   "input_format": "第一行一个整数 `n`；第二行 `n` 个整数，空格分隔。",
+   "output_format": "一行，`最高分 最低分 平均分`（平均分 2 位小数）。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 0 ≤ 每个成绩 ≤ 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 111,
+     "ord": 0,
+     "stdin": "5\n90 80 70 100 60\n",
+     "expected_stdout": "100 60 80.00\n",
+     "explanation": "总分 400，400 / 5 = 80.00"
+    },
+    {
+     "id": 112,
+     "ord": 1,
+     "stdin": "3\n1 2 4\n",
+     "expected_stdout": "4 1 2.33\n",
+     "explanation": "7 / 3 = 2.3333… → 2.33"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    4,
+    4,
+    4,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 25,
+   "line": "python",
+   "title": "合并有序列表",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "列表",
+    "双指针",
+    "归并",
+    "边界"
+   ],
+   "statement_md": "给定两个**升序排列**的整数序列，把它们合并成一个仍然升序的序列并输出。\n\n```text\n输入：1 3 5  和  2 4 6\n输出：1 2 3 4 5 6\n```\n\n两种写法：\n\n- **省事**：`sorted(a + b)` —— 直接拼起来全排序，O((n+m)log(n+m))\n- **正统**：双指针归并 —— 每次比较两个序列的队首，取小的那个，O(n + m)；这是归并排序的核心步骤\n\n**边界**：任一序列可以是空的（`n = 0` 时第二行是空行，也要读掉）。",
+   "input_format": "第一行一个整数 `n`；第二行 `n` 个升序整数（n = 0 时为空行）。\n\n第三行一个整数 `m`；第四行 `m` 个升序整数（m = 0 时为空行）。",
+   "output_format": "一行，合并后的升序序列，空格分隔。",
+   "constraints_md": "- 0 ≤ n, m ≤ 100000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "token",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 115,
+     "ord": 0,
+     "stdin": "3\n1 3 5\n3\n2 4 6\n",
+     "expected_stdout": "1 2 3 4 5 6\n",
+     "explanation": "交错合并"
+    },
+    {
+     "id": 116,
+     "ord": 1,
+     "stdin": "3\n1 1 2\n3\n1 2 2\n",
+     "expected_stdout": "1 1 1 2 2 2\n",
+     "explanation": "有重复元素，相等时先取哪个都行（结果一样）"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    5,
+    5,
+    5,
+    5
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 26,
+   "line": "python",
+   "title": "矩阵转置",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "二维列表",
+    "嵌套列表",
+    "zip"
+   ],
+   "statement_md": "读入一个 `n` 行 `m` 列的整数矩阵，输出它的**转置**（行列互换，变成 `m` 行 `n` 列）。\n\n```text\n输入：      输出：\n1 2 3       1 4\n4 5 6       2 5\n            3 6\n```\n\n两种写法：\n\n- 下标法：`new[j][i] = old[i][j]`\n- Python 味：`zip(*mat)` —— `*` 把行拆开，`zip` 再按列打包，一行搞定\n\n**注意**：这不是方阵，`n ≠ m` 是常态，别写死成对称交换。",
+   "input_format": "第一行两个整数 `n` 和 `m`。\n\n随后 `n` 行，每行 `m` 个整数。",
+   "output_format": "`m` 行，每行 `n` 个整数，空格分隔。",
+   "constraints_md": "- 1 ≤ n, m ≤ 500",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 119,
+     "ord": 0,
+     "stdin": "2 3\n1 2 3\n4 5 6\n",
+     "expected_stdout": "1 4\n2 5\n3 6\n",
+     "explanation": "2×3 → 3×2"
+    },
+    {
+     "id": 120,
+     "ord": 1,
+     "stdin": "2 2\n1 2\n3 4\n",
+     "expected_stdout": "1 3\n2 4\n",
+     "explanation": "方阵：对角不动，其余互换"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    5,
+    5,
+    5,
+    5
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 27,
+   "line": "python",
+   "title": "两数之和",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "字典",
+    "哈希表",
+    "复杂度"
+   ],
+   "statement_md": "给定 `n` 个整数和一个目标值 `t`，找出**一对**下标 `i < j`，使得 `nums[i] + nums[j] == t`。输出 `i j`；找不到输出 `-1`。\n\n**如果有多个答案，输出「第二个数的下标最小」的那一组。**\n\n两种写法：\n\n- **暴力**：两层循环试所有组合，O(n²)，n = 10⁵ 时会超时\n- **哈希表**：从左往右扫，边扫边把「值 → 下标」记进字典；对当前数 `v`，只要查 `t - v` 在不在字典里，O(n)\n\n这就是字典最典型的用途：**用空间换时间**。",
+   "input_format": "第一行两个整数 `n` 和 `t`；第二行 `n` 个整数，空格分隔。",
+   "output_format": "一行：`i j`（0 开始的下标），或 `-1`。",
+   "constraints_md": "- 2 ≤ n ≤ 100000\n- 每个数的绝对值 ≤ 10^9\n- 时间限制 1000 ms —— 暴力 O(n²) 会超时",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 123,
+     "ord": 0,
+     "stdin": "4 9\n2 7 11 15\n",
+     "expected_stdout": "0 1\n",
+     "explanation": "2 + 7 = 9"
+    },
+    {
+     "id": 124,
+     "ord": 1,
+     "stdin": "3 6\n3 2 4\n",
+     "expected_stdout": "1 2\n",
+     "explanation": "3 + 3 不行（只有一个 3）；2 + 4 = 6"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    5,
+    5,
+    5,
+    5
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 28,
+   "line": "python",
+   "title": "集合运算",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "集合",
+    "交集",
+    "并集",
+    "排序"
+   ],
+   "statement_md": "读入两个整数集合（每行一个，元素可能重复、行可能为空），输出两行：\n\n1. 它们的**交集**（两个集合都有的元素）\n2. 它们的**并集**（去重后的所有元素）\n\n两行都要求元素**从小到大**排列，空格分隔；如果结果为空，输出一个空行。\n\nPython 的集合运算符：`a & b` 交集、`a | b` 并集、`a - b` 差集、`a ^ b` 对称差。注意集合本身是**无序**的，要保证输出顺序必须自己 `sorted()`。",
+   "input_format": "两行，每行若干个整数（可为空行）。",
+   "output_format": "第一行交集，第二行并集，均升序、空格分隔。",
+   "constraints_md": "- 每行元素个数 ≤ 100000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 127,
+     "ord": 0,
+     "stdin": "1 2 3\n2 3 4\n",
+     "expected_stdout": "2 3\n1 2 3 4\n",
+     "explanation": ""
+    },
+    {
+     "id": 128,
+     "ord": 1,
+     "stdin": "1 2\n3 4\n",
+     "expected_stdout": "\n1 2 3 4\n",
+     "explanation": "交集为空 → 第一行是空行（但仍要输出这一行）"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    4,
+    4,
+    4,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 29,
+   "line": "python",
+   "title": "首字母分组",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "字典",
+    "分组",
+    "排序"
+   ],
+   "statement_md": "读入 `n` 个单词，按**首字母**分组输出，每组一行，格式：\n\n```text\n首字母: 单词1 单词2 …\n```\n\n- 组与组之间按**首字母升序**\n- 组内按**单词字典序**\n\n```text\n输入：apple banana avocado blueberry cherry\n输出：a: apple avocado\n      b: banana blueberry\n      c: cherry\n```\n\n用字典做「分组」是最常见套路：`groups.setdefault(key, []).append(w)`，比每次都 `if key not in groups` 简洁。",
+   "input_format": "第一行一个整数 `n`；随后 `n` 行，每行一个小写单词。",
+   "output_format": "每组一行，`首字母: 单词…`。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 单词由小写字母组成，长度 ≤ 20",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 131,
+     "ord": 0,
+     "stdin": "5\napple\nbanana\navocado\nblueberry\ncherry\n",
+     "expected_stdout": "a: apple avocado\nb: banana blueberry\nc: cherry\n",
+     "explanation": "a 组内 apple < avocado（字母序）"
+    },
+    {
+     "id": 132,
+     "ord": 1,
+     "stdin": "2\ndog\nant\n",
+     "expected_stdout": "a: ant\nd: dog\n",
+     "explanation": "输入顺序 dog 在前，但 a 组要先输出"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    5,
+    5,
+    5
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 30,
+   "line": "python",
+   "title": "众数",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "字典",
+    "计数",
+    "并列处理"
+   ],
+   "statement_md": "读入 `n` 个整数，输出**出现次数最多**的那个数。\n\n**如果并列，输出最小的那个。**\n\n例如 `1 1 2 2` 里 1 和 2 都出现 2 次，答案是 `1`。\n\n**并列规则是这题唯一的坑**：`max(cnt, key=cnt.get)` 在并列时返回的是「字典里先出现的键」，而字典的顺序取决于插入顺序，**不可靠**。显式写出比较规则才稳。",
+   "input_format": "第一行一个整数 `n`；第二行 `n` 个整数。",
+   "output_format": "一行，众数。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 134,
+     "ord": 0,
+     "stdin": "6\n3 1 2 1 3 3\n",
+     "expected_stdout": "3\n",
+     "explanation": "3 出现 3 次，最多"
+    },
+    {
+     "id": 135,
+     "ord": 1,
+     "stdin": "4\n1 1 2 2\n",
+     "expected_stdout": "1\n",
+     "explanation": "★ 并列 2 次 → 取小的 → 1"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    5,
+    5,
+    5
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 31,
+   "line": "python",
+   "title": "缺失的最小正整数",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "集合",
+    "边界",
+    "思维题"
+   ],
+   "statement_md": "给定 `n` 个整数（可能有负数、有重复），找出其中**没有出现**的**最小正整数**。\n\n```text\n输入：1 2 0        输出：3\n输入：3 4 -1 1     输出：2\n输入：7 8 9 11 12  输出：1\n```\n\n**思路**：把所有正数丢进集合，然后从 `1` 开始一个个试 —— `1` 在不在？在；`2` 在不在？不在 → 答案 2。\n\n看着简单，但**负数、0、重复值**这三样都容易让人绕晕，用集合一把过滤掉最省心。",
+   "input_format": "第一行一个整数 `n`；第二行 `n` 个整数。",
+   "output_format": "一行，一个正整数。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 137,
+     "ord": 0,
+     "stdin": "3\n1 2 0\n",
+     "expected_stdout": "3\n",
+     "explanation": "1 在、2 在、3 不在 → 3"
+    },
+    {
+     "id": 138,
+     "ord": 1,
+     "stdin": "4\n3 4 -1 1\n",
+     "expected_stdout": "2\n",
+     "explanation": "1 在、2 不在 → 2；负数直接忽略"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    5,
+    5,
+    5,
+    5
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 32,
+   "line": "python",
+   "title": "海伦公式",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "函数",
+    "math",
+    "浮点",
+    "合法性判断"
+   ],
+   "statement_md": "给定三角形三边长 `a` `b` `c`，能构成三角形就输出面积（**保留 2 位小数**），否则输出 `invalid`。\n\n**海伦公式**（记 `p = (a+b+c)/2`）：\n\n```text\n面积 = √( p × (p-a) × (p-b) × (p-c) )\n```\n\n**构成条件**：三边都大于 0，且**任意两边之和大于第三边**（只要检查三组，别只查一组）。\n\n这题很适合封装成一个函数 `area(a, b, c)`，边界检查放函数开头。",
+   "input_format": "一行，三个数 `a` `b` `c`（可能是小数）。",
+   "output_format": "一行，面积（2 位小数）或 `invalid`。",
+   "constraints_md": "- 0 ≤ a, b, c ≤ 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 141,
+     "ord": 0,
+     "stdin": "3 4 5\n",
+     "expected_stdout": "6.00\n",
+     "explanation": "直角三角形，3×4/2 = 6"
+    },
+    {
+     "id": 142,
+     "ord": 1,
+     "stdin": "1 1 1\n",
+     "expected_stdout": "0.43\n",
+     "explanation": "等边三角形：√3/4 ≈ 0.4330 → 0.43"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 33,
+   "line": "python",
+   "title": "可变默认参数的陷阱",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "函数",
+    "默认参数",
+    "可变对象",
+    "★坑"
+   ],
+   "statement_md": "这是 Python 最著名的坑之一，**请亲手跑一遍看看**。\n\n```python\ndef collect_bad(x, lst=[]):    # 默认值是个列表\n    lst.append(x)\n    return lst\n```\n\n每次调用看起来都会新建一个空列表？**并不会。** 默认参数只在**函数定义时求值一次**，所以那个 `[]` 是**所有调用共享的同一个对象**，会一直累积。\n\n正解是默认写成 `None`，在函数体里现建：\n\n```python\ndef collect_ok(x, lst=None):\n    if lst is None:\n        lst = []\n    ...\n```\n\n**本题要求**：读入 `n` 和一个数列，依次做两件事：\n\n1. 用上面的 `collect_bad` 把每个数依次传进去，最后输出它返回的列表\n2. 再用 `collect_ok` 把每个数依次传进去，**每次的结果单独输出一行**",
+   "input_format": "第一行一个整数 `n`（≥1）；第二行 `n` 个整数。",
+   "output_format": "第一行：`collect_bad` 最后一次返回的列表（标准 Python 列表格式）。\n\n随后 `n` 行：`collect_ok` 每次调用的返回值。",
+   "constraints_md": "- 1 ≤ n ≤ 100\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 2,
+   "samples": [
+    {
+     "id": 146,
+     "ord": 0,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "[1, 2, 3]\n[1]\n[2]\n[3]\n",
+     "explanation": "★ 上面那段累积成 [1, 2, 3]；下面那段每次都是新列表"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    10,
+    10
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 34,
+   "line": "python",
+   "title": "哥德巴赫猜想",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "函数",
+    "素数",
+    "复用",
+    "循环"
+   ],
+   "statement_md": "**哥德巴赫猜想**：任一大于 2 的偶数都可以写成两个素数之和。\n\n给定一个偶数 `n`（≥ 4），输出一对素数 `a b`，满足 `a + b = n` 且 **`a` 尽可能小**（`a ≤ b`）。\n\n```text\n10 → 3 7\n20 → 3 17\n100 → 3 97\n```\n\n**思路**：`a` 从 2 开始往上试，只要 `a` 和 `n - a` 都是素数就输出。\n\n这题是「函数复用」的好例子：把「判断素数」单独写成函数，主逻辑就只剩几行了。",
+   "input_format": "一行，一个偶数 `n`。",
+   "output_format": "一行，`a b`，其中 `a ≤ b` 且 `a` 最小。",
+   "constraints_md": "- 4 ≤ n ≤ 10^7，且 n 是偶数",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 148,
+     "ord": 0,
+     "stdin": "4\n",
+     "expected_stdout": "2 2\n",
+     "explanation": "最小的偶数：2 + 2"
+    },
+    {
+     "id": 149,
+     "ord": 1,
+     "stdin": "10\n",
+     "expected_stdout": "3 7\n",
+     "explanation": "2 + 8 不行（8 非素数），3 + 7 可以"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    5,
+    5,
+    5,
+    5
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 35,
+   "line": "python",
+   "title": "递归求阶乘",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "递归",
+    "大整数",
+    "边界"
+   ],
+   "statement_md": "用**递归**求 `n!`（n 的阶乘）。\n\n定义：`0! = 1`，`n! = n × (n-1)!`。\n\n**递归三要素**（对照着看）：\n\n1. **出口**：`n <= 1` 时返回 1\n2. **递推**：`n × fact(n-1)`\n3. **规模变小**：每层 `n` 减 1，必然到出口\n\nPython 整数无上限，`20!`（19 位）直接算，不会溢出。",
+   "input_format": "一行，一个整数 `n`。",
+   "output_format": "一行，`n!`。",
+   "constraints_md": "- 0 ≤ n ≤ 20",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 152,
+     "ord": 0,
+     "stdin": "0\n",
+     "expected_stdout": "1\n",
+     "explanation": "★ 0! = 1，不是 0（数学约定）"
+    },
+    {
+     "id": 153,
+     "ord": 1,
+     "stdin": "5\n",
+     "expected_stdout": "120\n",
+     "explanation": "1×2×3×4×5 = 120"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 36,
+   "line": "python",
+   "title": "汉诺塔",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "递归",
+    "经典问题",
+    "步骤输出"
+   ],
+   "statement_md": "汉诺塔：`n` 个盘子从柱子 `A` 借助 `B` 全部移到 `C`。\n\n每次只能移动一个盘子，且**大盘不能压在小盘上**。\n\n输出完整移动步骤，每行形如 `A->C`；最后一行输出总步数 `total=步数`。\n\n**递归思路**（把大问题拆成三小步）：\n\n1. 把上面 `n-1` 个从 `A` 移到 `B`（借助 `C`）\n2. 把最大的那个从 `A` 移到 `C`\n3. 把那 `n-1` 个从 `B` 移到 `C`（借助 `A`）\n\n三条语句，就是这个算法的全部。总步数 = `2ⁿ - 1`。",
+   "input_format": "一行，一个整数 `n`。",
+   "output_format": "每行一步（`A->C`），最后一行 `total=步数`。",
+   "constraints_md": "- 1 ≤ n ≤ 20（输出可能很大，n 别开太大）",
+   "time_limit_ms": 2000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 157,
+     "ord": 0,
+     "stdin": "1\n",
+     "expected_stdout": "A->C\ntotal=1\n",
+     "explanation": "2¹ − 1 = 1"
+    },
+    {
+     "id": 158,
+     "ord": 1,
+     "stdin": "2\n",
+     "expected_stdout": "A->B\nA->C\nB->C\ntotal=3\n",
+     "explanation": "2² − 1 = 3：小盘去 B，大盘去 C，小盘再跟过去"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    7,
+    7,
+    6
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 37,
+   "line": "python",
+   "title": "数位之和",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "递归",
+    "取余",
+    "整除"
+   ],
+   "statement_md": "用**递归**求一个非负整数的各位数字之和。\n\n```text\n123 → 1 + 2 + 3 = 6\n```\n\n**关键是把「拆最后一位」和「剩下的数」分开**：\n\n```python\ndef digit_sum(k):\n    if k < 10:\n        return k          # 出口：只剩一位\n    return k % 10 + digit_sum(k // 10)\n```\n\n`k % 10` 拿个位，`k // 10` 把个位丢掉。**别用 `str()`** —— 这题就是要练数位运算。",
+   "input_format": "一行，一个非负整数 `n`。",
+   "output_format": "一行，各位数字之和。",
+   "constraints_md": "- 0 ≤ n ≤ 10^18",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 160,
+     "ord": 0,
+     "stdin": "123\n",
+     "expected_stdout": "6\n",
+     "explanation": ""
+    },
+    {
+     "id": 161,
+     "ord": 1,
+     "stdin": "99999\n",
+     "expected_stdout": "45\n",
+     "explanation": "5 × 9 = 45"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    4,
+    4,
+    4,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 38,
+   "line": "python",
+   "title": "爬楼梯",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "递归",
+    "记忆化",
+    "斐波那契",
+    "重复子问题"
+   ],
+   "statement_md": "有 `n` 级楼梯，每次可以走 **1 级或 2 级**，问有多少种走法。\n\n设 `f(n)` 为走法数，则 `f(n) = f(n-1) + f(n-2)`，`f(1) = 1`、`f(2) = 2`。\n\n**递归树的坑**：直接写朴素递归，`f(n)` 会重复计算大量子问题 —— `f(40)` 就要算十亿次以上。两种解法：\n\n- **记忆化**：算过的存进字典，下次直接取\n- **自底向上**：从 `f(1)` 开始往上推，只用两个变量\n\n这就是「动态规划」的雏形：**用缓存消掉重复子问题**。",
+   "input_format": "一行，一个整数 `n`。",
+   "output_format": "一行，走法总数。",
+   "constraints_md": "- 1 ≤ n ≤ 90\n- 时间限制 1000 ms —— 朴素递归必超时",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 164,
+     "ord": 0,
+     "stdin": "1\n",
+     "expected_stdout": "1\n",
+     "explanation": "只能一步 1 级"
+    },
+    {
+     "id": 165,
+     "ord": 1,
+     "stdin": "2\n",
+     "expected_stdout": "2\n",
+     "explanation": "1+1 或 2"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 39,
+   "line": "python",
+   "title": "二分查找",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "二分",
+    "下标",
+    "边界"
+   ],
+   "statement_md": "给定一个**升序**整数序列和一个目标值，输出目标值的下标（从 0 开始）；不存在输出 `-1`。\n\n**二分查找**：每次取中间元素比大小，比目标小就去右半边，大就去左半边。每次砍掉一半，所以是 O(log n)。\n\n**最容易写错的三处**：\n\n- `while lo <= hi` 还是 `<` —— 用闭区间就写 `<=`\n- 中点 `mid = (lo + hi) // 2`，别写成 `/`\n- 移动时 `lo = mid + 1` / `hi = mid - 1`，**必须 ±1**，否则区间不缩小 → 死循环",
+   "input_format": "第一行两个整数 `n` 和 `t`；第二行 `n` 个升序整数。",
+   "output_format": "一行，下标或 `-1`。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 序列严格升序，绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 169,
+     "ord": 0,
+     "stdin": "5 5\n1 3 5 7 9\n",
+     "expected_stdout": "2\n",
+     "explanation": "正中命中"
+    },
+    {
+     "id": 170,
+     "ord": 1,
+     "stdin": "5 1\n1 3 5 7 9\n",
+     "expected_stdout": "0\n",
+     "explanation": "左边界"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    3,
+    3,
+    3,
+    3,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 40,
+   "line": "python",
+   "title": "math 模块",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "模块",
+    "import",
+    "math",
+    "格式化"
+   ],
+   "statement_md": "读入一个浮点数 `n`，在同一行输出三个值：\n\n```text\n√n（保留 3 位小数）  ⌈n⌉（向上取整）  ⌊n⌋（向下取整）\n```\n\n**三种 import 写法**，效果一样但用法不同：\n\n```python\nimport math                 # 用的时候写 math.sqrt(n)\nfrom math import sqrt       # 直接写 sqrt(n)\nimport math as m            # 写 m.sqrt(n)\n```\n\n**注意取整函数的返回值是整数**：`math.ceil(2.1)` 得 `3`（int），打印出来没有小数点。",
+   "input_format": "一行，一个非负浮点数 `n`。",
+   "output_format": "一行，`√n(3位小数) 向上取整 向下取整`。",
+   "constraints_md": "- 0 ≤ n ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 模块与包",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 174,
+     "ord": 0,
+     "stdin": "2\n",
+     "expected_stdout": "1.414 2 2\n",
+     "explanation": "√2 ≈ 1.4142 → 1.414"
+    },
+    {
+     "id": 175,
+     "ord": 1,
+     "stdin": "2.5\n",
+     "expected_stdout": "1.581 3 2\n",
+     "explanation": "★ 中间那个不是整数，向上 3、向下 2"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    3,
+    3,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 41,
+   "line": "python",
+   "title": "日期相差天数",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "模块",
+    "datetime",
+    "闰年",
+    "日期计算"
+   ],
+   "statement_md": "读入两个日期（格式 `YYYY-MM-DD`），输出**第二个日期减去第一个日期**相差的天数（可能为负）。\n\n标准库 `datetime` 让这件事变得非常简单：\n\n```python\nfrom datetime import date\nd1 = date(2024, 1, 1)\nd2 = date(2024, 12, 31)\nprint((d2 - d1).days)     # 365\n```\n\n**自己手算的话要注意闰年**：2024 能被 4 整除且不是世纪年 → 闰年，2 月 29 天；2023 是平年。`date` 对象相减会自动处理这些。",
+   "input_format": "两行，每行一个日期，格式 `YYYY-MM-DD`。",
+   "output_format": "一行，整数天数（`d2 - d1`，可为负）。",
+   "constraints_md": "- 1900 ≤ 年份 ≤ 2100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 模块与包",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 178,
+     "ord": 0,
+     "stdin": "2024-01-01\n2024-12-31\n",
+     "expected_stdout": "365\n",
+     "explanation": "2024 是闰年，全年 366 天，从 1/1 到 12/31 差 365 天"
+    },
+    {
+     "id": 179,
+     "ord": 1,
+     "stdin": "2023-02-28\n2023-03-01\n",
+     "expected_stdout": "1\n",
+     "explanation": "2023 平年，2 月只有 28 天，直接跨一天"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 42,
+   "line": "python",
+   "title": "均值与中位数",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "模块",
+    "statistics",
+    "中位数",
+    "奇偶"
+   ],
+   "statement_md": "读入 `n` 个整数，输出**平均值**和**中位数**，都用 2 位小数，空格分隔。\n\n**中位数的定义**（这题的核心）：\n\n- 先排序\n- `n` 为**奇数**：正中间那个\n- `n` 为**偶数**：中间两个的**平均值**\n\n标准库 `statistics` 两个函数就够：`statistics.mean(xs)` 和 `statistics.median(xs)`。",
+   "input_format": "第一行一个整数 `n`；第二行 `n` 个整数。",
+   "output_format": "一行，`平均值 中位数`（各 2 位小数）。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 模块与包",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 183,
+     "ord": 0,
+     "stdin": "4\n1 2 3 4\n",
+     "expected_stdout": "2.50 2.50\n",
+     "explanation": "偶数个 → 中位数取 (2+3)/2 = 2.5"
+    },
+    {
+     "id": 184,
+     "ord": 1,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "3.00 3.00\n",
+     "explanation": "奇数个 → 正中间 3"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    5,
+    5,
+    5
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 43,
+   "line": "python",
+   "title": "累乘",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "模块",
+    "functools",
+    "reduce",
+    "大整数"
+   ],
+   "statement_md": "读入 `n` 个整数，输出它们的**连乘积**。\n\n```text\n1 2 3 4 5 → 120\n```\n\n两种标准库写法：\n\n- `math.prod(nums)` —— Python 3.8+ 新增，最直接\n- `functools.reduce(lambda a, b: a * b, nums, 1)` —— 老牌做法，「把二元操作不停地往序列上套」\n\n注意初始值 `1` 不能省 —— 少写初始值，`n = 1` 时会直接把那个数当结果返回（恰好对），但 `n = 0` 就会报错。",
+   "input_format": "第一行一个整数 `n`；第二行 `n` 个整数。",
+   "output_format": "一行，连乘积。",
+   "constraints_md": "- 1 ≤ n ≤ 100\n- 每个数的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 模块与包",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 186,
+     "ord": 0,
+     "stdin": "3\n2 3 4\n",
+     "expected_stdout": "24\n",
+     "explanation": ""
+    },
+    {
+     "id": 187,
+     "ord": 1,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "120\n",
+     "explanation": "5! = 120"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    4,
+    4,
+    4,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 44,
+   "line": "python",
+   "title": "最高分学生",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "模块",
+    "排序",
+    "key",
+    "并列规则"
+   ],
+   "statement_md": "读入 `n` 行「名字 分数」，输出**分数最高**的学生名字。\n\n**并列时取名字字典序最小的那个。**\n\n```text\nalice 90\nbob 95\ncarol 95\n→ bob（并列 95，bob < carol）\n```\n\n一个 `key` 就把两个规则写清楚：\n\n```python\nrows.sort(key=lambda r: (-r[1], r[0]))\n#                            ↑ 分数降序（取负）   ↑ 名字升序\n```\n\n这就是「多关键字排序」的固定套路：**要降序的字段取负号**。",
+   "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `名字 分数`。",
+   "output_format": "一行，名字。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 名字由小写字母组成，长度 ≤ 20\n- 0 ≤ 分数 ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 模块与包",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 190,
+     "ord": 0,
+     "stdin": "3\nalice 90\nbob 95\ncarol 95\n",
+     "expected_stdout": "bob\n",
+     "explanation": "★ 并列 95，按名字升序 bob 在 carol 前"
+    },
+    {
+     "id": 191,
+     "ord": 1,
+     "stdin": "2\nzed 100\namy 100\n",
+     "expected_stdout": "amy\n",
+     "explanation": "输入顺序反过来，答案还是 amy"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    5,
+    5,
+    5
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 45,
+   "line": "python",
+   "title": "矩形类",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "类",
+    "方法",
+    "self",
+    "__init__"
+   ],
+   "statement_md": "定义一个 `Rectangle` 类：\n\n- `__init__(self, w, h)` 接收长和宽\n- `area()` 返回面积\n- `perimeter()` 返回周长\n\n读入长和宽，输出 `面积=xx 周长=xx`。\n\n**`self` 是什么**：它是「这个对象自己」。`self.w` 表示「我这个对象的 w 属性」，和别的对象互不干扰。定义方法时 `self` 必须写在第一个参数位，但**调用时不用传**。",
+   "input_format": "一行，两个整数 `w` 和 `h`。",
+   "output_format": "一行，`面积=xx 周长=xx`。",
+   "constraints_md": "- 1 ≤ w, h ≤ 100000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · 面向对象（上）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 193,
+     "ord": 0,
+     "stdin": "3 4\n",
+     "expected_stdout": "面积=12 周长=14\n",
+     "explanation": "3×4=12，2×(3+4)=14"
+    },
+    {
+     "id": 194,
+     "ord": 1,
+     "stdin": "5 5\n",
+     "expected_stdout": "面积=25 周长=20\n",
+     "explanation": "正方形"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    4,
+    3,
+    3
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 46,
+   "line": "python",
+   "title": "对象计数器",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "类属性",
+    "实例属性",
+    "★坑",
+    "self vs 类名"
+   ],
+   "statement_md": "**类属性和实例属性的区别**，这题就是要让你亲眼看见。\n\n```python\nclass Item:\n    total = 0                 # ← 类属性：所有对象共享一份\n    def __init__(self, idx):\n        Item.total += 1       # ← 必须写类名（或 type(self)），不能写 self.total\n        self.idx = idx        # ← 实例属性：每个对象各有一份\n```\n\n**★ 关键坑**：如果写成 `self.total += 1`，Python 会理解为「给**这个实例**新建一个 total 属性」，类属性 `Item.total` 永远停在 0。\n\n**本题要求**：读入 `n`，创建 `n` 个对象（编号 1 ~ n），输出 `total=总创建数 last=最后一个对象的编号`。",
+   "input_format": "一行，一个整数 `n`。",
+   "output_format": "一行，`total=x last=y`。",
+   "constraints_md": "- 0 ≤ n ≤ 100000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · 面向对象（上）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 196,
+     "ord": 0,
+     "stdin": "3\n",
+     "expected_stdout": "total=3 last=3\n",
+     "explanation": ""
+    },
+    {
+     "id": 197,
+     "ord": 1,
+     "stdin": "5\n",
+     "expected_stdout": "total=5 last=5\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    5,
+    5,
+    5
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 47,
+   "line": "python",
+   "title": "银行账户",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "类",
+    "状态修改",
+    "方法",
+    "模拟"
+   ],
+   "statement_md": "定义 `Account` 类，模拟一个银行账户。\n\n**输入**\n\n```text\n第一行：owner balance     （户主 初始余额，都是整数）\n第二行：m                 （操作条数）\n随后 m 行，每行是下面三种之一：\n  d 金额     存款\n  w 金额     取款\n  q          查询余额\n```\n\n**输出**：每个 `q` 输出一行当前余额；没有查询就什么都不输出。\n\n这题的关键是**对象的状态会被方法改变**：`deposit` 和 `withdraw` 改的是 `self.balance`，所以后面的 `q` 能看到累积效果。",
+   "input_format": "第一行 `owner balance`；第二行 `m`；随后 `m` 行操作。",
+   "output_format": "每个 `q` 一行余额；无 `q` 则无输出。",
+   "constraints_md": "- 0 ≤ 初始余额 ≤ 100000\n- 0 ≤ 金额 ≤ 100000\n- 1 ≤ m ≤ 100000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · 面向对象（上）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 199,
+     "ord": 0,
+     "stdin": "alice 100\n3\nd 50\nw 30\nq\n",
+     "expected_stdout": "120\n",
+     "explanation": "100 + 50 − 30 = 120"
+    },
+    {
+     "id": 200,
+     "ord": 1,
+     "stdin": "bob 0\n4\nd 200\nw 50\nq\nq\n",
+     "expected_stdout": "150\n150\n",
+     "explanation": "两次查询之间没有操作，所以都是 150"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    7,
+    7,
+    6
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 48,
+   "line": "python",
+   "title": "两点距离",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "类",
+    "方法参数",
+    "math",
+    "浮点"
+   ],
+   "statement_md": "定义 `Point` 类，方法 `dist(other)` 返回和另一个点的**欧氏距离**，保留 3 位小数。\n\n```text\n距离 = √( (x₁-x₂)² + (y₁-y₂)² )\n```\n\n读入 4 个数 `x1 y1 x2 y2`，输出 `p1` 到 `p2` 的距离。\n\n**注意方法参数**：`p1.dist(p2)` 里，`self` 是 `p1`、`other` 是 `p2`，所以方法里写 `self.x - other.x`。`math.hypot(dx, dy)` 一步到位。",
+   "input_format": "一行，四个整数 `x1 y1 x2 y2`。",
+   "output_format": "一行，距离（3 位小数）。",
+   "constraints_md": "- 每个坐标的绝对值 ≤ 10^6",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · 面向对象（上）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 4,
+   "samples": [
+    {
+     "id": 202,
+     "ord": 0,
+     "stdin": "0 0 3 4\n",
+     "expected_stdout": "5.000\n",
+     "explanation": "经典 3-4-5 直角三角形"
+    },
+    {
+     "id": 203,
+     "ord": 1,
+     "stdin": "1 1 4 5\n",
+     "expected_stdout": "5.000\n",
+     "explanation": "dx=3, dy=4，还是 5"
+    }
+   ],
+   "hidden_count": 2,
+   "case_points": [
+    4,
+    4,
+    4,
+    3
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 49,
+   "line": "python",
+   "title": "成绩管理器",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "类",
+    "对象列表",
+    "聚合",
+    "综合"
+   ],
+   "statement_md": "定义两个类：\n\n- `Student(name, score)` —— 存一个学生的信息\n- `GradeBook()` —— 管一群学生，有 `add(s)` 加人、`top()` 找最高分、`average()` 算平均分\n\n读入 `n` 行「名字 分数」，输出 `最高分学生名 平均分`（平均分 2 位小数）。\n\n**并列取先出现的那个**（本题保证分数并列时按输入顺序取第一个）。\n\n这题是「一个类装数据、另一个类管集合」的典型结构 —— 把 `Student` 想成一行记录，`GradeBook` 想成一张表。",
+   "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `名字 分数`。",
+   "output_format": "一行，`名字 平均分`（平均分 2 位小数）。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 0 ≤ 分数 ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · 面向对象（上）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 206,
+     "ord": 0,
+     "stdin": "3\nalice 90\nbob 80\ncarol 100\n",
+     "expected_stdout": "carol 90.00\n",
+     "explanation": "(90+80+100)/3 = 90.00"
+    },
+    {
+     "id": 207,
+     "ord": 1,
+     "stdin": "2\nx 60\ny 60\n",
+     "expected_stdout": "x 60.00\n",
+     "explanation": "★ 并列 60 → 取先出现的 x"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    7,
+    7,
+    6
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 50,
+   "line": "python",
+   "title": "形状面积（继承）",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "继承",
+    "方法重写",
+    "多态"
+   ],
+   "statement_md": "定义基类 `Shape`，以及两个子类：\n\n- `Circle(r)` —— 面积 `3.14 × r²`\n- `Rect(w, h)` —— 面积 `w × h`\n\n两者都实现 `area()` 方法。\n\n读入 `n` 行形状描述（`circle r` 或 `rect w h`），**每行输出对应面积**（2 位小数）。\n\n**继承的意义**：`Shape` 定义了「所有形状都有 `area()` 这个方法」，子类各自**重写**（override）成自己的算法。调用方只管写 `s.area()`，不用管 `s` 到底是圆还是矩形 —— 这就是**多态**。\n\n本题 π 取 **3.14**（和前面圆面积题保持一致，别用 `math.pi`）。",
+   "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `circle r` 或 `rect w h`。",
+   "output_format": "`n` 行，每行一个面积（2 位小数）。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 0 ≤ 边长/半径 ≤ 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 209,
+     "ord": 0,
+     "stdin": "2\ncircle 2\nrect 3 4\n",
+     "expected_stdout": "12.56\n12.00\n",
+     "explanation": "3.14 × 4 = 12.56；3 × 4 = 12"
+    },
+    {
+     "id": 210,
+     "ord": 1,
+     "stdin": "1\ncircle 1\n",
+     "expected_stdout": "3.14\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    7,
+    7,
+    6
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 51,
+   "line": "python",
+   "title": "动物叫声（多态）",
+   "difficulty": 2,
+   "total_score": 15,
+   "tags": [
+    "继承",
+    "多态",
+    "方法重写"
+   ],
+   "statement_md": "定义基类 `Animal` 和子类 `Dog`、`Cat`，各自实现 `sound()` 方法：\n\n- `Dog.sound()` 返回 `woof`\n- `Cat.sound()` 返回 `meow`\n\n读入 `n` 行「动物名 次数」，对每一行输出该叫声**重复对应次数**（用**一个空格**分隔）。\n\n```text\ndog 2  →  woof woof\ncat 3  →  meow meow meow\n```\n\n**多态的写法**：主循环里只写 `a.sound()`，不写 `if 是狗…elif 是猫…`。以后再加 `Cow`，主循环**一行都不用改** —— 这就是继承 + 多态的价值。",
+   "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `动物名 次数`（动物名是 `dog` 或 `cat`）。",
+   "output_format": "`n` 行，每行是重复的叫声。",
+   "constraints_md": "- 1 ≤ n ≤ 1000\n- 1 ≤ 次数 ≤ 1000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 2,
+   "samples": [
+    {
+     "id": 212,
+     "ord": 0,
+     "stdin": "2\ndog 2\ncat 3\n",
+     "expected_stdout": "woof woof\nmeow meow meow\n",
+     "explanation": ""
+    },
+    {
+     "id": 213,
+     "ord": 1,
+     "stdin": "1\ncat 1\n",
+     "expected_stdout": "meow\n",
+     "explanation": "次数为 1，不带空格"
+    }
+   ],
+   "hidden_count": 0,
+   "case_points": [
+    8,
+    7
+   ],
+   "points_sum": 15
+  },
+  {
+   "id": 52,
+   "line": "python",
+   "title": "初始化顺序（super）",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "继承链",
+    "super",
+    "MRO",
+    "★坑"
+   ],
+   "statement_md": "三层继承链：`C` 继承 `B`，`B` 继承 `A`。\n\n每个类的 `__init__` 先调 `super().__init__()` 再把自己的名字追加到 `self.trace` 列表。\n\n```python\nclass B(A):\n    def __init__(self):\n        super().__init__()        # ← 先去初始化父类\n        self.trace.append('B')    # ← 再记自己\n```\n\n读入 `n`（1 ~ 3），创建对应的那一层对象，输出 `trace` 里的内容（空格分隔）。\n\n**`super()` 到底是什么**：它不是「父类」的字面意思，而是「**MRO 里的下一个类**」。所以 `super().__init__()` 会顺着继承链一路往上跑，最终得到 `A B C` 这样的顺序。",
+   "input_format": "一行，一个整数 `n`（1 = A，2 = B，3 = C）。",
+   "output_format": "一行，空格分隔的初始化顺序。",
+   "constraints_md": "- 1 ≤ n ≤ 3",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 214,
+     "ord": 0,
+     "stdin": "1\n",
+     "expected_stdout": "A\n",
+     "explanation": "A 没有父类，只记自己"
+    },
+    {
+     "id": 215,
+     "ord": 1,
+     "stdin": "2\n",
+     "expected_stdout": "A B\n",
+     "explanation": "B 先跑到 A，再记 B"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    7,
+    7,
+    6
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 53,
+   "line": "python",
+   "title": "点的排序",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "魔法方法",
+    "__lt__",
+    "排序",
+    "自定义比较"
+   ],
+   "statement_md": "定义 `Point` 类，实现 `__lt__` 方法，让点之间可以**直接比大小**，规则是「先比 `x`，`x` 相同再比 `y`」。\n\n```python\ndef __lt__(self, other):\n    return (self.x, self.y) < (other.x, other.y)\n```\n\n读入 `n` 个点，**按升序排序后**输出，每行一个点（`x y`）。\n\n**为什么要有 `__lt__`**：`sorted()` 和 `.sort()` 靠的就是 `<` 运算符。自定义类默认不支持和 `<` 比较，实现 `__lt__` 后就能直接丢给 `sorted()` 用了 —— 这叫**运算符重载**。\n\n*（也可以用 `sorted(pts, key=lambda p: (p.x, p.y))` 绕过，但那不算「让对象自己会排序」。）*",
+   "input_format": "第一行一个整数 `n`；随后 `n` 行，每行两个整数 `x y`。",
+   "output_format": "`n` 行，排序后的点，每行 `x y`。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 坐标绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 217,
+     "ord": 0,
+     "stdin": "3\n3 1\n1 2\n1 1\n",
+     "expected_stdout": "1 1\n1 2\n3 1\n",
+     "explanation": "x 都为 1 时，y 小的在前"
+    },
+    {
+     "id": 218,
+     "ord": 1,
+     "stdin": "4\n5 5\n1 1\n5 1\n1 5\n",
+     "expected_stdout": "1 1\n1 5\n5 1\n5 5\n",
+     "explanation": "★ 输入顺序完全打乱，输出必须有序"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    7,
+    7,
+    6
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 54,
+   "line": "python",
+   "title": "向量相加",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "魔法方法",
+    "__add__",
+    "运算符重载"
+   ],
+   "statement_md": "定义 `Vector2D` 类，实现 `__add__`，让两个向量能**直接用 `+` 相加**：\n\n```python\ndef __add__(self, other):\n    return Vector2D(self.x + other.x, self.y + other.y)\n```\n\n顺便实现 `__str__`，让 `print(v)` 输出 `x y`。\n\n读入两行，每行两个整数（两个向量），输出它们的和。\n\n**运算符重载的意义**：`a + b` 本质上是 `a.__add__(b)`。给自定义类实现 `__add__` 之后，`+` 就有意义了，写出来跟数学公式一模一样。",
+   "input_format": "两行，每行两个整数 `x y`。",
+   "output_format": "一行，`x y`（两个向量的和）。",
+   "constraints_md": "- 每个分量的绝对值 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 220,
+     "ord": 0,
+     "stdin": "1 2\n3 4\n",
+     "expected_stdout": "4 6\n",
+     "explanation": ""
+    },
+    {
+     "id": 221,
+     "ord": 1,
+     "stdin": "-1 2\n1 -2\n",
+     "expected_stdout": "0 0\n",
+     "explanation": "相反向量，和为零向量"
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    7,
+    7,
+    6
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 55,
+   "line": "python",
+   "title": "年龄校验",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "property",
+    "setter",
+    "封装",
+    "异常"
+   ],
+   "statement_md": "用 `@property` + `@age.setter` 给年龄加一道**校验关卡**：\n\n```python\nclass Person:\n    @property\n    def age(self):\n        return self._age\n\n    @age.setter\n    def age(self, v):\n        if v < 0 or v > 150:\n            raise ValueError('bad age')\n        self._age = v\n```\n\n读入一个整数年龄。合法（0 ≤ 年龄 ≤ 150）就输出年龄；否则输出 `invalid`。\n\n**为什么不能直接写 `self.age = v`**：那样赋值时会**无限递归** —— setter 里再调 setter。所以真正存值用的是另一个名字 `_age`。\n\n**property 的价值**：外部代码写起来还是 `p.age = 25`（像普通属性），但赋值时会自动过校验，**用法不变、安全性提高**。",
+   "input_format": "一行，一个整数。",
+   "output_format": "一行，合法的年龄或 `invalid`。",
+   "constraints_md": "- -10^9 ≤ 输入 ≤ 10^9",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 223,
+     "ord": 0,
+     "stdin": "25\n",
+     "expected_stdout": "25\n",
+     "explanation": ""
+    },
+    {
+     "id": 224,
+     "ord": 1,
+     "stdin": "-1\n",
+     "expected_stdout": "invalid\n",
+     "explanation": "负数被 setter 拦下"
+    }
+   ],
+   "hidden_count": 3,
+   "case_points": [
+    4,
+    4,
+    4,
+    4,
+    4
+   ],
+   "points_sum": 20
+  },
+  {
+   "id": 56,
+   "line": "python",
+   "title": "形状总面积（多态）",
+   "difficulty": 3,
+   "total_score": 20,
+   "tags": [
+    "多态",
+    "对象列表",
+    "综合",
+    "聚合"
+   ],
+   "statement_md": "在「形状面积（继承）」的基础上再往前走一步：\n\n读入 `n` 个形状，把它们**都放进同一个列表**，然后遍历这个列表求**总面积**（2 位小数）。\n\n```python\nshapes = []\nshapes.append(Circle(1))\nshapes.append(Rect(2, 3))\ntotal = sum(s.area() for s in shapes)   # ← 不用管 s 是什么类型\n```\n\n**这就是多态真正的用处**：列表里混着不同类型，但循环体一句 `s.area()` 就够了 —— 因为每个对象都「知道自己该怎么算面积」。\n\n本题 π 取 **3.14**。",
+   "input_format": "第一行一个整数 `n`；随后 `n` 行，每行 `circle r` 或 `rect w h`。",
+   "output_format": "一行，总面积（2 位小数）。",
+   "constraints_md": "- 1 ≤ n ≤ 100000\n- 0 ≤ 边长/半径 ≤ 10000",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "testcase_count": 3,
+   "samples": [
+    {
+     "id": 228,
+     "ord": 0,
+     "stdin": "2\ncircle 1\nrect 2 3\n",
+     "expected_stdout": "9.14\n",
+     "explanation": "3.14 + 6 = 9.14"
+    },
+    {
+     "id": 229,
+     "ord": 1,
+     "stdin": "1\ncircle 2\n",
+     "expected_stdout": "12.56\n",
+     "explanation": ""
+    }
+   ],
+   "hidden_count": 1,
+   "case_points": [
+    7,
+    7,
+    6
+   ],
+   "points_sum": 20
+  }
+ ]
+}

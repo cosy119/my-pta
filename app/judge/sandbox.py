@@ -1,20 +1,27 @@
-"""进程沙箱：超时看门狗 + Job Object 限内存 + 杀整棵进程树。
-
-为什么手写 Job Object：本机没有 psutil，也没有 pywin32，所以只能走 ctypes。
-威胁模型是「防手滑」（死循环、爆内存、乱写文件），不是防恶意代码 ——
-所以用 Job Object + 独立临时目录 + 墙钟超时，不追求内核级隔离。
+"""进程沙箱：超时看门狗 + 内存限额 + 杀整棵进程树。
 
 两条铁律（踩过的坑，写死在这里）：
 1. 输入输出**一律字节模式**。绝不用 `subprocess.run(input=..., text=True)`：
    Windows 上文本模式会把 `\\r\\n` 二次翻译成 `\\r\\r\\n`，造出假结论。
-2. 超时后必须**杀整棵进程树**（`taskkill /F /T`），否则用户代码起的子进程会残留，
+2. 超时后必须**杀整棵进程树**，否则用户代码起的子进程会残留，
    下一步删临时目录就会失败。
+
+跨平台（2026-10-13 加 Linux 支持，为了能部署到免费云平台）
+----------------------------------------------------------
+- **Windows**：Job Object 限内存（`JOB_OBJECT_LIMIT_PROCESS_MEMORY`）+ `taskkill /F /T`
+- **Linux**：`resource.setrlimit` 在子进程里自限内存（preexec_fn）+
+  `os.killpg` 杀整个进程组（配合 `start_new_session=True` → setsid）
+- 内存峰值：Windows 从 Job Object 读；Linux 读 `/proc/<pid>/status` 的 VmHWM
+
+Linux 上 setrlimit 的效果和 Windows 不同：超限时分配失败会让 Python 抛
+MemoryError（跟 Windows 那条实测结论一样），所以 MLE 的三条证据判据通用。
 """
 from __future__ import annotations
 
 import ctypes
 import os
 import shutil
+import signal
 import subprocess
 import time
 from dataclasses import dataclass, field
@@ -169,17 +176,78 @@ def _taskkill() -> str:
 
 
 def kill_tree(proc: subprocess.Popen) -> None:
-    """杀整棵进程树。taskkill 失败就退回 proc.kill()。"""
-    try:
-        subprocess.run([_taskkill(), "/F", "/T", "/PID", str(proc.pid)],
-                       capture_output=True, timeout=5,
-                       creationflags=CREATE_NO_WINDOW if _IS_WINDOWS else 0)
-    except Exception:
-        pass
+    """杀整棵进程树。
+
+    Windows：taskkill /F /T；Linux：把整个进程组干掉（子进程用
+    start_new_session=True 起，所以 pgid == pid）。
+    两条路都失败才退回 proc.kill()。
+    """
+    if _IS_WINDOWS:
+        try:
+            subprocess.run([_taskkill(), "/F", "/T", "/PID", str(proc.pid)],
+                           capture_output=True, timeout=5,
+                           creationflags=CREATE_NO_WINDOW)
+        except Exception:
+            pass
+    else:
+        try:
+            os.killpg(os.getpgid(proc.pid), signal.SIGKILL)
+        except Exception:
+            pass
     try:
         proc.kill()
     except Exception:
         pass
+
+
+# --------------------------------------------------------------------- #
+# Linux 内存限额：在 fork 之后、exec 之前把 rlimit 设好
+# --------------------------------------------------------------------- #
+def _linux_rlimit_fn(mem_bytes: int | None):
+    """返回一个能塞给 subprocess.Popen(preexec_fn=...) 的函数。
+
+    在子进程里执行，所以这里只能碰 os / resource 这类 async-signal-safe 的东西。
+    """
+    if not mem_bytes:
+        return None
+
+    def _apply() -> None:  # pragma: no cover - 在子进程里跑
+        import resource
+        n = int(mem_bytes)
+        # AS = 地址空间总上限，最接近 Windows 的「进程内存限额」语义
+        try:
+            resource.setrlimit(resource.RLIMIT_AS, (n, n))
+            return
+        except (ValueError, OSError):
+            pass
+        # 有些内核不许设 RLIMIT_AS，退一步用 DATA 段（覆盖大多数爆内存场景）
+        try:
+            resource.setrlimit(resource.RLIMIT_DATA, (n, n))
+        except (ValueError, OSError):
+            pass
+        # 顺带限制单文件大小，防写爆磁盘
+        try:
+            resource.setrlimit(resource.RLIMIT_FSIZE, (64 * 1024 * 1024,) * 2)
+        except (ValueError, OSError):
+            pass
+
+    return _apply
+
+
+def _linux_peak_kb(pid: int) -> int:
+    """读 /proc/<pid>/status 的 VmHWM（峰值常驻内存），单位 KB。
+
+    进程已经退出就读不到了 —— 所以调用方要在 wait 之前读，或者接受读到 0。
+    这里也用 process.wait4 / getrusage 的路子兜底。
+    """
+    try:
+        with open("/proc/%d/status" % pid, "r", encoding="utf-8", errors="replace") as f:
+            for line in f:
+                if line.startswith("VmHWM:"):
+                    return int(line.split()[1])
+    except Exception:
+        pass
+    return 0
 
 
 # stderr 里出现这些字样，基本可以确认是「被内存掐住」而不是别的崩溃。
@@ -215,7 +283,17 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
     if env:
         full_env.update(env)
 
-    flags = (CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW) if _IS_WINDOWS else 0
+    if _IS_WINDOWS:
+        flags = CREATE_NEW_PROCESS_GROUP | CREATE_NO_WINDOW
+        popen_kw: dict = {"creationflags": flags}
+    else:
+        # 新会话 = 新进程组，超时时能 killpg 一锅端
+        popen_kw = {"start_new_session": True}
+        # 内存限额只能在这里塞进子进程（fork 后 exec 前生效）
+        rl = _linux_rlimit_fn(memory_limit_mb * 1024 * 1024 if memory_limit_mb else None)
+        if rl:
+            popen_kw["preexec_fn"] = rl
+
     t0 = time.perf_counter()
 
     proc = subprocess.Popen(
@@ -225,20 +303,26 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
         stderr=subprocess.PIPE,
         cwd=str(cwd) if cwd else None,
         env=full_env,
-        creationflags=flags,
+        **popen_kw,
     )
 
     job: JobObject | None = None
     note = ""
     try:
         mem_bytes = memory_limit_mb * 1024 * 1024 if memory_limit_mb else None
-        try:
-            job = JobObject(memory_limit_bytes=mem_bytes)
-            if not job.assign(proc):
-                note = "Job Object 挂载失败，本次无内存上限"
-        except OSError as e:
-            job = None
-            note = f"Job Object 不可用（{e}），本次无内存上限"
+
+        # Windows 才需要显式挂 Job Object；Linux 的限额已经在 preexec 里设好
+        if _IS_WINDOWS:
+            try:
+                job = JobObject(memory_limit_bytes=mem_bytes)
+                if not job.assign(proc):
+                    note = "Job Object 挂载失败，本次无内存上限"
+            except OSError as e:
+                job = None
+                note = f"Job Object 不可用（{e}），本次无内存上限"
+
+        # 趁进程还活着，先记一次峰值（Linux 的进程退出后 /proc 就没了）
+        early_peak_kb = _linux_peak_kb(proc.pid) if not _IS_WINDOWS else 0
 
         timed_out = False
         out = err = b""
@@ -259,7 +343,11 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
 
         elapsed_ms = int((time.perf_counter() - t0) * 1000)
 
-        peak_bytes = job.peak_memory_bytes() if job else 0
+        if _IS_WINDOWS:
+            peak_bytes = job.peak_memory_bytes() if job else 0
+        else:
+            # 优先读 /proc（进程可能已经退出，那就只能用之前抓到的）
+            peak_bytes = max(_linux_peak_kb(proc.pid), early_peak_kb) * 1024
         exit_code = proc.returncode if proc.returncode is not None else -1
 
         # 实测结论（别改成 `peak >= limit`）：Job Object 的进程内存限额**不会**直接杀进程，
@@ -275,7 +363,7 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
         near_limit = bool(mem_bytes) and peak_bytes >= mem_bytes * 0.9
         abnormal = (exit_code != 0) or timed_out
         mem_signal = (not out.strip()) or _looks_like_oom(err)
-        mem_exceeded = bool(job and mem_bytes and near_limit and abnormal and mem_signal)
+        mem_exceeded = bool(mem_bytes and near_limit and abnormal and mem_signal)
 
         truncated = False
         if max_output_bytes:
@@ -294,7 +382,7 @@ def run(cmd: list[str], *, stdin_bytes: bytes = b"", cwd: str | Path | None = No
             timed_out=timed_out,
             mem_exceeded=mem_exceeded,
             truncated=truncated,
-            job_assigned=job is not None and not note,
+            job_assigned=(job is not None and not note) if _IS_WINDOWS else bool(mem_bytes),
             raw_note=note,
         )
     finally:

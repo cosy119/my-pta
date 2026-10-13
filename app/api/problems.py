@@ -1,16 +1,25 @@
-"""题目接口：列表 / 详情 / 平台元信息。"""
+"""题目接口：列表 / 详情 / 平台元信息。
+
+★ 多用户（2026-10-13）：题库是**大家共用**的，进度（mastery）是**每人一份**。
+  所有带进度的接口都按 `X-User-Token` 过滤。
+"""
 from __future__ import annotations
 
 import re
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 
-from .. import config, db
+from .. import config, db, users
 
 router = APIRouter(prefix="/api", tags=["problems"])
 
 # 「第 03 讲 · 流程控制语句」→ 3；匹配不到就排到最后
 _LECTURE_RE = re.compile(r"第\s*(\d+)\s*讲")
+
+
+def current_user(request: Request) -> dict:
+    """从 X-User-Token 解析当前用户（首见即注册）。"""
+    return users.resolve(request.headers.get("x-user-token")) or {}
 
 
 def _order_key(row: dict) -> tuple:
@@ -22,6 +31,29 @@ def _order_key(row: dict) -> tuple:
     if m:
         return (0, int(m.group(1)), int(row.get("difficulty") or 0), row["id"])
     return (1, 0, int(row.get("difficulty") or 0), row["id"])
+
+
+@router.get("/me")
+def me(user: dict = Depends(current_user)):
+    """当前身份 + 这个人自己的进度概况。前端启动时拉一次。"""
+    uid = int(user.get("id") or 0)
+    s = users.summary(uid)
+    return {
+        "id": uid,
+        "nickname": user.get("nickname") or "",
+        "token": (user.get("token") or "")[:8] + "…",   # 只回前 8 位，别把整串 token 到处传
+        "attempts": s["attempts"],
+        "accepted": s["accepted"],
+        "score": s["score"],
+        "max_score": s["max_score"],
+    }
+
+
+@router.post("/me")
+def rename_me(body: dict, user: dict = Depends(current_user)):
+    """给这份进度起个名字，方便在界面上认出来。"""
+    users.rename(int(user.get("id") or 0), str(body.get("nickname") or ""))
+    return {"ok": True}
 
 
 @router.get("/meta")
@@ -62,7 +94,8 @@ def meta():
 
 @router.get("/problems")
 def list_problems(line: str | None = None, status: str | None = None,
-                  q: str | None = None):
+                  q: str | None = None, user: dict = Depends(current_user)):
+    uid = int(user.get("id") or 0)
     sql = """
         SELECT p.id, p.line, p.title, p.difficulty, p.tags, p.origin, p.status,
                p.total_score,
@@ -76,10 +109,10 @@ def list_problems(line: str | None = None, status: str | None = None,
                m.solved_at               AS solved_at,
                (SELECT COUNT(*) FROM testcases t WHERE t.problem_id = p.id) AS testcase_count
         FROM problems p
-        LEFT JOIN mastery m ON m.problem_id = p.id
+        LEFT JOIN mastery m ON m.problem_id = p.id AND m.user_id = ?
         WHERE 1 = 1
     """
-    params: list = []
+    params: list = [uid]
     if line:
         sql += " AND p.line = ?"
         params.append(line)
@@ -101,7 +134,8 @@ def list_problems(line: str | None = None, status: str | None = None,
 
 
 @router.get("/problems/{pid}")
-def get_problem(pid: int):
+def get_problem(pid: int, user: dict = Depends(current_user)):
+    uid = int(user.get("id") or 0)
     p = db.query_one("SELECT * FROM problems WHERE id=?", (pid,))
     if not p:
         raise HTTPException(status_code=404, detail="题目不存在")
@@ -125,29 +159,32 @@ def get_problem(pid: int):
                                                 int(p["total_score"] or 100))
     p["points_sum"] = sum(p["case_points"])
 
-    # ---------- 每题进度 + 历史 ----------
-    m = db.query_one("SELECT * FROM mastery WHERE problem_id=?", (pid,)) or {}
+    # ---------- 每题进度 + 历史（★ 只看当前用户的） ----------
+    m = db.query_one("SELECT * FROM mastery WHERE user_id=? AND problem_id=?",
+                     (uid, pid)) or {}
     p["mastery"] = m
     p["best_score"] = int(m.get("best_score") or 0)
     p["solved_at"] = m.get("solved_at") or ""
     p["solved"] = bool(p["solved_at"])
 
-    # 打开题目时回填用的「最后一次提交」
+    # 打开题目时回填用的「最后一次提交」（自己的）
     p["last_submission"] = None
     if m.get("last_submission_id"):
         p["last_submission"] = db.query_one(
             "SELECT id, verdict, score, max_score, passed, total, lang, interpreter, "
-            "       code, created_at, judged_at FROM submissions WHERE id=?",
-            (m["last_submission_id"],))
+            "       code, created_at, judged_at FROM submissions WHERE id=? AND user_id=?",
+            (m["last_submission_id"], uid))
 
-    # 历史提交（每次提交都留档，默认给最近 50 条）
+    # 历史提交（每次提交都留档，默认给最近 50 条；★ 只看自己的）
     p["history"] = db.query(
         "SELECT id, verdict, score, max_score, passed, total, lang, interpreter, "
         "       time_ms, mem_kb, created_at, judged_at "
-        "FROM submissions WHERE problem_id=? ORDER BY id DESC LIMIT 50", (pid,))
+        "FROM submissions WHERE user_id=? AND problem_id=? ORDER BY id DESC LIMIT 50",
+        (uid, pid))
 
     p["history_count"] = (db.query_one(
-        "SELECT COUNT(*) AS n FROM submissions WHERE problem_id=?", (pid,)) or {}).get("n", 0)
+        "SELECT COUNT(*) AS n FROM submissions WHERE user_id=? AND problem_id=?",
+        (uid, pid)) or {}).get("n", 0)
 
     # 参考解不外传（留着自己判题和日后回看用）
     p.pop("reference_solution", None)

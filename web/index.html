@@ -148,10 +148,12 @@ code,pre{font-family:var(--mono)}
 <body>
 
 <header class="top">
-  <span class="brand">本地 AI 出题 + 批改平台</span>
+  <span class="brand">Python 练习平台</span>
   <span class="dim" id="stats"></span>
   <span class="spacer"></span>
   <span class="dim" id="env"></span>
+  <button class="mini" id="btn-me" title="这份进度是谁的 / 换名字"></button>
+  <button class="mini" id="btn-set" title="设置后端地址">设置</button>
 </header>
 
 <div class="layout">
@@ -175,15 +177,99 @@ code,pre{font-family:var(--mono)}
 const $ = (s) => document.querySelector(s);
 let META = null, CURRENT = null, POLL = null;
 let PROBLEMS = [];
+let ME = null;              // 当前身份（进度隔离靠它）
+let API_OFFLINE = false;    // 后端连不上 → 降级成「只能看题」
+
+/* =====================================================================
+ * 身份：每个浏览器一份通行证，存在 localStorage
+ * ---------------------------------------------------------------------
+ * 没有账号密码 —— 生成一串随机值当 token，请求时用 X-User-Token 带上。
+ * 后端见到新 token 就自动建号（首见即注册）。
+ * ⚠️ 清浏览器数据 = 丢这份进度；同一串 token 复制到别的设备 = 接上同一份进度。
+ * ===================================================================== */
+const LS_TOKEN = "pta.userToken";
+const LS_BACKEND = "pta.backend";
+const LS_DRAFT = "pta.draft.";      // 草稿：pta.draft.<problemId>
+
+function newToken() {
+  const a = new Uint8Array(16);
+  (window.crypto || window.msCrypto).getRandomValues(a);
+  return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function getUserToken() {
+  let t = localStorage.getItem(LS_TOKEN);
+  if (!t || !/^[0-9a-f]{16,64}$/.test(t)) {
+    t = newToken();
+    localStorage.setItem(LS_TOKEN, t);
+  }
+  return t;
+}
+
+/* 后端地址：
+ * - 空字符串 = 同源（本地 run.bat 起来时就是这种）
+ * - http(s)://... = 另一台机器/云平台（GitHub Pages 上必须填）
+ * - 也支持 ?api=https://xxx 一次性指定（分享给别人时方便）
+ */
+function getBackend() {
+  const q = new URLSearchParams(location.search).get("api");
+  if (q) { localStorage.setItem(LS_BACKEND, q); return q.replace(/\/+$/, ""); }
+  return (localStorage.getItem(LS_BACKEND) || "").replace(/\/+$/, "");
+}
+function setBackend(url) {
+  const v = (url || "").trim().replace(/\/+$/, "");
+  if (v) localStorage.setItem(LS_BACKEND, v);
+  else localStorage.removeItem(LS_BACKEND);
+}
 
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g,
   (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
+/* 所有后端请求统一走这里：自动带 token + 自动拼后端地址 */
 async function api(path, opts) {
-  const r = await fetch(path, opts);
+  const url = getBackend() + path;
+  const o = Object.assign({}, opts || {});
+  o.headers = Object.assign({ "X-User-Token": getUserToken() }, o.headers || {});
+  const r = await fetch(url, o);
   const text = await r.text();
   if (!r.ok) throw new Error(text || (r.status + " " + r.statusText));
   return text ? JSON.parse(text) : null;
+}
+
+/* 本地草稿（后端连不上也不丢你写的东西） */
+function saveDraft(pid, code) {
+  if (!pid) return;
+  try { localStorage.setItem(LS_DRAFT + pid, code); } catch (e) {}
+}
+function loadDraft(pid) {
+  try { return localStorage.getItem(LS_DRAFT + pid) || ""; } catch (e) { return ""; }
+}
+
+/* 本地进度镜像（后端连不上时，至少让你看到自己攒的分数） */
+const LS_LOCAL = "pta.localProgress";
+function localProgress() {
+  try { return JSON.parse(localStorage.getItem(LS_LOCAL) || "{}"); } catch (e) { return {}; }
+}
+function setLocalProgress(pid, score, max, solved) {
+  const m = localProgress();
+  const prev = m[pid] || { score: 0, max: max, solved: false };
+  m[pid] = {
+    score: Math.max(prev.score || 0, score),
+    max: max,
+    solved: prev.solved || solved,
+    at: Date.now(),
+  };
+  try { localStorage.setItem(LS_LOCAL, JSON.stringify(m)); } catch (e) {}
+}
+
+/* 静态题库：后端连不上时的兜底数据源 */
+let STATIC_BANK = null;
+async function loadStaticBank() {
+  if (STATIC_BANK) return STATIC_BANK;
+  const r = await fetch("problems.json", { cache: "no-cache" });
+  if (!r.ok) throw new Error("静态题库也读不到");
+  STATIC_BANK = await r.json();
+  return STATIC_BANK;
 }
 
 /* ---------- 迷你 markdown（够题面用） ---------- */
@@ -215,6 +301,7 @@ function md(src) {
 async function loadStats() {
   try {
     const s = await api("/api/stats");
+    API_OFFLINE = false;
     const pct = s.max_score ? Math.round(s.score * 100 / s.max_score) : 0;
     $("#stats").innerHTML =
       '得分 <span class="score ' + (s.score >= s.max_score && s.max_score ? "full" : "") + '">' +
@@ -222,7 +309,78 @@ async function loadStats() {
       " · 通过 " + s.solved + " / " + s.problems +
       " · 提交 " + s.submissions +
       (s.pending ? " · 队列 " + s.pending : "");
-  } catch (e) { /* 忽略 */ }
+  } catch (e) {
+    // 后端连不上 → 用本地镜像算个粗略的，别让顶栏空着
+    API_OFFLINE = true;
+    const m = localProgress();
+    const got = Object.values(m).reduce((a, x) => a + (x.score || 0), 0);
+    const mx = Object.values(m).reduce((a, x) => a + (x.max || 0), 0);
+    const ok = Object.values(m).filter((x) => x.solved).length;
+    $("#stats").innerHTML = got
+      ? '<span class="chip warn">离线</span> 本地记录 ' + got + " / " + mx +
+        " · 通过 " + ok
+      : '<span class="chip warn">后端未连接</span> 点右上角「设置」填后端地址';
+  }
+}
+
+/* ---------- 身份 ---------- */
+async function loadMe() {
+  const btn = $("#btn-me");
+  try {
+    ME = await api("/api/me");
+    btn.textContent = ME.nickname || ("#" + ME.id);
+    btn.title = "点一下改名。这份进度的通行证：" + ME.token +
+                "（换设备时填同一串就能接上）";
+  } catch (e) {
+    ME = null;
+    btn.textContent = "离线";
+    btn.title = "后端未连接，进度暂存在这台浏览器";
+  }
+}
+
+function bindMe() {
+  $("#btn-me").onclick = async () => {
+    if (!ME) { openSettings(); return; }
+    const nick = prompt(
+      "给这份进度起个名字：\n\n通行证（换设备时填这个）：\n" + getUserToken(),
+      ME.nickname || "");
+    if (nick === null) return;
+    if (nick.trim()) {
+      try { await api("/api/me", { method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nickname: nick.trim() }) }); } catch (e) {}
+      ME.nickname = nick.trim();
+      $("#btn-me").textContent = ME.nickname;
+      loadStats();
+    }
+    // 顺便给个「换身份」的入口
+    if (confirm("要换一份全新进度吗？\n（当前这份会留在服务器上，通行证是 " +
+                getUserToken() + "，记下来还能切回来）")) {
+      localStorage.setItem(LS_TOKEN, newToken());
+      location.reload();
+    }
+  };
+}
+
+/* ---------- 设
+
+/* ---------- 设置：后端地址 ---------- */
+function openSettings() {
+  const cur = getBackend();
+  const url = prompt(
+    "后端地址（跑判题的那台机器）：\n\n" +
+    "· 留空 = 同源（用 run.bat 在本机跑时就这样）\n" +
+    "· 云端例如 https://my-pta.onrender.com\n\n" +
+    "当前：" + (cur || "（同源）"),
+    cur);
+  if (url === null) return;
+  setBackend(url);
+  API_OFFLINE = false;
+  boot(true);
+}
+
+function bindSettings() {
+  $("#btn-set").onclick = openSettings;
 }
 
 /* ---------- 题目列表 ---------- */
@@ -234,15 +392,46 @@ function scoreCls(got, full, solved) {
 async function loadProblems() {
   const q = $("#q").value.trim();
   const line = $("#ftype").value;
-  const url = "/api/problems?" + new URLSearchParams(
-    Object.assign({}, q ? { q } : {}, line ? { line } : {}));
-  const data = await api(url);
-  PROBLEMS = data.items || [];
+  let items = [];
+
+  try {
+    const url = "/api/problems?" + new URLSearchParams(
+      Object.assign({}, q ? { q } : {}, line ? { line } : {}));
+    const data = await api(url);
+    items = data.items || [];
+    API_OFFLINE = false;
+  } catch (e) {
+    // ★ 后端连不上 → 退到静态题库（GitHub Pages 上就是靠这份）
+    API_OFFLINE = true;
+    try {
+      const bank = await loadStaticBank();
+      items = (bank.items || []).map((p) => {
+        const lp = localProgress()[p.id];
+        return Object.assign({}, p, {
+          attempts: lp ? 1 : 0,
+          best_score: lp ? lp.score : 0,
+          solved_at: lp && lp.solved ? "本地" : "",
+          solved: !!(lp && lp.solved),
+          testcase_count: p.testcase_count,
+          score_label: (lp ? lp.score : 0) + "/" + (p.total_score || 0),
+        });
+      });
+      if (q) items = items.filter((p) =>
+        (p.title || "").includes(q) || (p.tags || []).join(",").includes(q));
+      if (line) items = items.filter((p) => p.line === line);
+    } catch (e2) {
+      items = [];
+    }
+  }
+
+  PROBLEMS = items;
   const ul = $("#plist");
   ul.innerHTML = "";
   if (!PROBLEMS.length) {
     ul.innerHTML = '<li><span class="t"><b>还没有题目</b>' +
-                   '<span class="sub">用 P3 的 AI 出题，或手工加题</span></span></li>';
+                   '<span class="sub">' + (API_OFFLINE
+                     ? "后端未连接，且静态题库读不到" : "题库是空的") +
+                   '</span></span></li>';
     return;
   }
   for (const p of PROBLEMS) {
@@ -318,14 +507,45 @@ async function refreshCurrent() {
     if (el) { el.className = t.cls; el.textContent = t.text; }
     const hb = $("#hist-box");
     if (hb) { hb.innerHTML = histInner(p); bindHistory(); }
-  } catch (e) { /* 忽略 */ }
+  } catch (e) { /* 后台刷新失败无所谓，别打扰用户 */ }
+}
+
+/* 取题目详情：优先后端（带你的进度），连不上就退到静态题库 */
+async function fetchProblem(id) {
+  try {
+    const p = await api("/api/problems/" + id);
+    API_OFFLINE = false;
+    return p;
+  } catch (e) {
+    API_OFFLINE = true;
+    const bank = await loadStaticBank();
+    const p = (bank.items || []).find((x) => x.id === id);
+    if (!p) throw new Error("题目不存在");
+    const lp = localProgress()[id];
+    return Object.assign({}, p, {
+      samples: p.samples || [],
+      history: [],
+      history_count: 0,
+      last_submission: null,
+      best_score: lp ? lp.score : 0,
+      solved: !!(lp && lp.solved),
+      case_points: p.case_points || [],
+      points_sum: p.points_sum || p.total_score || 0,
+    });
+  }
 }
 
 /* ---------- 打开题目 ---------- */
 async function openProblem(id, li) {
+  const prev = CURRENT;
+  if (prev && prev.id && prev.id !== id) {
+    // 切题前把草稿存下来
+    saveDraft(prev.id, $("#code") ? $("#code").value : "");
+  }
   document.querySelectorAll(".plist li").forEach((x) => x.classList.remove("active"));
   if (li) li.classList.add("active");
-  const p = await api("/api/problems/" + id);
+
+  const p = await fetchProblem(id);
   CURRENT = p;
 
   const samples = (p.samples || []).map((s, i) =>
@@ -380,11 +600,23 @@ async function openProblem(id, li) {
     "</div>";
 
   fillInterp(p.line);
-  // 打开题目就回填「最后一次提交」的代码 —— PTA 也是这个行为
+  // 打开题目就回填代码 —— 优先级：后端「最后一次提交」> 本地草稿
+  const draft = loadDraft(p.id);
   if (p.last_submission && p.last_submission.code) {
     $("#code").value = p.last_submission.code;
     if (p.last_submission.interpreter) $("#interp").value = p.last_submission.interpreter;
     $("#ed-hint").textContent = "已回填上次提交的代码（#" + p.last_submission.id + "）";
+  } else if (draft) {
+    $("#code").value = draft;
+    $("#ed-hint").textContent = "已恢复本地草稿";
+  }
+  // 断线时的提示与禁用
+  if (API_OFFLINE) {
+    $("#btn-submit").disabled = true;
+    $("#btn-run").disabled = true;
+    $("#ed-hint").innerHTML = '<span style="color:var(--warn)">' +
+      "后端未连接 —— 代码会自动存本地草稿，但无法判题。点右上角「设置」填后端地址" +
+      "</span>";
   }
   bindEditor();
   bindHistory();
@@ -444,6 +676,16 @@ function bindEditor() {
       ta.value = ta.value.slice(0, s) + "    " + ta.value.slice(en);
       ta.selectionStart = ta.selectionEnd = s + 4;
     }
+  });
+  // ★ 边写边存草稿（后端连不上也不会丢你写的东西）
+  let t = null;
+  ta.addEventListener("input", () => {
+    clearTimeout(t);
+    t = setTimeout(() => saveDraft(CURRENT && CURRENT.id, ta.value), 400);
+  });
+  // 关页面前再存一次
+  window.addEventListener("beforeunload", () => {
+    if (CURRENT && CURRENT.id) saveDraft(CURRENT.id, ta.value);
   });
 }
 
@@ -518,6 +760,9 @@ function startPoll(sid) {
       if (s.verdict !== "pending" && s.verdict !== "judging") {
         clearInterval(POLL); POLL = null;
         $("#btn-submit").disabled = false;
+        // 本地也记一份（离线时列表还能显示进度）
+        if (CURRENT) setLocalProgress(
+          CURRENT.id, s.score || 0, s.max_score || 0, s.verdict === "AC");
         loadProblems(); loadStats(); refreshCurrent();
       }
     } catch (e) {
@@ -603,22 +848,46 @@ function renderResult(s) {
 }
 
 /* ---------- 启动 ---------- */
-(async function boot() {
+(async function boot(isReconnect) {
+  if (!isReconnect) { bindSettings(); bindMe(); }
+  API_OFFLINE = false;
+
+  // 先拉身份（首见即注册），再拉元信息
+  try {
+    ME = await api("/api/me");
+    $("#btn-me").textContent = ME.nickname || ("#" + ME.id);
+    $("#btn-me").title = "点一下改名。这份进度的通行证：" + ME.token;
+  } catch (e) {
+    ME = null;
+    $("#btn-me").textContent = "离线";
+  }
+
   try {
     META = await api("/api/meta");
-    $("#env").textContent =
-      "解释器 " + (META.langs[0].interpreters[0].label.match(/[\d.]+/) || [""])[0] +
-      " / " + (META.langs[0].interpreters[1].label.match(/[\d.]+/) || [""])[0] +
-      " · 端口 " + META.port;
+    const back = getBackend();
+    $("#env").textContent = (back ? back.replace(/^https?:\/\//, "") : "本机") +
+      " · 进度独立保存";
   } catch (e) {
-    $("#env").textContent = "无法连接后端";
+    // 后端不通：用一份「假 meta」让界面还能撑起来（只有 Python、不能判题）
+    META = {
+      langs: [{ lang: "python", label: "Python", default: "py313",
+                interpreters: [
+                  { key: "py313", label: "Python 3.13（后端未连接）", path: "" },
+                ] }],
+      port: 0,
+    };
+    $("#env").innerHTML = '<span style="color:var(--warn)">后端未连接</span>';
   }
+
   await loadProblems();
   await loadStats();
-  setInterval(loadStats, 5000);
-  let t = null;
-  $("#q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(loadProblems, 250); });
-  $("#ftype").addEventListener("change", loadProblems);
+
+  if (!isReconnect) {
+    setInterval(loadStats, 5000);
+    let t = null;
+    $("#q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(loadProblems, 250); });
+    $("#ftype").addEventListener("change", loadProblems);
+  }
 })();
 </script>
 </body>

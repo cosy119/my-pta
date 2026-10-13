@@ -13,6 +13,7 @@
 """
 from __future__ import annotations
 
+import os
 import socket
 import sys
 import threading
@@ -175,6 +176,15 @@ def main() -> int:
 
 
 if __name__ == "__main__":
+    # 云端（Render/Railway/Fly）会注入 $PORT 并要求绑 0.0.0.0：
+    # 这时跳过「打开浏览器」「端口冲突提示」这些本地交互，直接起服务。
+    if os.environ.get("PORT") or os.environ.get("PTA_CLOUD"):
+        from app.main import app as _app
+        import uvicorn as _uv
+        _cfg = config.get()
+        _uv.run(_app, host=_cfg.host_env, port=_cfg.port_env, log_level="info")
+        raise SystemExit(0)
+
     try:
         raise SystemExit(main())
     except SystemExit:

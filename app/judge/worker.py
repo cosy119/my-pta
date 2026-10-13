@@ -13,7 +13,7 @@ import time
 import traceback
 from pathlib import Path
 
-from .. import config, db, scoring
+from .. import config, db, scoring, users
 from . import sandbox
 from .compare import compare
 from .runner_base import Limits
@@ -88,6 +88,8 @@ class JudgeWorker:
             db.update("submissions", {"verdict": "IE", "message": "题目不存在"},
                       "id=?", (sid,))
             return
+        # 判完写 mastery 时要按「这次提交是谁的」来记账
+        prob["_uid"] = int(sub["user_id"] or 0)
 
         cases = db.query(
             "SELECT * FROM testcases WHERE problem_id=? ORDER BY ord, id",
@@ -221,17 +223,24 @@ class JudgeWorker:
             "judged_at": db.now_iso(),
             "judge_ms": judge_ms,
         }, "id=?", (sid,))
-        self._update_mastery(int(prob["id"]), verdict, int(score), int(max_score), sid)
+        self._update_mastery(int(prob["id"]), verdict, int(score), int(max_score), sid,
+                             int(prob.get("_uid") or 0))
 
     def _update_mastery(self, problem_id: int, verdict: str, score: int,
-                        max_score: int, sid: int) -> None:
-        """更新每题进度：最高分、最后提交、首次满分时间。
+                        max_score: int, sid: int, user_id: int = 0) -> None:
+        """更新**这个人**在这道题上的进度：最高分、最后提交、首次满分时间。
 
         best_submission_id / last_submission_id 是「打开题目自动回填代码」的依据：
         - last_*  → 回填你上次写的
         - best_*  → 回填你得最高分的那版（想找回最好解法时用）
         """
-        row = db.query_one("SELECT * FROM mastery WHERE problem_id=?", (problem_id,))
+        uid = int(user_id or 0)
+        if not uid:
+            # 兜底：老提交（迁移前）或脚本直接塞的记录可能没 user_id
+            # → 归到「本机用户」，不能让 FK 约束把判题搞崩
+            uid = users.user_id_of(None)
+        row = db.query_one("SELECT * FROM mastery WHERE user_id=? AND problem_id=?",
+                           (uid, problem_id))
         now = db.now_iso()
         solved = verdict == "AC"
 
@@ -252,19 +261,16 @@ class JudgeWorker:
             solved_at = row["solved_at"] or (now if solved else "")
             level = 2 if ac_count >= 2 else (1 if (best_score > 0 or attempts >= 2) else 0)
 
-            db.update("mastery", {
-                "attempts": attempts,
-                "ac_count": ac_count,
-                "best_score": best_score,
-                "best_submission_id": best_sid,
-                "last_submission_id": sid,
-                "last_verdict": verdict,
-                "last_at": now,
-                "solved_at": solved_at,
-                "level": level,
-            }, "problem_id=?", (problem_id,))
+            db.execute("""
+                UPDATE mastery SET attempts=?, ac_count=?, best_score=?,
+                    best_submission_id=?, last_submission_id=?, last_verdict=?,
+                    last_at=?, solved_at=?, level=?
+                WHERE user_id=? AND problem_id=?
+            """, (attempts, ac_count, best_score, best_sid, sid, verdict,
+                  now, solved_at, level, uid, problem_id))
         else:
             db.insert("mastery", {
+                "user_id": uid,
                 "problem_id": problem_id,
                 "attempts": 1,
                 "ac_count": 1 if solved else 0,

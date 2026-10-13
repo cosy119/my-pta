@@ -8,6 +8,7 @@ import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -68,7 +69,22 @@ async def lifespan(app: FastAPI):
     log.info("已停止判题线程")
 
 
-app = FastAPI(title="本地 AI 出题 + 批改平台", version="0.1.0", lifespan=lifespan)
+app = FastAPI(title="本地 AI 出题 + 批改平台", version="0.2.0", lifespan=lifespan)
+
+# ★ CORS：前端要能放在 GitHub Pages（另一个域名）上，后端只提供 API。
+# 允许的来源由 settings.toml [server] allow_origins 控制；默认 "*" 适合个人学习平台
+# （身份靠 X-User-Token 而不是 cookie，所以不需要 allow_credentials）。
+_cors = config.get().allow_origins or ["*"]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=_cors,
+    allow_origin_regex=r"https://.*\.github\.io",   # 顺手放行 Pages 的预览域名
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+    expose_headers=["*"],
+)
+
 app.include_router(problems.router)
 app.include_router(submissions.router)
 

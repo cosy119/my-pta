@@ -1,20 +1,29 @@
-"""提交与判题查询接口。"""
+"""提交与判题查询接口。
+
+★ 多用户（2026-10-13）：所有接口都按请求头 `X-User-Token` 隔离，
+  各人的提交记录与进度互不可见。
+"""
 from __future__ import annotations
 
 import os
 import time
 from pathlib import Path
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi.concurrency import run_in_threadpool
 from pydantic import BaseModel
 
-from .. import config, db
+from .. import config, db, users
 from ..judge import sandbox
 from ..judge.runner_base import Limits
 from ..judge.worker import build_runner, get_worker
 
 router = APIRouter(prefix="/api", tags=["submissions"])
+
+
+def current_user(request: Request) -> dict:
+    """从 X-User-Token 解析当前用户（首见即注册）。"""
+    return users.resolve(request.headers.get("x-user-token")) or {}
 
 
 class SubmitIn(BaseModel):
@@ -34,7 +43,7 @@ class RunIn(BaseModel):
 
 
 @router.post("/submissions")
-def create_submission(body: SubmitIn):
+def create_submission(body: SubmitIn, user: dict = Depends(current_user)):
     p = db.query_one("SELECT id, line FROM problems WHERE id=?", (body.problem_id,))
     if not p:
         raise HTTPException(status_code=404, detail="题目不存在")
@@ -42,6 +51,7 @@ def create_submission(body: SubmitIn):
         raise HTTPException(status_code=400, detail="代码是空的")
 
     sid = db.insert("submissions", {
+        "user_id": int(user.get("id") or 0),
         "problem_id": body.problem_id,
         "lang": body.lang or p["line"] or "python",
         "interpreter": body.interpreter or "py313",
@@ -96,8 +106,10 @@ async def run_once(body: RunIn):
 
 
 @router.get("/submissions/{sid}")
-def get_submission(sid: int, with_cases: bool = True):
-    s = db.query_one("SELECT * FROM submissions WHERE id=?", (sid,))
+def get_submission(sid: int, with_cases: bool = True, user: dict = Depends(current_user)):
+    """取一次提交。★ 只能看自己的 —— 别人的提交直接 404。"""
+    s = db.query_one("SELECT * FROM submissions WHERE id=? AND user_id=?",
+                     (sid, int(user.get("id") or 0)))
     if not s:
         raise HTTPException(status_code=404, detail="提交不存在")
     if with_cases:
@@ -109,11 +121,12 @@ def get_submission(sid: int, with_cases: bool = True):
 
 
 @router.get("/submissions")
-def list_submissions(problem_id: int | None = None, limit: int = 50):
+def list_submissions(problem_id: int | None = None, limit: int = 50,
+                     user: dict = Depends(current_user)):
     sql = ("SELECT id, problem_id, lang, interpreter, verdict, score, max_score, "
            "       passed, total, time_ms, mem_kb, created_at, judged_at "
-           "FROM submissions WHERE 1=1")
-    params: list = []
+           "FROM submissions WHERE user_id = ?")
+    params: list = [int(user.get("id") or 0)]
     if problem_id:
         sql += " AND problem_id = ?"
         params.append(problem_id)
@@ -123,11 +136,13 @@ def list_submissions(problem_id: int | None = None, limit: int = 50):
 
 
 @router.get("/progress")
-def progress():
+def progress(user: dict = Depends(current_user)):
     """总进度：按题目汇总「已得 / 满分」，以及逐题明细。
 
     只算每题的**历史最高分**（best_score），跟 PTA 一样 —— 刷题不倒退。
+    ★ 只看当前用户的 mastery。
     """
+    uid = int(user.get("id") or 0)
     rows = db.query("""
         SELECT p.id, p.title, p.line, p.difficulty, p.total_score,
                COALESCE(m.best_score, 0) AS best_score,
@@ -137,9 +152,9 @@ def progress():
                m.solved_at,
                COALESCE(m.is_starred, 0) AS is_starred
         FROM problems p
-        LEFT JOIN mastery m ON m.problem_id = p.id
+        LEFT JOIN mastery m ON m.problem_id = p.id AND m.user_id = ?
         ORDER BY p.id ASC
-    """)
+    """, (uid,))
     full = sum(int(r["total_score"] or 0) for r in rows)
     got = sum(int(r["best_score"] or 0) for r in rows)
     solved = sum(1 for r in rows if r["solved_at"])
@@ -156,13 +171,16 @@ def progress():
 
 
 @router.get("/stats")
-def stats():
-    """首页角标用：题目数、提交数、通过率、总得分等。"""
+def stats(user: dict = Depends(current_user)):
+    """首页角标用：题目数、提交数、通过率、总得分等（全部限当前用户）。"""
+    uid = int(user.get("id") or 0)
     prob = db.query_one("SELECT COUNT(*) AS n FROM problems") or {}
     pub = db.query_one("SELECT COUNT(*) AS n FROM problems WHERE status='published'") or {}
-    sub = db.query_one("SELECT COUNT(*) AS n FROM submissions") or {}
-    ac = db.query_one("SELECT COUNT(*) AS n FROM submissions WHERE verdict='AC'") or {}
-    star = db.query_one("SELECT COUNT(*) AS n FROM mastery WHERE is_starred=1") or {}
+    sub = db.query_one("SELECT COUNT(*) AS n FROM submissions WHERE user_id=?", (uid,)) or {}
+    ac = db.query_one(
+        "SELECT COUNT(*) AS n FROM submissions WHERE user_id=? AND verdict='AC'", (uid,)) or {}
+    star = db.query_one(
+        "SELECT COUNT(*) AS n FROM mastery WHERE user_id=? AND is_starred=1", (uid,)) or {}
 
     # 得分汇总：每题取历史最高分
     agg = db.query_one("""
@@ -170,8 +188,8 @@ def stats():
                SUM(COALESCE(m.best_score, 0))    AS got,
                SUM(CASE WHEN COALESCE(m.solved_at,'') <> '' THEN 1 ELSE 0 END) AS solved
         FROM problems p
-        LEFT JOIN mastery m ON m.problem_id = p.id
-    """) or {}
+        LEFT JOIN mastery m ON m.problem_id = p.id AND m.user_id = ?
+    """, (uid,)) or {}
 
     return {
         "problems": prob.get("n", 0),
@@ -183,4 +201,5 @@ def stats():
         "score": agg.get("got", 0) or 0,
         "max_score": agg.get("full", 0) or 0,
         "pending": get_worker().pending(),
+        "user": {"id": uid, "nickname": user.get("nickname") or ""},
     }

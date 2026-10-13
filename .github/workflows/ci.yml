@@ -1,0 +1,55 @@
+# CI：每次推送自动跑一遍自检
+#
+# 为什么有用：
+# 1. 我本机是 Windows，**沙箱的 Linux 分支（setrlimit + killpg）只能在 Linux 上验证** ——
+#    这个 workflow 就替我把这件事做了（ubuntu-latest = 真 Linux）
+# 2. 顺便守护题库：加题时参考解必须全过，不然 CI 红
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  # ---------- Linux 上验证沙箱 + 判题内核 ----------
+  linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: 装依赖
+        run: pip install -r requirements.txt
+
+      - name: 沙箱跨平台自检（★ 这一步验证 Linux 的内存限额与杀进程树）
+        run: python tools/selftest_sandbox.py
+
+      - name: 判题内核 + 评分回归
+        run: python tools/selfcheck.py
+
+      - name: 题库对拍（参考解 vs 期望输出）
+        run: python tools/verify_bank.py --quiet
+
+  # ---------- Windows 上也跑一遍（本机日常环境） ----------
+  windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: 装依赖
+        run: pip install -r requirements.txt
+
+      - name: 沙箱自检（Windows 分支：Job Object）
+        run: python tools/selftest_sandbox.py
+
+      - name: 判题内核 + 评分回归
+        run: python tools/selfcheck.py

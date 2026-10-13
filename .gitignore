@@ -29,3 +29,10 @@ desktop.ini
 # ---- 备份 ----
 backups/
 *.zip
+
+# ---- 测试残留 ----
+data/_migrate_test.db**
+
+# 注意：docs/ 下的 index.html / problems.json / .nojekyll 都是**要**提交的
+# （GitHub Pages 靠它们发布静态站；problems.json 由 tools/export_static.py 生成，
+#   记得加题之后重新导一次再提交）

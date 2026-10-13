@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parent.parent          # E:\学习\001\pta
 CONFIG_PATH = ROOT / "config" / "settings.toml"
 
 _DEFAULTS: dict[str, dict[str, Any]] = {
-    "server": {"host": "127.0.0.1", "port": 8765},
+    "server": {"host": "127.0.0.1", "port": 8765, "allow_origins": ["*"]},
     "paths": {
         "db": "data/pta.db",
         "tmp_judge": "data/tmp/judge",
@@ -73,6 +73,35 @@ class Settings:
         return int(self.get("server", "port"))
 
     @property
+    def allow_origins(self) -> list[str]:
+        """CORS 允许的来源。默认 ["*"]（个人学习平台，身份走 X-User-Token）。
+
+        可用环境变量 `PTA_ALLOW_ORIGINS` 收紧（逗号分隔），例如
+        `PTA_ALLOW_ORIGINS=https://cosy119.github.io`。
+        """
+        env = os.environ.get("PTA_ALLOW_ORIGINS")
+        if env:
+            return [s.strip() for s in env.split(",") if s.strip()]
+        v = self.get("server", "allow_origins", ["*"])
+        if isinstance(v, str):
+            return [s.strip() for s in v.split(",") if s.strip()]
+        return list(v or ["*"])
+
+    @property
+    def host_env(self) -> str:
+        """云平台会注入 $PORT 并要求绑 0.0.0.0。"""
+        return os.environ.get("HOST", "") or self.host
+
+    @property
+    def port_env(self) -> int:
+        """云平台注入的 $PORT 优先（Render/Railway/Fly 都是这个约定）。"""
+        p = os.environ.get("PORT")
+        try:
+            return int(p) if p else self.port
+        except ValueError:
+            return self.port
+
+    @property
     def concurrency(self) -> int:
         return max(1, int(self.get("judge", "concurrency", 1)))
 
@@ -102,7 +131,16 @@ class Settings:
 
     # ---- 路径 ----
     def path(self, key: str) -> Path:
-        """按 [paths] 里的名字取绝对路径。"""
+        """按 [paths] 里的名字取绝对路径。
+
+        ★ 环境变量 `PTA_<KEY>` 优先（如 `PTA_DB=/data/pta.db`）。
+        云平台的持久化卷挂载点跟仓库目录不是一个地方，必须能外部指定，
+        否则容器一重启进度就没了。
+        """
+        env = os.environ.get("PTA_" + key.upper())
+        if env:
+            p = Path(env)
+            return p if p.is_absolute() else (ROOT / p)
         rel = self.get("paths", key)
         if rel is None:
             raise KeyError(f"settings.toml [paths] 缺少 {key!r}")

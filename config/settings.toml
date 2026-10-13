@@ -4,9 +4,15 @@
 [server]
 host = "127.0.0.1"
 port = 8765
+# CORS 允许来源。默认 ["*"] —— 前端可能放在 GitHub Pages 上（另一个域名），后端只提供 API。
+# 身份走 X-User-Token（不是 cookie），所以通配也安全。
+# 想收紧就写数组，或用环境变量 PTA_ALLOW_ORIGINS=https://cosy119.github.io
+allow_origins = ["*"]
 
 [paths]
-# 以下路径都相对于 pta 根目录
+# 以下路径都相对于 pta 根目录。
+# ★ 部署到云平台时用环境变量覆盖（持久化卷的挂载点和仓库目录不是一个地方）：
+#     PTA_DB=/data/pta.db   PTA_LOGS=/data/logs   PTA_TMP_JUDGE=/tmp/pta-judge
 db        = "data/pta.db"
 tmp_judge = "data/tmp/judge"
 media     = "data/media"

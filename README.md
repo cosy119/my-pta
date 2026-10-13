@@ -6,6 +6,17 @@
 
 > 仓库：<https://github.com/cosy119/my-pta>
 
+## 两种用法
+
+| 用法 | 适合 | 怎么做 |
+|---|---|---|
+| **本机跑** | 自己一个人用，最省事 | 双击 `run.bat` |
+| **部署上网** | 想在手机/别的电脑刷，或者分享给别人 | 见 **[DEPLOY.md](DEPLOY.md)**（约 10 分钟） |
+
+上网那种是「**GitHub Pages 放前端 + 一个免费后端专门判题**」。
+**每个人的进度各自独立** —— 不需要注册，浏览器自己带一串通行证，
+后端按它区分是谁（详见 DEPLOY.md 第三节）。
+
 ## 新机器上跑起来（克隆后三步）
 
 ```bat
@@ -17,7 +28,7 @@ run.bat
 第一次跑会自动做这些事（不用手动初始化）：
 
 1. 建 `data/` 目录和空数据库
-2. 自动补表结构、补列（老库也适用，不动已有数据）
+2. 自动补表结构、补列、**把老数据归到「本机用户」**（老库也适用，不动已有数据）
 3. **自动灌入 56 道题**（按标题判重，重复执行不会灌两遍）
 4. 打开浏览器
 
@@ -135,30 +146,45 @@ D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py --quiet  &rem 只�
 pta/
 ├─ run.bat                 启动入口（纯 ASCII，只调用 run.py）
 ├─ run.py                  启动器：端口探测 / 自动开浏览器 / 错误不闪退 / 写日志
+│                          ★ 见到 $PORT 或 $PTA_CLOUD 就走云端模式（绑 0.0.0.0，不开浏览器）
 ├─ stop.bat                停止服务（杀掉占用 8765 的进程）
+├─ DEPLOY.md               ★ 部署上网的完整步骤（Pages + 免费后端）
+├─ Dockerfile              ★ 云端镜像（Render / Railway / Fly.io）
+├─ render.yaml             ★ Render 一键配置（含持久化 Disk）
+├─ requirements.txt        ★ 后端依赖（部署用）
 ├─ README.md               本文件
+├─ .github/workflows/ci.yml ★ 每次推送自动跑自检（Linux + Windows 双平台）
 ├─ config/
-│  ├─ settings.toml        平台配置（解释器路径、时限、AI key 环境变量名…）
+│  ├─ settings.toml        平台配置（解释器路径、时限、CORS、AI key 环境变量名…）
 │  └─ prompts/             出题与讲解的提示词模板（P3/P5 用）
 ├─ app/
-│  ├─ main.py              FastAPI 入口
-│  ├─ config.py            读 settings.toml
-│  ├─ db.py / schema.sql   数据库（含老库自动补列迁移）
+│  ├─ main.py              FastAPI 入口（含 CORS）
+│  ├─ config.py            读 settings.toml + 环境变量覆盖（PTA_DB / PTA_ALLOW_ORIGINS…）
+│  ├─ db.py / schema.sql   数据库（含老库自动补列迁移）+ index.sql（迁移后建索引）
+│  ├─ users.py             ★ 轻量身份：浏览器生成的 token 就是账号，首见即注册
 │  ├─ scoring.py           评分：分值分配 / 计分 / 部分正确判定
 │  ├─ seed.py              种子题（核心题 + 题库）与老库升级
 │  ├─ problems_bank.py     题库第一批（11 道）
 │  ├─ problems_bank_ext.py 题库第二批（42 道，带第二套实现对拍字段）
-│  ├─ api/                 HTTP 接口（problems / submissions / progress）
+│  ├─ api/                 HTTP 接口（problems / submissions / progress / me）
 │  └─ judge/               判题内核
-│     ├─ sandbox.py        进程沙箱（Job Object + 看门狗）
+│     ├─ sandbox.py        进程沙箱（★ 跨平台：Windows Job Object / Linux setrlimit+killpg）
 │     ├─ compare.py        输出比对
 │     ├─ runner_python.py  Python runner
-│     └─ worker.py         判题队列（单线程，按测试点分值计分）
+│     └─ worker.py         判题队列（单线程，按测试点分值计分，按用户记账）
 ├─ web/index.html          前端（单文件，无构建工具）
+├─ docs/                   ★ GitHub Pages 发布目录（由 export_static.py 生成）
+│  ├─ index.html           前端副本
+│  ├─ problems.json        题库快照（不含参考解）
+│  └─ .nojekyll            别让 Jekyll 处理
 ├─ tools/
 │  ├─ selfcheck.py         判题内核 + 评分 自检（62 项）
+│  ├─ selftest_sandbox.py  ★ 沙箱跨平台自检（12 项，部署后在容器里跑它）
+│  ├─ httptest_users.py    ★ 多用户隔离自检（23 项，自己起服务）
+│  ├─ httptest_split.py    ★ 跨源（Pages + 后端）自检（18 项，含 CORS 预检）
 │  ├─ httptest.py          HTTP 层自检（18 项，需服务在跑）
 │  ├─ verify_bank.py       题库校验（双实现撞独立算出的期望输出）
+│  ├─ export_static.py     ★ 导出静态题库 + 生成 docs/ 站点
 │  ├─ backup_db.py         数据备份 / 导出 JSON / 恢复
 │  └─ reset_progress.py    清空做题记录（保留题目；加 --yes 才真删）
 └─ data/                   ← 不进 Git（见 .gitignore）
@@ -169,15 +195,24 @@ pta/
 
 ## 自检
 
-四份脚本都是「真跑出证据」，不是断言假设：
+脚本都是「真跑出证据」，不是断言假设：
 
 ```bat
 cd /d E:\学习\001\pta
-D:\Pythontools\Python\python.exe -X utf8 tools\selfcheck.py     &rem 62 项：判题内核 + 评分
-D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py   &rem 60 个测试点：题库
-D:\Pythontools\Python\python.exe -X utf8 tools\httptest.py      &rem 18 项：HTTP 全链路（需服务在跑）
-D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py &rem 清空记录（加 --yes 才真删）
+D:\Pythontools\Python\python.exe -X utf8 tools\selfcheck.py        &rem 62 项：判题内核 + 评分
+D:\Pythontools\Python\python.exe -X utf8 tools\selftest_sandbox.py &rem 12 项：沙箱（跨平台）
+D:\Pythontools\Python\python.exe -X utf8 tools\httptest_users.py   &rem 23 项：多用户隔离（自起服务）
+D:\Pythontools\Python\python.exe -X utf8 tools\httptest_split.py   &rem 18 项：跨源 CORS（自起两个源）
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py      &rem 215 个测试点：题库双实现对拍
+D:\Pythontools\Python\python.exe -X utf8 tools\httptest.py         &rem 18 项：HTTP（需服务已在跑）
+D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py   &rem 清空记录（加 --yes 才真删）
 ```
+
+后三个（`selftest_sandbox` / `httptest_users` / `httptest_split`）会**自己起服务、测完自己关**，
+不依赖外部状态，适合部署后在容器里立刻确认环境。
+
+CI（`.github/workflows/ci.yml`）在 Ubuntu 和 Windows 上各跑一遍 ——
+**Linux 那份专门用来验证沙箱的 setrlimit + killpg 分支**（本机是 Windows，测不到）。
 
 注意：`selfcheck.py` 和 `httptest.py` 会往题库里写测试提交（也就改变了进度）。
 **刷题前先跑自检，跑完再开始做题**；已经做了题就别再跑这两个脚本，

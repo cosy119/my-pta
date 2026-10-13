@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>本地 AI 出题 + 批改平台</title>
+<style>
+:root{
+  --bg:#f6f7f9; --panel:#fff; --border:#e2e5ea; --text:#1f2328; --muted:#697386;
+  --accent:#2563eb; --accent-soft:#eff3ff;
+  --ok:#15803d; --ok-soft:#ecfdf3;
+  --warn:#b45309; --warn-soft:#fffbeb;
+  --err:#b91c1c; --err-soft:#fef2f2;
+  --code:#f4f5f7;
+  --mono:ui-monospace,Consolas,"Cascadia Mono","Courier New",monospace;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--text);
+     font:14px/1.6 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+code,pre{font-family:var(--mono)}
+
+/* ---- 顶栏 ---- */
+.top{display:flex;align-items:center;gap:14px;height:48px;padding:0 16px;
+     background:var(--panel);border-bottom:1px solid var(--border);
+     position:sticky;top:0;z-index:10}
+.brand{font-weight:600;letter-spacing:.2px}
+.dim{color:var(--muted);font-size:12.5px}
+.spacer{flex:1}
+
+/* ---- 布局 ---- */
+.layout{display:flex;height:calc(100vh - 48px)}
+.side{width:290px;flex:none;background:var(--panel);border-right:1px solid var(--border);
+      display:flex;flex-direction:column;min-height:0}
+.side-tools{padding:10px;display:flex;gap:8px;border-bottom:1px solid var(--border)}
+.side-tools input{flex:1;min-width:0;padding:6px 9px;border:1px solid var(--border);
+                  border-radius:6px;background:#fbfcfd}
+.side-tools select{padding:6px 8px;border:1px solid var(--border);border-radius:6px;background:#fbfcfd}
+.plist{list-style:none;margin:0;padding:6px;overflow:auto;flex:1}
+.plist li{padding:8px 10px;border-radius:7px;cursor:pointer;display:flex;gap:8px}
+.plist li:hover{background:var(--accent-soft)}
+.plist li.active{background:var(--accent-soft);box-shadow:inset 3px 0 0 var(--accent)}
+.plist .t{flex:1;min-width:0}
+.plist .t b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.plist .sub{font-size:12px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;margin-top:7px;flex:none;background:#cbd5e1}
+.dot.ac{background:var(--ok)}
+.dot.bad{background:var(--err)}
+.main{flex:1;min-width:0;overflow:auto;padding:16px}
+.placeholder{color:var(--muted);padding:40px;text-align:center}
+
+/* ---- 卡片 ---- */
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;overflow:hidden}
+.card+.card{margin-top:14px}
+.card-h{padding:10px 14px;border-bottom:1px solid var(--border);font-weight:600;
+        display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.card-b{padding:14px}
+.work{display:grid;grid-template-columns:minmax(320px,44%) 1fr;gap:14px;align-items:start}
+@media (max-width:1100px){.work{grid-template-columns:1fr}}
+
+/* ---- 题面 ---- */
+.stmt h2,.stmt h3,.stmt h4{margin:14px 0 6px;font-size:15px}
+.stmt h2:first-child,.stmt h3:first-child{margin-top:0}
+.stmt p{margin:8px 0}
+.stmt ul{margin:8px 0;padding-left:20px}
+.stmt code{background:var(--code);padding:1px 5px;border-radius:4px;font-size:12.5px}
+.stmt pre{background:var(--code);border-radius:6px;padding:10px 12px;overflow:auto;font-size:12.5px}
+.meta-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.chip{font-size:12px;padding:2px 9px;border-radius:999px;background:#eef1f5;color:#495060}
+.chip.tag{background:var(--accent-soft);color:var(--accent)}
+
+/* ---- 样例 ---- */
+.sample{border:1px solid var(--border);border-radius:8px;margin:10px 0;overflow:hidden}
+.sample-h{padding:6px 12px;background:#fafbfc;border-bottom:1px solid var(--border);
+          font-size:12.5px;color:var(--muted)}
+.sample-grid{display:grid;grid-template-columns:1fr 1fr}
+.sample-grid>div+div{border-left:1px solid var(--border)}
+.lab{font-size:11.5px;color:var(--muted);padding:6px 12px 0;text-transform:none}
+.sample pre,.three pre{margin:4px 0 0;padding:8px 12px;background:transparent;
+                       font-size:12.5px;white-space:pre-wrap;word-break:break-all;min-height:20px}
+
+/* ---- 编辑器 ---- */
+.ed-head{display:flex;align-items:center;gap:10px;padding:9px 12px;flex-wrap:wrap}
+.ed-head select{padding:6px 9px;border:1px solid var(--border);border-radius:6px;background:#fbfcfd}
+.btn{padding:7px 16px;border:1px solid var(--accent);background:var(--accent);color:#fff;
+     border-radius:7px;font-weight:500}
+.btn:hover{filter:brightness(1.05)}
+.btn[disabled]{opacity:.55;cursor:default}
+.btn.ghost{background:#fff;color:var(--text);border-color:var(--border)}
+#code{display:block;width:100%;min-height:400px;border:0;border-top:1px solid var(--border);
+      padding:12px;font-family:var(--mono);font-size:13px;line-height:1.6;
+      resize:vertical;outline:none;tab-size:4;background:var(--panel)}
+.stdin-box{border-top:1px solid var(--border);padding:8px 12px}
+.stdin-box textarea{width:100%;height:56px;border:1px solid var(--border);border-radius:6px;
+                    padding:6px 9px;font-family:var(--mono);font-size:12.5px;resize:vertical}
+.run-row{margin-top:7px;display:flex;align-items:center;gap:10px}
+.run-out{margin:0;padding:10px 12px;border-top:1px solid var(--border);background:#fbfcfd;
+         font-size:12.5px;white-space:pre-wrap;word-break:break-all;
+         max-height:280px;overflow:auto}
+
+/* ---- 结果 ---- */
+.res-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 14px;
+          border-bottom:1px solid var(--border)}
+.badge{display:inline-block;padding:3px 12px;border-radius:999px;font-weight:600;font-size:13px}
+.badge.sm{padding:1px 8px;font-size:11.5px;font-weight:500}
+.badge.AC{background:var(--ok-soft);color:var(--ok)}
+.badge.WA,.badge.RE,.badge.CE,.badge.MLE,.badge.TLE,.badge.OLE,.badge.IE{background:var(--err-soft);color:var(--err)}
+.badge.PE{background:var(--warn-soft);color:var(--warn)}
+.badge.pending,.badge.judging{background:#eef2ff;color:var(--accent)}
+.cases{width:100%;border-collapse:collapse;font-size:12.5px}
+.cases th,.cases td{padding:6px 10px;border-bottom:1px solid var(--border);text-align:left}
+.cases th{color:var(--muted);font-weight:500;background:#fafbfc}
+.msg{margin:0;padding:10px 14px;background:var(--err-soft);color:var(--err);
+     font-size:12.5px;white-space:pre-wrap;word-break:break-all}
+.fail{border-top:1px solid var(--border);padding-bottom:10px}
+.three{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0;border-top:1px solid var(--border)}
+.three>div+div{border-left:1px solid var(--border)}
+.three .lab{padding-bottom:0}
+.soft-head{padding:8px 14px;background:#fafbfc;border-top:1px solid var(--border);
+           border-bottom:1px solid var(--border);font-size:12.5px;color:var(--muted)}
+
+/* ---- 得分 / 进度 ---- */
+.score{font-family:var(--mono);font-weight:600;color:var(--accent);white-space:nowrap}
+.score.full{color:var(--ok)}
+.score.zero{color:var(--muted);font-weight:400}
+.dot.partial{background:#d97706}
+.badge.PA{background:var(--warn-soft);color:var(--warn)}
+.chip.ok{background:var(--ok-soft);color:var(--ok)}
+.chip.warn{background:var(--warn-soft);color:var(--warn)}
+
+/* ---- 历史提交 ---- */
+.hist-wrap{border-top:1px solid var(--border)}
+.hist-head{padding:8px 12px;font-size:12.5px;color:var(--muted);display:flex;
+           align-items:center;gap:8px;background:#fafbfc;border-bottom:1px solid var(--border)}
+.hist{width:100%;border-collapse:collapse;font-size:12.5px}
+.hist th,.hist td{padding:5px 10px;border-bottom:1px solid var(--border);text-align:left;
+                  white-space:nowrap}
+.hist th{color:var(--muted);font-weight:500;background:#fafbfc}
+.hist tbody tr:hover{background:#fbfcfe}
+.hist-wrap .scroll{max-height:260px;overflow:auto}
+.mini{padding:2px 8px;border:1px solid var(--border);background:#fff;border-radius:5px;
+      font-size:11.5px;color:var(--muted);cursor:pointer}
+.mini:hover{border-color:var(--accent);color:var(--accent)}
+</style>
+</head>
+<body>
+
+<header class="top">
+  <span class="brand">Python 练习平台</span>
+  <span class="dim" id="stats"></span>
+  <span class="spacer"></span>
+  <span class="dim" id="env"></span>
+  <button class="mini" id="btn-me" title="这份进度是谁的 / 换名字"></button>
+  <button class="mini" id="btn-set" title="设置后端地址">设置</button>
+</header>
+
+<div class="layout">
+  <aside class="side">
+    <div class="side-tools">
+      <input id="q" type="search" placeholder="搜索题目…">
+      <select id="ftype">
+        <option value="">全部</option>
+        <option value="python">Python</option>
+      </select>
+    </div>
+    <ul class="plist" id="plist"></ul>
+  </aside>
+  <main class="main" id="main">
+    <div class="placeholder">← 从左边选一道题开始</div>
+  </main>
+</div>
+
+<script>
+"use strict";
+const $ = (s) => document.querySelector(s);
+let META = null, CURRENT = null, POLL = null;
+let PROBLEMS = [];
+let ME = null;              // 当前身份（进度隔离靠它）
+let API_OFFLINE = false;    // 后端连不上 → 降级成「只能看题」
+
+/* =====================================================================
+ * 身份：每个浏览器一份通行证，存在 localStorage
+ * ---------------------------------------------------------------------
+ * 没有账号密码 —— 生成一串随机值当 token，请求时用 X-User-Token 带上。
+ * 后端见到新 token 就自动建号（首见即注册）。
+ * ⚠️ 清浏览器数据 = 丢这份进度；同一串 token 复制到别的设备 = 接上同一份进度。
+ * ===================================================================== */
+const LS_TOKEN = "pta.userToken";
+const LS_BACKEND = "pta.backend";
+const LS_DRAFT = "pta.draft.";      // 草稿：pta.draft.<problemId>
+
+function newToken() {
+  const a = new Uint8Array(16);
+  (window.crypto || window.msCrypto).getRandomValues(a);
+  return Array.from(a, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+function getUserToken() {
+  let t = localStorage.getItem(LS_TOKEN);
+  if (!t || !/^[0-9a-f]{16,64}$/.test(t)) {
+    t = newToken();
+    localStorage.setItem(LS_TOKEN, t);
+  }
+  return t;
+}
+
+/* 后端地址：
+ * - 空字符串 = 同源（本地 run.bat 起来时就是这种）
+ * - http(s)://... = 另一台机器/云平台（GitHub Pages 上必须填）
+ * - 也支持 ?api=https://xxx 一次性指定（分享给别人时方便）
+ */
+function getBackend() {
+  const q = new URLSearchParams(location.search).get("api");
+  if (q) { localStorage.setItem(LS_BACKEND, q); return q.replace(/\/+$/, ""); }
+  return (localStorage.getItem(LS_BACKEND) || "").replace(/\/+$/, "");
+}
+function setBackend(url) {
+  const v = (url || "").trim().replace(/\/+$/, "");
+  if (v) localStorage.setItem(LS_BACKEND, v);
+  else localStorage.removeItem(LS_BACKEND);
+}
+
+const esc = (s) => String(s == null ? "" : s).replace(/[&<>"]/g,
+  (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+/* 所有后端请求统一走这里：自动带 token + 自动拼后端地址 */
+async function api(path, opts) {
+  const url = getBackend() + path;
+  const o = Object.assign({}, opts || {});
+  o.headers = Object.assign({ "X-User-Token": getUserToken() }, o.headers || {});
+  const r = await fetch(url, o);
+  const text = await r.text();
+  if (!r.ok) throw new Error(text || (r.status + " " + r.statusText));
+  return text ? JSON.parse(text) : null;
+}
+
+/* 本地草稿（后端连不上也不丢你写的东西） */
+function saveDraft(pid, code) {
+  if (!pid) return;
+  try { localStorage.setItem(LS_DRAFT + pid, code); } catch (e) {}
+}
+function loadDraft(pid) {
+  try { return localStorage.getItem(LS_DRAFT + pid) || ""; } catch (e) { return ""; }
+}
+
+/* 本地进度镜像（后端连不上时，至少让你看到自己攒的分数） */
+const LS_LOCAL = "pta.localProgress";
+function localProgress() {
+  try { return JSON.parse(localStorage.getItem(LS_LOCAL) || "{}"); } catch (e) { return {}; }
+}
+function setLocalProgress(pid, score, max, solved) {
+  const m = localProgress();
+  const prev = m[pid] || { score: 0, max: max, solved: false };
+  m[pid] = {
+    score: Math.max(prev.score || 0, score),
+    max: max,
+    solved: prev.solved || solved,
+    at: Date.now(),
+  };
+  try { localStorage.setItem(LS_LOCAL, JSON.stringify(m)); } catch (e) {}
+}
+
+/* 静态题库：后端连不上时的兜底数据源 */
+let STATIC_BANK = null;
+async function loadStaticBank() {
+  if (STATIC_BANK) return STATIC_BANK;
+  const r = await fetch("problems.json", { cache: "no-cache" });
+  if (!r.ok) throw new Error("静态题库也读不到");
+  STATIC_BANK = await r.json();
+  return STATIC_BANK;
+}
+
+/* ---------- 迷你 markdown（够题面用） ---------- */
+function md(src) {
+  if (!src) return "";
+  const blocks = [];
+  let s = String(src).replace(/```[\w+-]*\n([\s\S]*?)```/g, (m, code) => {
+    blocks.push('<pre>' + esc(code.replace(/\n+$/, "")) + "</pre>");
+    return "\u0000B" + (blocks.length - 1) + "\u0000";
+  });
+  s = esc(s);
+  s = s.replace(/^#### (.*)$/gm, "<h4>$1</h4>")
+       .replace(/^### (.*)$/gm, "<h3>$1</h3>")
+       .replace(/^## (.*)$/gm, "<h2>$1</h2>")
+       .replace(/`([^`\n]+)`/g, "<code>$1</code>")
+       .replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>")
+       .replace(/^\s*[-*] (.*)$/gm, "<li>$1</li>");
+  s = s.split(/\n{2,}/).map((seg) => {
+    seg = seg.trim();
+    if (!seg) return "";
+    if (/^<(h\d|pre|ul|ol|li|table|blockquote)/.test(seg)) return seg;
+    if (seg.indexOf("<li>") >= 0) return "<ul>" + seg + "</ul>";
+    return "<p>" + seg.replace(/\n/g, "<br>") + "</p>";
+  }).join("\n");
+  return s.replace(/\u0000B(\d+)\u0000/g, (m, i) => blocks[+i]);
+}
+
+/* ---------- 顶栏 ---------- */
+async function loadStats() {
+  try {
+    const s = await api("/api/stats");
+    API_OFFLINE = false;
+    const pct = s.max_score ? Math.round(s.score * 100 / s.max_score) : 0;
+    $("#stats").innerHTML =
+      '得分 <span class="score ' + (s.score >= s.max_score && s.max_score ? "full" : "") + '">' +
+      s.score + "</span> / " + s.max_score + "（" + pct + "%）" +
+      " · 通过 " + s.solved + " / " + s.problems +
+      " · 提交 " + s.submissions +
+      (s.pending ? " · 队列 " + s.pending : "");
+  } catch (e) {
+    // 后端连不上 → 用本地镜像算个粗略的，别让顶栏空着
+    API_OFFLINE = true;
+    const m = localProgress();
+    const got = Object.values(m).reduce((a, x) => a + (x.score || 0), 0);
+    const mx = Object.values(m).reduce((a, x) => a + (x.max || 0), 0);
+    const ok = Object.values(m).filter((x) => x.solved).length;
+    $("#stats").innerHTML = got
+      ? '<span class="chip warn">离线</span> 本地记录 ' + got + " / " + mx +
+        " · 通过 " + ok
+      : '<span class="chip warn">后端未连接</span> 点右上角「设置」填后端地址';
+  }
+}
+
+/* ---------- 身份 ---------- */
+async function loadMe() {
+  const btn = $("#btn-me");
+  try {
+    ME = await api("/api/me");
+    btn.textContent = ME.nickname || ("#" + ME.id);
+    btn.title = "点一下改名。这份进度的通行证：" + ME.token +
+                "（换设备时填同一串就能接上）";
+  } catch (e) {
+    ME = null;
+    btn.textContent = "离线";
+    btn.title = "后端未连接，进度暂存在这台浏览器";
+  }
+}
+
+function bindMe() {
+  $("#btn-me").onclick = async () => {
+    if (!ME) { openSettings(); return; }
+    const nick = prompt(
+      "给这份进度起个名字：\n\n通行证（换设备时填这个）：\n" + getUserToken(),
+      ME.nickname || "");
+    if (nick === null) return;
+    if (nick.trim()) {
+      try { await api("/api/me", { method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nickname: nick.trim() }) }); } catch (e) {}
+      ME.nickname = nick.trim();
+      $("#btn-me").textContent = ME.nickname;
+      loadStats();
+    }
+    // 顺便给个「换身份」的入口
+    if (confirm("要换一份全新进度吗？\n（当前这份会留在服务器上，通行证是 " +
+                getUserToken() + "，记下来还能切回来）")) {
+      localStorage.setItem(LS_TOKEN, newToken());
+      location.reload();
+    }
+  };
+}
+
+/* ---------- 设
+
+/* ---------- 设置：后端地址 ---------- */
+function openSettings() {
+  const cur = getBackend();
+  const url = prompt(
+    "后端地址（跑判题的那台机器）：\n\n" +
+    "· 留空 = 同源（用 run.bat 在本机跑时就这样）\n" +
+    "· 云端例如 https://my-pta.onrender.com\n\n" +
+    "当前：" + (cur || "（同源）"),
+    cur);
+  if (url === null) return;
+  setBackend(url);
+  API_OFFLINE = false;
+  boot(true);
+}
+
+function bindSettings() {
+  $("#btn-set").onclick = openSettings;
+}
+
+/* ---------- 题目列表 ---------- */
+function scoreCls(got, full, solved) {
+  if (solved) return "score full";
+  return got > 0 ? "score" : "score zero";
+}
+
+async function loadProblems() {
+  const q = $("#q").value.trim();
+  const line = $("#ftype").value;
+  let items = [];
+
+  try {
+    const url = "/api/problems?" + new URLSearchParams(
+      Object.assign({}, q ? { q } : {}, line ? { line } : {}));
+    const data = await api(url);
+    items = data.items || [];
+    API_OFFLINE = false;
+  } catch (e) {
+    // ★ 后端连不上 → 退到静态题库（GitHub Pages 上就是靠这份）
+    API_OFFLINE = true;
+    try {
+      const bank = await loadStaticBank();
+      items = (bank.items || []).map((p) => {
+        const lp = localProgress()[p.id];
+        return Object.assign({}, p, {
+          attempts: lp ? 1 : 0,
+          best_score: lp ? lp.score : 0,
+          solved_at: lp && lp.solved ? "本地" : "",
+          solved: !!(lp && lp.solved),
+          testcase_count: p.testcase_count,
+          score_label: (lp ? lp.score : 0) + "/" + (p.total_score || 0),
+        });
+      });
+      if (q) items = items.filter((p) =>
+        (p.title || "").includes(q) || (p.tags || []).join(",").includes(q));
+      if (line) items = items.filter((p) => p.line === line);
+    } catch (e2) {
+      items = [];
+    }
+  }
+
+  PROBLEMS = items;
+  const ul = $("#plist");
+  ul.innerHTML = "";
+  if (!PROBLEMS.length) {
+    ul.innerHTML = '<li><span class="t"><b>还没有题目</b>' +
+                   '<span class="sub">' + (API_OFFLINE
+                     ? "后端未连接，且静态题库读不到" : "题库是空的") +
+                   '</span></span></li>';
+    return;
+  }
+  for (const p of PROBLEMS) {
+    const li = document.createElement("li");
+    li.dataset.id = p.id;
+    const got = p.best_score || 0, full = p.total_score || 0;
+    const cls = p.solved ? "ac" : (got > 0 ? "partial" : (p.attempts > 0 ? "bad" : ""));
+    const stars = "★".repeat(p.difficulty || 0) || "—";
+    li.innerHTML = '<span class="dot ' + cls + '"></span>' +
+      '<span class="t"><b>' + esc(p.title) + "</b>" +
+      '<span class="sub">' + esc(p.line) + " · " + stars +
+      " · " + (p.testcase_count || 0) + " 测试点" +
+      (p.source_section ? " · " + esc(p.source_section) : "") +
+      "</span></span>" +
+      '<span class="' + scoreCls(got, full, p.solved) + '" style="align-self:center">' +
+      got + "/" + full + "</span>";
+    li.onclick = () => openProblem(p.id, li);
+    ul.appendChild(li);
+  }
+}
+
+/* ---------- 得分 chip / 历史面板（判完题要能原地刷新） ---------- */
+function scoreChipText(p) {
+  const full = p.points_sum || p.total_score || 0;
+  const got = p.best_score || 0;
+  return {
+    cls: p.solved ? "chip ok" : (got > 0 ? "chip warn" : "chip"),
+    text: p.solved ? ("已通过 " + got + " / " + full)
+        : (got > 0 ? ("最高 " + got + " / " + full) : ("满分 " + full)),
+  };
+}
+
+function scoreChipHtml(p) {
+  const t = scoreChipText(p);
+  return '<span class="' + t.cls + '" id="score-chip">' + t.text + "</span>";
+}
+
+function histInner(p) {
+  const hist = p.history || [];
+  if (!hist.length) {
+    return '<div class="hist-wrap"><div class="hist-head">' +
+           "还没有提交记录 —— 写点代码提交试试</div></div>";
+  }
+  const rows = hist.map((h) => {
+    const partial = h.verdict !== "AC" && h.score > 0 && h.score < h.max_score;
+    return "<tr><td>#" + h.id + "</td>" +
+      '<td><span class="badge sm ' + (partial ? "PA" : esc(h.verdict)) + '">' +
+      esc(vlabel(h.verdict, h.score, h.max_score)) + "</span></td>" +
+      '<td class="' + scoreCls(h.score, h.max_score, h.verdict === "AC") + '">' +
+      h.score + "/" + h.max_score + "</td>" +
+      '<td class="dim">' + h.passed + "/" + h.total + "</td>" +
+      '<td class="dim">' + esc(h.interpreter || "") + "</td>" +
+      '<td class="dim">' + esc(h.created_at || "") + "</td>" +
+      '<td><button class="mini" data-fill="' + h.id + '">回填</button> ' +
+      '<button class="mini" data-view="' + h.id + '">查看</button></td></tr>';
+  }).join("");
+  return '<div class="hist-wrap"><div class="hist-head">' +
+    "<b>提交历史</b> · 共 " + p.history_count + " 次（显示最近 " + hist.length + " 次）" +
+    '<span class="dim">「回填」把那次的代码放回编辑器，「查看」看那次的判题明细</span>' +
+    '</div><div class="scroll"><table class="hist"><thead><tr>' +
+    "<th>#</th><th>判定</th><th>得分</th><th>测试点</th><th>解释器</th><th>时间</th><th></th>" +
+    "</tr></thead><tbody>" + rows + "</tbody></table></div></div>";
+}
+
+/* 判完一道题后，原地刷新「得分 chip」和「历史面板」，不用重开题目（免得把编辑器里的代码冲掉） */
+async function refreshCurrent() {
+  if (!CURRENT) return;
+  try {
+    const p = await api("/api/problems/" + CURRENT.id);
+    CURRENT = p;
+    const t = scoreChipText(p);
+    const el = $("#score-chip");
+    if (el) { el.className = t.cls; el.textContent = t.text; }
+    const hb = $("#hist-box");
+    if (hb) { hb.innerHTML = histInner(p); bindHistory(); }
+  } catch (e) { /* 后台刷新失败无所谓，别打扰用户 */ }
+}
+
+/* 取题目详情：优先后端（带你的进度），连不上就退到静态题库 */
+async function fetchProblem(id) {
+  try {
+    const p = await api("/api/problems/" + id);
+    API_OFFLINE = false;
+    return p;
+  } catch (e) {
+    API_OFFLINE = true;
+    const bank = await loadStaticBank();
+    const p = (bank.items || []).find((x) => x.id === id);
+    if (!p) throw new Error("题目不存在");
+    const lp = localProgress()[id];
+    return Object.assign({}, p, {
+      samples: p.samples || [],
+      history: [],
+      history_count: 0,
+      last_submission: null,
+      best_score: lp ? lp.score : 0,
+      solved: !!(lp && lp.solved),
+      case_points: p.case_points || [],
+      points_sum: p.points_sum || p.total_score || 0,
+    });
+  }
+}
+
+/* ---------- 打开题目 ---------- */
+async function openProblem(id, li) {
+  const prev = CURRENT;
+  if (prev && prev.id && prev.id !== id) {
+    // 切题前把草稿存下来
+    saveDraft(prev.id, $("#code") ? $("#code").value : "");
+  }
+  document.querySelectorAll(".plist li").forEach((x) => x.classList.remove("active"));
+  if (li) li.classList.add("active");
+
+  const p = await fetchProblem(id);
+  CURRENT = p;
+
+  const samples = (p.samples || []).map((s, i) =>
+    '<div class="sample"><div class="sample-h">样例 ' + (i + 1) +
+    (s.explanation ? " · " + esc(s.explanation) : "") + "</div>" +
+    '<div class="sample-grid">' +
+    '<div><div class="lab">输入</div><pre>' + esc(s.stdin) + "</pre></div>" +
+    '<div><div class="lab">输出</div><pre>' + esc(s.expected_stdout) + "</pre></div>" +
+    "</div></div>").join("");
+
+  const tags = (p.tags || []).map((t) => '<span class="chip tag">' + esc(t) + "</span>").join("");
+
+  const chipScore = scoreChipHtml(p);
+  const histHtml = '<div id="hist-box">' + histInner(p) + "</div>";
+
+  $("#main").innerHTML =
+    '<div class="work">' +
+      '<div class="card">' +
+        '<div class="card-h">' + esc(p.title) + "</div>" +
+        '<div class="card-b stmt">' +
+          '<div class="meta-row">' +
+            '<span class="chip">' + esc(p.line) + "</span>" +
+            '<span class="chip">难度 ' + "★".repeat(p.difficulty || 0) + "</span>" +
+            '<span class="chip">时限 ' + p.time_limit_ms + " ms</span>" +
+            '<span class="chip">内存 ' + p.memory_limit_mb + " MB</span>" +
+            '<span class="chip">' + (p.testcase_count || 0) + " 个测试点</span>" +
+            chipScore +
+            tags +
+          "</div>" +
+          md(p.statement_md) +
+          "<h3>输入格式</h3><p>" + md(p.input_format).replace(/^<p>|<\/p>$/g, "") + "</p>" +
+          "<h3>输出格式</h3><p>" + md(p.output_format).replace(/^<p>|<\/p>$/g, "") + "</p>" +
+          "<h3>样例</h3>" + (samples || '<span class="dim">无</span>') +
+          (p.constraints_md ? "<h3>数据范围</h3>" + md(p.constraints_md) : "") +
+        "</div>" +
+      "</div>" +
+      '<div class="card">' +
+        '<div class="ed-head">' +
+          '<select id="interp"></select>' +
+          '<button class="btn" id="btn-submit">提交判题</button>' +
+          '<span class="dim" id="ed-hint"></span>' +
+        "</div>" +
+        '<textarea id="code" spellcheck="false" placeholder="在这里写代码…"></textarea>' +
+        '<div class="stdin-box"><div class="lab">自测输入（不参与判题）</div>' +
+        '<textarea id="stdin" spellcheck="false" placeholder="给标准输入喂点数据…"></textarea>' +
+        '<div class="run-row"><button class="btn ghost" id="btn-run">运行自测</button>' +
+        '<span class="dim" id="run-hint"></span></div></div>' +
+        '<pre id="run-out" class="run-out" hidden></pre>' +
+        '<div id="result"></div>' +
+        histHtml +
+      "</div>" +
+    "</div>";
+
+  fillInterp(p.line);
+  // 打开题目就回填代码 —— 优先级：后端「最后一次提交」> 本地草稿
+  const draft = loadDraft(p.id);
+  if (p.last_submission && p.last_submission.code) {
+    $("#code").value = p.last_submission.code;
+    if (p.last_submission.interpreter) $("#interp").value = p.last_submission.interpreter;
+    $("#ed-hint").textContent = "已回填上次提交的代码（#" + p.last_submission.id + "）";
+  } else if (draft) {
+    $("#code").value = draft;
+    $("#ed-hint").textContent = "已恢复本地草稿";
+  }
+  // 断线时的提示与禁用
+  if (API_OFFLINE) {
+    $("#btn-submit").disabled = true;
+    $("#btn-run").disabled = true;
+    $("#ed-hint").innerHTML = '<span style="color:var(--warn)">' +
+      "后端未连接 —— 代码会自动存本地草稿，但无法判题。点右上角「设置」填后端地址" +
+      "</span>";
+  }
+  bindEditor();
+  bindHistory();
+  $("#btn-submit").onclick = doSubmit;
+  $("#btn-run").onclick = doRun;
+}
+
+/* 历史记录里的「回填 / 查看」 */
+function bindHistory() {
+  document.querySelectorAll("[data-fill]").forEach((b) => {
+    b.onclick = async () => {
+      try {
+        const s = await api("/api/submissions/" + b.dataset.fill);
+        $("#code").value = s.code || "";
+        if (s.interpreter) $("#interp").value = s.interpreter;
+        $("#ed-hint").textContent = "已回填提交 #" + s.id + " 的代码";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      } catch (e) {
+        $("#ed-hint").textContent = "回填失败：" + e.message;
+      }
+    };
+  });
+  document.querySelectorAll("[data-view]").forEach((b) => {
+    b.onclick = async () => {
+      try {
+        const s = await api("/api/submissions/" + b.dataset.view);
+        renderResult(s);
+        $("#result").scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } catch (e) {
+        $("#result").innerHTML = '<div class="msg">读取失败：' + esc(e.message) + "</div>";
+      }
+    };
+  });
+}
+
+function fillInterp(line) {
+  const sel = $("#interp");
+  sel.innerHTML = "";
+  const lang = (META.langs || []).find((l) => l.lang === (line || "python")) || META.langs[0];
+  if (!lang) return;
+  for (const it of lang.interpreters) {
+    const o = document.createElement("option");
+    o.value = it.key;
+    o.textContent = it.label;
+    if (it.key === lang.default) o.selected = true;
+    sel.appendChild(o);
+  }
+  $("#ed-hint").textContent = "队列 " + (META ? "" : "");
+}
+
+function bindEditor() {
+  const ta = $("#code");
+  ta.addEventListener("keydown", (e) => {
+    if (e.key === "Tab") {
+      e.preventDefault();
+      const s = ta.selectionStart, en = ta.selectionEnd;
+      ta.value = ta.value.slice(0, s) + "    " + ta.value.slice(en);
+      ta.selectionStart = ta.selectionEnd = s + 4;
+    }
+  });
+  // ★ 边写边存草稿（后端连不上也不会丢你写的东西）
+  let t = null;
+  ta.addEventListener("input", () => {
+    clearTimeout(t);
+    t = setTimeout(() => saveDraft(CURRENT && CURRENT.id, ta.value), 400);
+  });
+  // 关页面前再存一次
+  window.addEventListener("beforeunload", () => {
+    if (CURRENT && CURRENT.id) saveDraft(CURRENT.id, ta.value);
+  });
+}
+
+/* ---------- 提交 ---------- */
+async function doSubmit() {
+  const code = $("#code").value;
+  if (!code.trim()) { alert("先写点代码"); return; }
+  $("#btn-submit").disabled = true;
+  $("#result").innerHTML = '<div class="res-head"><span class="badge pending">提交中…</span></div>';
+  try {
+    const r = await api("/api/submissions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        problem_id: CURRENT.id,
+        code: code,
+        lang: CURRENT.line,
+        interpreter: $("#interp").value,
+      }),
+    });
+    startPoll(r.id);
+  } catch (e) {
+    $("#result").innerHTML = '<div class="msg">提交失败：' + esc(e.message) + "</div>";
+    $("#btn-submit").disabled = false;
+  }
+}
+
+/* ---------- 自测运行（不判题） ---------- */
+async function doRun() {
+  const btn = $("#btn-run");
+  btn.disabled = true;
+  $("#run-hint").textContent = "运行中…";
+  try {
+    const r = await api("/api/run", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        code: $("#code").value,
+        lang: CURRENT.line,
+        interpreter: $("#interp").value,
+        stdin: $("#stdin").value,
+        time_limit_ms: Math.max(2000, (CURRENT.time_limit_ms || 1000) * 3),
+        memory_limit_mb: CURRENT.memory_limit_mb || 256,
+      }),
+    });
+    const out = $("#run-out");
+    out.hidden = false;
+    if (r.verdict === "CE") {
+      out.textContent = "语法 / 编译错误：\n" + (r.compile_output || "");
+    } else {
+      out.textContent =
+        "判定：" + r.verdict + "   耗时 " + r.time_ms + " ms   内存 " +
+        (r.mem_kb ? Math.round(r.mem_kb / 1024) + " MB" : "-") + "\n" +
+        (r.detail ? "说明：" + r.detail + "\n" : "") +
+        "\n—— stdout ——\n" + (r.stdout || "（无输出）") +
+        (r.stderr ? "\n—— stderr ——\n" + r.stderr : "");
+    }
+    $("#run-hint").textContent = "";
+  } catch (e) {
+    $("#run-hint").textContent = "运行失败：" + e.message;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+function startPoll(sid) {
+  if (POLL) clearInterval(POLL);
+  const tick = async () => {
+    try {
+      const s = await api("/api/submissions/" + sid);
+      renderResult(s);
+      if (s.verdict !== "pending" && s.verdict !== "judging") {
+        clearInterval(POLL); POLL = null;
+        $("#btn-submit").disabled = false;
+        // 本地也记一份（离线时列表还能显示进度）
+        if (CURRENT) setLocalProgress(
+          CURRENT.id, s.score || 0, s.max_score || 0, s.verdict === "AC");
+        loadProblems(); loadStats(); refreshCurrent();
+      }
+    } catch (e) {
+      clearInterval(POLL); POLL = null;
+      $("#btn-submit").disabled = false;
+    }
+  };
+  tick();
+  POLL = setInterval(tick, 500);
+}
+
+function vlabel(v, score, max) {
+  // 拿到分但没拿满 —— PTA 里单独显示「部分正确」
+  if (v !== "AC" && v !== "pending" && v !== "judging" &&
+      score > 0 && max > 0 && score < max) return "部分正确";
+  const m = {
+    AC: "Accepted 通过", WA: "Wrong Answer 答案错误", PE: "Presentation Error 格式错误",
+    TLE: "Time Limit Exceeded 超时", MLE: "Memory Limit Exceeded 内存超限",
+    RE: "Runtime Error 运行错误", CE: "Compile Error 编译错误",
+    OLE: "Output Limit Exceeded 输出超限", IE: "Internal Error 判题器错误",
+    pending: "排队中", judging: "判题中",
+  };
+  return m[v] || v;
+}
+
+function fmtMem(kb) {
+  if (!kb) return "-";
+  return kb >= 1024 ? Math.round(kb / 1024) + " MB" : kb + " KB";
+}
+
+function renderResult(s) {
+  const v = s.verdict || "pending";
+  const partial = v !== "AC" && s.score > 0 && s.max_score > 0 && s.score < s.max_score;
+  let h = '<div class="res-head">' +
+    '<span class="badge ' + (partial ? "PA" : esc(v)) + '">' +
+    esc(vlabel(v, s.score, s.max_score)) + "</span>";
+  if (s.max_score) {
+    h += '<span class="' + scoreCls(s.score, s.max_score, s.score >= s.max_score) + '">' +
+         "得分 " + s.score + " / " + s.max_score + "</span>";
+  }
+  if (s.total) h += '<span class="dim">通过 ' + s.passed + " / " + s.total + " 个测试点</span>";
+  if (s.time_ms) h += '<span class="dim">总耗时 ' + s.time_ms + " ms</span>";
+  if (s.mem_kb) h += '<span class="dim">峰值内存 ' + fmtMem(s.mem_kb) + "</span>";
+  if (s.judge_ms) h += '<span class="dim">判题耗时 ' + s.judge_ms + " ms</span>";
+  h += "</div>";
+
+  if (s.message) h += '<pre class="msg">' + esc(s.message) + "</pre>";
+
+  const cases = s.cases || [];
+  if (cases.length) {
+    h += "<table class='cases'><thead><tr><th>#</th><th>判定</th><th>得分</th><th>耗时</th>" +
+         "<th>内存</th><th>说明</th></tr></thead><tbody>";
+    for (const c of cases) {
+      const cp = c.verdict !== "AC" && (c.earned || 0) > 0 && (c.earned || 0) < (c.points || 0);
+      h += "<tr><td>" + (c.ord + 1) + "</td>" +
+           "<td><span class='badge sm " + (cp ? "PA" : esc(c.verdict)) + "'>" +
+           esc(c.verdict) + "</span></td>" +
+           "<td class='" + scoreCls(c.earned, c.points, c.verdict === "AC") + "'>" +
+           (c.earned || 0) + "/" + (c.points || 0) + "</td>" +
+           "<td>" + c.time_ms + " ms</td><td>" + fmtMem(c.mem_kb) + "</td>" +
+           "<td class='dim'>" + esc(c.detail || "") + "</td></tr>";
+    }
+    h += "</tbody></table>";
+
+    const f = cases.find((c) => c.verdict !== "AC");
+    if (f) {
+      h += '<div class="soft-head">第一个失败测试点（第 ' + (f.ord + 1) + " 个 · 丢 " +
+        ((f.points || 0) - (f.earned || 0)) + " 分）</div>" +
+        '<div class="three">' +
+        '<div><div class="lab">输入</div><pre>' + (esc(f.stdin) || "（空）") + "</pre></div>" +
+        '<div><div class="lab">期望输出</div><pre>' + (esc(f.expected) || "（空）") + "</pre></div>" +
+        '<div><div class="lab">实际输出</div><pre>' + (esc(f.stdout) || "（空）") + "</pre></div>" +
+        "</div>";
+      if (f.stderr) {
+        h += '<div class="lab" style="padding:8px 14px 0">stderr</div>' +
+             '<pre style="margin:4px 14px 10px;padding:8px;background:var(--code);' +
+             'border-radius:6px;font-size:12.5px;white-space:pre-wrap">' +
+             esc(f.stderr) + "</pre>";
+      }
+    }
+  }
+  $("#result").innerHTML = h;
+}
+
+/* ---------- 启动 ---------- */
+(async function boot(isReconnect) {
+  if (!isReconnect) { bindSettings(); bindMe(); }
+  API_OFFLINE = false;
+
+  // 先拉身份（首见即注册），再拉元信息
+  try {
+    ME = await api("/api/me");
+    $("#btn-me").textContent = ME.nickname || ("#" + ME.id);
+    $("#btn-me").title = "点一下改名。这份进度的通行证：" + ME.token;
+  } catch (e) {
+    ME = null;
+    $("#btn-me").textContent = "离线";
+  }
+
+  try {
+    META = await api("/api/meta");
+    const back = getBackend();
+    $("#env").textContent = (back ? back.replace(/^https?:\/\//, "") : "本机") +
+      " · 进度独立保存";
+  } catch (e) {
+    // 后端不通：用一份「假 meta」让界面还能撑起来（只有 Python、不能判题）
+    META = {
+      langs: [{ lang: "python", label: "Python", default: "py313",
+                interpreters: [
+                  { key: "py313", label: "Python 3.13（后端未连接）", path: "" },
+                ] }],
+      port: 0,
+    };
+    $("#env").innerHTML = '<span style="color:var(--warn)">后端未连接</span>';
+  }
+
+  await loadProblems();
+  await loadStats();
+
+  if (!isReconnect) {
+    setInterval(loadStats, 5000);
+    let t = null;
+    $("#q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(loadProblems, 250); });
+    $("#ftype").addEventListener("change", loadProblems);
+  }
+})();
+</script>
+</body>
+</html>

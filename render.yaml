@@ -1,0 +1,45 @@
+# Render 部署配置（免费额度够个人用）
+#
+# 怎么用：
+#   1. 打开 https://render.com → New → Web Service
+#   2. 连上 GitHub 仓库 cosy119/my-pta（Render 能直接读这个文件）
+#   3. Render 会照下面配置建服务；唯一要你手动做的：
+#      在 Environment 里加 PTA_DB=/data/pta.db，并挂一个 Disk 到 /data
+#      ★ **不挂 Disk 的话，每次重新部署进度就没了**（免费实例会休眠/重启）
+#
+# 免费实例的限制（提前说清楚）：
+# - 15 分钟没人访问会休眠，下次打开要等 ~30 秒冷启动
+# - 每月 750 小时（单实例够用）
+# - 磁盘 1GB（只存 SQLite，够存几万条提交）
+services:
+  - type: web
+    name: my-pta
+    runtime: python
+    plan: free
+    region: singapore          # 离国内近一点；也可以选 oregon/frankfurt
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: python run.py
+    healthCheckPath: /api/health
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.13.0"
+      - key: PTA_CLOUD
+        value: "1"
+      # ★ 数据库放在持久化磁盘上（下面 disk 挂载点）
+      - key: PTA_DB
+        value: /data/pta.db
+      - key: PTA_LOGS
+        value: /data/logs
+      - key: PTA_TMP_JUDGE
+        value: /tmp/pta-judge
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    disk:
+      name: pta-data
+      mountPath: /data
+      sizeGB: 1
+
+# 可选：CORS 允许的来源。默认 "*"（个人学习平台，身份走 X-User-Token）
+# 想收紧就设 PTA_ALLOW_ORIGINS（逗号分隔），例如：
+#   PTA_ALLOW_ORIGINS=https://cosy119.github.io
