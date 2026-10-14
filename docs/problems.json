@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-13 17:37:00",
+ "generated_at": "2026-10-14 19:57:54",
  "count": 204,
  "total_score": 2615,
  "total_testcases": 532,
@@ -48,6 +48,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1 2\n",
+     "expected_stdout": "3\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "-5 3\n",
+     "expected_stdout": "-2\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0 0\n",
+     "expected_stdout": "0\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1000000000 1000000000\n",
+     "expected_stdout": "2000000000\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "-1000000000 -1000000000\n",
+     "expected_stdout": "-2000000000\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -101,6 +138,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1\n3 5\n",
+     "expected_stdout": "12\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\n-5 -3\n",
+     "expected_stdout": "-12\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2\n1 1\n-3 -1\n",
+     "expected_stdout": "1\n-6\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1\n0 0\n",
+     "expected_stdout": "0\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "1\n-1000000000 1000000000\n",
+     "expected_stdout": "0\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -154,6 +228,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "2\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3\n1 1 2\n",
+     "expected_stdout": "1.3333333333333333\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\n-5\n",
+     "expected_stdout": "-5\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "4\n-1 -2 -3 -4\n",
+     "expected_stdout": "-2.5\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "2\n0 0\n",
+     "expected_stdout": "0\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -207,6 +318,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "3.14\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\n",
+     "expected_stdout": "12.56\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0\n",
+     "expected_stdout": "0.00\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "10\n",
+     "expected_stdout": "314.00\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "7\n",
+     "expected_stdout": "153.86\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -259,6 +407,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "2024\n",
+     "expected_stdout": "yes\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1900\n",
+     "expected_stdout": "no\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2000\n",
+     "expected_stdout": "yes\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "2023\n",
+     "expected_stdout": "no\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "2100\n",
+     "expected_stdout": "no\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -312,6 +497,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n",
+     "expected_stdout": "1\n1 2\n1 2 3\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "1\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2\n",
+     "expected_stdout": "1\n1 2\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "5\n",
+     "expected_stdout": "1\n1 2\n1 2 3\n1 2 3 4\n1 2 3 4 5\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "10\n",
+     "expected_stdout": "1\n1 2\n1 2 3\n1 2 3 4\n1 2 3 4 5\n1 2 3 4 5 6\n1 2 3 4 5 6 7\n1 2 3 4 5 6 7 8\n1 2 3 4 5 6 7 8 9\n1 2 3 4 5 6 7 8 9 10\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -366,6 +588,50 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "17\n",
+     "expected_stdout": "prime\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "not prime\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2\n",
+     "expected_stdout": "prime\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "4\n",
+     "expected_stdout": "not prime\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "1000000007\n",
+     "expected_stdout": "prime\n",
+     "points": 2
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "1000000\n",
+     "expected_stdout": "not prime\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -419,6 +685,50 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "abc\n",
+     "expected_stdout": "cba\nno\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "aba\n",
+     "expected_stdout": "aba\nyes\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "a\n",
+     "expected_stdout": "a\nyes\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "abccba\n",
+     "expected_stdout": "abccba\nyes\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "Hello\n",
+     "expected_stdout": "olleH\nno\n",
+     "points": 1
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "\n",
+     "expected_stdout": "\nyes\n",
+     "points": 1
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -473,6 +783,50 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "hello world\n",
+     "expected_stdout": "2\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "  a   b  c  \n",
+     "expected_stdout": "3\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "one\n",
+     "expected_stdout": "1\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "\n",
+     "expected_stdout": "0\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "a b\nc d e\nf\n",
+     "expected_stdout": "6\n",
+     "points": 1
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "   \n\t\n  \n",
+     "expected_stdout": "0\n",
+     "points": 1
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -527,6 +881,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n1 2 2 3 1\n",
+     "expected_stdout": "1 2 3\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3\n5 5 5\n",
+     "expected_stdout": "5\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\n7\n",
+     "expected_stdout": "7\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "6\n3 1 4 1 5 9\n",
+     "expected_stdout": "3 1 4 5 9\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "4\n-1 0 -1 0\n",
+     "expected_stdout": "-1 0\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -580,6 +971,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5 1\n3 1 4 1 5\n",
+     "expected_stdout": "5\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5 5\n3 1 4 1 5\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5 3\n3 1 4 1 5\n",
+     "expected_stdout": "3\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "3 2\n10 20 30\n",
+     "expected_stdout": "20\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "6 4\n7 7 7 8 9 9\n",
+     "expected_stdout": "7\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -633,6 +1061,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\napple\nbanana\napple\ncherry\nbanana\n",
+     "expected_stdout": "apple 2\nbanana 2\ncherry 1\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3\nb\na\nb\n",
+     "expected_stdout": "b 2\na 1\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\nz\n",
+     "expected_stdout": "z 1\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "6\na\nb\nc\na\nb\na\n",
+     "expected_stdout": "a 3\nb 2\nc 1\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "4\nd\nc\nb\na\n",
+     "expected_stdout": "a 1\nb 1\nc 1\nd 1\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -687,6 +1152,50 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "12 18\n",
+     "expected_stdout": "6\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "7 13\n",
+     "expected_stdout": "1\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0 5\n",
+     "expected_stdout": "5\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "0 0\n",
+     "expected_stdout": "0\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "100 100\n",
+     "expected_stdout": "100\n",
+     "points": 1
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "998244353 1000000007\n",
+     "expected_stdout": "1\n",
+     "points": 1
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -741,6 +1250,50 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "0\n",
+     "expected_stdout": "0\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "10\n",
+     "expected_stdout": "55\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "50\n",
+     "expected_stdout": "12586269025\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "90\n",
+     "expected_stdout": "2880067194370816120\n",
+     "points": 2
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "200\n",
+     "expected_stdout": "280571172992510140037611932413038677189525\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -796,6 +1349,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "0\n",
+     "expected_stdout": "32.00\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "100\n",
+     "expected_stdout": "212.00\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "-40\n",
+     "expected_stdout": "-40.00\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "37\n",
+     "expected_stdout": "98.60\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "25\n",
+     "expected_stdout": "77.00\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -849,6 +1439,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "123\n",
+     "expected_stdout": "6\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "999\n",
+     "expected_stdout": "27\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "100\n",
+     "expected_stdout": "1\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "405\n",
+     "expected_stdout": "9\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "700\n",
+     "expected_stdout": "7\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -895,6 +1522,15 @@
     }
    ],
    "hidden_count": 0,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "\n",
+     "expected_stdout": "1*1=1\n2*1=2 2*2=4\n3*1=3 3*2=6 3*3=9\n4*1=4 4*2=8 4*3=12 4*4=16\n5*1=5 5*2=10 5*3=15 5*4=20 5*5=25\n6*1=6 6*2=12 6*3=18 6*4=24 6*5=30 6*6=36\n7*1=7 7*2=14 7*3=21 7*4=28 7*5=35 7*6=42 7*7=49\n8*1=8 8*2=16 8*3=24 8*4=32 8*5=40 8*6=48 8*7=56 8*8=64\n9*1=9 9*2=18 9*3=27 9*4=36 9*5=45 9*6=54 9*7=63 9*8=72 9*9=81\n",
+     "points": 15
+    }
+   ],
    "case_points": [
     15
    ],
@@ -944,6 +1580,50 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "90\n",
+     "expected_stdout": "A\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "60\n",
+     "expected_stdout": "D\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "89\n",
+     "expected_stdout": "B\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "75\n",
+     "expected_stdout": "C\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "59\n",
+     "expected_stdout": "E\n",
+     "points": 1
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "0\n",
+     "expected_stdout": "E\n",
+     "points": 1
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -991,6 +1671,15 @@
     }
    ],
    "hidden_count": 0,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "\n",
+     "expected_stdout": "153 370 371 407\n",
+     "points": 15
+    }
+   ],
    "case_points": [
     15
    ],
@@ -1040,6 +1729,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "Hello World 123\n",
+     "expected_stdout": "10 3 2 0\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "a b!\n",
+     "expected_stdout": "2 0 1 1\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "abc\n",
+     "expected_stdout": "3 0 0 0\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "12345\n",
+     "expected_stdout": "0 5 0 0\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "\n",
+     "expected_stdout": "0 0 0 0\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -1093,6 +1819,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "Hello\n",
+     "expected_stdout": "hELLO\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "Hello World\n",
+     "expected_stdout": "hELLO wORLD\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "AbC123\n",
+     "expected_stdout": "aBc123\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "\n",
+     "expected_stdout": "\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -1145,6 +1901,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "aaaa\naa\n",
+     "expected_stdout": "3\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "abcabcabc\nabc\n",
+     "expected_stdout": "3\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "abababa\naba\n",
+     "expected_stdout": "3\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "aaa\na\n",
+     "expected_stdout": "3\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "hello\nxyz\n",
+     "expected_stdout": "0\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -1198,6 +1991,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n3 1 4 1 5\n",
+     "expected_stdout": "4\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\n7\n",
+     "expected_stdout": "0\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "4\n-5 -2 -9 -1\n",
+     "expected_stdout": "8\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     3,
@@ -1249,6 +2065,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n90 80 70 100 60\n",
+     "expected_stdout": "100 60 80.00\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3\n1 2 4\n",
+     "expected_stdout": "4 1 2.33\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\n59\n",
+     "expected_stdout": "59 59 59.00\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "4\n100 100 100 100\n",
+     "expected_stdout": "100 100 100.00\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -1302,6 +2148,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n1 3 5\n3\n2 4 6\n",
+     "expected_stdout": "1 2 3 4 5 6\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3\n1 1 2\n3\n1 2 2\n",
+     "expected_stdout": "1 1 1 2 2 2\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "3\n1 2 3\n0\n\n",
+     "expected_stdout": "1 2 3\n",
+     "points": 5
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "0\n\n1\n5\n",
+     "expected_stdout": "5\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -1354,6 +2230,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "2 3\n1 2 3\n4 5 6\n",
+     "expected_stdout": "1 4\n2 5\n3 6\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2 2\n1 2\n3 4\n",
+     "expected_stdout": "1 3\n2 4\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1 1\n7\n",
+     "expected_stdout": "7\n",
+     "points": 5
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "3 1\n1\n2\n3\n",
+     "expected_stdout": "1 2 3\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -1406,6 +2312,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "4 9\n2 7 11 15\n",
+     "expected_stdout": "0 1\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3 6\n3 2 4\n",
+     "expected_stdout": "1 2\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2 6\n3 3\n",
+     "expected_stdout": "0 1\n",
+     "points": 5
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "3 100\n1 2 3\n",
+     "expected_stdout": "-1\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -1459,6 +2395,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1 2 3\n2 3 4\n",
+     "expected_stdout": "2 3\n1 2 3 4\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1 2\n3 4\n",
+     "expected_stdout": "\n1 2 3 4\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5 5 5\n5\n",
+     "expected_stdout": "5\n5\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "\n\n",
+     "expected_stdout": "\n\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -1511,6 +2477,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\napple\nbanana\navocado\nblueberry\ncherry\n",
+     "expected_stdout": "a: apple avocado\nb: banana blueberry\nc: cherry\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\ndog\nant\n",
+     "expected_stdout": "a: ant\nd: dog\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\ncat\n",
+     "expected_stdout": "c: cat\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -1562,6 +2551,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "6\n3 1 2 1 3 3\n",
+     "expected_stdout": "3\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "4\n1 1 2 2\n",
+     "expected_stdout": "1\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\n5\n",
+     "expected_stdout": "5\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -1613,6 +2625,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n1 2 0\n",
+     "expected_stdout": "3\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "4\n3 4 -1 1\n",
+     "expected_stdout": "2\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5\n7 8 9 11 12\n",
+     "expected_stdout": "1\n",
+     "points": 5
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "4\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -1666,6 +2708,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3 4 5\n",
+     "expected_stdout": "6.00\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1 1 1\n",
+     "expected_stdout": "0.43\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2 2 3\n",
+     "expected_stdout": "1.98\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1 2 3\n",
+     "expected_stdout": "invalid\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "1 1 2\n",
+     "expected_stdout": "invalid\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -1713,6 +2792,22 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "[1, 2, 3]\n[1]\n[2]\n[3]\n",
+     "points": 10
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "1\n9\n",
+     "expected_stdout": "[9]\n[9]\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10,
     10
@@ -1764,6 +2859,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "4\n",
+     "expected_stdout": "2 2\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "10\n",
+     "expected_stdout": "3 7\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "20\n",
+     "expected_stdout": "3 17\n",
+     "points": 5
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "100\n",
+     "expected_stdout": "3 97\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -1816,6 +2941,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "0\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5\n",
+     "expected_stdout": "120\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "10\n",
+     "expected_stdout": "3628800\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "20\n",
+     "expected_stdout": "2432902008176640000\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -1869,6 +3031,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "A->C\ntotal=1\n",
+     "points": 7
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\n",
+     "expected_stdout": "A->B\nA->C\nB->C\ntotal=3\n",
+     "points": 7
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "3\n",
+     "expected_stdout": "A->C\nA->B\nC->B\nA->C\nB->A\nB->C\nA->C\ntotal=7\n",
+     "points": 6
+    }
+   ],
    "case_points": [
     7,
     7,
@@ -1920,6 +3105,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "123\n",
+     "expected_stdout": "6\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "99999\n",
+     "expected_stdout": "45\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0\n",
+     "expected_stdout": "0\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1000000\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -1973,6 +3188,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "1\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\n",
+     "expected_stdout": "2\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "3\n",
+     "expected_stdout": "3\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "5\n",
+     "expected_stdout": "8\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "10\n",
+     "expected_stdout": "89\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -2026,6 +3278,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5 5\n1 3 5 7 9\n",
+     "expected_stdout": "2\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5 1\n1 3 5 7 9\n",
+     "expected_stdout": "0\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5 9\n1 3 5 7 9\n",
+     "expected_stdout": "4\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "5 4\n1 3 5 7 9\n",
+     "expected_stdout": "-1\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "4 3\n1 2 3 4\n",
+     "expected_stdout": "2\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -2080,6 +3369,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "2\n",
+     "expected_stdout": "1.414 2 2\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2.5\n",
+     "expected_stdout": "1.581 3 2\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "9\n",
+     "expected_stdout": "3.000 9 9\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "0.5\n",
+     "expected_stdout": "0.707 1 0\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -2133,6 +3452,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "2024-01-01\n2024-12-31\n",
+     "expected_stdout": "365\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2023-02-28\n2023-03-01\n",
+     "expected_stdout": "1\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2024-02-28\n2024-03-01\n",
+     "expected_stdout": "2\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "2023-12-31\n2024-01-01\n",
+     "expected_stdout": "1\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "2024-03-01\n2024-02-28\n",
+     "expected_stdout": "-2\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -2187,6 +3543,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "4\n1 2 3 4\n",
+     "expected_stdout": "2.50 2.50\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "3.00 3.00\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "3\n1 2 10\n",
+     "expected_stdout": "4.33 2.00\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -2239,6 +3618,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n2 3 4\n",
+     "expected_stdout": "24\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "120\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "4\n10 10 10 10\n",
+     "expected_stdout": "10000\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1\n7\n",
+     "expected_stdout": "7\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -2292,6 +3701,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\nalice 90\nbob 95\ncarol 95\n",
+     "expected_stdout": "bob\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\nzed 100\namy 100\n",
+     "expected_stdout": "amy\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\ntom 60\n",
+     "expected_stdout": "tom\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -2344,6 +3776,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3 4\n",
+     "expected_stdout": "面积=12 周长=14\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5 5\n",
+     "expected_stdout": "面积=25 周长=20\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1 1\n",
+     "expected_stdout": "面积=1 周长=4\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     3,
@@ -2396,6 +3851,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n",
+     "expected_stdout": "total=3 last=3\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5\n",
+     "expected_stdout": "total=5 last=5\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0\n",
+     "expected_stdout": "total=0 last=0\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -2448,6 +3926,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "alice 100\n3\nd 50\nw 30\nq\n",
+     "expected_stdout": "120\n",
+     "points": 7
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "bob 0\n4\nd 200\nw 50\nq\nq\n",
+     "expected_stdout": "150\n150\n",
+     "points": 7
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "c 10\n1\nd 5\n",
+     "expected_stdout": "",
+     "points": 6
+    }
+   ],
    "case_points": [
     7,
     7,
@@ -2500,6 +4001,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "0 0 3 4\n",
+     "expected_stdout": "5.000\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1 1 4 5\n",
+     "expected_stdout": "5.000\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1 2 4 6\n",
+     "expected_stdout": "5.000\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "0 0 0 0\n",
+     "expected_stdout": "0.000\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -2553,6 +4084,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\nalice 90\nbob 80\ncarol 100\n",
+     "expected_stdout": "carol 90.00\n",
+     "points": 7
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\nx 60\ny 60\n",
+     "expected_stdout": "x 60.00\n",
+     "points": 7
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\na 0\n",
+     "expected_stdout": "a 0.00\n",
+     "points": 6
+    }
+   ],
    "case_points": [
     7,
     7,
@@ -2604,6 +4158,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "2\ncircle 2\nrect 3 4\n",
+     "expected_stdout": "12.56\n12.00\n",
+     "points": 7
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\ncircle 1\n",
+     "expected_stdout": "3.14\n",
+     "points": 7
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2\nrect 1 1\ncircle 10\n",
+     "expected_stdout": "1.00\n314.00\n",
+     "points": 6
+    }
+   ],
    "case_points": [
     7,
     7,
@@ -2655,6 +4232,22 @@
     }
    ],
    "hidden_count": 0,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "2\ndog 2\ncat 3\n",
+     "expected_stdout": "woof woof\nmeow meow meow\n",
+     "points": 8
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\ncat 1\n",
+     "expected_stdout": "meow\n",
+     "points": 7
+    }
+   ],
    "case_points": [
     8,
     7
@@ -2706,6 +4299,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "A\n",
+     "points": 7
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\n",
+     "expected_stdout": "A B\n",
+     "points": 7
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "3\n",
+     "expected_stdout": "A B C\n",
+     "points": 6
+    }
+   ],
    "case_points": [
     7,
     7,
@@ -2758,6 +4374,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n3 1\n1 2\n1 1\n",
+     "expected_stdout": "1 1\n1 2\n3 1\n",
+     "points": 7
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "4\n5 5\n1 1\n5 1\n1 5\n",
+     "expected_stdout": "1 1\n1 5\n5 1\n5 5\n",
+     "points": 7
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2\n0 0\n0 0\n",
+     "expected_stdout": "0 0\n0 0\n",
+     "points": 6
+    }
+   ],
    "case_points": [
     7,
     7,
@@ -2809,6 +4448,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1 2\n3 4\n",
+     "expected_stdout": "4 6\n",
+     "points": 7
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "-1 2\n1 -2\n",
+     "expected_stdout": "0 0\n",
+     "points": 7
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0 0\n0 0\n",
+     "expected_stdout": "0 0\n",
+     "points": 6
+    }
+   ],
    "case_points": [
     7,
     7,
@@ -2861,6 +4523,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "25\n",
+     "expected_stdout": "25\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "-1\n",
+     "expected_stdout": "invalid\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0\n",
+     "expected_stdout": "0\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "150\n",
+     "expected_stdout": "150\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "200\n",
+     "expected_stdout": "invalid\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -2915,6 +4614,29 @@
     }
    ],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "2\ncircle 1\nrect 2 3\n",
+     "expected_stdout": "9.14\n",
+     "points": 7
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\ncircle 2\n",
+     "expected_stdout": "12.56\n",
+     "points": 7
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "3\nrect 1 1\nrect 2 2\ncircle 0\n",
+     "expected_stdout": "5.00\n",
+     "points": 6
+    }
+   ],
    "case_points": [
     7,
     7,
@@ -2966,6 +4688,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 4 5\n1\n9\n",
+     "expected_stdout": "9 1 2 3 4 5\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 4 5\n6\n9\n",
+     "expected_stdout": "1 2 3 4 5 9\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5\n1 2 3 4 5\n3\n9\n",
+     "expected_stdout": "1 2 9 3 4 5\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1\n7\n1\n0\n",
+     "expected_stdout": "0 7\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "1\n7\n2\n8\n",
+     "expected_stdout": "7 8\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3019,6 +4778,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 2 4\n2\n",
+     "expected_stdout": "1 3 4\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3\n2 2 2\n2\n",
+     "expected_stdout": "empty\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "4\n1 2 3 4\n5\n",
+     "expected_stdout": "1 2 3 4\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1\n5\n5\n",
+     "expected_stdout": "empty\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "6\n1 1 2 2 3 3\n1\n",
+     "expected_stdout": "2 2 3 3\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3072,6 +4868,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "6\n10 20 30 40 50 60\n2 4\n",
+     "expected_stdout": "10 50 60\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 4 5\n1 5\n",
+     "expected_stdout": "empty\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5\n1 2 3 4 5\n1 1\n",
+     "expected_stdout": "2 3 4 5\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "5\n1 2 3 4 5\n5 5\n",
+     "expected_stdout": "1 2 3 4\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "4\n9 8 7 6\n2 3\n",
+     "expected_stdout": "9 6\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3125,6 +4958,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "5 4 3 2 1\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "4\n1 2 3 4\n",
+     "expected_stdout": "4 3 2 1\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1\n42\n",
+     "expected_stdout": "42\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "2\n7 8\n",
+     "expected_stdout": "8 7\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "6\n-1 -2 -3 -4 -5 -6\n",
+     "expected_stdout": "-6 -5 -4 -3 -2 -1\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3178,6 +5048,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n1 3 5\n3\n2 4 6\n",
+     "expected_stdout": "1 2 3 4 5 6\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "4\n1 2 3 4\n0\n\n",
+     "expected_stdout": "1 2 3 4\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0\n\n3\n7 8 9\n",
+     "expected_stdout": "7 8 9\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "0\n\n0\n\n",
+     "expected_stdout": "empty\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "3\n1 1 2\n3\n1 2 2\n",
+     "expected_stdout": "1 1 1 2 2 2\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -3231,6 +5138,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "1 -> 2 -> 3 -> NULL\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5\n10 20 30 40 50\n",
+     "expected_stdout": "10 -> 20 -> 30 -> 40 -> 50 -> NULL\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0\n\n",
+     "expected_stdout": "NULL\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1\n7\n",
+     "expected_stdout": "7 -> NULL\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "4\n-1 0 1 2\n",
+     "expected_stdout": "-1 -> 0 -> 1 -> 2 -> NULL\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3284,6 +5228,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "6\n1 2 3 2 4 2\n2\n",
+     "expected_stdout": "1 -> 3 -> 4 -> NULL\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3\n5 5 5\n5\n",
+     "expected_stdout": "NULL\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "4\n1 2 3 4\n9\n",
+     "expected_stdout": "1 -> 2 -> 3 -> 4 -> NULL\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "2\n7 7\n7\n",
+     "expected_stdout": "NULL\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "5\n1 1 2 1 1\n1\n",
+     "expected_stdout": "2 -> NULL\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -3337,6 +5318,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "5 -> 4 -> 3 -> 2 -> 1 -> NULL\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\n9\n",
+     "expected_stdout": "9 -> NULL\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0\n\n",
+     "expected_stdout": "NULL\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "4\n10 20 30 40\n",
+     "expected_stdout": "40 -> 30 -> 20 -> 10 -> NULL\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "6\n-1 -2 -3 -4 -5 -6\n",
+     "expected_stdout": "-6 -> -5 -> -4 -> -3 -> -2 -> -1 -> NULL\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -3397,6 +5415,50 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "()\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "(]\n",
+     "expected_stdout": "no\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "([{}])\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "(()\n",
+     "expected_stdout": "no\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": ")(\n",
+     "expected_stdout": "no\n",
+     "points": 2
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "{[()]}\n",
+     "expected_stdout": "yes\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3458,6 +5520,50 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "10 2\n",
+     "expected_stdout": "1010\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "255 16\n",
+     "expected_stdout": "FF\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "0 2\n",
+     "expected_stdout": "0\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1000 8\n",
+     "expected_stdout": "1750\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "255 2\n",
+     "expected_stdout": "11111111\n",
+     "points": 2
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "1 16\n",
+     "expected_stdout": "1\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3519,6 +5625,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\n1 2 3\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3\n3 2 1\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "3\n3 1 2\n",
+     "expected_stdout": "no\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "4\n1 3 2 4\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "4\n4 3 2 1\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "1\n1\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "5\n1 2 4 5 3\n",
+     "expected_stdout": "yes\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3574,6 +5731,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\nin 1\nin 2\nout\nin 3\nin 4\nin 5\nout\nout\nout\nend\n",
+     "expected_stdout": "1\nfull\nfull\n2\n3\nempty\nempty\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\nout\nend\n",
+     "expected_stdout": "empty\nempty\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2\nin 5\nin 6\nin 7\nin 8\nout\nend\n",
+     "expected_stdout": "full\nfull\nfull\n5\nempty\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1\nin 1\nout\nin 2\nout\nend\n",
+     "expected_stdout": "full\nempty\nfull\nempty\nempty\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "4\nin 1\nin 2\nin 3\nout\nin 9\nout\nend\n",
+     "expected_stdout": "1\n2\n3 9\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -3634,6 +5828,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3 4 +\n",
+     "expected_stdout": "7\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "5 1 2 + 4 * + 3 -\n",
+     "expected_stdout": "14\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "7 2 /\n",
+     "expected_stdout": "3\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "2 3 4 * +\n",
+     "expected_stdout": "14\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "10 3 - 2 *\n",
+     "expected_stdout": "14\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "3 5 -\n",
+     "expected_stdout": "-2\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "2 3 + 4 5 + *\n",
+     "expected_stdout": "45\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -3696,6 +5941,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "abcba\n",
+     "expected_stdout": "yes\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "abba\n",
+     "expected_stdout": "yes\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "abc\n",
+     "expected_stdout": "no\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "a\n",
+     "expected_stdout": "yes\n",
+     "points": 1
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "ab\n",
+     "expected_stdout": "no\n",
+     "points": 1
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "Aba\n",
+     "expected_stdout": "no\n",
+     "points": 1
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "12321\n",
+     "expected_stdout": "yes\n",
+     "points": 1
+    }
+   ],
    "case_points": [
     2,
     2,
@@ -3758,6 +6054,43 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "1\nA->C\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "2\n",
+     "expected_stdout": "3\nA->B\nA->C\nB->C\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "3\n",
+     "expected_stdout": "7\nA->C\nA->B\nC->B\nA->C\nB->A\nB->C\nA->C\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "4\n",
+     "expected_stdout": "15\nA->B\nA->C\nB->C\nA->B\nC->A\nC->B\nA->B\nA->C\nB->C\nB->A\nC->A\nB->C\nA->B\nA->C\nB->C\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "5\n",
+     "expected_stdout": "31\nA->C\nA->B\nC->B\nA->C\nB->A\nB->C\nA->C\nA->B\nC->B\nC->A\nB->A\nC->B\nA->C\nA->B\nC->B\nA->C\nB->A\nB->C\nA->C\nB->A\nC->B\nC->A\nB->A\nB->C\nA->C\nA->B\nC->B\nA->C\nB->A\nB->C\nA->C\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -3818,6 +6151,50 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5 2\n",
+     "expected_stdout": "2 4 1 5 3\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "7 3\n",
+     "expected_stdout": "3 6 2 7 5 1 4\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "1 1\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "6 6\n",
+     "expected_stdout": "6 1 3 2 5 4\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "10 4\n",
+     "expected_stdout": "4 8 2 7 3 10 9 1 6 5\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "2 3\n",
+     "expected_stdout": "1 2\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -3879,6 +6256,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "abcabc\nbc\n",
+     "expected_stdout": "2\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "aaaa\naa\n",
+     "expected_stdout": "1\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "abc\nd\n",
+     "expected_stdout": "0\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "a\na\n",
+     "expected_stdout": "1\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "ababab\nabab\n",
+     "expected_stdout": "1\n",
+     "points": 2
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "abcde\ncde\n",
+     "expected_stdout": "3\n",
+     "points": 2
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "abcdef\nf\n",
+     "expected_stdout": "6\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     2,
@@ -3934,6 +6362,57 @@
     }
    ],
    "hidden_count": 5,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "abaabc\n",
+     "expected_stdout": "0 1 1 2 2 3\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "aaaa\n",
+     "expected_stdout": "0 1 2 3\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "ababaa\n",
+     "expected_stdout": "0 1 1 2 3 4\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "a\n",
+     "expected_stdout": "0\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "abcabx\n",
+     "expected_stdout": "0 1 1 1 2 3\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "aaab\n",
+     "expected_stdout": "0 1 2 3\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "abcabcaa\n",
+     "expected_stdout": "0 1 1 1 2 3 4 5\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -3996,6 +6475,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "aaaaa\naa\n",
+     "expected_stdout": "2\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "abcabcabc\nabc\n",
+     "expected_stdout": "3\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "abababa\naba\n",
+     "expected_stdout": "2\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "abc\nd\n",
+     "expected_stdout": "0\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "aaa\naaaa\n",
+     "expected_stdout": "0\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "aabaaab\naab\n",
+     "expected_stdout": "2\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "abcabxabcd\nabc\n",
+     "expected_stdout": "2\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -4051,6 +6581,50 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3 4 3\n1 1 5\n2 3 7\n3 2 9\n",
+     "expected_stdout": "4 3 3\n1 1 5\n2 3 9\n3 2 7\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "3 3 4\n1 1 1\n1 3 2\n2 2 3\n3 1 4\n",
+     "expected_stdout": "3 3 4\n1 1 1\n1 3 4\n2 2 3\n3 1 2\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "2 2 0\n",
+     "expected_stdout": "2 2 0\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1 5 2\n1 2 8\n1 4 6\n",
+     "expected_stdout": "5 1 2\n2 1 8\n4 1 6\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "4 1 2\n2 1 3\n4 1 7\n",
+     "expected_stdout": "1 4 2\n1 2 3\n1 4 7\n",
+     "points": 4
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "3 3 1\n2 2 9\n",
+     "expected_stdout": "3 3 1\n2 2 9\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     5,
     4,
@@ -4106,6 +6680,36 @@
     }
    ],
    "hidden_count": 2,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "4\n6\n3 2\n2 3\n1 1\n4 4\n1 4\n2 2\n",
+     "expected_stdout": "5\n5\n1\n10\n7\n3\n",
+     "points": 5
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\n1\n1 1\n",
+     "expected_stdout": "1\n",
+     "points": 5
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5\n4\n5 5\n5 1\n1 5\n3 4\n",
+     "expected_stdout": "15\n11\n11\n9\n",
+     "points": 5
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "3\n3\n1 2\n2 1\n3 3\n",
+     "expected_stdout": "2\n2\n6\n",
+     "points": 5
+    }
+   ],
    "case_points": [
     5,
     5,
@@ -4172,6 +6776,64 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "a\n",
+     "expected_stdout": "0\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "()\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "(a)\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": true,
+     "stdin": "(a,b)\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "((a))\n",
+     "expected_stdout": "2\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "(a,(b,c))\n",
+     "expected_stdout": "2\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "((),())\n",
+     "expected_stdout": "2\n",
+     "points": 3
+    },
+    {
+     "ord": 7,
+     "is_sample": false,
+     "stdin": "((a),(b,((c))))\n",
+     "expected_stdout": "4\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     3,
@@ -4235,6 +6897,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "aaa\naa\n",
+     "expected_stdout": "a\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "aabbaabb\naabb\n",
+     "expected_stdout": "empty\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "abcabc\nabc\n",
+     "expected_stdout": "empty\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "hello\nl\n",
+     "expected_stdout": "heo\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "abcabc\nxyz\n",
+     "expected_stdout": "abcabc\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "ababab\nab\n",
+     "expected_stdout": "empty\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "aabbcc\nab\n",
+     "expected_stdout": "cc\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -4297,6 +7010,50 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "BDAC\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "A##\n",
+     "expected_stdout": "A\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "AB##C##\n",
+     "expected_stdout": "BAC\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "#\n",
+     "expected_stdout": "empty\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "ABC####\n",
+     "expected_stdout": "CBA\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "ABD##E##C#F##\n",
+     "expected_stdout": "DBEACF\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -4358,6 +7115,50 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "3\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "A##\n",
+     "expected_stdout": "1\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "#\n",
+     "expected_stdout": "0\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "ABC####\n",
+     "expected_stdout": "3\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "A#B#C#D###\n",
+     "expected_stdout": "4\n",
+     "points": 2
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "ABD##E##C#F##\n",
+     "expected_stdout": "3\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -4419,6 +7220,50 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "4 2\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "A##\n",
+     "expected_stdout": "1 1\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "#\n",
+     "expected_stdout": "0 0\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "ABC####\n",
+     "expected_stdout": "3 1\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "AB##C##\n",
+     "expected_stdout": "3 2\n",
+     "points": 2
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "ABD##E##C#F##\n",
+     "expected_stdout": "6 3\n",
+     "points": 2
+    }
+   ],
    "case_points": [
     3,
     3,
@@ -4480,6 +7325,50 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "ABCD\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "AB##C##\n",
+     "expected_stdout": "ABC\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "#\n",
+     "expected_stdout": "empty\n",
+     "points": 3
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "A##\n",
+     "expected_stdout": "A\n",
+     "points": 3
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "ABC####\n",
+     "expected_stdout": "ABC\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "ABD##E##C#F##\n",
+     "expected_stdout": "ABCDEF\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -4541,6 +7430,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "ABDEC\nDBEAC\n",
+     "expected_stdout": "DEBCA\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "A\nA\n",
+     "expected_stdout": "A\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "ABC\nBAC\n",
+     "expected_stdout": "BCA\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "AB\nAB\n",
+     "expected_stdout": "BA\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "AB\nBA\n",
+     "expected_stdout": "BA\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "ABC\nACB\n",
+     "expected_stdout": "CBA\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "ABCDEFG\nCBDAFEG\n",
+     "expected_stdout": "CDBFGEA\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -4603,6 +7543,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "A##\n",
+     "expected_stdout": "yes\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "AB##C##\n",
+     "expected_stdout": "yes\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "A#B##\n",
+     "expected_stdout": "no\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "AB#D##C##\n",
+     "expected_stdout": "no\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "AB##\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "#\n",
+     "expected_stdout": "yes\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "ABC####\n",
+     "expected_stdout": "no\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -4665,6 +7656,57 @@
     }
    ],
    "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 4 5\n",
+     "expected_stdout": "33\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1\n7\n",
+     "expected_stdout": "0\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": true,
+     "stdin": "2\n3 5\n",
+     "expected_stdout": "8\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "4\n1 1 1 1\n",
+     "expected_stdout": "8\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "3\n5 5 5\n",
+     "expected_stdout": "25\n",
+     "points": 3
+    },
+    {
+     "ord": 5,
+     "is_sample": false,
+     "stdin": "6\n1 2 3 4 5 6\n",
+     "expected_stdout": "51\n",
+     "points": 3
+    },
+    {
+     "ord": 6,
+     "is_sample": false,
+     "stdin": "3\n1 2 100\n",
+     "expected_stdout": "106\n",
+     "points": 3
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -4720,6 +7762,43 @@
     }
    ],
    "hidden_count": 3,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5 3\n1 2\n2 3\n4 5\n2\n1 3\n1 4\n",
+     "expected_stdout": "2\nyes\nno\n",
+     "points": 4
+    },
+    {
+     "ord": 1,
+     "is_sample": true,
+     "stdin": "1 0\n1\n1 1\n",
+     "expected_stdout": "1\nyes\n",
+     "points": 4
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "4 0\n3\n1 2\n3 4\n1 1\n",
+     "expected_stdout": "4\nno\nno\nyes\n",
+     "points": 4
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "6 5\n1 2\n2 3\n3 1\n4 5\n5 6\n2\n1 3\n1 6\n",
+     "expected_stdout": "2\nyes\nno\n",
+     "points": 4
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "3 2\n1 2\n1 2\n2\n2 1\n2 3\n",
+     "expected_stdout": "2\nyes\nno\n",
+     "points": 4
+    }
+   ],
    "case_points": [
     4,
     4,
@@ -4764,6 +7843,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|调用 compress（老式 .Z 格式）压缩\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -4804,6 +7892,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|-v（小写）\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -4844,6 +7941,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|-c（小写）\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -4884,6 +7990,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|tail -n +1000 file\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -4924,6 +8039,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|wc -l file1\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -4964,6 +8088,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|[0-9] 只匹配「名字恰好是一个数字」的条目\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5001,6 +8134,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5041,6 +8183,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|ls -ld /etc\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5079,6 +8230,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5119,6 +8279,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|cp -a ~/docs /backup/\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5157,6 +8326,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5196,6 +8374,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|从第 5 行到文件末尾\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5233,6 +8420,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5272,6 +8468,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|gzip\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5310,6 +8515,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5349,6 +8563,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|parents（缺失的父目录一并创建）\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5386,6 +8609,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5425,6 +8657,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|unzip -l a.zip\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5462,6 +8703,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5500,6 +8750,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5537,6 +8796,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5575,6 +8843,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -5608,6 +8885,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd -\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5642,6 +8928,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls -la /etc\n|ls -al /etc\n|ls -lah /etc\n|ls -alh /etc\n|ls -lA /etc\n|ls -Al /etc\n|ls -l -a /etc\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5676,6 +8971,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cp -a ~/docs /tmp/\n|cp -a ~/docs /tmp\n|cp -rp ~/docs /tmp/\n|cp -a /home/lijihao/docs /tmp/\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -5709,6 +9013,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls -ld /etc\n|ls -dl /etc\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5742,6 +9055,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|head -n 50 a.log\n|head -50 a.log\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5776,6 +9098,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|tail -n +100 a.log\n|tail +100 a.log\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -5810,6 +9141,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|head -n -10 a.log\n|head -10 a.log\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -5844,6 +9184,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|tar -czf project.tar.gz ~/project\n|tar -czf project.tar.gz /home/lijihao/project\n|tar czf project.tar.gz ~/project\n|tar -zcf project.tar.gz ~/project\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -5878,6 +9227,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|tar -tzvf bak.tar.gz\n|tar -tzf bak.tar.gz\n|tar tzf bak.tar.gz\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5913,6 +9271,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|mkdir -p /tmp/out && tar -xzvf bak.tar.gz -C /tmp/out\n|mkdir -p /tmp/out; tar -xzvf bak.tar.gz -C /tmp/out\n|mkdir -p /tmp/out; tar -xzf bak.tar.gz -C /tmp/out\n|mkdir -p /tmp/out && tar -xzf bak.tar.gz -C /tmp/out\n",
+     "points": 15
+    }
+   ],
    "case_points": [
     15
    ],
@@ -5946,6 +9313,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|mkdir -p data/2026/10/report\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -5980,6 +9356,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|touch /tmp/a.txt /tmp/b.txt /tmp/c.txt\n|touch /tmp/{a,b,c}.txt\n|cd /tmp && touch a.txt b.txt c.txt\n|touch /tmp/a.txt; touch /tmp/b.txt; touch /tmp/c.txt\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -6019,6 +9404,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|tar -zcvf bak.tar.gz dir/\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6059,6 +9453,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|tail -n +100 a.log\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6098,6 +9501,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|wc -l a.log\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6138,6 +9550,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|rm -rf /tmp/lab\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6179,6 +9600,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|cp -a ~/.ssh /tmp/ssh_backup\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6219,6 +9649,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|cp -r ~/docs /tmp/\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6259,6 +9698,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|tar -xzvf bak.tar.gz -C dir/\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6298,6 +9746,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|mkdir -p data/2026/10\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6338,6 +9795,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|zip -r doc.zip doc/\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6377,6 +9843,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|tail -n 5 a.log\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6417,6 +9892,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|ls *[0-9]*\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6451,6 +9935,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd ../..\n|cd ../../\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6485,6 +9978,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cat /etc/shells\n|chsh -l\n|less /etc/shells\n|more /etc/shells\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6519,6 +10021,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|echo $SHELL\n|echo ${SHELL}\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6559,6 +10070,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|su - 然后 pwd\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6594,6 +10114,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls /usr/local > ~/test1.txt && cat -n ~/test1.txt\n|ls /usr/local > ~/test1.txt; cat -n ~/test1.txt\n|ls /usr/local > /home/lijihao/test1.txt && cat -n /home/lijihao/test1.txt\n|ls /usr/local > ~/test1.txt && cat -n /home/lijihao/test1.txt\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -6629,6 +10158,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls -d *pass*\n|cd /etc && ls -d *pass*\n|ls /etc | grep pass\n|find /etc -maxdepth 1 -name '*pass*'\n|ls -d /etc/*pass*\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -6669,6 +10207,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|sudo cp -r /tmp/a1 /usr/\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6709,6 +10256,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|Esc 然后 :wq\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6749,6 +10305,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|前者改名为 /test8，后者移进 /tmp 目录\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6784,6 +10349,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|mkdir -p ~/abc && sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc && cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/\n|mkdir -p /home/lijihao/abc && sudo cp /boot/vmlinuz* /home/lijihao/abc/\n",
+     "points": 15
+    }
+   ],
    "case_points": [
     15
    ],
@@ -6822,6 +10396,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -6862,6 +10445,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|只是警告，压缩正常完成，包内路径是相对路径\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6902,6 +10494,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|ln -s /usr/local/sdutshare /myshare\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6937,6 +10538,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sort -r ~/mysort1\n|sort -r /home/lijihao/mysort1\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -6972,6 +10582,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|echo -n \"hello everyone!\"\n|echo -n hello everyone!\n|printf \"hello everyone!\"\n|echo -e \"hello everyone!\\c\"\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7012,6 +10631,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|第 5 章\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7052,6 +10680,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|./eclipse\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7092,6 +10729,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|mysql 是客户端包，服务端在 mysql-server 里\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7127,6 +10773,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cat file11 file12 > dir1/file13\n|cat ~/file11 ~/file12 > ~/dir1/file13\n|cat file11 file12 > ~/dir1/file13\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -7162,6 +10817,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|dnf provides '*/ls'\n|dnf provides ls\n|dnf provides */ls\n|dnf provides '*/ls' -q\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -7202,6 +10866,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|Shell 解析并找到 ls → 内核 fork/exec → ls 运行 → 结果回终端\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7241,6 +10914,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|第 3 层，在文件系统之上、应用程序之下\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7280,6 +10962,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|/etc\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7317,6 +11008,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -7357,6 +11057,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|单根倒树，一切都在 / 之下\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7397,6 +11106,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|底层显示服务：管画面输出、键盘鼠标输入\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7435,6 +11153,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -7474,6 +11201,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|Writer / Calc / Impress\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7512,6 +11248,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -7552,6 +11297,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|sudo dnf install ./x.rpm\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7592,6 +11346,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|xxx-devel\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7632,6 +11395,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|sudo dnf group install development-tools\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7672,6 +11444,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|先 `modinfo -F version nvidia` 确认模块编好了\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7710,6 +11491,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -7745,6 +11535,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo dnf history undo 1\n|dnf history undo 1\n|sudo dnf history undo last\n|dnf history undo last\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -7785,6 +11584,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|改用 ip addr\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7824,6 +11632,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|modify 只写配置文件，必须再 con down 再 con up 才生效\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7864,6 +11681,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|DNS 解析有问题\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7898,6 +11724,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ip -br link\n|ip link show\n|ip -brief link\n|ip -br addr\n|ip link\n|nmcli device status\n",
+     "points": 12
+    }
+   ],
    "case_points": [
     12
    ],
@@ -7938,6 +11773,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|ss -tulpn\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -7978,6 +11822,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|scp -P 2222 文件 远端:\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8017,6 +11870,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|hostname 只改当前运行时的值，永久生效要用 hostnamectl set-hostname\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8055,6 +11917,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -8095,6 +11966,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|enable 只是「设为开机自启」，不会启动服务。要用 enable --now\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8136,6 +12016,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|Apache 包 httpd 服务 httpd；Samba 包 samba 服务 smb；BIND 包 bind 服务 named；vsFTPd 两者都叫 vsftpd\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8176,6 +12065,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|先查 firewall-cmd，再查 SELinux\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8216,6 +12114,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|semanage fcontext + restorecon，chcon 是临时的会被冲掉\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8256,6 +12163,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|少写一行空的 ExecStart= 先把原值清掉\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8296,6 +12212,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|disable 只取消自启（还能手动 start）；mask 彻底禁死（连手动都起不来）\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8336,6 +12261,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|useradd 建的账号是锁死的（shadow 里是 !!），必须再 passwd 设密码\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8376,6 +12310,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|sudo usermod -aG wheel zhang\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8416,6 +12359,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|用 journalctl\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8456,6 +12408,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|目录失去 x 权限就进不去了 —— 目录要 755、文件才 644\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8496,6 +12457,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|先 kill（默认 15），等几秒不行再 kill -9\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8536,6 +12506,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|内核直接忽略脚本的 SUID 位，SUID 只对二进制程序生效\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8574,6 +12553,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -8614,6 +12602,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|看 available 那一列才是真实可用内存，cache 是可回收的\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8654,6 +12651,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|cron 的 PATH 极小，必须写绝对路径 /usr/bin/python3\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8692,6 +12698,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -8732,6 +12747,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|firewalld 重载时会冲掉手写的规则\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8772,6 +12796,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|漏了 -P 参数，改动没写进策略\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8812,6 +12845,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|sudo dnf install policycoreutils-python-utils\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8852,6 +12894,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|新建的文件全都没有标签；日后想再启用要全盘 relabel，可能开不了机\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8890,6 +12941,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -8930,6 +12990,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|先 sudo sshd -t 校验语法，再 systemctl reload sshd\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -8970,6 +13039,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|pam_tally2 已被移除，要用 pam_faillock（authselect enable-feature with-faillock）\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -9008,6 +13086,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -9048,6 +13135,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|make install 在 Fedora 上不会建启动项 —— 它是给 LILO 时代写的\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -9086,6 +13182,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
    "case_points": [
     8
    ],
@@ -9125,6 +13230,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|cp /boot/config-$(uname -r) .config 然后 make olddefconfig\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -9165,6 +13279,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|内存不足，cc1 被 OOM killer 杀了\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],
@@ -9205,6 +13328,15 @@
    "testcase_count": 1,
    "samples": [],
    "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|不一定 —— 新内核可能装了，但默认启动项还是旧的\n",
+     "points": 10
+    }
+   ],
    "case_points": [
     10
    ],

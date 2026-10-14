@@ -41,8 +41,16 @@ DEFAULT_OUT = ROOT / "docs"
 _STRIP_FIELDS = ("reference_solution", "ref_interpreter", "ai_meta", "ai_model")
 
 
-def build_bank() -> dict:
-    """把库里的题目拼成前端能直接吃的结构。"""
+def build_bank(with_cases: bool = False) -> dict:
+    """把库里的题目拼成前端能直接吃的结构。
+
+    with_cases=True 时**额外把隐藏测试点也下发**（前端本地判题需要 stdin + 期望输出）。
+    默认 False，与历史行为完全一致：隐藏点只给个数，内容不出库。
+
+    ★ 实测（204 题）：342 个隐藏点全量下发只占 **8.4 KB**
+      —— problems.json 从 267 KB → 275 KB，只涨 3%。所以「下发隐藏点」在体积上
+      根本不是问题，唯一需要权衡的是「学生能看到期望输出」这件事本身。
+    """
     # ★ subject / choices 必须一起导：前端要靠它们做「科目分类」和渲染选择题选项。
     #   选择题的正确答案在 expected_stdout 里（且这些题 is_sample=0），所以给 options 不泄题。
     rows = db.query("""
@@ -75,6 +83,18 @@ def build_bank() -> dict:
             for c in cases if c["is_sample"]
         ]
         p["hidden_count"] = sum(1 for c in cases if not c["is_sample"])
+        # 前端本地判题需要**完整的**测试点（含期望输出与分值）→ 只有显式开启才带出来。
+        # 不开时**不加这个键**，保证默认导出与历史产物字节级一致（只有时间戳在变）。
+        #
+        # ★ 给的是全量（样例 + 隐藏）而不是只有隐藏点：判题要按 ord 把所有点都过一遍，
+        #   分值也才能和后端 scoring.grade 对上。
+        if with_cases:
+            p["cases"] = [
+                {"ord": c["ord"], "is_sample": bool(c["is_sample"]),
+                 "stdin": c["stdin"], "expected_stdout": c["expected_stdout"],
+                 "points": int(c["points"] or 0)}
+                for c in cases
+            ]
 
         # 测试点分值（前端展示用；判题时后端会再算一遍）
         raw = [c["points"] for c in cases]
@@ -92,16 +112,19 @@ def build_bank() -> dict:
     }
 
 
-def export(out_dir: Path) -> None:
+def export(out_dir: Path, with_cases: bool = False) -> None:
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # 1) 题库
-    bank = build_bank()
+    bank = build_bank(with_cases=with_cases)
     (out_dir / "problems.json").write_text(
         json.dumps(bank, ensure_ascii=False, indent=1), encoding="utf-8")
-    print("题目 %d 道 / %d 分 / %d 个测试点 → %s"
-          % (bank["count"], bank["total_score"], bank["total_testcases"],
+    n_hidden = sum(1 for p in bank["items"]
+                   for c in (p.get("cases") or []) if not c["is_sample"])
+    extra = "（含 %d 个隐藏测试点）" % n_hidden if with_cases else "（隐藏点未下发）"
+    print("题目 %d 道 / %d 分 / %d 个测试点 %s → %s"
+          % (bank["count"], bank["total_score"], bank["total_testcases"], extra,
              out_dir / "problems.json"))
 
     # 2) 前端
@@ -130,8 +153,10 @@ def export(out_dir: Path) -> None:
 def main() -> int:
     ap = argparse.ArgumentParser(description="导出静态题库 + 生成 Pages 站点")
     ap.add_argument("--out", default=str(DEFAULT_OUT), help="输出目录（默认 docs/）")
+    ap.add_argument("--with-cases", action="store_true",
+                    help="把隐藏测试点也导出（前端本地判题用；实测仅 +8.4 KB）")
     args = ap.parse_args()
-    export(Path(args.out))
+    export(Path(args.out), with_cases=args.with_cases)
     return 0
 
 

@@ -447,6 +447,10 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
 <div id="toast"></div>
 <div id="modalHost"></div>
 
+<!-- 浏览器端理论题判题器：零后端、零下载。判题口径与后端 app/judge 逐条对拍过
+     （题库全部理论题 × 多种答案 = 3463 条，逐字段一致）。
+     ★ 要改它之前先跑 `node tools/verify_text_judge.mjs` 对拍。 -->
+<script src="judge_text.js"></script>
 <script>
 "use strict";
 
@@ -521,10 +525,19 @@ async function api(path, opts){
 function localProgress(){
   try { return JSON.parse(localStorage.getItem(LS.local) || '{}') || {}; } catch(e){ return {}; }
 }
-function setLocalProgress(pid, best, total){
+/* 记录一次作答结果。
+   ★ 默认保留**历史最高分**：本地判题会反复调用它，如果直接覆盖，
+     答对之后再交一次错的就会把「已掌握」冲掉（后端口径同样是取最高分）。
+     手动标记里的「部分掌握」要的就是「改成这个值」，所以给它 {force:true}。 */
+function setLocalProgress(pid, best, total, opts){
   const m = localProgress();
-  m[pid] = { best_score: best, total_score: total, attempts: (m[pid] && m[pid].attempts || 0) + 1,
-             solved_at: best >= total ? nowStamp() : '' };
+  const prev = m[pid] || {};
+  const v = parseInt(best || 0, 10) || 0;
+  const t = parseInt(total || 0, 10) || 0;
+  const keep = (opts && opts.force) ? v : Math.max(parseInt(prev.best_score || 0, 10) || 0, v);
+  m[pid] = { best_score: keep, total_score: t,
+             attempts: (parseInt(prev.attempts || 0, 10) || 0) + 1,
+             solved_at: (t > 0 && keep >= t) ? (prev.solved_at || nowStamp()) : '' };
   try { localStorage.setItem(LS.local, JSON.stringify(m)); } catch(e){}
 }
 function nowStamp(){
@@ -867,9 +880,14 @@ function viewHome(){
 
   let html = '';
   if (OFFLINE){
+    /* 数字现算，别写死 —— 题库会变 */
+    const nLocal = window.TextJudge
+      ? PROBLEMS.filter(x => x.line === 'text' && TextJudge.canJudgeLocally(x)).length : 0;
     html += '<div class="banner warn"><span>⚠</span><span class="grow">'
-         + '当前处于<b>离线浏览</b>模式（没有连上判题后端）。题目可以随便看，但判题、运行自测需要后端。'
-         + '本地跑 <span class="codeInline">run.bat</span>，或在「设置」里填后端地址。</span>'
+         + '当前处于<b>离线模式</b>（没有连上判题后端）。'
+         + (nLocal ? '<b>其中 ' + nLocal + ' 道理论题可以直接在本机浏览器里判</b>，进度存在这台设备上。' : '')
+         + '代码题（Python / 数据结构）要真跑一遍才能判，需要后端 —— 本地跑 '
+         + '<span class="codeInline">run.bat</span>，或在「设置」里填后端地址。</span>'
          + '<button class="btn sm ghost" onclick="openSettings()">设置后端</button></div>';
   }
 
@@ -1257,17 +1275,26 @@ function renderButtons(){
   const p = CUR;
   const canJudge = !OFFLINE;
   const theory = p.line === 'text';
+  /* 离线也能判的充要条件：理论题 + 题库里带了完整测试点（导出时加 --with-cases）。
+     代码题无论怎样都要真执行，浏览器里做不到 → 不给这个按钮，别让人点了发现没反应。 */
+  const local = !canJudge && theory && !!(window.TextJudge && TextJudge.canJudgeLocally(p));
   let h = '';
   if (canJudge){
     h += '<button class="btn" id="btnSubmit" onclick="doSubmit()">提交评测</button>';
     if (!theory) h += '<button class="btn ghost" onclick="doRun()">运行自测</button>';
+  } else if (local){
+    h += '<button class="btn" id="btnSubmit" onclick="doSubmitLocal()">提交并判题</button>'
+      +  '<button class="btn ghost" onclick="markSolved(' + (p.total_score||0) + ')">直接标记为已掌握</button>';
   } else {
     h += '<button class="btn" onclick="markSolved(' + (p.total_score||0) + ')">标记为已掌握</button>'
       +  '<button class="btn ghost" onclick="markPartial()">标记为部分掌握</button>';
   }
-  h += '<span class="hintline">' + (canJudge
-        ? (theory ? '提交后立刻判题' : '提交后排队评测，结果自动刷新')
-        : '离线模式：只能浏览题目与手动标记') + '</span>';
+  let hint;
+  if (canJudge)      hint = theory ? '提交后立刻判题' : '提交后排队评测，结果自动刷新';
+  else if (local)    hint = '本地判题：就在这个浏览器里判，口径与后端一致';
+  else if (theory)   hint = '离线模式：这道题在题库里没有测试点，只能手动标记';
+  else               hint = '离线模式：代码要真跑一遍，需要后端（本机 run.bat 也行）';
+  h += '<span class="hintline">' + hint + '</span>';
   row.innerHTML = h;
 }
 
@@ -1278,7 +1305,7 @@ function markSolved(total){
 }
 function markPartial(){
   const t = parseInt(CUR.total_score || 0, 10);
-  setLocalProgress(CUR.id, Math.floor(t / 2), t);
+  setLocalProgress(CUR.id, Math.floor(t / 2), t, { force:true });
   toast('已标记为「部分掌握」', 'ok');
   afterJudgeRefresh();
 }
@@ -1300,26 +1327,36 @@ function copySample(i){
   if (s) copyText(s.stdin || '');
 }
 
+/* 从界面取「理论题」的答案（判断题 / 单选题 / 填空题）。
+   ★ 判断题的答案就是「对 / 错」这两个字，直接交正文；
+     单选题题库里存的是选项**字母**，所以交字母（交正文也判得过，
+     后端 backfill_choice_alts 会把正文补成备选答案）。
+   返回 null 表示不合格 —— 提示已经弹过了，调用方直接 return。 */
+function readTheoryAnswer(){
+  const p = CUR;
+  if (p.is_choice){
+    const on = document.querySelector('.choice.on');
+    if (!on){ toast('先选一个选项', 'err'); return null; }
+    const ch = p.choices || [];
+    const isJudge = ch.length === 2 && ch.indexOf('对') >= 0 && ch.indexOf('错') >= 0;
+    return isJudge ? on.getAttribute('data-v')
+                   : String.fromCharCode(65 + parseInt(on.getAttribute('data-i'), 10));
+  }
+  const box = document.getElementById('codeBox');
+  const v = box ? box.value : '';
+  if (!v.trim()){ toast('答案不能为空', 'err'); return null; }
+  return v;
+}
+
 async function doSubmit(){
   const btn = document.getElementById('btnSubmit');
   const p = CUR;
   const theory = p.line === 'text';
   let code, lang = 'python', interp = 'py313';
 
-  if (p.is_choice){
-    const on = document.querySelector('.choice.on');
-    if (!on){ toast('先选一个选项', 'err'); return; }
-    const ch = p.choices || [];
-    /* ★ 判断题的答案就是「对 / 错」这两个字，直接交正文；
-       单选题题库里存的是选项**字母**，所以交字母（提交正文也判得过，
-       后端 backfill_choice_alts 会把正文补成备选答案）。 */
-    const isJudge = ch.length === 2 && ch.indexOf('对') >= 0 && ch.indexOf('错') >= 0;
-    code = isJudge ? on.getAttribute('data-v')
-                   : String.fromCharCode(65 + parseInt(on.getAttribute('data-i'), 10));
-  } else if (theory){
-    const box = document.getElementById('codeBox');
-    code = box ? box.value.trim() : '';
-    if (!code){ toast('答案不能为空', 'err'); return; }
+  if (p.is_choice || theory){
+    code = readTheoryAnswer();
+    if (code === null) return;
   } else {
     const box = document.getElementById('codeBox');
     code = box ? box.value : '';
@@ -1344,6 +1381,29 @@ async function doSubmit(){
     rb.innerHTML = verdictHtml('IE', '提交失败', String(e.message || e));
     if (btn){ btn.disabled = false; btn.textContent = '提交评测'; }
   }
+}
+
+/* 离线本地判题（理论题专用）。判题逻辑全在 judge_text.js 里 ——
+   它与后端 app/judge 逐条对拍过，这里只负责「取答案 → 判 → 展示 → 记进度」。
+   ★ 返回的结构与后端提交结果**字段完全一致**，所以能直接复用 renderResult。 */
+function doSubmitLocal(){
+  const p = CUR;
+  if (!(window.TextJudge && TextJudge.canJudgeLocally(p))){
+    toast('这道题在本地判不了：题库里没带它的测试点', 'err');
+    return;
+  }
+  const answer = readTheoryAnswer();
+  if (answer === null) return;
+
+  const btn = document.getElementById('btnSubmit');
+  const r = TextJudge.judgeTextProblem(p, answer);
+  if (r.error){ toast(r.error, 'err'); return; }
+
+  RESULT = r;
+  renderResult(r);
+  setLocalProgress(p.id, r.score, r.max_score || p.total_score || 0);
+  if (btn) btn.textContent = '再交一次';
+  afterJudgeRefresh();
 }
 
 function verdictHtml(v, title, detail){
@@ -1541,6 +1601,17 @@ function openSettings(){
     +   '<input value="' + escAttr(TOKEN) + '" readonly onclick="this.select()">'
     +   '<div class="desc">这是你的身份（本机随机生成，没有账号密码）。'
     +   '<b>换设备时把这一串复制过去</b>，进度就能接续。</div></div>'
+    + '<div class="field"><div class="lb">进度备份</div>'
+    +   '<div class="btnrow" style="margin:0">'
+    +     '<button class="btn ghost" onclick="exportProgress()">导出进度</button>'
+    +     '<button class="btn ghost" onclick="document.getElementById(\'impFile\').click()">导入进度</button>'
+    +     '<input id="impFile" type="file" accept=".json,application/json" style="display:none"'
+    +       ' onchange="importProgress(event)">'
+    +   '</div>'
+    +   '<div class="desc">导出一个 JSON（离线进度 + 草稿 + 通行证）。'
+    +   '<b>换电脑 / 换浏览器 / 清缓存之前先导出</b>；导入按「取最高分」合并，'
+    +   '不会把已经拿到的高分冲掉。离线判题的进度只存在这台设备的浏览器里，'
+    +   '没有别的地方替你存着。</div></div>'
     + '<div class="btnrow"><button class="btn" onclick="saveSettings()">保存</button>'
     +   '<button class="btn ghost" onclick="closeModal()">取消</button>'
     +   '<button class="btn ghost" style="margin-left:auto" onclick="refreshAll().then(()=>{closeModal();route();toast(\'已重新连接\',\'ok\')})">重新连接</button>'
@@ -1555,6 +1626,98 @@ function saveSettings(){
   closeModal();
   renderNav();
   boot(true);
+}
+
+/* =========================================================================
+   11b. 进度导出 / 导入
+   离线判题的进度活在 localStorage 里 —— 清一次缓存、换一个浏览器就没了。
+   云同步要一台服务器，而这件事「导出一个文件」就能兜住大半，成本几乎为零。
+   ========================================================================= */
+function progressBundle(){
+  const drafts = {};
+  try {
+    for (let i = 0; i < localStorage.length; i++){
+      const k = localStorage.key(i);
+      if (k && k.indexOf('pta.draft.') === 0){
+        const v = localStorage.getItem(k);
+        if (v) drafts[k] = v;
+      }
+    }
+  } catch(e){}
+  return {
+    kind: 'my-pta-progress', version: 1, exported_at: nowStamp(),
+    token: TOKEN, nickname: nickname(), apiBase: apiBase(),
+    local: localProgress(), drafts: drafts,
+  };
+}
+
+function exportProgress(){
+  const b = progressBundle();
+  const d = new Date(), p = n => String(n).padStart(2,'0');
+  const name = 'pta-progress-' + d.getFullYear() + p(d.getMonth()+1) + p(d.getDate())
+             + '-' + p(d.getHours()) + p(d.getMinutes()) + '.json';
+  const url = URL.createObjectURL(new Blob([JSON.stringify(b, null, 2)], { type:'application/json' }));
+  const a = document.createElement('a');
+  a.href = url; a.download = name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 5000);
+  toast('已导出：' + Object.keys(b.local).length + ' 道题 + '
+        + Object.keys(b.drafts).length + ' 份草稿', 'ok');
+}
+
+function importProgress(ev){
+  const input = ev && ev.target;
+  const f = input && input.files && input.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = () => {
+    let b = null;
+    try { b = JSON.parse(String(rd.result || '')); } catch(e){}
+    if (!b || b.kind !== 'my-pta-progress' || !b.local || typeof b.local !== 'object'){
+      toast('这不是本平台导出的进度文件', 'err');
+      if (input) input.value = '';
+      return;
+    }
+    /* ★ 合并规则：分数取 max、作答次数累加。
+       绝不能直接覆盖 —— 导一份旧备份不该把现在的高分抹掉。 */
+    const m = localProgress();
+    let improved = 0;
+    Object.keys(b.local).forEach(pid => {
+      const nv = b.local[pid] || {}, ov = m[pid] || {};
+      const ob = parseInt(ov.best_score || 0, 10) || 0;
+      const nb = Math.max(ob, parseInt(nv.best_score || 0, 10) || 0);
+      const nt = parseInt(nv.total_score || 0, 10) || parseInt(ov.total_score || 0, 10) || 0;
+      if (nb > ob) improved++;
+      m[pid] = {
+        best_score: nb, total_score: nt,
+        attempts: (parseInt(ov.attempts || 0, 10) || 0) + (parseInt(nv.attempts || 0, 10) || 0),
+        solved_at: (nt > 0 && nb >= nt) ? (ov.solved_at || nv.solved_at || nowStamp()) : '',
+      };
+    });
+    try { localStorage.setItem(LS.local, JSON.stringify(m)); } catch(e){}
+    /* 草稿：只在本地还没有时补，不覆盖正在写的内容 */
+    let sk = 0;
+    if (b.drafts) Object.keys(b.drafts).forEach(k => {
+      try { if (!localStorage.getItem(k)){ localStorage.setItem(k, b.drafts[k]); sk++; } } catch(e){}
+    });
+    /* 通行证：这份文件本来就是为了「把这台设备变成那台设备」才导出的，
+       所以文件里带着合法通行证、且与当前不同时，就采用它（后端进度才跟得回来）。 */
+    let switched = false;
+    if (typeof b.token === 'string' && /^[0-9a-f]{16,64}$/.test(b.token) && b.token !== TOKEN){
+      TOKEN = b.token;
+      try { localStorage.setItem(LS.token, TOKEN); } catch(e){}
+      switched = true;
+    }
+    if (b.nickname){ try { localStorage.setItem(LS.nick, String(b.nickname)); } catch(e){} }
+    if (input) input.value = '';
+    toast('已导入：' + improved + ' 道题分数变高'
+          + (sk ? '，补了 ' + sk + ' 份草稿' : '')
+          + (switched ? '；通行证已切回 ' + TOKEN.slice(0, 8) + '…' : ''), 'ok');
+    closeModal();
+    refreshAll().then(() => { route(); });
+  };
+  rd.onerror = () => { toast('读文件失败', 'err'); if (input) input.value = ''; };
+  rd.readAsText(f, 'utf-8');
 }
 
 /* =========================================================================

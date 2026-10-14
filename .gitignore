@@ -32,10 +32,24 @@ Thumbs.db
 desktop.ini
 .DS_Store
 
+# ---- Node（只有 experiments/ 里的前端判题 PoC 用）----
+node_modules/
+npm-debug.log*
+
+# ★ experiments/pyodide-judge/fixtures.json 含**参考解**，绝不能进公开仓库。
+#   它由 experiments/pyodide-judge/dump_fixtures.py 从库里重新生成。
+experiments/pyodide-judge/fixtures.json
+
 # ---- 备份 ----
 backups/
 *.zip
 
-# 注意：docs/ 下的 index.html / problems.json / .nojekyll 都是**要**提交的
+# 注意：docs/ 下的 index.html / judge_text.js / problems.json / .nojekyll 都是**要**提交的
 # （GitHub Pages 靠它们发布静态站；problems.json 由 tools/export_static.py 生成，
 #   记得加题之后重新导一次再提交）
+#
+# ★★ 2026-10-14 起 problems.json **带上了全部测试点**（export_static.py --with-cases）：
+#    浏览器里要本地判题，期望输出就必须下发到客户端 —— 这是「离线也能判」的固有代价，
+#    没法两全。但**参考解仍然绝不外传**（_STRIP_FIELDS 照旧剥掉 reference_solution /
+#    interp /  ai_meta），导出的只是「测试点的期望输出」。
+#    想回到不下发的旧行为：不加 --with-cases 重导一次即可（前端会自动退回手动标记）。

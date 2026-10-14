@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>前端判题 PoC · Pyodide</title>
+<style>
+  :root{
+    --bd:#dcdcdc; --fg:#1f1f1f; --mut:#6b6b6b; --bg:#fafafa; --card:#fff;
+    --ac:#1a7f37; --wa:#c62828; --tle:#b26a00; --ie:#6a1b9a; --pe:#9a6b00;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);
+       font:14px/1.65 -apple-system,"Segoe UI","Microsoft YaHei",sans-serif}
+  header{display:flex;align-items:center;gap:14px;padding:12px 20px;
+         background:var(--card);border-bottom:1px solid var(--bd)}
+  header h1{margin:0;font-size:16px;font-weight:500}
+  #status{font-size:12px;color:var(--mut);margin-left:auto}
+  #status.ok{color:var(--ac)}
+  #status.err{color:var(--wa)}
+  main{display:grid;grid-template-columns:300px minmax(0,1fr);gap:16px;
+       padding:16px 20px;max-width:1240px;margin:0 auto;align-items:start}
+  aside,section{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:14px}
+  select{width:100%;padding:7px 9px;border:1px solid var(--bd);border-radius:7px;
+         font:inherit;background:#fff}
+  #meta{margin-top:10px;font-size:12px;color:var(--mut);line-height:1.9}
+  h2{font-size:14px;font-weight:500;margin:0 0 8px}
+  .stmt{white-space:pre-wrap;background:#f6f6f6;border-radius:8px;padding:10px 12px;
+        font-size:13px;max-height:180px;overflow:auto}
+  .case{border:1px solid var(--bd);border-radius:8px;padding:8px 10px;margin:8px 0;
+        font-size:12px;background:#fcfcfc}
+  .case b{font-weight:500;color:var(--mut)}
+  .case pre{margin:3px 0;white-space:pre-wrap;font-family:Consolas,Menlo,monospace;
+            font-size:12px;color:#333}
+  textarea{width:100%;min-height:200px;padding:11px;border:1px solid var(--bd);border-radius:8px;
+           font:13px/1.55 Consolas,Menlo,"Courier New",monospace;resize:vertical}
+  .bar{display:flex;gap:9px;margin:11px 0;flex-wrap:wrap}
+  button{padding:7px 15px;border:1px solid var(--bd);border-radius:7px;background:#fff;
+         font:inherit;cursor:pointer}
+  button:hover{background:#f2f2f2}
+  button.primary{background:#1f6feb;border-color:#1f6feb;color:#fff}
+  button.primary:hover{background:#1a5fd0}
+  button:disabled{opacity:.5;cursor:default}
+  .row{display:flex;align-items:flex-start;gap:10px;padding:7px 10px;margin:5px 0;
+       border:1px solid var(--bd);border-left-width:3px;border-radius:7px;font-size:13px;
+       background:#fff}
+  .row .v{font-weight:600;min-width:42px}
+  .row .d{color:var(--mut);font-size:12px;flex:1;min-width:0;
+          overflow-wrap:anywhere}
+  .v-AC{color:var(--ac);border-left-color:var(--ac)}
+  .v-WA{color:var(--wa);border-left-color:var(--wa)}
+  .v-TLE{color:var(--tle);border-left-color:var(--tle)}
+  .v-PE{color:var(--pe);border-left-color:var(--pe)}
+  .v-CE,.v-RE,.v-IE{color:var(--ie);border-left-color:var(--ie)}
+  .sum{margin-top:10px;font-size:13px;padding:9px 11px;border-radius:7px;background:#f2f7ff}
+</style>
+</head>
+<body>
+<header>
+  <h1>前端判题 PoC · Pyodide</h1>
+  <div id="status">正在加载判题引擎…</div>
+</header>
+
+<main>
+  <aside>
+    <h2>选一道题</h2>
+    <select id="picker"></select>
+    <div id="meta"></div>
+  </aside>
+
+  <section>
+    <h2>题面</h2>
+    <div class="stmt" id="statement"></div>
+    <div id="samples"></div>
+
+    <h2 style="margin-top:14px">代码</h2>
+    <textarea id="editor" spellcheck="false"></textarea>
+
+    <div class="bar">
+      <button class="primary" id="run">判题</button>
+      <button id="fill">填入参考解</button>
+      <button id="hang">死循环测试</button>
+    </div>
+    <div id="results"></div>
+  </section>
+</main>
+
+<script type="module">
+const $ = (s) => document.querySelector(s);
+let worker = null, readyP = null, nextId = 1;
+let bank = null, cur = null;
+
+/* ---------- Worker 管理 ---------- */
+function setStatus(text, cls = "") {
+  const el = $("#status");
+  el.textContent = text;
+  el.className = cls;
+}
+
+function ensureWorker() {
+  if (worker) return readyP;
+  setStatus("正在加载 Pyodide…");
+  const w = new Worker("/judge-worker.js", { type: "module" });
+  worker = w;
+  readyP = new Promise((resolve, reject) => {
+    // ★ 必须监听 error/messageerror：Worker 脚本自身加载失败（路径错、MIME 错、
+    //   import 失败）时**不会**走 postMessage，只会触发 error 事件。
+    //   不接住就是一个永远不 resolve 的 promise —— 表现为页面无声卡死。
+    const onErr = (e) => {
+      const msg = (e && (e.message || e.detail)) || "Worker 启动失败";
+      setStatus("引擎启动失败：" + msg, "err");
+      reject(new Error(msg));
+    };
+    w.addEventListener("error", onErr);
+    w.addEventListener("messageerror", onErr);
+    w.addEventListener("message", (e) => {
+      if (e.data.type === "ready") {
+        w.removeEventListener("error", onErr);
+        setStatus(`引擎就绪 · CPython ${e.data.python}`, "ok");
+        resolve();
+      } else if (e.data.type === "fatal") {
+        setStatus("引擎启动失败：" + e.data.detail, "err");
+        reject(new Error(e.data.detail));
+      }
+    });
+  });
+  return readyP;
+}
+
+function hardReset() {
+  if (worker) worker.terminate();
+  worker = null; readyP = null;
+}
+
+/* 判一个用例。超时靠 terminate 整个 Worker —— Pyodide 卡在 Python 执行里时，
+   没有别的办法能把它叫停（这也是它必须待在 Worker 里的原因）。 */
+async function judgeCase(payload, timeoutMs) {
+  await ensureWorker();
+  return new Promise((resolve) => {
+    const id = nextId++;
+    const timer = setTimeout(() => {
+      hardReset();
+      resolve({ verdict: "TLE", ms: timeoutMs, detail: `超过 ${timeoutMs} ms 未返回，已强制中断` });
+    }, timeoutMs);
+
+    const onMsg = (e) => {
+      if (e.data.id !== id) return;
+      clearTimeout(timer);
+      worker.removeEventListener("message", onMsg);
+      resolve(e.data.payload);
+    };
+    worker.addEventListener("message", onMsg);
+    worker.postMessage({ type: "judge", id, ...payload });
+  });
+}
+
+/* ---------- 界面 ---------- */
+function renderMeta() {
+  $("#meta").innerHTML =
+    `checker：<code>${cur.checker}</code><br>` +
+    `时间限制：${cur.time_limit_ms} ms<br>` +
+    `样例：${cur.sample_count} 个<br>` +
+    `参考解：${cur.reference_solution ? "有" : "无"}`;
+  $("#statement").textContent = cur.title + "\n\n（PoC 只演示判题链路，题面正文略）";
+  $("#samples").innerHTML = cur.samples.map((s, i) =>
+    `<div class="case"><b>样例 ${i + 1}</b>
+      <pre>输入：${esc(s.stdin)}</pre>
+      <pre>期望：${esc(s.expected_stdout)}</pre></div>`).join("");
+}
+
+function esc(s) {
+  return String(s ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+}
+
+function showResult(i, r) {
+  const div = document.createElement("div");
+  div.className = "row v-" + r.verdict;
+  div.innerHTML = `<span class="v">${r.verdict}</span>
+    <span class="d">样例 ${i + 1} · ${r.ms} ms${r.detail ? " · " + esc(r.detail) : ""}</span>`;
+  $("#results").appendChild(div);
+}
+
+/* ---------- 主流程 ---------- */
+async function loadBank() {
+  bank = await fetch("/fixtures.json").then((r) => r.json());
+  const picker = $("#picker");
+  picker.innerHTML = bank.items.map((it) =>
+    `<option value="${it.id}">#${it.id} ${esc(it.title)}</option>`).join("");
+  picker.addEventListener("change", () => select(Number(picker.value)));
+  select(bank.items[0].id);
+}
+
+function select(id) {
+  cur = bank.items.find((x) => x.id === id);
+  renderMeta();
+  $("#editor").value = "";
+  $("#results").innerHTML = "";
+}
+
+$("#fill").addEventListener("click", () => { $("#editor").value = cur.reference_solution; });
+$("#hang").addEventListener("click", () => {
+  $("#editor").value = "# 故意死循环，验证页面不会被冻住\nwhile True:\n    pass";
+});
+
+$("#run").addEventListener("click", async () => {
+  const code = $("#editor").value;
+  $("#results").innerHTML = "";
+  $("#run").disabled = true;
+  let ac = 0;
+  const t0 = performance.now();
+
+  for (let i = 0; i < cur.samples.length; i++) {
+    const sc = cur.samples[i];
+    const timeoutMs = Math.max(2000, cur.time_limit_ms * 3 + 1000);
+    const r = await judgeCase({
+      code, stdin: sc.stdin ?? "", expected: sc.expected_stdout ?? "",
+      checker: cur.checker, eps: cur.float_eps,
+    }, timeoutMs);
+    if (r.verdict === "AC") ac++;
+    showResult(i, r);
+  }
+
+  const total = Math.round(performance.now() - t0);
+  const sum = document.createElement("div");
+  sum.className = "sum";
+  sum.textContent = `合计 ${ac}/${cur.samples.length} AC · 总耗时 ${total} ms（含首次引擎加载）`;
+  $("#results").appendChild(sum);
+  $("#run").disabled = false;
+});
+
+// 供 headless 测试调用
+window.__poc = {
+  judgeCase, select, ensureWorker,
+  get bank() { return bank; },
+  setCode: (c) => { $("#editor").value = c; },
+  get cur() { return cur; },
+};
+
+// ★ 页面一打开就预热判题引擎 —— 原来只在点「判题」时才初始化，
+//   等于白等用户一轮（而且 PoC 一打开根本没有就绪状态）。
+ensureWorker().catch((e) => setStatus("引擎启动失败：" + (e.message || e), "err"));
+loadBank().catch((e) => setStatus("题库加载失败：" + e.message, "err"));
+</script>
+</body>
+</html>

@@ -362,6 +362,35 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
 - 命令填空的宽容度
 - **全库扫三条**：每道题的参考答案都判得过自己 / 期望值里每条可接受答案都判得过 / 乱写加料仍判错
 
+### ★★ 浏览器端判题（`web/judge_text.js`，2026-10-14）
+
+理论题没有「可执行的东西」—— 用户交的就是答案本身，判题 = 字符串归一化 + 比对。
+所以这件事**浏览器完全干得了**，不需要任何后端。于是把上面这套口径**逐字移植成 JS**，
+让 GitHub Pages 那份纯静态站在没有后端时也能判题。
+
+- **口径零重写**：`app/judge/compare.py` 是纯逻辑（只依赖 `re` + `dataclasses`），
+  移植时按原函数逐个对着写 —— `normalize_answer` / `answer_forms` / `_norm_cmd` /
+  `oneof_alternatives` / `_uses_oneof` / `compare` / `scoring.grade` 一个不落。
+- ★★ **口径分叉是这里最大的风险**，而且极其隐蔽：大多数答案仍然判得对，只在边角处悄悄不一致。
+  所以配了 `tools/verify_text_judge.mjs` —— 题库全部 **117 道理论题 × 多种答案 = 3463 条**，
+  在 JS 侧跑一遍、在 Python 侧（**真实实现**，不是另写一套「差不多的」）跑一遍，
+  逐字段比对 verdict / score。现状：**3463 条全部一致**（1854 AC / 1609 非 AC —— 正反两面都有，不是恒真）。
+  改 `judge_text.js` 之后必须重跑它。
+
+移植时踩到的坑（都写在文件头了）：
+
+| 坑 | 说明 |
+|---|---|
+| Unicode 空白**不等价** | Python `str.split()` / `strip()` 认的是 `Py_UNICODE_ISSPACE`；JS 的 `\s` **多了 `\ufeff`、少了 `\x1c`~`\x1f` 和 `\x85`**。用显式字符类把 Python 那张表抄下来。 |
+| `strip(chars)` 按**码点**剥字符集合 | 不是按子串。得用 `[...s]` 展开码点，用下标会在非 BMP 字符上错位。 |
+| 带 `g` 的正则 `.test()` 会记住 `lastIndex` | 「只看单字符是不是空白」的那个正则**绝不能带 `g`**，否则连续调用时对时错。 |
+| 块注释里的 `*/` | 注释里写 `'*/ls'` 会**提前闭合块注释** → 整个文件语法崩。 |
+
+文件是 UMD：浏览器挂 `window.TextJudge`，Node 里 `require` 得到同一个对象（对拍脚本用）。
+
+**离线本地判题的边界**：只有 `line === 'text'` 的题（Linux 线 117 道）能本地判；
+Python 56 + 数据结构 31 是**代码题**，必须真执行，仍然要后端（本机 `run.bat` 也行）。
+
 ## 自检脚本
 
 | 脚本 | 项数 | 说明 |
@@ -373,16 +402,19 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
 | `smoke_cloud.py` | **13/13** | **云端启动路径**：真起 `python run.py`（`PTA_CLOUD=1` + `$PORT`）、绑 0.0.0.0、三科目齐、**真编 C++ / 真跑 Python 各 AC 一次** |
 | `e2e_ui.py` | **33/33** | 端到端过 HTTP（**需先起服务**） |
 | `ui_smoke.mjs` | **41/41** | jsdom 真渲染前端（离线 + 假后端两遍） |
+| `ui_test_local_judge.mjs` | **45/45** | 离线本地判题：**真 jsdom + 真加载 `judge_text.js`**（专门起静态服务，让外链脚本真被取到）。含「答对后再答错最高分不被冲掉」「导入低分备份不冲掉高分」两条回归 |
+| `ui_e2e_local_judge.mjs` | **25/25** | **真 Chrome**（puppeteer-core + 系统 Chrome）跑 `docs/` **发布产物**：真点按钮判题、**真下载**进度 JSON、**真上传**导入回来 |
 | `httptest_users.py` | **23/23** | 多用户隔离、越权 404、CORS |
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
 | `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
 | `verify_bank.py` | **204 题 / 532 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
 
-跑 `e2e_ui` 的正确姿势（**用测试库，绝不碰真实库**）：
+跑 `e2e_ui` 的正确姿势（**用测试库，绝不碰真实库**；⚠️ 本机要带 `NO_PROXY`，见下节）：
 
 ```bat
 set PTA_DB=E:\学习\001\pta\data\_bank_test.db
 D:\Pythontools\Python\python.exe -m uvicorn app.main:app --port 8792
+set NO_PROXY=127.0.0.1,localhost
 D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 ```
 
@@ -465,7 +497,17 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 - ⚠️ 日志**不要写 `/tmp`**（触发安全策略 SIGTERM），写项目目录（如 `data/vb.log`）。
 - ⚠️ 后台跑的脚本**重定向到文件时输出是全缓冲**，跑完才落盘 —— 别拿「日志还是 0 行」当失败。
 - ⚠️ 本机 curl 报 `CRYPT_E_REVOCATION_OFFLINE` → 加 `--ssl-no-revoke`。
-- ⚠️ 本机有 `HTTP_PROXY`（`127.0.0.1:61969`）；curl 测本机端口要用 `--noproxy '*'`（`"*"` 在 Git Bash 里会被 glob 展开，用单引号）。Python urllib 实测能直连，不受影响。
+- ⚠️ **`HTTP_PROXY` / `HTTPS_PROXY` 会被注进环境**（端口每次不一定一样，2026-10-14 实测是 `127.0.0.1:51814`）。
+  curl 测本机端口用 `--noproxy '*'`（`"*"` 在 Git Bash 里会被 glob 展开，要加单引号）。
+- ★★ **Python `urllib` 同样会走它** —— 笔记里原先写的「urllib 实测能直连、不受影响」**是错的**
+  （2026-10-14 翻案）：`tools/e2e_ui.py` 打 `http://127.0.0.1:8792` 被代理接走，报 **502 Bad Gateway**
+  —— 不是「连不上」，很容易误判成「服务挂了」。跑任何打本机端口的脚本都要带：
+
+  ```bash
+  NO_PROXY=127.0.0.1,localhost no_proxy=127.0.0.1,localhost python tools/e2e_ui.py
+  ```
+
+  `e2e_ui` / `httptest_*` / `selfcheck` / `smoke_cloud` 全都要加。
 
 ## 前端（PTA 风格）
 
@@ -475,12 +517,30 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 - **离线降级**：连不上后端就读 `problems.json` + `localStorage`，拼成和在线一样的 CATALOG。
   - ⚠️ 静态快照**不含 `langs`** → 前端有一份 `LANG_OPTIONS` 本地副本，否则离线时语言下拉是空的。
   - ⚠️ 启动必须 `loadMeta → loadProblems → loadCatalog` **串行** —— 离线兜底要从题库现聚合，并行会拿到空题库（首页 0 张卡片）。
+- **离线本地判题**（2026-10-14）：离线 + `line === 'text'` + 题库带了 `cases` 时，按钮从
+  「标记为已掌握」换成「提交并判题」，走 `web/judge_text.js` 现场判分。
+  判题结果**直接复用同一套 `renderResult`** —— `TextJudge.judgeTextProblem()` 的返回字段与后端
+  提交结果**完全对齐**（verdict / score / max_score / passed / total / cases[]），所以显示层零改动。
+  在线时仍然走后端，不会被本地判题抢走（`ui_test_local_judge.mjs` 的 [5] 专门守这条）。
+- ★ **本地进度取历史最高分**：`setLocalProgress()` 默认 keep-max。本地判题会反复写它，
+  直接覆盖的话「答对之后再交一次错的」会把「已掌握」冲掉（后端口径也是取最高分）。
+  手动标记的「部分掌握」要的就是强制改值，所以走 `{force:true}`。
+- **设置里有「导出进度 / 导入进度」**（JSON 含进度 + 草稿 + 通行证）。导入按**取最高分**合并，
+  绝不覆盖已有高分。离线判题的进度只活在这台设备的 localStorage 里 —— 这是它唯一的安全绳。
+- 理论题取答案抽成 `readTheoryAnswer()`，在线（`doSubmit`）与离线（`doSubmitLocal`）两条路共用，
+  免得各写一份而分叉。
+- 离线横幅里的「N 道理论题可本地判」是**现算的**（`PROBLEMS.filter(...)`），不是写死的数字。
 - 分组折叠用**下标传参**（`toggleGroup(i)` + `GNAMES`），避免题目名字里的引号打断内联 JS。
 - `prefers-color-scheme` 双主题。
 - ⚠️ `Write` 工具对**未 Read 过的已有文件**会报 `File has not been read yet` —— 要么先 Read，要么先 `cp` 备份再 `rm` 腾路径。
 
 ## 数据工具
 
+- `tools/export_static.py`：导出 `docs/`（题库快照 + 前端 + `.nojekyll`）。
+  **`--with-cases`**（2026-10-14 加）会把**完整测试点**一并写进 `problems.json`，
+  前端本地判题就靠它。★ 不开这个开关时**不加 `cases` 键**，默认导出与历史产物**字节级一致**
+  （只差 `generated_at` 时间戳）—— 这条专门回归过，免得顺手把默认行为改掉。
+  体积实测：281 KB → 351 KB（**gzip 后 47 KB → 54 KB**，多 6.8 KB）。
 - `tools/backup_db.py`：`backup` / `export -o x.json` / `import <json|db>` / `list`。
   **去重键 = 题目 + `created_at` + `verdict` + `code.strip()`**。`_import_db()` 用 `ATTACH DATABASE`；题目按**标题**跨库对应。
 - `tools/reset_progress.py`：清空做题记录（只删 submissions / submission_cases / mastery，题目保留；默认预览，加 `--yes` 才真删）。
@@ -501,13 +561,31 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 
 ## 进度
 
-**P0 + P1 + 评分系统 + 三科目题库(204 道) + C/C++ 双通道 + 理论题判题 + PTA 风格前端 + 数据备份 + 多用户隔离 + Pages 发布** 已完成。
+**P0 + P1 + 评分系统 + 三科目题库(204 道) + C/C++ 双通道 + 理论题判题 + PTA 风格前端 +
+数据备份 + 多用户隔离 + Pages 发布 + 前端本地判题（Linux 理论 117 道）+ 进度导出/导入** 已完成。
+
+### 部署路线（2026-10-14 定）：不是「VPS vs 纯前端」二选一，而是三步走
+
+1. ✅ **Linux 117 道理论题改前端本地判** —— 零依赖、当天可见，已落地并验证
+2. ⏳ **Python 56 道走 Pyodide** —— 可行性已在 `experiments/pyodide-judge/` 真跑验证
+   （Node 15/15 + 真浏览器 10/10；CPython 3.14.2；单样例中位 0.2 ms；死循环 2 s 被 terminate 且不冻页面）
+3. ⏳ **C/C++ 31 道缓做** —— 浏览器内跑 clang 要下 ≈95 MB 换 15% 覆盖，不划算；
+   在 Fedora 上本地 g++ 跑反而更对
+
+后端的定位因此**从「必须」降级为「可选增强」**，只干三件事：
+**跨设备进度、C/C++ 判题、防作弊**。
+
+> ★★ 代价必须记住：`docs/problems.json` 现在**带全部 532 个测试点**（`--with-cases`），
+> 也就是**期望输出是公开的**（仓库公开、Pages 公开）。自学平台无所谓（随时对答案反而是加分项），
+> 但**分享给别人刷题就有作弊空间**。**参考解 `reference_solution` 仍然绝不外传**。
+> 想回退到「不下发」：不加该参数重导一次即可（前端会自动退回手动标记，不会报错）。
 
 待做：
 
 - **P3** AI 出题管线
 - **P4** Shell（SSH）runner —— 需用户提供 SSH 目标（`hosts` 里没有 `fedora`；`wsl.exe` 被安全策略列入程序黑名单）
 - **P5** AI 讲解 + 双解释器对拍 + Obsidian 导出
+- 「进度跨设备」的轻量方案（导出/导入已经能用；真要**自动**同步才需要一台服务器）
 
 **待用户操作**：
 
