@@ -40,6 +40,7 @@ os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
 import _console                                                   # noqa: E402
+import _testdb                                                   # noqa: E402  ★ 别让自检写进真实库
 from app import config                                        # noqa: E402
 from app.judge import sandbox                                 # noqa: E402
 from app.judge.compare import compare                         # noqa: E402

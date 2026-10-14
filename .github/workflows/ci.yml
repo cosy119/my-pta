@@ -43,6 +43,13 @@ jobs:
       - name: C/C++ 双通道自检（AC / CE / WA / TLE / 同目录产物不串）
         run: python tools/selftest_cpp.py
 
+      # ★ 这一步替掉「部署完才发现起不来」：真的用 PTA_CLOUD=1 + $PORT 起一遍服务。
+      #   两个早就埋着的 bug 就是这么被它抓出来的（云分支没导入 config、
+      #   绑定地址落到 127.0.0.1）。在 ubuntu 上它还顺带验证了
+      #   「settings.toml 里那串 Windows 路径在 Linux 上不存在时能否兜底找到 g++」。
+      - name: 云端启动路径自检（真起进程 + 真编 C++）
+        run: python tools/smoke_cloud.py
+
       - name: 理论题判题自检（对答案判过、错答案判错、全库扫）
         run: python tools/selftest_theory.py
 
@@ -70,6 +77,9 @@ jobs:
 
       - name: C/C++ 双通道自检
         run: python tools/selftest_cpp.py
+
+      - name: 云端启动路径自检（真起进程 + 真编 C++）
+        run: python tools/smoke_cloud.py
 
       - name: 理论题判题自检
         run: python tools/selftest_theory.py

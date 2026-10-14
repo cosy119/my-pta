@@ -67,7 +67,7 @@ async def lifespan(app: FastAPI):
         log.info("标记 %d 条中断的提交", stuck)
 
     get_worker().start()
-    log.info("就绪 → http://%s:%s", cfg.host, cfg.port)
+    log.info("就绪 → http://%s:%s", cfg.host_env, cfg.port_env)
 
     yield
 
@@ -108,7 +108,10 @@ def health():
     cfg = config.get()
     return {
         "ok": True,
-        "port": cfg.port,
+        # ★ 报实际监听的 host/port（云端是 0.0.0.0:$PORT），
+        #   不是配置里那份 —— 否则在 Render 上看到 "port":8765 会一脸问号。
+        "host": cfg.host_env,
+        "port": cfg.port_env,
         "pending": get_worker().pending(),
         "db": str(cfg.db_path),
         "web": str(WEB_DIR),

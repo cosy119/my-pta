@@ -30,6 +30,7 @@ DOCS = ROOT / "docs"
 sys.path.insert(0, str(ROOT))
 
 import _console                                                   # noqa: E402
+import _testdb                                                    # noqa: E402  ★ 必须在 app 之前
 API_PORT = 8799
 WEB_PORT = 8888
 API = f"http://127.0.0.1:{API_PORT}"
@@ -49,7 +50,9 @@ def check(name: str, ok: bool, extra: str = "") -> None:
         print(f"  [FAIL] {name}" + (f"  -- {extra}" if extra else ""))
 
 
-def wait_http(url: str, timeout: float = 40.0) -> bool:
+def wait_http(url: str, timeout: float = 120.0) -> bool:
+    """等就绪。120 秒的理由同 httptest_users：
+    每次 `fresh_test_db()` 删库重建后，服务要重新播种 204 题，本机实测约 40 秒。"""
     t0 = time.time()
     while time.time() - t0 < timeout:
         try:
@@ -75,6 +78,8 @@ def raw_request(url: str, method: str = "GET", headers: dict | None = None,
 
 
 def main() -> int:
+    # ★ 干净的测试库（理由同 httptest_users：固定通行证 + 断言条数）
+    _testdb.fresh_test_db()
     from app import db
     from app import users as _users
 
@@ -86,6 +91,8 @@ def main() -> int:
     run_env = dict(os.environ)
     run_env.update({"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8",
                     "PTA_ALLOW_ORIGINS": f"http://127.0.0.1:{WEB_PORT}"})
+    # ★ 显式交给子进程，别让它连真实库（见 tools/_testdb.py 的说明）
+    run_env["PTA_DB"] = _testdb.use_test_db()
 
     api_proc = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "app.main:app",
@@ -117,8 +124,12 @@ def main() -> int:
             n = bank.get("count")
         except Exception:
             n = 0
-        check("problems.json 可访问且是合法 JSON", code == 200 and n == 56,
-              f"HTTP {code} · {n} 题")
+        # ★ 别硬编码题数：题库一直在长（这里曾经写死 56，后来变成 204），
+        #   硬编码的断言迟早变成假失败。对着 docs/problems.json 自己数一遍，
+        #   两边一致才算过 —— 这样它验的是「服务端发出来的就是仓库里那份」。
+        expect_n = json.loads((DOCS / "problems.json").read_text(encoding="utf-8")).get("count")
+        check("problems.json 可访问且是合法 JSON", code == 200 and n == expect_n,
+              f"HTTP {code} · {n} 题（期望 {expect_n}）")
         check("静态题库不含参考解", "reference_solution" not in body, "")
 
         print("\n[3] ★ 跨源 CORS（本地同源测不出来的部分）")
@@ -172,9 +183,9 @@ def main() -> int:
 
         print("\n[4] 前端 JS 里没有硬编码同源假设")
         html = (DOCS / "index.html").read_text(encoding="utf-8")
-        check("有「后端地址」设置项", "pta.backend" in html, "")
+        check("有「后端地址」设置项", "pta.apiBase" in html, "")
         check("请求会自动带 X-User-Token", "X-User-Token" in html, "")
-        check("支持 ?api= 一次性指定后端", 'get("api")' in html, "")
+        check("支持 ?api= 一次性指定后端", "get('api')" in html, "")
         check("后端连不上时降级读静态题库", "problems.json" in html, "")
         check("有本地草稿（离线也不丢代码）", "pta.draft." in html, "")
         check("有本地进度镜像", "pta.localProgress" in html, "")

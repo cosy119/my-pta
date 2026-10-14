@@ -179,10 +179,26 @@ if __name__ == "__main__":
     # 云端（Render/Railway/Fly）会注入 $PORT 并要求绑 0.0.0.0：
     # 这时跳过「打开浏览器」「端口冲突提示」这些本地交互，直接起服务。
     if os.environ.get("PORT") or os.environ.get("PTA_CLOUD"):
-        from app.main import app as _app
-        import uvicorn as _uv
-        _cfg = config.get()
-        _uv.run(_app, host=_cfg.host_env, port=_cfg.port_env, log_level="info")
+        import traceback
+
+        try:
+            from app import config as _config
+            from app.main import app as _app
+            import uvicorn as _uv
+        except Exception as e:  # noqa: BLE001
+            say("[ERROR] Cloud start failed during import: %s: %s" % (type(e).__name__, e))
+            say(traceback.format_exc())
+            raise SystemExit(1)
+
+        _cfg = _config.get()
+        say("[i] Cloud mode: binding %s:%d (PTA_DB=%s)"
+            % (_cfg.host_env, _cfg.port_env, _cfg.db_path))
+        try:
+            _uv.run(_app, host=_cfg.host_env, port=_cfg.port_env, log_level="info")
+        except Exception as e:  # noqa: BLE001
+            say("[ERROR] Cloud server crashed: %s: %s" % (type(e).__name__, e))
+            say(traceback.format_exc())
+            raise SystemExit(1)
         raise SystemExit(0)
 
     try:

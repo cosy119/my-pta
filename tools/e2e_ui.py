@@ -19,6 +19,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))     # 为了能 import _console
 import _console                                               # noqa: E402
+import _testdb                                                # noqa: E402  （只用它的 guard_live_db）
 
 PORT = sys.argv[1] if len(sys.argv) > 1 else "8792"
 BASE = f"http://127.0.0.1:{PORT}"
@@ -78,6 +79,18 @@ def find_by_title(title: str) -> dict | None:
 
 
 print(f"== 端到端验证 -> {BASE} ==")
+
+# ★ 先问一句对面连的是哪个库。这个脚本**会真的写进去**（提交、进度），
+#   如果对面是真实库，就会在你的刷题记录里塞测试数据。
+#   我们决定不了服务用哪个库，但至少要说出来。
+try:
+    _h = req("/api/health")
+    _warn = _testdb.guard_live_db(_h)
+    print("  " + _warn.replace("\n", "\n  "))
+    if "真实库" in _warn:
+        print("  （继续跑，但请知悉：这次的数据进了真实库）")
+except Exception as _e:  # noqa: BLE001
+    print("  （读 /api/health 失败，跳过数据库归属检查：%s）" % _e)
 
 # ---------------------------------------------------------------- 1. 目录
 cat = req("/api/catalog")

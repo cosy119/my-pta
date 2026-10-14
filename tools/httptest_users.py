@@ -29,6 +29,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 import _console                                                   # noqa: E402
+import _testdb                                                    # noqa: E402  ★ 必须在 app 之前
 HOST = "127.0.0.1"
 PORT = 8799
 BASE = f"http://{HOST}:{PORT}"
@@ -77,7 +78,14 @@ def req(path: str, token: str | None = None, method: str = "GET",
     return code, parsed, hdrs
 
 
-def wait_port(timeout: float = 40.0) -> bool:
+def wait_port(timeout: float = 120.0) -> bool:
+    """等服务和 health 就绪。
+
+    120 秒不是随手写的：这个脚本每次都用 `fresh_test_db()` 删库重建，
+    服务启动时要重新播种 204 题 / 532 个测试点。
+    本机（两套杀软实时扫描）实测那一步要 40 秒上下，
+    原来的 40 秒上限刚好卡在边界上，会偶发「服务没起来」的假失败。
+    """
     t0 = time.time()
     while time.time() - t0 < timeout:
         with socket.socket() as s:
@@ -109,6 +117,9 @@ def submit_and_wait(token: str, pid: int, code: str, limit: int = 60) -> dict:
 
 
 def main() -> int:
+    # ★ 先要一个**干净的**测试库：这个脚本用固定通行证，
+    #   还断言「A 的历史条数 = 1」—— 上一次跑留下的记录会让第二次跑必挂。
+    _testdb.fresh_test_db()
     from app import db
 
     log = ROOT / "data" / "logs" / "httptest_users.log"
@@ -119,6 +130,10 @@ def main() -> int:
     import os
     run_env = dict(os.environ)
     run_env.update(env)
+    # ★ 子进程不会自己知道「父进程 import 过 _testdb」——
+    #   必须把库路径显式交给它，否则它会连真实库、凭空写进测试数据。
+    run_env["PTA_DB"] = _testdb.use_test_db()
+    print("测试库：%s" % run_env["PTA_DB"])
 
     proc = subprocess.Popen(
         [sys.executable, "-m", "uvicorn", "app.main:app",

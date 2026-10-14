@@ -38,6 +38,7 @@ os.chdir(ROOT)
 sys.path.insert(0, str(ROOT))
 
 import _console                                                   # noqa: E402
+import _testdb                                                   # noqa: E402  ★ 别让自检写进真实库
 from app.judge.compare import compare, oneof_alternatives   # noqa: E402
 from app.judge.runner_text import TextRunner, normalize_answer  # noqa: E402
 from app.problems_bank_linux import LINUX_PROBLEMS           # noqa: E402

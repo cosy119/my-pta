@@ -89,8 +89,19 @@ class Settings:
 
     @property
     def host_env(self) -> str:
-        """云平台会注入 $PORT 并要求绑 0.0.0.0。"""
-        return os.environ.get("HOST", "") or self.host
+        """云平台会注入 $PORT 并要求绑 0.0.0.0。
+
+        ★ 顺序很重要：`HOST` 环境变量优先；没写 HOST 但明显在云上
+        （有 `PORT` 或 `PTA_CLOUD`）就必须绑 `0.0.0.0` —— 否则会绑到
+        `127.0.0.1`，容器内部自己连得通、平台健康检查却连不上，
+        部署直接判失败。（本地跑仍然绑 127.0.0.1，别把服务暴露到局域网。）
+        """
+        h = os.environ.get("HOST", "").strip()
+        if h:
+            return h
+        if os.environ.get("PTA_CLOUD") or os.environ.get("PORT"):
+            return "0.0.0.0"          # noqa: S104 —— 容器里必须监听全网卡
+        return self.host
 
     @property
     def port_env(self) -> int:

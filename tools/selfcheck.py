@@ -25,19 +25,29 @@ sys.path.insert(0, str(ROOT))
 # 而它默认连的是**真实库** data/pta.db —— 于是每跑一次就往用户记录里多 11 条假提交，
 # 一天跑了三次就是 33 条。用户的「我的提交」页面会莫名其妙多出一堆自己没写过的代码。
 #
-# 修法：默认改用测试库 `data/_bank_test.db`（跑挂了也无所谓，它是专门用来被蹂躏的）；
+# 修法：默认改用测试库（路径的定义在 tools/_testdb.py，全项目只此一份）；
 # 真要对着真实库跑（上线前验收之类）就显式加 `--live`，脚本会把这件事喊出来。
-_TEST_DB = ROOT / "data" / "_bank_test.db"
-if "--live" not in sys.argv and not os.environ.get("PTA_DB"):
-    os.environ["PTA_DB"] = str(_TEST_DB)
+if "--live" in sys.argv:
+    os.environ["PTA_TESTDB_AUTO"] = "0"       # 别自动切，让它连真实库
 
 import _console                                                   # noqa: E402
+import _testdb                                                    # noqa: E402
 from app import config, db, seed, scoring              # noqa: E402
 from app.judge import sandbox                          # noqa: E402
 from app.judge.compare import compare                  # noqa: E402
 from app.judge.runner_python import PythonRunner       # noqa: E402
 from app.judge.runner_base import Limits               # noqa: E402
 from app.judge.worker import get_worker                # noqa: E402
+
+# ★ 开跑前要一个**干净的**测试库。
+#
+# 为什么：评分那一节会断言「best_submission_id 指向最高分那次」——
+# 如果库里已经躺着上一次跑出来的满分提交，best 就还指着旧的 id，断言必挂。
+# 表现是「单独跑 62/62，混在回归批次里跑 60/62」。
+#
+# ★ `--live` 时绝不清 —— 那是对着**真实库**跑，清一下等于把用户的记录删了。
+if "--live" not in sys.argv:
+    _testdb.fresh_test_db()
 
 _ok: list[str] = []
 _bad: list[str] = []
@@ -210,10 +220,29 @@ n_ac_cases = len(db.query("SELECT id FROM submission_cases WHERE submission_id =
 check("AC 那次写入了全部 5 条用例明细", n_ac_cases == 5, f"{n_ac_cases} 条")
 
 # 双解释器：同一份代码两边都判一遍
-s13 = submit_and_judge("import sys\na, b = map(int, sys.stdin.read().split())\nprint(a + b)\n", "py313")
-s14 = submit_and_judge("import sys\na, b = map(int, sys.stdin.read().split())\nprint(a + b)\n", "py314")
-check("3.13 判 AC", s13["verdict"] == "AC", s13["verdict"])
-check("3.14（Thonny 环境）判 AC", s14["verdict"] == "AC", s14["verdict"])
+#
+# ★ 为什么这里要重试一次：本机启动一个进程本身就要 160~400 ms
+#   （两套杀软的实时扫描；Thonny 的 python.exe 还是个启动器存根，要再套一层），
+#   于是**临界用例会偶发 TLE** —— 那是环境噪音，不是判题逻辑错。
+#   这一节验的是「解释器接线通不通」，不是「时间限制准不准」，
+#   所以 TLE 时重试一次，并把「重试过」如实打出来（不静默吞掉）。
+#   ★ 真实判题不加这个重试 —— 学生提交超时就该判超时。
+def submit_expect_ac(code: str, interpreter: str, tries: int = 2) -> tuple[dict, int]:
+    row = submit_and_judge(code, interpreter)
+    used = 1
+    while row["verdict"] == "TLE" and used < tries:
+        used += 1
+        row = submit_and_judge(code, interpreter)
+    return row, used
+
+
+_AB = "import sys\na, b = map(int, sys.stdin.read().split())\nprint(a + b)\n"
+s13, n13 = submit_expect_ac(_AB, "py313")
+s14, n14 = submit_expect_ac(_AB, "py314")
+check("3.13 判 AC", s13["verdict"] == "AC",
+      s13["verdict"] + ("（TLE 重试 %d 次）" % (n13 - 1) if n13 > 1 else ""))
+check("3.14（Thonny 环境）判 AC", s14["verdict"] == "AC",
+      s14["verdict"] + ("（TLE 重试 %d 次）" % (n14 - 1) if n14 > 1 else ""))
 
 # ---------------------------------------------------------------- 7 评分
 print("\n[7] 评分：分值 / 部分正确 / 进度 / 历史")

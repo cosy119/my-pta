@@ -1,32 +1,41 @@
-# Render 部署配置（免费额度够个人用）
+# Render 部署蓝图（Blueprint）
 #
 # 怎么用：
-#   1. 打开 https://render.com → New → Web Service
-#   2. 连上 GitHub 仓库 cosy119/my-pta（Render 能直接读这个文件）
-#   3. Render 会照下面配置建服务；唯一要你手动做的：
-#      在 Environment 里加 PTA_DB=/data/pta.db，并挂一个 Disk 到 /data
-#      ★ **不挂 Disk 的话，每次重新部署进度就没了**（免费实例会休眠/重启）
+#   1. 打开 https://dashboard.render.com/blueprints
+#   2. New Blueprint Instance → 选 GitHub 仓库 cosy119/my-pta
+#   3. Render 读这个文件自动建服务；点一下确认即可
 #
-# 免费实例的限制（提前说清楚）：
-# - 15 分钟没人访问会休眠，下次打开要等 ~30 秒冷启动
-# - 每月 750 小时（单实例够用）
-# - 磁盘 1GB（只存 SQLite，够存几万条提交）
+# ★★ 三个必须知道的现实（2026-10 核实，别照老教程做）★★
+#
+#   1) **必须用 Docker 运行时**。数据结构线的 C/C++ 题要真编译，
+#      而 Render 的原生 python 运行时**不带 gcc/g++** —— 用原生运行时时
+#      一提交 C++ 就是 CE。镜像见 Dockerfile（apt 装 gcc g++ libc6-dev）。
+#
+#   2) **免费实例不能挂持久化 Disk**。Render 官方限制：free plan 无 disk。
+#      所以在 free 档上：题库每次启动会从代码重建（没问题），
+#      但**做题记录（submissions/mastery）会在休眠、重启、重新部署时全部丢失**。
+#      免费实例 15 分钟没人访问就休眠 —— 也就是说进度基本留不住。
+#      → 想留进度：把 plan 改成 starter（$7/月），再解开文件末尾的 disk 段。
+#
+#   3) **免费实例只有 0.1 vCPU / 512 MB**。编译 C++ 会慢，
+#      计算量大的题可能比在你本机更早撞上时间限制。
+#      个人刷题够用；想舒服点同样上 starter（0.5 vCPU）。
+#
 services:
   - type: web
     name: my-pta
-    runtime: python
-    plan: free
-    region: singapore          # 离国内近一点；也可以选 oregon/frankfurt
+    runtime: docker                      # ★ 见上面 (1)
+    dockerfilePath: ./Dockerfile
+    plan: free                           # 想留进度就改 starter
+    region: singapore                    # 离国内近；也可 oregon / frankfurt
     branch: main
-    buildCommand: pip install -r requirements.txt
-    startCommand: python run.py
     healthCheckPath: /api/health
+    autoDeploy: true
     envVars:
-      - key: PYTHON_VERSION
-        value: "3.13.0"
       - key: PTA_CLOUD
         value: "1"
-      # ★ 数据库放在持久化磁盘上（下面 disk 挂载点）
+      # Dockerfile 里已经 mkdir + chown 过 /data 与 /tmp/pta-judge，
+      # 没挂卷也能跑（只是重启就没了），挂了卷就是持久化。
       - key: PTA_DB
         value: /data/pta.db
       - key: PTA_LOGS
@@ -35,11 +44,15 @@ services:
         value: /tmp/pta-judge
       - key: PYTHONUNBUFFERED
         value: "1"
-    disk:
-      name: pta-data
-      mountPath: /data
-      sizeGB: 1
+      # 想收紧跨域（默认 "*"，身份走 X-User-Token，通配也安全）就设它：
+      # - key: PTA_ALLOW_ORIGINS
+      #   value: https://cosy119.github.io
 
-# 可选：CORS 允许的来源。默认 "*"（个人学习平台，身份走 X-User-Token）
-# 想收紧就设 PTA_ALLOW_ORIGINS（逗号分隔），例如：
-#   PTA_ALLOW_ORIGINS=https://cosy119.github.io
+    # ★★ 持久化 Disk：**只有付费实例（starter 及以上）才能挂**。
+    #    免费档留着这段会导致部署报错，所以默认注释掉。
+    #    升级到 starter 后把下面四行解开即可（$0.25/GB/月）：
+    #
+    # disk:
+    #   name: pta-data
+    #   mountPath: /data
+    #   sizeGB: 1

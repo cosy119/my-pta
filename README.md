@@ -212,6 +212,7 @@ pta/
 │  ├─ selftest_sandbox.py  ★ 沙箱跨平台自检（19 项，部署后在容器里跑它）
 │  ├─ selftest_cpp.py      ★ C/C++ 双通道自检（9 项：AC/CE/WA/TLE/产物不串/别名）
 │  ├─ selftest_theory.py   ★ 理论题判题自检（14 项：含「错答案必须判错」的反向验证）
+│  ├─ smoke_cloud.py       ★ 云端启动路径自检（13 项：真用 PTA_CLOUD+$PORT 起进程、真编 C++）
 │  ├─ e2e_ui.py            ★ 端到端过 HTTP（33 项：前端真正走的那条路）
 │  ├─ httptest_users.py    ★ 多用户隔离自检（23 项，自己起服务）
 │  ├─ httptest_split.py    ★ 跨源（Pages + 后端）自检（18 项，含 CORS 预检）
@@ -220,6 +221,7 @@ pta/
 │  ├─ gen_linux_bank.py    ★ Linux 题库生成器（含 _sanity 把关）
 │  ├─ verify_bank.py       题库校验（三线双实现撞独立算出的期望输出）
 │  ├─ _console.py          ★ 把控制台切成 UTF-8（被上面这些脚本 import）
+│  ├─ _testdb.py           ★ 把自检脚本的库钉到测试库（导入即生效，别写进真实库）
 │  ├─ export_static.py     ★ 导出静态题库 + 生成 docs/ 站点
 │  ├─ backup_db.py         数据备份 / 导出 JSON / 恢复
 │  └─ reset_progress.py    清空做题记录（保留题目；加 --yes 才真删）
@@ -239,6 +241,7 @@ D:\Pythontools\Python\python.exe -X utf8 tools\selfcheck.py         &rem 62 项�
 D:\Pythontools\Python\python.exe -X utf8 tools\selftest_sandbox.py  &rem 19 项：沙箱（跨平台）
 D:\Pythontools\Python\python.exe -X utf8 tools\selftest_cpp.py      &rem  9 项：C/C++ 双通道
 D:\Pythontools\Python\python.exe -X utf8 tools\selftest_theory.py   &rem 14 项：理论题正反双向
+D:\Pythontools\Python\python.exe -X utf8 tools\smoke_cloud.py       &rem 13 项：云端启动路径（自起进程，含真编 C++）
 D:\Pythontools\Python\python.exe -X utf8 tools\e2e_ui.py 8792       &rem 33 项：端到端过 HTTP（需服务）
 D:\Pythontools\Python\python.exe -X utf8 tools\httptest_users.py    &rem 23 项：多用户隔离（自起服务）
 D:\Pythontools\Python\python.exe -X utf8 tools\httptest_split.py    &rem 18 项：跨源 CORS（自起两个源）
@@ -247,7 +250,8 @@ D:\Pythontools\Python\python.exe -X utf8 tools\httptest.py          &rem 18 项�
 D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py    &rem 清空记录（加 --yes 才真删）
 ```
 
-`selftest_sandbox` / `selftest_cpp` / `selftest_theory` / `httptest_users` / `httptest_split`
+`selftest_sandbox` / `selftest_cpp` / `selftest_theory` / `smoke_cloud` /
+`httptest_users` / `httptest_split`
 会**自己起服务、测完自己关**，不依赖外部状态，适合部署后在容器里立刻确认环境。
 
 CI（`.github/workflows/ci.yml`）在 Ubuntu 和 Windows 上各跑一遍 ——
@@ -261,7 +265,11 @@ CI（`.github/workflows/ci.yml`）在 Ubuntu 和 Windows 上各跑一遍 ——
 - `selfcheck.py` 会往库里**插 11 条测试提交**（AC / WA / RE / TLE / CE / MLE 各一条）。
   ★ 所以它**默认只对着测试库** `data/_bank_test.db` 跑，**不会碰你的真实进度**；
   真要对着真实库跑（上线前验收之类）显式加 `--live`，脚本会把这件事喊出来。
-  `httptest.py` 走的是真服务，它写哪个库取决于服务连的库 —— 起服务时用 `PTA_DB` 指到测试库就好。
+- ★ **所有会写库的自检都在测试库上跑**，靠 `tools/_testdb.py` 保证（导入即生效，
+  把 `PTA_DB` 钉到 `data/_bank_test.db`）。`httptest_users` / `httptest_split` 开跑前还会
+  把测试库**删掉重建** —— 它们用固定通行证、断言「历史条数 = 1」，
+  不干净的库会让第二次跑假失败。`e2e_ui` / `httptest` 连的是别人起好的服务，
+  决定不了库，但会先读 `/api/health` 把库路径打出来警告你。
 - ★ **这台机器启动进程本身要 160~400 ms**（两套杀软的实时扫描；实测一个立刻 `return 0` 的
   空 C 程序也要 164 ms）。所以本机量出来的运行时间有一大块不是代码耗时，
   1000 ms 的题目限制里学生代码实际只剩 600~800 ms，临界题会偶发 TLE。

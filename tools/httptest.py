@@ -15,6 +15,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))     # 为了能 import _console
 import _console                                               # noqa: E402
+import _testdb                                                # noqa: E402  （只用它的 guard_live_db）
 
 BASE = "http://127.0.0.1:8765"
 _ok: list[str] = []
@@ -53,6 +54,13 @@ print("=" * 72)
 if not wait_ready():
     print("服务没起来，先检查 uvicorn 是否启动成功")
     sys.exit(1)
+
+# ★ 这个脚本会真的写进去（提交、进度）。先问一句对面连的是哪个库，
+#   是真实库就大声说出来 —— 否则测试数据会悄悄混进你的刷题记录。
+try:
+    print("  " + _testdb.guard_live_db(req("GET", "/api/health")).replace("\n", "\n  "))
+except Exception as _e:  # noqa: BLE001
+    print("  （读 /api/health 失败，跳过数据库归属检查：%s）" % _e)
 
 # ---------------------------------------------------------------- 1 基础接口
 print("\n[1] 基础接口")

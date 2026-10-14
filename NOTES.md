@@ -194,6 +194,51 @@ Python 抛 `MemoryError` 并打印 traceback —— 最硬的证据，不需要�
 - `run.bat` 必须保持**非 ASCII 字节数 0**：
   `[System.IO.File]::ReadAllBytes($f) | ? { $_ -gt 127 }` 计数要为 0。
 
+### ★★ 云端那条启动分支：两个一部署就炸的 bug（2026-10-14 修）
+
+Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过** —— 于是埋了两个雷，
+都是「本地双击 `run.bat` 永远碰不到、`e2e_ui` / `selfcheck` 也抓不到」的那一类
+（它们都默认「服务已经手动起好了」）：
+
+| 症状 | 根因 |
+|---|---|
+| 部署后进程秒退，日志 `NameError: name 'config' is not defined` | `run.py` 云分支里用了 `config.get()`，但 `config` **只在 `main()` 的分支里才需要**，模块顶部根本没导入 |
+| 部署判「不健康」，但容器内部 curl 得通 | `host_env` 返回 `self.host` = `127.0.0.1`（`config/settings.toml` 里的值）。容器绑本地回环，平台健康检查从外面连不上 |
+
+修法：
+
+- 云分支里 `from app import config as _config` 显式导入，并给 import / uvicorn 都包上 try，
+  崩溃时打完整 traceback（云上只看得到 stdout，静默退出等于没法排）。
+- `host_env` 改成：`HOST` 环境变量优先 → 否则**有 `PTA_CLOUD` 或 `PORT` 就返回 `0.0.0.0`**
+  → 再否则返回配置里的 `127.0.0.1`（本地跑别把服务暴露到局域网）。
+- `/api/health` 和启动日志改报 `host_env` / `port_env`（实际监听值），
+  不是配置里那份 —— 否则在 Render 上看到 `"port": 8765` 会一脸问号。
+
+**新增 `tools/smoke_cloud.py` 把这条路径锁住**（13 项）：真起一个子进程
+`python run.py`、环境照抄云端（`PTA_CLOUD=1` + `PORT=<空闲端口>`、清掉 `HOST`），
+然后断言：起得来 / health 的 host 是 `0.0.0.0` / port 等于注入值 / 三科目目录齐 /
+静态前端拿得到 / **C++ 与 Python 各交一次都要 AC**。
+
+最后那一对是关键：CI 的 ubuntu runner 上 `settings.toml` 里那串 `D:/mingw64/...`
+根本不存在，能 AC 就证明**兜底探测**（`shutil.which("g++")` / `_probe_python`）真的生效了 ——
+也就是容器镜像里的工具链被正确找到了。
+
+> 教训：**配置文件里写了 `runtime: python` 就等于没装编译器**。
+> 数据结构线要真编 C/C++，Render 必须走 `runtime: docker`（镜像 `apt install gcc g++ libc6-dev`）。
+
+### ★★ Render 免费档不能挂持久化 Disk（2026-10）
+
+很多教程让你「在 Render 免费实例上挂个 Disk 存 SQLite」—— **现在做不到**。
+官方免费档限制：free web service **无 SSH、无持久化磁盘**，
+且每次休眠 / 重启 / 重新部署都会丢掉本地文件系统的一切改动
+（免费实例 15 分钟无访问即休眠 → 进度基本留不住）。
+
+- 免费档还能跑：题库每次启动从 `app/problems_bank*.py` 重建，**题目永远在**；
+  只有 `submissions` / `mastery` 会丢。
+- 要留进度：`plan: starter`（$7/月）+ 磁盘（$0.25/GB/月）。
+- 所以 `render.yaml` 里 disk 段默认**注释掉**，否则免费档部署会直接报错。
+- 免费档还有 0.1 vCPU / 512 MB —— 编译 C++ 慢，计算量大的题更容易撞时间限制。
+
 ## 判题与评分
 
 - 架构：FastAPI + uvicorn → API 只入队 → **独立后台单线程**（concurrency=1）→ 每个用例独立子进程 → 限内存 + 墙钟看门狗。
@@ -325,6 +370,7 @@ Python 抛 `MemoryError` 并打印 traceback —— 最硬的证据，不需要�
 | `selftest_sandbox.py` | **19/19** | 超时杀孙进程、爆内存判 MLE、`exit(1)` 反向不误判、**MLE 判据矩阵（7 项纯函数断言）** |
 | `selftest_cpp.py` | **9/9** | C/C++ AC·CE·WA·TLE、**同目录产物不串**、编译器路径无效给人话、别名收敛 |
 | `selftest_theory.py` | **14/14** | 72 道单选其余选项全判错、判断题双向、命令宽容度、全库扫 |
+| `smoke_cloud.py` | **13/13** | **云端启动路径**：真起 `python run.py`（`PTA_CLOUD=1` + `$PORT`）、绑 0.0.0.0、三科目齐、**真编 C++ / 真跑 Python 各 AC 一次** |
 | `e2e_ui.py` | **33/33** | 端到端过 HTTP（**需先起服务**） |
 | `ui_smoke.mjs` | **41/41** | jsdom 真渲染前端（离线 + 假后端两遍） |
 | `httptest_users.py` | **23/23** | 多用户隔离、越权 404、CORS |
@@ -357,6 +403,59 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 只改了 `selfcheck.py` —— `selftest_cpp` / `selftest_theory` / `selftest_sandbox` 都是
 **只编译只运行、不碰数据库**的，已核对过。`httptest*.py` 走真服务，写哪个库取决于服务连的库
 （起服务时用 `PTA_DB` 指过去就行）。
+
+### ★★ 又踩了一次：`httptest_users` 也连真实库（2026-10-14 修）
+
+上面那条「`httptest*.py` 起服务时用 `PTA_DB` 指过去就行」是**嘴上说说**，代码里没人做。
+结果 2026-10-14 清空真实库之后跑了一遍回归，真实库又长出
+**2 条提交 + 2 个测试账号**（`aaaa1111…` / `eeee5555…`，14:05:39 那批）。
+
+两个坑叠在一起：
+
+1. `httptest_users.py` / `httptest_split.py` 起服务时只 `dict(os.environ)` 复制了一份环境，
+   **没设 `PTA_DB`** → 服务连真实库。
+2. 脚本**自己**也 `from app import db`（要查 `users` 表）→ 连的也是真实库。
+   所以是「测试进程 + 服务进程」双双写真实库。
+
+修法：新增 `tools/_testdb.py`，**导入即生效**地在 `config.get()` 之前把 `PTA_DB` 钉到测试库。
+
+为什么必须是「导入即生效」而不是「`main()` 里设一下」：
+`app/config.py` 的 `db_path` 是**读取时定格**的（第一次 `config.get()` 从环境变量取值，
+之后再改环境变量也没用）。放在函数里太晚。
+
+配套的三条规矩：
+
+| 脚本类型 | 该怎么做 |
+|---|---|
+| 自己 `Popen` 起服务（`httptest_users` / `httptest_split`） | import `_testdb`，**并且把 `PTA_DB` 显式塞进子进程 env** —— 子进程不继承「父进程 import 过什么」，只认 `os.environ` |
+| 只连已有服务（`e2e_ui` / `httptest`） | 不设 `PTA_DB`（服务在别人手里），但要先读 `/api/health` 的 `db` 字段，用 `guard_live_db()` 大声警告 |
+| 本来就是操作真实库的（`export_static` / `backup_db` / `reset_progress`） | **绝不**import `_testdb` |
+
+### ★ `httptest_users` 的可重复性（2026-10-14 修）
+
+两个连带问题，都是「换了测试库之后才暴露」的：
+
+1. **非幂等**：脚本用**固定通行证**，还断言「A 的历史条数 = 1」。
+   以前它在真实库上跑、跑完真实库被清掉，所以看不出问题；
+   改用持久的测试库之后，第二次跑必定数到上一次留下的记录 → 假失败。
+   → 加 `_testdb.fresh_test_db()`：开跑前把测试库**删掉重建**
+   （schema 不用管，`app/db.py` 的 `connect()` 会自己建表）。
+2. **等待时限刚好卡边界**：删库重建后服务要重新播种 204 题 / 532 个测试点，
+   本机实测约 40 秒，而 `wait_port` / `wait_http` 的默认上限**正好是 40 秒**。
+   → 提到 120 秒。
+
+### ★ `httptest_split` 里三条过期的前端断言（2026-10-14 修）
+
+前端重写成 PTA 风格之后，这个脚本的断言没跟着改，于是长期假失败：
+
+| 旧断言 | 现实 |
+|---|---|
+| `problems.json` 的 `count == 56` | 题库早就 204 题了 → 改成**对着 `docs/problems.json` 自己数一遍**，别硬编码 |
+| HTML 里有 `pta.backend` | 新前端的键是 `pta.apiBase` |
+| HTML 里有 `get("api")` | 新前端是 `new URLSearchParams(location.search).get('api')` |
+
+> 教训：**断言里的数量都是定时炸弹**。凡是「应该等于 N」的地方，
+> 优先写成「和权威来源比一遍」，而不是写死一个数。
 
 ## 环境与工具的注意事项
 
