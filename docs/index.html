@@ -451,6 +451,7 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
      （题库全部理论题 × 多种答案 = 3463 条，逐字段一致）。
      ★ 要改它之前先跑 `node tools/verify_text_judge.mjs` 对拍。 -->
 <script src="judge_text.js"></script>
+<script src="python-local.js"></script>
 <script>
 "use strict";
 
@@ -726,7 +727,7 @@ function buildLocalCatalog(){
     s.total++;
     s.gained += best;
     s.max_score += parseInt(p.total_score || 0, 10);
-    if (best > 0) s.attempted++;
+    if ((parseInt(m.attempts || 0, 10) || 0) > 0) s.attempted++;
     if (best >= parseInt(p.total_score || 0, 10) && p.total_score > 0) s.solved++;
     const sec = p.source_section || '未分组';
     const g = s.sections[sec] || (s.sections[sec] = { name: sec, total:0, solved:0, gained:0, max_score:0 });
@@ -883,10 +884,11 @@ function viewHome(){
     /* 数字现算，别写死 —— 题库会变 */
     const nLocal = window.TextJudge
       ? PROBLEMS.filter(x => x.line === 'text' && TextJudge.canJudgeLocally(x)).length : 0;
+    const nPython = window.PythonLocal ? PROBLEMS.filter(x => x.line === 'python' && x.cases && x.cases.length).length : 0;
     html += '<div class="banner warn"><span>⚠</span><span class="grow">'
          + '当前处于<b>离线模式</b>（没有连上判题后端）。'
-         + (nLocal ? '<b>其中 ' + nLocal + ' 道理论题可以直接在本机浏览器里判</b>，进度存在这台设备上。' : '')
-         + '代码题（Python / 数据结构）要真跑一遍才能判，需要后端 —— 本地跑 '
+         + (nLocal || nPython ? '<b>' + nLocal + ' 道理论题和 ' + nPython + ' 道 Python 题可在浏览器里判</b>，进度存在这台设备上。' : '')
+         + '数据结构 C/C++ 题仍需后端 —— 本地跑 '
          + '<span class="codeInline">run.bat</span>，或在「设置」里填后端地址。</span>'
          + '<button class="btn sm ghost" onclick="openSettings()">设置后端</button></div>';
   }
@@ -1016,7 +1018,7 @@ function viewSet(subject){
 
   let html = crumb(label, s ? label : subject);
   if (OFFLINE){
-    html += '<div class="banner warn"><span>⚠</span><span class="grow">离线浏览：进度来自你在这台浏览器上的手动标记。</span></div>';
+    html += '<div class="banner warn"><span>⚠</span><span class="grow">浏览器模式：理论题和 Python 题可直接判题，进度保存在这个浏览器里。</span></div>';
   }
 
   html += '<div class="setHead">'
@@ -1223,7 +1225,7 @@ function renderProblem(){
       + langs.map(l => '<option value="' + escAttr(l.lang) + '">' + esc(l.label) + ' · ' + esc(l.hint) + '</option>').join('')
       + '</select>';
   } else if (!isTheory && langs.length === 1 && langs[0].lang === 'python'){
-    const interps = (langs[0].interpreters || []);
+    const interps = OFFLINE ? [{key:'browser', label:'浏览器 Python（Pyodide）'}] : (langs[0].interpreters || []);
     right += '<label class="hintline">解释器</label><select class="sel" id="interpSel">'
       + interps.map(x => '<option value="' + escAttr(x.key) + '">' + esc(x.label) + '</option>').join('')
       + '</select>';
@@ -1275,13 +1277,16 @@ function renderButtons(){
   const p = CUR;
   const canJudge = !OFFLINE;
   const theory = p.line === 'text';
-  /* 离线也能判的充要条件：理论题 + 题库里带了完整测试点（导出时加 --with-cases）。
-     代码题无论怎样都要真执行，浏览器里做不到 → 不给这个按钮，别让人点了发现没反应。 */
+  /* 静态题库含测试点时，理论题用 JS 判，Python 题用 Pyodide Worker 判。 */
   const local = !canJudge && theory && !!(window.TextJudge && TextJudge.canJudgeLocally(p));
+  const localPython = !canJudge && p.line === 'python' && !!(window.PythonLocal && p.cases && p.cases.length);
   let h = '';
   if (canJudge){
     h += '<button class="btn" id="btnSubmit" onclick="doSubmit()">提交评测</button>';
     if (!theory) h += '<button class="btn ghost" onclick="doRun()">运行自测</button>';
+  } else if (localPython){
+    h += '<button class="btn" id="btnSubmit" onclick="doSubmitPythonLocal()">提交并判题</button>'
+      + '<button class="btn ghost" id="btnRun" onclick="doRunPythonLocal()">运行自测</button>';
   } else if (local){
     h += '<button class="btn" id="btnSubmit" onclick="doSubmitLocal()">提交并判题</button>'
       +  '<button class="btn ghost" onclick="markSolved(' + (p.total_score||0) + ')">直接标记为已掌握</button>';
@@ -1291,6 +1296,7 @@ function renderButtons(){
   }
   let hint;
   if (canJudge)      hint = theory ? '提交后立刻判题' : '提交后排队评测，结果自动刷新';
+  else if (localPython) hint = '浏览器内运行 Python；首次加载引擎需要网络，成绩保存在这个浏览器里';
   else if (local)    hint = '本地判题：就在这个浏览器里判，口径与后端一致';
   else if (theory)   hint = '离线模式：这道题在题库里没有测试点，只能手动标记';
   else               hint = '离线模式：代码要真跑一遍，需要后端（本机 run.bat 也行）';
@@ -1406,6 +1412,45 @@ function doSubmitLocal(){
   setLocalProgress(p.id, r.score, r.max_score || p.total_score || 0);
   if (btn) btn.textContent = '再交一次';
   afterJudgeRefresh();
+}
+
+async function doSubmitPythonLocal(){
+  const p = CUR, box = document.getElementById('codeBox');
+  const code = box ? box.value : '';
+  if (!code.trim()){ toast('代码不能为空', 'err'); return; }
+  const btn = document.getElementById('btnSubmit');
+  if (btn) btn.disabled = true;
+  const rb = document.getElementById('resultBox');
+  rb.innerHTML = verdictHtml('pending', '正在加载 Python 并判题…', '');
+  try {
+    const r = await PythonLocal.submit(p, code, (done, total) => {
+      if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('judging', '正在评测 ' + done + '/' + total, '');
+    });
+    setLocalProgress(p.id, r.score, r.max_score);
+    if (CUR && CUR.id === p.id){ RESULT = r; renderResult(r); }
+    afterJudgeRefresh();
+  } catch(e){
+    if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', String(e.message || e));
+  } finally { if (btn) btn.disabled = false; }
+}
+
+async function doRunPythonLocal(){
+  const box = document.getElementById('codeBox');
+  const code = box ? box.value : '';
+  if (!code.trim()){ toast('代码不能为空', 'err'); return; }
+  const btn = document.getElementById('btnRun');
+  if (btn) btn.disabled = true;
+  const rb = document.getElementById('resultBox');
+  rb.innerHTML = verdictHtml('pending', '正在运行 Python…', '');
+  try {
+    const input = document.getElementById('stdinBox');
+    const r = await PythonLocal.run(code, input ? input.value : '');
+    let h = verdictHtml(r.verdict, r.verdict === 'OK' ? '运行成功' : null, r.detail);
+    h += ioRow('标准输出', r.stdout);
+    if (r.stderr) h += ioRow('标准错误', r.stderr, 'err');
+    rb.innerHTML = h;
+  } catch(e){ rb.innerHTML = verdictHtml('IE', '运行失败', String(e.message || e)); }
+  finally { if (btn) btn.disabled = false; }
 }
 
 function verdictHtml(v, title, detail){
@@ -1598,7 +1643,7 @@ function openSettings(){
     + '<div class="field"><div class="lb">判题后端地址</div>'
     +   '<input id="setApi" value="' + escAttr(base) + '" placeholder="例如 https://my-pta.onrender.com">'
     +   '<div class="desc">留空 = 同源（本地 <span class="codeInline">run.bat</span> 起的就是同源）。'
-    +   'GitHub Pages 上必须填你自己的后端地址。也可以用网址参数 <span class="codeInline">?api=https://…</span> 一步配好。</div></div>'
+    +   '浏览器判理论题和 Python 题无需填写；C/C++ 判题需填写后端地址。也可以用网址参数 <span class="codeInline">?api=https://…</span> 一步配好。</div></div>'
     + '<div class="field"><div class="lb">我的通行证</div>'
     +   '<input value="' + escAttr(TOKEN) + '" readonly onclick="this.select()">'
     +   '<div class="desc">这是你的身份（本机随机生成，没有账号密码）。'

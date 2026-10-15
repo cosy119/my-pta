@@ -5,8 +5,8 @@
 前端要放到 GitHub Pages（纯静态，没有 Python）。所以：
 
 1. **题目列表**必须能在没有后端时也显示出来 → 导出成 `docs/problems.json`
-2. 真正的判题仍然连后端（同一个人自己部署的免费实例）
-3. 后端连不上时，前端至少能：浏览题目、看样例、本地草稿（存 localStorage）
+2. 理论题和 Python 题在浏览器本地判；C/C++ 题仍需后端
+3. 后端连不上时，前端仍能浏览题目、运行 Python、保存本地进度
 
 产出（都在 docs/ 下）
 --------------------
@@ -132,6 +132,13 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
         for f in WEB.iterdir():
             if f.is_file():
                 shutil.copy2(f, out_dir / f.name)
+        for name in ("python", "pyodide"):
+            src = WEB / name
+            if src.is_dir():
+                shutil.copytree(src, out_dir / name, dirs_exist_ok=True)
+        # Keep the browser comparator identical to the server comparator.
+        shutil.copy2(ROOT / "app" / "judge" / "compare.py",
+                     out_dir / "python" / "compare.py")
         print("前端已拷到", out_dir)
 
     # 3) 别让 Jekyll 处理（否则 _ 开头的文件会被吃掉）
@@ -139,9 +146,8 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
 
     # 4) 一个最小的 CORS 说明，免得以后忘了
     (out_dir / "backend.txt").write_text(
-        "这个静态站默认连「同源」后端。\n"
-        "部署到 GitHub Pages 后，请在页面右上角「设置」里填你自己的后端地址，\n"
-        "例如 https://my-pta.onrender.com —— 部署方法见仓库 README。\n",
+        "理论题和 Python 题可直接在浏览器中判题，无需安装后端。\n"
+        "C/C++ 题需要判题后端；如需连接后端，请在页面右上角「设置」中填写地址。\n",
         encoding="utf-8")
 
     print("\n产物清单：")
