@@ -213,10 +213,15 @@ def main() -> int:
     if isinstance(cat, dict):
         for s in cat.get("subjects") or []:
             got[s.get("key")] = (s.get("total"), s.get("max_score"))
-    check("目录含三科目：python 56/860 · ds 31/595 · linux 117/1160",
-          got.get("python") == (56, 860) and got.get("ds") == (31, 595)
-          and got.get("linux") == (117, 1160),
-          str(got))
+    from app.seed import SEED_PROBLEMS  # noqa: E402
+    expected: dict[str, tuple[int, int]] = {}
+    for p in SEED_PROBLEMS:
+        subject = p.get("subject", "python")
+        count, score = expected.get(subject, (0, 0))
+        expected[subject] = (count + 1, score + int(p.get("total_score") or 100))
+    check("目录与当前种子题库的题数及总分一致",
+          got == expected and set(got) == {"python", "ds", "linux"},
+          "实际=%s 预期=%s" % (got, expected))
 
     # ---------- 5. ★ 真编真跑：C++ 与 Python 各来一发 ----------
     from app.problems_bank import BANK_PROBLEMS                 # noqa: E402
