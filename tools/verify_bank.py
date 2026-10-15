@@ -198,7 +198,10 @@ def main() -> int:
     #   （那是崩溃兜底清理）。对拍脚本如果也住在里面，只要此时碰巧有服务在跑
     #   （或服务在这中间启动过一次），编译出来的 main.py 就会被顺手删掉，
     #   表现为一连串莫名其妙的 `can't open file ... main.py` RE。
-    base = Path(cfg.tmp_judge).parent / "verify_bank"
+    # ★ 两份对拍**绝不能并发共用同一目录**（2026-10-15 踩到：另一窗口同时跑
+    #   --ds，两边互相覆盖 ref/alt 里的 main.py，报 PermissionError）。
+    #   并发时用 `PTA_VERIFY_TMP` 给自己起个独立目录名。
+    base = Path(os.environ.get("PTA_VERIFY_TMP") or (Path(cfg.tmp_judge).parent / "verify_bank"))
     ref_dir = base / "ref"
     alt_dir = base / "alt"
     sandbox.rmtree_force(ref_dir)

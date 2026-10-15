@@ -45,6 +45,10 @@ async def lifespan(app: FastAPI):
     if added:
         log.info("写入 %d 道种子题", added)
 
+    typed = seed.sync_question_types()
+    if typed:
+        log.info("标注了 %d 道题的题型", typed)
+
     fixed = seed.backfill_points()
     if fixed:
         log.info("同步了 %d 道题的测试点分值", fixed)

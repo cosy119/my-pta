@@ -11,6 +11,7 @@ P0 阶段它们同时也是判题器的自检样本。
 from __future__ import annotations
 
 from . import db, scoring
+from .question_types import infer as infer_question_type
 from .problems_bank import BANK_PROBLEMS
 from .problems_bank_ds import DS_PROBLEMS
 from .problems_bank_linux import LINUX_PROBLEMS
@@ -199,6 +200,7 @@ SEED_PROBLEMS: list[dict] = (CORE_PROBLEMS + BANK_PROBLEMS
                              + DS_PROBLEMS + LINUX_PROBLEMS)
 
 
+
 def ensure() -> int:
     """写种子题。返回新增条数（已存在则跳过，可反复调用）。"""
     added = 0
@@ -215,6 +217,7 @@ def ensure() -> int:
         spec["tags"] = db.jdumps(spec.get("tags", []))
         # 选择题的选项也存 JSON（空数组 = 不是选择题，前端据此决定渲染成选项还是编辑器）
         spec["choices"] = db.jdumps(spec.get("choices", []) or [])
+        spec["question_type"] = infer_question_type(raw)
         spec["created_at"] = db.now_iso()
         # 没写 subject 的一律归 Python 线（核心题与早期题库都没写）
         spec.setdefault("subject", "python")
@@ -244,6 +247,22 @@ def ensure() -> int:
     return added
 
 
+def sync_question_types() -> int:
+    """给老库补显式题型；种子题按题库定义同步，人工题保留已标注类型。"""
+    seeded = {p["title"]: infer_question_type(p) for p in SEED_PROBLEMS}
+    updated = 0
+    for row in db.query(
+            "SELECT id, title, line, choices, reference_solution, question_type FROM problems"):
+        current = row.get("question_type") or ""
+        wanted = seeded.get(row["title"])
+        if wanted is None and not current:
+            wanted = infer_question_type(row)
+        if wanted is not None and current != wanted:
+            db.execute("UPDATE problems SET question_type=? WHERE id=?", (wanted, row["id"]))
+            updated += 1
+    return updated
+
+
 _LETTERS = "ABCDEFGH"
 
 
@@ -262,11 +281,11 @@ def backfill_choice_alts() -> int:
     """
     n = 0
     rows = db.query(
-        "SELECT id, choices FROM problems "
+        "SELECT id, choices, question_type FROM problems "
         "WHERE line = 'text' AND COALESCE(choices, '[]') NOT IN ('[]', '')")
     for r in rows:
         choices = db.jloads(r["choices"], [])
-        if len(choices) < 2 or choices == ["对", "错"]:
+        if len(choices) < 2 or r["question_type"] in ("true_false", "multiple_choice"):
             continue
         for c in db.query("SELECT id, expected_stdout FROM testcases WHERE problem_id = ?",
                           (r["id"],)):

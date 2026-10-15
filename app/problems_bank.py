@@ -597,3 +597,8 @@ BANK_PROBLEMS: list[dict] = [
 from .problems_bank_ext import EXT_PROBLEMS as _EXT_PROBLEMS  # noqa: E402
 
 BANK_PROBLEMS = BANK_PROBLEMS + _EXT_PROBLEMS
+
+# 第三批：第 12~14 讲（Python 讲义完结收尾）。同上：合并顺序不影响学习顺序。
+from .problems_bank_ext2 import EXT2_PROBLEMS as _EXT2_PROBLEMS  # noqa: E402
+
+BANK_PROBLEMS = BANK_PROBLEMS + _EXT2_PROBLEMS

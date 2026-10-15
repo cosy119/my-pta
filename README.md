@@ -1,6 +1,6 @@
-# 本地 AI 出题 + 批改平台
+# my-pta：多科目题库与在线判题
 
-浏览器打开的「个人版 PTA」：**AI 按讲义出题 → 你写代码 → 真跑判题 → AI 归因讲解**。
+浏览器打开的学习题库：按科目、讲次和题型找题，写代码或回答理论题，再看真实评测结果和个人进度。AI 出题与讲解仍在规划中；当前判题依据测试点或标准答案，不由 AI 猜测结果。
 
 判题不是让 AI 看代码猜，而是**真起进程跑**，再拿真实输出比对 —— 所以判定和 OJ 一致。
 
@@ -8,13 +8,13 @@
 
 ## 直接在网页使用（无需安装）
 
-打开 <https://cosy119.github.io/my-pta/>，即可在浏览器中完成全部 204 道题（Linux 理论、Python 编程和数据结构 C/C++）的提交判题。首次做 Python 题时会加载约 14 MB 的运行时；首次做 C/C++ 题时会加载约 29 MB 的 Clang/WASI 编译器。浏览器内的 C/C++ 环境与后端 GCC 有差异，成绩保存在当前浏览器；换设备前请在「设置」中导出进度。**不需要注册、不需要安装任何东西**，一个现代浏览器就够了（进度存在各人自己的浏览器里）。引擎下载偶尔会被网络掐断 —— 报「评测机内部错误」时**再点一次「提交并判题」**就会重新下载，不用刷新页面。
+打开 <https://cosy119.github.io/my-pta/>，即可在浏览器中完成已发布题目（Linux 理论、Python 编程和数据结构 C/C++）的提交判题。首次做 Python 题时会加载约 14 MB 的运行时；首次做 C/C++ 题时会加载约 29 MB 的 Clang/WASI 编译器。浏览器内的 C/C++ 环境与后端 GCC 有差异，成绩保存在当前浏览器；换设备前请在「设置」中导出进度。**不需要注册、不需要安装任何东西**，一个现代浏览器就够了（进度存在各人自己的浏览器里）。引擎下载偶尔会被网络掐断 —— 报「评测机内部错误」时**再点一次「提交并判题」**就会重新下载，不用刷新页面。
 
 ## 也可以在本机运行
 
 | 用法 | 适合 | 怎么做 |
 |---|---|---|
-| **直接打开网页** | 分享给别人，无需安装 | 打开上方网址；204 道题均可在浏览器判 |
+| **直接打开网页** | 分享给别人，无需安装 | 打开上方网址；已发布题目均可在浏览器判 |
 | **本机跑** | 想用 GCC 后端或保存本机后端进度 | 按下方步骤安装后双击 `run.bat` |
 | **部署后端** | 想让网页使用 GCC 后端与跨设备后端进度 | 见 **[DEPLOY.md](DEPLOY.md)** |
 
@@ -39,7 +39,7 @@ run.bat
 
 1. 建 `data/` 目录和空数据库
 2. 自动补表结构、补列、**把老数据归到「本机用户」**（老库也适用，不动已有数据）
-3. **自动灌入 204 道题**（按标题判重，重复执行不会灌两遍）
+3. **自动导入当前题库**（按标题判重，重复执行不会灌两遍）
 4. 打开浏览器
 
 `config/settings.toml` 里的解释器路径是作者机器上的（`D:/Pythontools/...`）。
@@ -92,7 +92,7 @@ run.bat
 | **提交历史 + 一键回填某次代码** | ✅ |
 | **打开题目自动回填上次提交的代码** | ✅ |
 | **智能编辑器（自托管 CodeMirror：缩进 / 括号配对 / 本地关键词与片段提示）** | ✅ |
-| **题库 204 道 / 2615 分 / 532 个测试点（三科目）** | ✅ |
+| **Python、数据结构、Linux 三科目题库（题数以页面统计为准）** | ✅ |
 | **数据备份 / 导出 JSON / 恢复** | ✅ |
 | AI 按讲义出题 | ⏳ P3 |
 | Linux Shell 判题（SSH 到 Fedora） | ⏳ P4 |
@@ -154,16 +154,31 @@ D:\Pythontools\Python\python.exe -X utf8 tools\export_static.py --with-cases   &
 - **编辑器加载失败的 promise 不能缓存** —— 早期写法把「第一次失败」永久缓存成「这辈子都用不上编辑器」，
   网络恢复、换题都不会再试。现在失败会把缓存清掉，下一题重新加载。
 
-## 题库（三个科目，共 204 道 / 2615 分 / 532 个测试点）
+## 题库与题型
 
 主页是**题集广场**（三张科目卡片 + 进度条），点进去是**题集内页**（按讲次 / 实验分组，
 带状态筛选与搜索），再点题目进**答题页**（左题面右编辑区）。三层都比较贴近 PTA。
 
-| 科目 | 题数 | 分 | 语言 | 题库文件 |
-|---|---|---|---|---|
-| **Python 快乐编程基础入门** | 56 | 860 | Python | `problems_bank.py` + `problems_bank_ext.py` |
-| **数据结构（C 语言版）** | 31 | 595 | **C 或 C++ 任选** | `problems_bank_ds.py` |
-| **Linux 系统应用与开发** | 117 | 1160 | 理论题（选择 / 判断 / 填空） | `problems_bank_linux.py` |
+| 科目 | 主要作答方式 | 题库文件 |
+|---|---|---|
+| **Python 快乐编程基础入门** | Python 编程 | `problems_bank.py` + `problems_bank_ext.py` |
+| **数据结构（C 语言版）** | C/C++ 编程与理论题 | `problems_bank_ds.py` |
+| **Linux 系统应用与开发** | 单选、判断、命令填空 | `problems_bank_linux.py` |
+
+每道题现在有独立的 `question_type`，与科目 `subject`、提交方式 `line` 分开。题集页可按题型筛选，列表和题目页显示同一标签；API 与静态导出的 `problems.json` 也带此字段。
+
+| 题型 | 字段值 | 当前情况 |
+|---|---|---|
+| 单选题 | `single_choice` | 点击一个选项作答 |
+| 多选题 | `multiple_choice` | 界面可选多个；当前题库暂无多选题 |
+| 判断题 | `true_false` | 点击「对」或「错」 |
+| 填空题 | `fill_blank` | 输入短文本；现有 Linux 命令题是**命令填空**，没有实际执行 Shell |
+| 简答题 | `short_answer` | 题型预留；尚无自动语义评分器 |
+| 编程题 | `programming` | Python/C/C++ 代码运行与测试点评测 |
+| 实操题 | `practical` | 题型预留；未来需专用操作环境与评分规则 |
+
+旧题会按提交方式与选项自动补标，也支持出题时显式填写 `question_type`。分类不修改原有答案、分值或提交记录。未来新增多选题时，标准答案用升序字母组合（如 `AC`）；简答题和实操题须先配套评分器，不能只改题型标签就发布。
+
 
 ### 数据结构线：同一道题 C 与 C++ 都能交
 
@@ -239,8 +254,8 @@ pta/
 │  ├─ bank_kit.py          ★ 理论题工厂（mc / tf / fill）：选项、答案、分值一次配好
 │  ├─ problems_bank.py     题库：Python 第一批（11 道）
 │  ├─ problems_bank_ext.py 题库：Python 第二批（42 道）
-│  ├─ problems_bank_ds.py  题库：数据结构 31 道（C / C++，由 gen_ds_bank.py 生成）
-│  ├─ problems_bank_linux.py 题库：Linux 117 道理论题（由 gen_linux_bank.py 生成）
+│  ├─ problems_bank_ds.py  题库：数据结构（由 gen_ds_bank.py 生成）
+│  ├─ problems_bank_linux.py 题库：Linux 理论题（由 gen_linux_bank.py 生成）
 │  ├─ api/                 HTTP 接口（problems / submissions / progress / me / catalog）
 │  └─ judge/               判题内核
 │     ├─ sandbox.py        进程沙箱（★ 跨平台：Windows Job Object / Linux setrlimit+killpg）
@@ -297,7 +312,7 @@ D:\Pythontools\Python\python.exe -X utf8 tools\smoke_cloud.py       &rem 13 项�
 D:\Pythontools\Python\python.exe -X utf8 tools\e2e_ui.py 8792       &rem 33 项：端到端过 HTTP（需服务）
 D:\Pythontools\Python\python.exe -X utf8 tools\httptest_users.py    &rem 23 项：多用户隔离（自起服务）
 D:\Pythontools\Python\python.exe -X utf8 tools\httptest_split.py    &rem 18 项：跨源 CORS（自起两个源）
-D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py       &rem 204 题 / 532 个测试点：三线双实现对拍
+D:\Pythontools\Python\python.exe -X utf8 tools\verify_bank.py       &rem 三线双实现对拍
 D:\Pythontools\Python\python.exe -X utf8 tools\httptest.py          &rem 18 项：HTTP（需服务已在跑）
 D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py    &rem 清空记录（加 --yes 才真删）
 ```

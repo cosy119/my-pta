@@ -38,6 +38,9 @@ const { JSDOM, VirtualConsole } = loadJsdom();
 const CWD = process.cwd();
 const HTML = fs.readFileSync(path.join(CWD, 'web', 'index.html'), 'utf8');
 const BANK = JSON.parse(fs.readFileSync(path.join(CWD, 'docs', 'problems.json'), 'utf8'));
+const BANK_SCORE = BANK.items.reduce((sum, p) => sum + Number(p.total_score || 0), 0);
+const subjectItems = key => BANK.items.filter(p => p.subject === key);
+const subjectGroups = key => new Set(subjectItems(key).map(p => p.source_section || '未分组')).size;
 
 let PASS = 0;
 const FAIL = [];
@@ -98,7 +101,7 @@ function buildCatalog() {
     });
     return s;
   }).sort((a, b) => ORDER[a.key] - ORDER[b.key]);
-  return { subjects: list, user_score: 0, max_score: 0, user_max_score: 2615 };
+  return { subjects: list, user_score: 0, max_score: 0, user_max_score: BANK_SCORE };
 }
 
 const NO_BACKEND = { ok: false, status: 404, json: async () => ({ detail: 'not found' }) };
@@ -119,7 +122,7 @@ function stubFetch(mode) {
       return it ? jsonOk(detail(it)) : NO_BACKEND;
     }
     if (p === '/api/submissions') return jsonOk({ items: [] });
-    if (p === '/api/me') return jsonOk({ id: 1, nickname: '', score: 0, max_score: 2615 });
+    if (p === '/api/me') return jsonOk({ id: 1, nickname: '', score: 0, max_score: BANK_SCORE });
     return NO_BACKEND;
   };
 }
@@ -181,16 +184,16 @@ async function run() {
     check('题集广场渲染出 3 张科目卡片', doc.querySelectorAll('.card').length === 3,
       String(doc.querySelectorAll('.card').length));
     check('卡片里有进度条', doc.querySelectorAll('.card .bar').length >= 3);
-    check('hero 里显示了总分', app.textContent.includes('2615'));
+    check('hero 里显示了总分', app.textContent.includes(String(BANK_SCORE)));
 
     await goto(dom, '#/set/ds');
     const grps = app.querySelectorAll('.grpbox');
-    check('数据结构题集渲染出 4 个分组', grps.length === 4, String(grps.length));
+    check('数据结构题集分组齐全', grps.length === subjectGroups('ds'), String(grps.length));
     const rows = app.querySelectorAll('table.ptable tbody tr');
-    check('题集内表格有 31 行', rows.length === 31, String(rows.length));
-    check('状态列渲染了圆点', app.querySelectorAll('td.c-st .st').length === 31);
-    check('难度列渲染了星星', app.querySelectorAll('td.c-df .stars').length === 31);
-    check('类型列渲染了标签', app.querySelectorAll('td.c-ty .tyTag').length === 31);
+    check('题集内表格题数正确', rows.length === subjectItems('ds').length, String(rows.length));
+    check('状态列渲染了圆点', app.querySelectorAll('td.c-st .st').length === rows.length);
+    check('难度列渲染了星星', app.querySelectorAll('td.c-df .stars').length === rows.length);
+    check('类型列渲染了标签', app.querySelectorAll('td.c-ty .tyTag').length === rows.length);
 
     // 折叠
     dom.window.toggleGroup(0);
@@ -285,7 +288,7 @@ async function run() {
     const app = doc.getElementById('app');
     check('在线时没有「离线浏览」提示条', !doc.querySelector('.banner.warn'));
     check('在线时角标隐藏', doc.getElementById('offlineTag').style.display === 'none');
-    check('导航栏显示了总分 / 满分', doc.getElementById('navScore').textContent.includes('2615'),
+    check('导航栏显示了总分 / 满分', doc.getElementById('navScore').textContent.includes(String(BANK_SCORE)),
       doc.getElementById('navScore').textContent.trim());
     check('在线时题集广场也是 3 张卡片', doc.querySelectorAll('.card').length === 3,
       String(doc.querySelectorAll('.card').length));
@@ -294,15 +297,15 @@ async function run() {
 
     await goto(dom, '#/set/linux');
     const rows = app.querySelectorAll('table.ptable tbody tr');
-    check('Linux 题集表格 117 行', rows.length === 117, String(rows.length));
-    check('Linux 题集 16 个分组', app.querySelectorAll('.grpbox').length === 16,
+    check('Linux 题集题数正确', rows.length === subjectItems('linux').length, String(rows.length));
+    check('Linux 题集分组齐全', app.querySelectorAll('.grpbox').length === subjectGroups('linux'),
       String(app.querySelectorAll('.grpbox').length));
 
     // 搜索
     dom.window.onQuery('tar');
     await sleep(320);
     const n = app.querySelectorAll('table.ptable tbody tr').length;
-    check('搜索能把题目筛出来', n > 0 && n < 117, n + ' 行');
+    check('搜索能把题目筛出来', n > 0 && n < subjectItems('linux').length, n + ' 行');
     dom.window.onQuery('');
     await sleep(320);
 

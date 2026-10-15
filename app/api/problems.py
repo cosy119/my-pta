@@ -10,6 +10,7 @@ import re
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from .. import config, db, users
+from ..question_types import LABELS as QUESTION_TYPE_LABELS
 from ..seed import SUBJECT_LABELS
 
 router = APIRouter(prefix="/api", tags=["problems"])
@@ -130,6 +131,7 @@ def meta():
     ]
     return {
         "langs": langs,
+        "question_types": [{"key": k, "label": v} for k, v in QUESTION_TYPE_LABELS.items()],
         "subjects": [{"key": k, "label": v} for k, v in SUBJECT_LABELS.items()],
         "port": cfg.port,
         "db": str(cfg.db_path),
@@ -216,10 +218,11 @@ def catalog(user: dict = Depends(current_user)):
 @router.get("/problems")
 def list_problems(line: str | None = None, status: str | None = None,
                   subject: str | None = None, q: str | None = None,
+                  question_type: str | None = None,
                   user: dict = Depends(current_user)):
     uid = int(user.get("id") or 0)
     sql = """
-        SELECT p.id, p.subject, p.line, p.title, p.difficulty, p.tags,
+        SELECT p.id, p.subject, p.line, p.question_type, p.title, p.difficulty, p.tags,
                p.origin, p.status, p.choices,
                p.total_score,
                p.source_section, p.source_anchor, p.created_at,
@@ -242,6 +245,11 @@ def list_problems(line: str | None = None, status: str | None = None,
     if subject:
         sql += " AND p.subject = ?"
         params.append(subject)
+    if question_type:
+        if question_type not in QUESTION_TYPE_LABELS:
+            raise HTTPException(status_code=400, detail="未知题型")
+        sql += " AND p.question_type = ?"
+        params.append(question_type)
     if status:
         sql += " AND p.status = ?"
         params.append(status)

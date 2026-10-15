@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 import _console                                                   # noqa: E402
-from app import db, scoring                                   # noqa: E402
+from app import db, scoring, seed                             # noqa: E402
 
 WEB = ROOT / "web"
 DEFAULT_OUT = ROOT / "docs"
@@ -54,7 +54,7 @@ def build_bank(with_cases: bool = False) -> dict:
     # ★ subject / choices 必须一起导：前端要靠它们做「科目分类」和渲染选择题选项。
     #   选择题的正确答案在 expected_stdout 里（且这些题 is_sample=0），所以给 options 不泄题。
     rows = db.query("""
-        SELECT id, subject, line, title, difficulty, total_score, tags, choices,
+        SELECT id, subject, line, question_type, title, difficulty, total_score, tags, choices,
                statement_md, input_format, output_format, constraints_md,
                time_limit_ms, memory_limit_mb, checker, float_eps,
                source_section, source_anchor, origin, status
@@ -113,6 +113,8 @@ def build_bank(with_cases: bool = False) -> dict:
 
 
 def export(out_dir: Path, with_cases: bool = False) -> None:
+    db.init_db()
+    seed.sync_question_types()
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
 

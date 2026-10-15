@@ -26,6 +26,7 @@ FALSE = "错"
 
 # 理论题默认分值
 SCORE_CHOICE = 10      # 单选
+SCORE_MULTI = 14       # 多选（要对若干个，比单选难，分值给高一点）
 SCORE_JUDGE = 8        # 判断
 SCORE_FILL = 12        # 填空
 
@@ -43,7 +44,8 @@ def _theory(*, title: str, subject: str, section: str, statement_md: str,
             answers: list[str], explanation: str, tags: list[str],
             difficulty: int, total_score: int, choices: list[str] | None = None,
             input_format: str = "", output_format: str = "",
-            constraints_md: str = "", tip: str = "") -> dict:
+            constraints_md: str = "", tip: str = "",
+            question_type: str = "fill_blank") -> dict:
     """理论题的公共骨架。"""
     expected, ref = _oneof(answers)
     stmt = statement_md
@@ -53,6 +55,7 @@ def _theory(*, title: str, subject: str, section: str, statement_md: str,
         "title": title,
         "subject": subject,
         "line": "text",
+        "question_type": question_type,
         "difficulty": difficulty,
         "total_score": total_score,
         "tags": tags,
@@ -96,6 +99,7 @@ def mc(title: str, statement_md: str, options: list[str], answer: str, *,
         statement_md=statement_md, answers=[answer.strip().upper()],
         explanation=explanation, tags=tags, difficulty=difficulty,
         total_score=total_score, choices=options,
+        question_type="single_choice",
         output_format="一个选项字母（`A`~`%s`）" % letters[len(options) - 1],
         tip=answer_note)
 
@@ -111,6 +115,7 @@ def tf(title: str, statement_md: str, answer: bool, *,
         answers=[TRUE, "正确", "√", "T"] if answer else [FALSE, "错误", "×", "F"],
         explanation=explanation, tags=tags, difficulty=difficulty,
         total_score=total_score, choices=[TRUE, FALSE],
+        question_type="true_false",
         output_format="`对` 或 `错`（写 `正确`/`√`/`T` 也认）")
 
 
@@ -131,3 +136,45 @@ def fill(title: str, statement_md: str, answers: list[str], *,
         total_score=total_score, input_format=input_format,
         output_format="一行答案（不要写解释、不要写命令提示符）",
         tip=hint)
+
+
+def multi(title: str, statement_md: str, options: list[str], answers: list[str], *,
+          subject: str, section: str, explanation: str, tags: list[str],
+          difficulty: int = 3, total_score: int = SCORE_MULTI,
+          answer_note: str = "") -> dict:
+    """多选题。
+
+    `answers` 写**全部正确选项**的字母（例：`["A", "C"]`），至少两个。
+    入库时按字母升序收成一个串（`"AC"`）—— 网页端是多选点选，
+    取出来的字母天然按选项顺序排好，所以「升序」就是它的标准形式。
+
+    ★ 为什么还要把**排列**也列成可接受答案
+      点选界面写不出 `CA` 这种顺序，但 API 直接提交、或者以后做别的客户端时
+      写反了就白判一次 WA。字母数 ≤ 3 时全排列最多 6 种，代价很小，就都收进来；
+      再多就不列了（4 个字母 24 种，会把「可接受答案」提示刷屏，
+      那种情况下题干里会明写「按字母升序」）。
+    """
+    letters = "ABCDEFGH"
+    if len(options) < 3:
+        raise ValueError("多选题至少要 3 个选项（2 个选项的多选没有区分度）")
+    if len(options) > len(letters):
+        raise ValueError("多选题最多 8 个选项")
+    picked = {a.strip().upper() for a in answers}
+    if len(picked) < 2:
+        raise ValueError("多选题至少要 2 个正确答案")
+    for a in picked:
+        if a not in letters[:len(options)]:
+            raise ValueError(f"答案 {a!r} 不在选项范围里")
+    key = "".join(sorted(picked))
+    alts = [key]
+    if len(key) <= 3:
+        from itertools import permutations
+        alts += ["".join(p) for p in sorted(permutations(key)) if "".join(p) != key]
+    return _theory(
+        title=title, subject=subject, section=section,
+        statement_md=statement_md, answers=alts,
+        explanation=explanation, tags=tags, difficulty=difficulty,
+        total_score=total_score, choices=options,
+        question_type="multiple_choice",
+        output_format="若干个选项字母，按字母升序连写（如 `AC`）",
+        tip=answer_note or "**多选题**：正确选项不止一个，点选切换，再次点击可取消。")

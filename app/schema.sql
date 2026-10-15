@@ -36,6 +36,7 @@ CREATE TABLE IF NOT EXISTS problems (
   total_score        INTEGER DEFAULT 100,              -- 本题满分（= 各测试点分值之和）
   tags               TEXT DEFAULT '[]',                -- JSON 数组字符串
   choices            TEXT DEFAULT '[]',                -- 选择题选项（JSON 数组；空 = 非选择题）
+  question_type      TEXT NOT NULL DEFAULT '',         -- 单选/多选/判断/填空/简答/编程/实操
   statement_md       TEXT DEFAULT '',
   input_format       TEXT DEFAULT '',
   output_format      TEXT DEFAULT '',

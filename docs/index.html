@@ -171,6 +171,8 @@ input,select,textarea{font-family:inherit; color:var(--text)}
 .fbtn:hover{border-color:var(--primary); color:var(--primary)}
 .fbtn.on{background:var(--primary); border-color:var(--primary); color:#fff; font-weight:600}
 .fbtn .n{opacity:.7; margin-left:4px; font-size:11.5px}
+.typeSelect{border:1px solid var(--border); border-radius:8px; padding:6px 10px; background:var(--panel); color:var(--text2); font-size:13px; cursor:pointer}
+.typeSelect:focus{outline:2px solid var(--primary); outline-offset:1px}
 .searchBox{
   margin-left:auto; display:flex; align-items:center; gap:7px; border:1px solid var(--border);
   border-radius:8px; padding:5px 11px; background:var(--panel2); min-width:210px;
@@ -221,8 +223,10 @@ td.c-sc{width:96px; text-align:right; white-space:nowrap; font-variant-numeric:t
 .tyTag{font-size:11.5px; padding:2px 8px; border-radius:5px; background:var(--panel3); color:var(--text2); border:1px solid var(--border)}
 .tyTag.t-code{background:var(--infoWeak); color:var(--info); border-color:rgba(13,143,217,.22)}
 .tyTag.t-mc{background:var(--primaryWeak); color:var(--primary); border-color:rgba(47,107,237,.22)}
+.tyTag.t-multi{background:var(--primaryWeak); color:var(--primary); border-color:rgba(47,107,237,.22)}
 .tyTag.t-tf{background:var(--okWeak); color:var(--ok); border-color:rgba(18,161,80,.22)}
 .tyTag.t-fill{background:#f3ecff; color:var(--purple); border-color:rgba(123,92,240,.22)}
+.tyTag.t-short,.tyTag.t-practical{background:var(--panel3); color:var(--text2); border-color:var(--border)}
 @media (prefers-color-scheme:dark){.tyTag.t-fill{background:#241d3d}}
 .stars{color:#f0a92c; letter-spacing:1px; font-size:12px}
 .stars .off{color:var(--border)}
@@ -795,24 +799,27 @@ async function loadMeta(){
   catch(e){ META = null; }
 }
 
+const QUESTION_TYPES = [
+  {k:'single_choice', label:'单选题'}, {k:'multiple_choice', label:'多选题'},
+  {k:'true_false', label:'判断题'}, {k:'fill_blank', label:'填空题'},
+  {k:'short_answer', label:'简答题'}, {k:'programming', label:'编程题'},
+  {k:'practical', label:'实操题'}
+];
+function questionTypeKey(p){
+  if (QUESTION_TYPES.some(t => t.k === p.question_type)) return p.question_type;
+  if (p.line !== 'text') return 'programming';
+  const c = p.choices || [];
+  return c.length === 2 && c.indexOf('对') >= 0 && c.indexOf('错') >= 0
+    ? 'true_false' : (c.length ? 'single_choice' : 'fill_blank');
+}
 function problemType(p){
-  if (p.is_choice) return '单选题';
-  if (p.line === 'text'){
-    const c = p.choices || [];
-    if (c.length === 2 && c.indexOf('对') >= 0 && c.indexOf('错') >= 0) return '判断题';
-    if (c.length) return '单选题';
-    return '填空题';
-  }
-  if (p.line === 'cpp') return 'C / C++ 编程';
-  if (p.line === 'c') return 'C 编程';
-  return 'Python 编程';
+  const type = QUESTION_TYPES.find(t => t.k === questionTypeKey(p));
+  return type ? type.label : '待分类';
 }
 function typeClass(p){
-  if (p.line === 'text'){
-    const t = problemType(p);
-    return t === '判断题' ? 't-tf' : (t === '单选题' ? 't-mc' : 't-fill');
-  }
-  return 't-code';
+  return ({single_choice:'t-mc', multiple_choice:'t-multi', true_false:'t-tf',
+    fill_blank:'t-fill', short_answer:'t-short', programming:'t-code',
+    practical:'t-practical'})[questionTypeKey(p)] || 't-fill';
 }
 function stars(n){
   n = Math.max(1, Math.min(5, parseInt(n || 1, 10)));
@@ -1072,7 +1079,7 @@ const FILTERS = [
   { k:'solved',label:'已解决' },
   { k:'full',  label:'满分' },
 ];
-let FILTER = 'all', QUERY = '';
+let FILTER = 'all', TYPE_FILTER = 'all', TYPE_SUBJECT = '', QUERY = '';
 const CLOSED = {};   // 分组折叠状态：只有显式 true 才是收起
 let GNAMES = [];     // 当前题集的分组名（onclick 里传下标，避免名字里的引号把内联 JS 打断）
 
@@ -1084,6 +1091,7 @@ function matchFilter(p){
   if (FILTER === 'full')   return st === 'solved';
   return true;
 }
+function matchType(p){ return TYPE_FILTER === 'all' || questionTypeKey(p) === TYPE_FILTER; }
 function matchQuery(p){
   if (!QUERY) return true;
   const q = QUERY.toLowerCase();
@@ -1093,6 +1101,7 @@ function matchQuery(p){
 }
 
 function viewSet(subject){
+  if (TYPE_SUBJECT !== subject){ TYPE_FILTER = 'all'; TYPE_SUBJECT = subject; }
   const s = (CATALOG && (CATALOG.subjects || []).find(x => x.key === subject)) || null;
   const all = PROBLEMS.filter(p => (p.subject || 'python') === subject);
   const label = s ? s.label : (SUBJECT_LABELS[subject] || subject);
@@ -1153,6 +1162,12 @@ function viewSet(subject){
   html += '<div class="toolbar">'
     + FILTERS.map(f => '<button class="fbtn' + (FILTER === f.k ? ' on' : '') + '" onclick="setFilter(\'' + f.k + '\')">'
         + f.label + '<span class="n">' + cnt[f.k] + '</span></button>').join('')
+    + '<select class="typeSelect" aria-label="按题型筛选" onchange="setTypeFilter(this.value)">'
+    + '<option value="all">全部题型（' + all.length + '）</option>'
+    + QUESTION_TYPES.map(t => { const n = all.filter(p => questionTypeKey(p) === t.k).length;
+        return '<option value="' + t.k + '"' + (TYPE_FILTER === t.k ? ' selected' : '')
+          + (n ? '' : ' disabled') + '>' + t.label + '（' + n + '）</option>'; }).join('')
+    + '</select>'
     + '<div class="searchBox"><span>🔍</span>'
     + '<input id="qbox" placeholder="搜索题目标题 / 标签" value="' + escAttr(QUERY) + '" oninput="onQuery(this.value)"></div>'
     + '<button class="fbtn" onclick="toggleAllGroups()">展开 / 折叠</button>'
@@ -1160,7 +1175,7 @@ function viewSet(subject){
 
   let shown = 0;
   gnames.forEach((g, gi) => {
-    const items = groups[g].filter(p => matchFilter(p) && matchQuery(p));
+    const items = groups[g].filter(p => matchFilter(p) && matchType(p) && matchQuery(p));
     if (!items.length) return;
     shown += items.length;
     const gGot = groups[g].reduce((a,p) => a + bestOf(p), 0);
@@ -1223,6 +1238,7 @@ function onQuery(v){
   qTimer = setTimeout(() => { viewSet(SET.subject); }, 180);
 }
 function setFilter(k){ FILTER = k; viewSet(SET.subject); }
+function setTypeFilter(k){ TYPE_FILTER = k; viewSet(SET.subject); }
 function toggleGroup(i){
   const g = GNAMES[i];
   if (g === undefined) return;
@@ -1390,7 +1406,7 @@ function renderProblem(){
   const langs = langsOf(p);
   const isTheory = p.line === 'text';
   const isChoice = !!p.is_choice;
-  const isJudge = isTheory && (p.choices || []).length === 2 && p.choices.indexOf('对') >= 0 && p.choices.indexOf('错') >= 0;
+  const isJudge = questionTypeKey(p) === 'true_false';
   const draftKey = LS.draft(p.id);
 
   const sequence = problemSequence(subject);
@@ -1466,6 +1482,7 @@ function renderProblem(){
   right += '</div><div class="peditBody">';
 
   if (isChoice){
+    if (questionTypeKey(p) === 'multiple_choice') right += '<div class="hintline">可选多个选项；再次点击可取消。</div>';
     right += '<div class="choiceList" id="choiceList">'
       + (p.choices || []).map((c, i) =>
           '<div class="choice" data-i="' + i + '" data-v="' + escAttr(c) + '" onclick="pickChoice(this)">'
@@ -1578,8 +1595,11 @@ function markPartial(){
 }
 
 function pickChoice(el){
-  Array.prototype.forEach.call(document.querySelectorAll('.choice'), c => c.classList.remove('on'));
-  el.classList.add('on');
+  if (questionTypeKey(CUR) === 'multiple_choice') el.classList.toggle('on');
+  else {
+    Array.prototype.forEach.call(document.querySelectorAll('.choice'), c => c.classList.remove('on'));
+    el.classList.add('on');
+  }
 }
 function onLangChange(){
   const sel = document.getElementById('langSel');
@@ -1603,12 +1623,13 @@ function copySample(i){
 function readTheoryAnswer(){
   const p = CUR;
   if (p.is_choice){
-    const on = document.querySelector('.choice.on');
-    if (!on){ toast('先选一个选项', 'err'); return null; }
+    const selected = Array.from(document.querySelectorAll('.choice.on'));
+    if (!selected.length){ toast('先选一个选项', 'err'); return null; }
     const ch = p.choices || [];
-    const isJudge = ch.length === 2 && ch.indexOf('对') >= 0 && ch.indexOf('错') >= 0;
-    return isJudge ? on.getAttribute('data-v')
-                   : String.fromCharCode(65 + parseInt(on.getAttribute('data-i'), 10));
+    const kind = questionTypeKey(p);
+    if (kind === 'true_false') return selected[0].getAttribute('data-v');
+    const letters = selected.map(on => String.fromCharCode(65 + parseInt(on.getAttribute('data-i'), 10))).sort().join('');
+    return kind === 'multiple_choice' ? letters : letters.slice(0, 1);
   }
   const box = document.getElementById('codeBox');
   const v = box ? box.value : '';

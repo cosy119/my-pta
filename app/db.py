@@ -126,6 +126,7 @@ MIGRATIONS: tuple[tuple[str, str, str], ...] = (
     # choices = 选择题选项（JSON 数组），空表示不是选择题
     ("problems", "subject", "TEXT DEFAULT 'python'"),
     ("problems", "choices", "TEXT DEFAULT '[]'"),
+    ("problems", "question_type", "TEXT NOT NULL DEFAULT ''"),
 )
 
 
