@@ -396,8 +396,25 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
 
 文件是 UMD：浏览器挂 `window.TextJudge`，Node 里 `require` 得到同一个对象（对拍脚本用）。
 
-**离线本地判题的边界**：只有 `line === 'text'` 的题（Linux 线 117 道）能本地判；
-Python 56 + 数据结构 31 是**代码题**，必须真执行，仍然要后端（本机 `run.bat` 也行）。
+**离线本地判题的边界（2026-10-15 更新）**：最初只有 `line === 'text'` 的题（Linux 线 117 道）能本地判；
+现在 **三条线都能在浏览器里判** —— 理论题走 `judge_text.js`，Python 走 **Pyodide**（`web/pyodide/`，约 13 MB，随仓库分发）、
+C/C++ 走 **Clang/WASI**（`web/clang/`，约 29 MB，随仓库分发），引擎全部**从本站加载、零 CDN 依赖**。
+后端从「必须」变成「可选增强」：跨设备进度、更准的 GCC 环境、防作弊。
+
+### ★★ 引擎下载被掐：失败态绝不能缓存（2026-10-15 线上踩到）
+
+C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
+（fetch 流报 `network error`）→「评测机内部错误」。下载失败本身拦不住，
+**真 bug 是 `cpp-worker.js` 把 rejected 的 `toolchainPromise` 缓存住了** ——
+之后每次点「提交并判题」都瞬间失败，唯一出路是刷新整页。
+
+- 修法与编辑器那次同款：`createToolchain(...).catch(e => { toolchainPromise = null; throw e; })`。
+  这是本项目**第二次**踩「失败态被永久缓存」这个坑（第一次是编辑器的 `smartEditorLoad`）——
+  **任何 `if (!p) p = somethingAsync()` 的写法都要配 catch 清缓存。**
+- Python 侧（`python-local.js`）本来就写对了：`ready` 失败即置 null，重试会起新 worker。
+- 顺手把英文报错翻成人话（`localJudgeHint` / `friendlyLoad`）：「下载中断了，再点一次就会重新下载，不用刷新页面」。
+- 回归测试 `tools/ui_e2e_local_engines.mjs`（9/9）：本地服务器**故意掐断**第一次传输（先给 1 KB 正文再 destroy，
+  比 404 更接近真实故障），断言 IE + 提示 → 重试 → 引擎重新下载并真判出来。
 
 ## 自检脚本
 
@@ -412,6 +429,7 @@ Python 56 + 数据结构 31 是**代码题**，必须真执行，仍然要后端
 | `ui_smoke.mjs` | **41/41** | jsdom 真渲染前端（离线 + 假后端两遍） |
 | `ui_test_local_judge.mjs` | **45/45** | 离线本地判题：**真 jsdom + 真加载 `judge_text.js`**（专门起静态服务，让外链脚本真被取到）。含「答对后再答错最高分不被冲掉」「导入低分备份不冲掉高分」两条回归 |
 | `ui_e2e_local_judge.mjs` | **25/25** | **真 Chrome**（puppeteer-core + 系统 Chrome）跑 `docs/` **发布产物**：真点按钮判题、**真下载**进度 JSON、**真上传**导入回来 |
+| `ui_e2e_local_engines.mjs` | **9/9** | ★★ **浏览器判题引擎的「下载被掐 → 重试恢复」回归**：本地伺服 `docs/`，第一次故意掐断 `clang.wasm.gz` / `pyodide.asm.wasm` 传输（模拟线上 2026-10-15 的 `network error`），断言第一次判 IE + 有人话指引、**重试后引擎重新下载并真判出来**（Python A+B 浏览器内满分；C++ 真编译运行判 WA）。这也是浏览器 C/C++ 判题的第一条端到端测试 |
 | `ui_e2e_editor.mjs` | **63/63** | ★ **真 Chrome 测智能编辑器**（唯一真敲键盘的测试）：三种语言的缩进 / 配对 / 补全 / Tab / Shift+Tab / `Esc`+`Tab` / 切题草稿 / C↔C++ 语言切换 / 加载失败回退 |
 | `httptest_users.py` | **23/23** | 多用户隔离、越权 404、CORS |
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |

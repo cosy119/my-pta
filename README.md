@@ -8,7 +8,7 @@
 
 ## 直接在网页使用（无需安装）
 
-打开 <https://cosy119.github.io/my-pta/>，即可在浏览器中完成全部 204 道题（Linux 理论、Python 编程和数据结构 C/C++）的提交判题。首次做 Python 题时会加载约 14 MB 的运行时；首次做 C/C++ 题时会加载约 29 MB 的 Clang/WASI 编译器。浏览器内的 C/C++ 环境与后端 GCC 有差异，成绩保存在当前浏览器；换设备前请在「设置」中导出进度。
+打开 <https://cosy119.github.io/my-pta/>，即可在浏览器中完成全部 204 道题（Linux 理论、Python 编程和数据结构 C/C++）的提交判题。首次做 Python 题时会加载约 14 MB 的运行时；首次做 C/C++ 题时会加载约 29 MB 的 Clang/WASI 编译器。浏览器内的 C/C++ 环境与后端 GCC 有差异，成绩保存在当前浏览器；换设备前请在「设置」中导出进度。**不需要注册、不需要安装任何东西**，一个现代浏览器就够了（进度存在各人自己的浏览器里）。引擎下载偶尔会被网络掐断 —— 报「评测机内部错误」时**再点一次「提交并判题」**就会重新下载，不用刷新页面。
 
 ## 也可以在本机运行
 
@@ -317,6 +317,7 @@ node tools\ui_smoke.mjs              &rem jsdom 冒烟：界面渲染、路由�
 node tools\ui_test_local_judge.mjs   &rem 本地判题（含草稿导入导出）
 node tools\ui_e2e_local_judge.mjs    &rem 真 Chrome 跑发布产物的判题全流程
 node tools\ui_e2e_editor.mjs         &rem ★ 真 Chrome 测智能编辑器（63 项，约 2 分钟）
+node tools\ui_e2e_local_engines.mjs  &rem ★ 真 Chrome 测浏览器判题引擎的「下载被掐→重试恢复」（9 项）
 node tools\verify_text_judge.mjs     &rem 前端判题器口径与后端对拍
 ```
 
