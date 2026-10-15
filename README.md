@@ -17,22 +17,27 @@
 **每个人的进度各自独立** —— 不需要注册，浏览器自己带一串通行证，
 后端按它区分是谁（详见 DEPLOY.md 第三节）。
 
-## 新机器上跑起来（克隆后三步）
+## 新机器上跑起来
+
+先安装 **Python 3.13**（安装时启用 Python Launcher 或将 `python.exe` 加入 PATH）。首次使用还需安装依赖：
 
 ```bat
 git clone https://github.com/cosy119/my-pta.git
 cd my-pta
+py -3.13 -m pip install -r requirements.txt
 run.bat
 ```
+
+如果电脑没有 `py` 命令、但 `python --version` 显示 3.13，可将上面的安装命令改为 `python -m pip install -r requirements.txt`。`run.bat` 会自动选择可用的 Python 3.13；缺少解释器或依赖时会打印处理方法。数据结构题还需要安装 `gcc` 和 `g++`，并将它们加入 PATH（或在 `config/settings.toml` 的 `[compilers]` 中填写路径）。
 
 第一次跑会自动做这些事（不用手动初始化）：
 
 1. 建 `data/` 目录和空数据库
 2. 自动补表结构、补列、**把老数据归到「本机用户」**（老库也适用，不动已有数据）
-3. **自动灌入 56 道题**（按标题判重，重复执行不会灌两遍）
+3. **自动灌入 204 道题**（按标题判重，重复执行不会灌两遍）
 4. 打开浏览器
 
-`config/settings.toml` 里的解释器路径是我机器上的（`D:/Pythontools/...`）。
+`config/settings.toml` 里的解释器路径是作者机器上的（`D:/Pythontools/...`）。
 换机器不用改：**配置里的路径不存在时会自动在本机找 Python**（PATH → 常见安装位置）。
 真要固定用某个解释器，才需要手改这个文件。
 

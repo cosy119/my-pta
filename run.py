@@ -146,7 +146,7 @@ def main() -> int:
         say(traceback.format_exc())
         say("")
         say("Hint: make sure dependencies are installed, e.g.")
-        say('      "D:\\Pythontools\\Python\\python.exe" -m pip install fastapi uvicorn openai httpx')
+        say('      "%s" -m pip install -r requirements.txt' % sys.executable)
         pause_if_interactive()
         return 1
 
