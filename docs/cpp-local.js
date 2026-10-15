@@ -40,6 +40,14 @@
       passed: 0, total: (problem.cases || []).length, time_ms: 0,
       lang, message, compile_output: compileOutput || '', cases: [] };
   }
+  /* 加载阶段失败（下载被掐 / 太慢超时）几乎都是网络问题，且重试就会重新下载 —— 把这条出路告诉用户。 */
+  function friendlyLoad(message) {
+    const s = String(message || '');
+    if (/network error|Failed to (decompress|load)|加载失败|超时/.test(s))
+      return s + '\n\n提示：浏览器判题的编译器（约 29 MB）是从本站下载的，刚才下载中断了。'
+        + '检查网络后**再点一次「提交并判题」**就会重新下载；github.io 偶尔不稳，多试一两次通常能成功，不用刷新页面。';
+    return s;
+  }
   async function submit(problem, code, lang, progress) {
     if (busy) throw Error('已有 C/C++ 任务正在运行');
     const cases = problem.cases || [];
@@ -48,7 +56,7 @@
     try {
       const compiled = await compile(code, lang, progress);
       if (compiled.verdict !== 'OK') return emptyResult(problem, lang,
-        compiled.verdict, compiled.verdict === 'CE' ? '编译未通过' : compiled.detail,
+        compiled.verdict, compiled.verdict === 'CE' ? '编译未通过' : friendlyLoad(compiled.detail),
         compiled.verdict === 'CE' ? compiled.detail : '');
       const verdicts = [], details = [], outputs = [], errors = [], times = [];
       for (let i = 0; i < cases.length; i++) {
@@ -86,7 +94,8 @@
     busy = true;
     try {
       const compiled = await compile(code, lang, progress);
-      if (compiled.verdict !== 'OK') return { ...compiled, compile_output: compiled.detail || '' };
+      if (compiled.verdict !== 'OK') return { ...compiled, message: friendlyLoad(compiled.detail),
+        compile_output: compiled.detail || '' };
       return await request({ type: 'run', stdin }, 6000);
     } finally { busy = false; }
   }

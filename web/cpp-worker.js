@@ -6,8 +6,11 @@ let artifact = null;
 
 function toolchain() {
   if (!toolchainPromise) {
+    /* ★ 失败的加载不能缓存：一次网络中断不该变成「这辈子都用不上编译器」。
+       清掉缓存，下一次请求会重新走 fetch（大文件下载中途被掐是常态，重试往往就过了）。 */
     toolchainPromise = self.clangWasmToolchain.createToolchain({ baseUrl: TOOLCHAIN_URL,
-      onProgress: value => self.postMessage({ type: 'load', value }) });
+      onProgress: value => self.postMessage({ type: 'load', value }) })
+      .catch(error => { toolchainPromise = null; throw error; });
   }
   return toolchainPromise;
 }

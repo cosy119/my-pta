@@ -1675,6 +1675,16 @@ function doSubmitLocal(){
   afterJudgeRefresh();
 }
 
+/* 浏览器判题的引擎（Python 约 13 MB / C++ 编译器约 29 MB）都是从本站下载的，
+   下载中途被掐是最常见的失败 —— 失败后直接重试就会重新下载，把这条出路告诉用户。 */
+function localJudgeHint(e){
+  const msg = String(e && e.message || e);
+  if (/network error|Failed to (decompress|load)|超时|加载失败/.test(msg))
+    return msg + '\n\n提示：判题引擎是从本站下载的，刚才下载中断了。'
+      + '检查网络后**再点一次「提交并判题」**就会重新下载，不用刷新页面；github.io 偶尔不稳，多试一两次通常能成功。';
+  return msg;
+}
+
 async function doSubmitPythonLocal(){
   const p = CUR, code = codeValue();
   if (!code.trim()){ toast('代码不能为空', 'err'); return; }
@@ -1690,7 +1700,7 @@ async function doSubmitPythonLocal(){
     if (CUR && CUR.id === p.id){ RESULT = r; renderResult(r); }
     afterJudgeRefresh();
   } catch(e){
-    if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', String(e.message || e));
+    if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', localJudgeHint(e));
   } finally { if (btn) btn.disabled = false; }
 }
 
@@ -1713,7 +1723,7 @@ async function doSubmitCppLocal(){
     if (CUR && CUR.id === p.id){ RESULT = r; renderResult(r); }
     afterJudgeRefresh();
   } catch(e){
-    if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', String(e.message || e));
+    if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', localJudgeHint(e));
   } finally { if (btn) btn.disabled = false; }
 }
 
