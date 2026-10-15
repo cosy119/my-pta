@@ -80,6 +80,7 @@ input,select,textarea{font-family:inherit; color:var(--text)}
 
 /* ---------- 布局 ---------- */
 .wrap{max-width:1240px; margin:0 auto; padding:22px 22px 70px}
+#app.problemView{max-width:1680px; margin:0 auto; padding:16px 18px 40px}
 .crumb{font-size:13px; color:var(--muted); margin-bottom:14px}
 .crumb a{color:var(--text2)}
 .crumb .sep{margin:0 7px; opacity:.55}
@@ -235,10 +236,40 @@ td.c-sc{width:96px; text-align:right; white-space:nowrap; font-variant-numeric:t
 }
 
 /* ---------- 题目页 ---------- */
-.pgrid{display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:16px; align-items:start}
-@media (max-width:1080px){ .pgrid{grid-template-columns:1fr} }
+.problemTop{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px}
+.problemTop .crumb{margin:0}
+.problemSteps{display:flex; gap:8px; flex:0 0 auto}
+.problemSteps button{border:1px solid var(--border); border-radius:8px; background:var(--panel); color:var(--text2); padding:6px 12px; cursor:pointer}
+.problemSteps button:hover:not(:disabled){border-color:var(--primary); color:var(--primary)}
+.problemSteps button:disabled{opacity:.45; cursor:not-allowed}
+.pgrid{display:grid; grid-template-columns:var(--sidebar-width,224px) minmax(340px,var(--statement-width,1fr)) 10px minmax(340px,1fr); gap:12px; align-items:start; min-width:0}
+.pgrid.sidebarCollapsed{--sidebar-width:44px}
+.pside{height:calc(100dvh - 92px); min-height:420px; position:sticky; top:72px; padding:0; display:flex; flex-direction:column; overflow:hidden}
+.psideHead{display:flex; align-items:center; gap:8px; padding:10px 8px 10px 12px; border-bottom:1px solid var(--border2); min-height:48px}
+.psideTitle{font-size:13px; font-weight:700; line-height:1.3; flex:1; min-width:0}
+.psideToggle{border:1px solid var(--border); border-radius:7px; background:var(--panel); color:var(--text2); cursor:pointer; width:29px; height:29px; flex:0 0 29px; padding:0}
+.psideToggle:hover{border-color:var(--primary); color:var(--primary)}
+.psideBody{overflow:auto; padding:8px 10px 14px; min-height:0}
+.psideGroup{margin-bottom:15px}
+.psideGroupHead{font-size:11.5px; font-weight:700; color:var(--text2); line-height:1.4; margin:5px 0 7px}
+.psideGroupHead span{font-weight:400; color:var(--muted); display:block}
+.psideTiles{display:grid; grid-template-columns:repeat(auto-fill,minmax(43px,1fr)); gap:6px}
+.psideTile{min-height:39px; border:1px solid var(--border); border-radius:7px; background:var(--panel2); color:var(--text2); text-decoration:none; display:flex; align-items:center; justify-content:center; gap:2px; font:600 11.5px var(--mono)}
+.psideTile:hover{text-decoration:none; border-color:var(--primary); color:var(--primary)}
+.psideTile.solved{background:var(--okWeak); color:var(--ok); border-color:var(--ok)}
+.psideTile.partial{background:var(--warnWeak); color:var(--warn); border-color:var(--warn)}
+.psideTile.att{background:var(--errWeak); color:var(--err); border-color:var(--err)}
+.psideTile.active{outline:2px solid var(--primary); outline-offset:1px}
+.psideTile .tileMark{font-size:12px}
+.psideFoot{margin-top:auto; padding:9px 7px; text-align:center; border-top:1px solid var(--border2); font-size:11px; color:var(--muted)}
+.sidebarCollapsed .psideHead{padding:8px 6px}
+.sidebarCollapsed .psideTitle,.sidebarCollapsed .psideBody,.sidebarCollapsed .psideFoot{display:none}
+.pdivider{height:calc(100dvh - 92px); min-height:420px; position:sticky; top:72px; border-radius:8px; cursor:col-resize; touch-action:none; background:transparent; display:flex; align-items:center; justify-content:center}
+.pdivider:before{content:''; width:4px; height:70px; border-radius:5px; background:var(--border)}
+.pdivider:hover:before,.pdivider:focus-visible:before,.pdivider.dragging:before{background:var(--primary)}
+.pdivider:focus-visible{outline:2px solid var(--primary)}
 .pcard{background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); box-shadow:var(--shadow)}
-.pstmt{padding:20px 22px 26px}
+.pstmt{padding:20px 22px 26px; min-width:0}
 .ptitle{font-size:19px; font-weight:700; line-height:1.4; margin:0 0 11px}
 .chips{display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px}
 .mdsec{margin:0 0 18px}
@@ -298,7 +329,7 @@ td.c-sc{width:96px; text-align:right; white-space:nowrap; font-variant-numeric:t
 }
 .sampleNote{padding:8px 12px; border-top:1px solid var(--border2); background:var(--panel2)}
 
-.pedit{padding:0; display:flex; flex-direction:column; max-height:calc(100vh - 108px); position:sticky; top:74px}
+.pedit{padding:0; display:flex; flex-direction:column; height:calc(100dvh - 92px); min-height:420px; position:sticky; top:72px; min-width:0}
 .peditHead{
   display:flex; align-items:center; gap:9px; padding:12px 15px; border-bottom:1px solid var(--border2);
   flex-wrap:wrap;
@@ -313,9 +344,11 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
 .peditBody{padding:14px 15px; overflow:auto; flex:1; min-height:0; display:flex; flex-direction:column; gap:11px}
 .editor{
   width:100%; min-height:330px; resize:vertical; border:1px solid var(--border); border-radius:9px;
-  background:var(--panel2); color:var(--text); font-family:var(--mono); font-size:13px;
+  background:var(--panel2); color:var(--text); font-family:var(--mono); font-size:15px;
   line-height:1.62; padding:12px 13px; outline:0; tab-size:4;
 }
+.pedit.hasCode .editor{flex:1 0 300px}
+.pedit.hasCode #resultBox,.pedit.hasCode #histBox{flex:0 0 auto}
 .editor:focus{border-color:var(--primary); background:var(--panel)}
 .editor::placeholder{color:var(--muted)}
 .btnrow{display:flex; gap:9px; align-items:center; flex-wrap:wrap}
@@ -332,6 +365,29 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
 .stdinBox{width:100%; min-height:74px; resize:vertical; border:1px solid var(--border); border-radius:8px;
   background:var(--panel2); padding:9px 11px; font-family:var(--mono); font-size:12.6px; outline:0}
 .stdinBox:focus{border-color:var(--primary)}
+@media (max-width:1080px){
+  #app.problemView{padding:14px 14px 45px}
+  .pgrid{grid-template-columns:minmax(0,1fr); gap:12px}
+  .pside{position:relative; top:auto; height:auto; min-height:0; max-height:300px}
+  .psideBody{max-height:215px}
+  .sidebarCollapsed .pside{max-height:none}
+  .pdivider{display:none}
+  .pedit{position:relative; top:auto; height:auto; min-height:500px}
+  .pedit.hasCode .editor{min-height:380px}
+}
+@media (max-width:560px){
+  .nav{gap:7px; padding:0 9px}
+  .brand span:not(.logo){display:none}
+  .brand .logo{flex:0 0 26px}
+  .navlinks{margin-left:0; gap:0}
+  .navlinks a{padding:6px 5px; font-size:11.5px}
+  .navright{gap:5px; font-size:10.5px}
+  .offlineTag{padding:2px 5px; font-size:10px}
+  .iconbtn{padding:5px 7px; font-size:11px}
+  .problemTop{align-items:flex-start; flex-direction:column}
+  .problemSteps{width:100%}
+  .problemSteps button{flex:1}
+}
 
 .choiceList{display:flex; flex-direction:column; gap:9px}
 .choice{
@@ -466,6 +522,8 @@ const LS = {
   draft:  p => 'pta.draft.' + p,
   local:  'pta.localProgress',
   seen:   'pta.lastProblem',
+  problemSidebar: 'pta.problemSidebarCollapsed',
+  problemSplit: 'pta.problemSplitRatio',
 };
 
 const VERDICT_TXT = {
@@ -825,6 +883,7 @@ function parseHash(){
 
 function route(){
   SET = parseHash();
+  document.getElementById('app').classList.toggle('problemView', SET.view === 'p');
   document.getElementById('navHome').className = SET.view === 'home' ? 'on' : '';
   document.getElementById('navSubs').className = SET.view === 'subs' ? 'on' : '';
   window.scrollTo(0, 0);
@@ -1135,6 +1194,119 @@ let CUR = null;          // 当前题目详情
 let RESULT = null;       // 当前判题结果
 let POLL = null;
 
+function problemSequence(subject){
+  return PROBLEMS.filter(x => (x.subject || 'python') === subject);
+}
+function problemSidebarHtml(subject, currentId){
+  const items = problemSequence(subject), groups = new Map();
+  const arrow = sidebarIsCollapsed() ? '⇥' : '⇤';
+  items.forEach(x => {
+    const name = x.source_section || '未分组';
+    if (!groups.has(name)) groups.set(name, []);
+    groups.get(name).push(x);
+  });
+  const pos = items.findIndex(x => x.id === currentId);
+  let h = '<aside class="pcard pside" id="problemSidebar" aria-label="当前科目题目导航">'
+    + '<div class="psideHead"><span class="psideTitle">题目导航</span>'
+    + '<button class="psideToggle" type="button" onclick="toggleProblemSidebar()" aria-label="折叠或展开题目导航" title="折叠或展开题目导航">' + arrow + '</button></div>'
+    + '<div class="psideBody" id="psideBody">';
+  groups.forEach((list, name) => {
+    const solved = list.filter(solvedOf).length;
+    h += '<section class="psideGroup"><div class="psideGroupHead">' + esc(name)
+      + '<span>' + solved + ' / ' + list.length + ' 已解决</span></div><div class="psideTiles">';
+    list.forEach(x => {
+      const status = statusOf(x);
+      const label = { solved:'已解决', partial:'部分正确', att:'已尝试', none:'未做' }[status];
+      const mark = { solved:'✓', partial:'◐', att:'•', none:'' }[status];
+      h += '<a class="psideTile ' + status + (x.id === currentId ? ' active' : '')
+        + '" href="#/p/' + x.id + '" title="#' + x.id + ' ' + escAttr(x.title) + ' · ' + label + '"'
+        + ' aria-label="第 ' + x.id + ' 题 ' + escAttr(x.title) + '，' + label + '"'
+        + (x.id === currentId ? ' aria-current="page"' : '') + '>' + x.id
+        + (mark ? '<span class="tileMark" aria-hidden="true">' + mark + '</span>' : '') + '</a>';
+    });
+    h += '</div></section>';
+  });
+  return h + '</div><div class="psideFoot">当前 ' + (pos + 1) + ' / ' + items.length + ' 题</div></aside>';
+}
+function sidebarIsCollapsed(){
+  try { return localStorage.getItem(LS.problemSidebar) === '1'; } catch(e){ return false; }
+}
+function toggleProblemSidebar(){
+  const grid = document.getElementById('problemGrid');
+  if (!grid) return;
+  const collapsed = grid.classList.toggle('sidebarCollapsed');
+  try { localStorage.setItem(LS.problemSidebar, collapsed ? '1' : '0'); } catch(e){}
+  const toggle = grid.querySelector('.psideToggle');
+  if (toggle) toggle.textContent = collapsed ? '⇥' : '⇤';
+  updateProblemColumns();
+}
+function storedProblemRatio(){
+  try {
+    const value = Number(localStorage.getItem(LS.problemSplit));
+    return value > 0 && value < 1 ? value : .5;
+  } catch(e){ return .5; }
+}
+function updateProblemColumns(ratio){
+  const grid = document.getElementById('problemGrid');
+  if (!grid || window.innerWidth <= 1080) return;
+  const sidebar = document.getElementById('problemSidebar');
+  const available = grid.clientWidth - sidebar.getBoundingClientRect().width - 10 - 36;
+  if (available < 680) return;
+  const fraction = ratio === undefined ? storedProblemRatio() : ratio;
+  const width = Math.max(340, Math.min(available - 340, Math.round(available * fraction)));
+  grid.style.setProperty('--statement-width', width + 'px');
+  const divider = document.getElementById('problemDivider');
+  if (divider) divider.setAttribute('aria-valuenow', String(Math.round(width / available * 100)));
+}
+function initProblemLayout(){
+  const grid = document.getElementById('problemGrid');
+  const divider = document.getElementById('problemDivider');
+  if (!grid || !divider) return;
+  updateProblemColumns();
+  const active = document.querySelector('.psideTile.active');
+  const body = document.getElementById('psideBody');
+  if (active && body) body.scrollTop = Math.max(0, active.offsetTop - body.offsetTop - body.clientHeight / 3);
+  divider.addEventListener('pointerdown', e => {
+    if (window.innerWidth <= 1080) return;
+    e.preventDefault();
+    divider.setPointerCapture(e.pointerId);
+    divider.classList.add('dragging');
+    const startX = e.clientX;
+    const startWidth = grid.querySelector('.pstmt').getBoundingClientRect().width;
+    const available = grid.clientWidth - document.getElementById('problemSidebar').getBoundingClientRect().width - 10 - 36;
+    const move = ev => updateProblemColumns((startWidth + ev.clientX - startX) / available);
+    const stop = () => {
+      divider.classList.remove('dragging');
+      divider.removeEventListener('pointermove', move);
+      divider.removeEventListener('pointerup', stop);
+      divider.removeEventListener('pointercancel', stop);
+      const width = grid.querySelector('.pstmt').getBoundingClientRect().width;
+      try { localStorage.setItem(LS.problemSplit, String(width / available)); } catch(e){}
+    };
+    divider.addEventListener('pointermove', move);
+    divider.addEventListener('pointerup', stop);
+    divider.addEventListener('pointercancel', stop);
+  });
+  divider.addEventListener('keydown', e => {
+    if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+    e.preventDefault();
+    const available = grid.clientWidth - document.getElementById('problemSidebar').getBoundingClientRect().width - 10 - 36;
+    const width = grid.querySelector('.pstmt').getBoundingClientRect().width + (e.key === 'ArrowRight' ? 24 : -24);
+    updateProblemColumns(width / available);
+    try { localStorage.setItem(LS.problemSplit, String(grid.querySelector('.pstmt').getBoundingClientRect().width / available)); } catch(error){}
+  });
+}
+window.addEventListener('resize', () => { if (SET.view === 'p') updateProblemColumns(); });
+function refreshProblemSidebar(){
+  if (!CUR || SET.view !== 'p') return;
+  const old = document.getElementById('problemSidebar');
+  if (!old) return;
+  const scroll = document.getElementById('psideBody')?.scrollTop || 0;
+  old.outerHTML = problemSidebarHtml(CUR.subject || 'python', CUR.id);
+  const body = document.getElementById('psideBody');
+  if (body) body.scrollTop = scroll;
+}
+
 function localProblem(id){
   const p = PROBLEMS.find(x => x.id === id);
   if (!p) return null;
@@ -1169,9 +1341,15 @@ function renderProblem(){
   const isJudge = isTheory && (p.choices || []).length === 2 && p.choices.indexOf('对') >= 0 && p.choices.indexOf('错') >= 0;
   const draftKey = LS.draft + p.id;
 
-  let html = crumb(p.subject_label || SUBJECT_LABELS[subject] || subject,
+  const sequence = problemSequence(subject);
+  const position = sequence.findIndex(x => x.id === p.id);
+  const previous = position > 0 ? sequence[position - 1] : null;
+  const next = position >= 0 && position + 1 < sequence.length ? sequence[position + 1] : null;
+  let html = '<div class="problemTop">' + crumb(p.subject_label || SUBJECT_LABELS[subject] || subject,
                    p.subject_label || SUBJECT_LABELS[subject] || subject)
-    .replace('href="#/"', 'href="#/set/' + esc(subject) + '"');
+    .replace('href="#/"', 'href="#/set/' + esc(subject) + '"')
+    + '<div class="problemSteps"><button type="button" ' + (previous ? 'onclick="location.hash=\'#/p/' + previous.id + '\'"' : 'disabled') + '>← 上一题</button>'
+    + '<button type="button" ' + (next ? 'onclick="location.hash=\'#/p/' + next.id + '\'"' : 'disabled') + '>下一题 →</button></div></div>';
 
   /* ------- 左边：题面 ------- */
   let left = '<div class="pcard pstmt">'
@@ -1183,7 +1361,9 @@ function renderProblem(){
     +   '<span class="pill">难度 ' + stars(p.difficulty) + '</span>'
     +   '<span class="pill">满分 ' + (p.total_score||0) + ' 分</span>'
     +   (p.testcase_count ? '<span class="pill">' + p.testcase_count + ' 个测试点</span>' : '')
-    +   (p.solved ? '<span class="pill p-ok">已解决</span>' : (bestOf(p) > 0 ? '<span class="pill p-warn">部分正确 ' + bestOf(p) + ' 分</span>' : ''))
+    +   '<span id="problemStatusChip">'
+    +   (solvedOf(p) ? '<span class="pill p-ok">已解决</span>' : (bestOf(p) > 0 ? '<span class="pill p-warn">部分正确 ' + bestOf(p) + ' 分</span>' : ''))
+    +   '</span>'
     + '</div>'
     + '<div class="mdsec"><h4>题目描述</h4><div class="md">' + mdRender(p.statement_md) + '</div></div>';
 
@@ -1218,7 +1398,7 @@ function renderProblem(){
   left += '</div>';
 
   /* ------- 右边：作答区 ------- */
-  let right = '<div class="pcard pedit">';
+  let right = '<div class="pcard pedit' + (!isTheory ? ' hasCode' : '') + '">';
   right += '<div class="peditHead"><span class="tt">' + (isTheory ? '作答' : '代码') + '</span>' + '<span class="grow"></span>';
 
   if (!isTheory && langs.length > 1){
@@ -1259,7 +1439,13 @@ function renderProblem(){
     + '<div id="histBox"></div>'
     + '</div></div>';
 
-  app.innerHTML = html + '<div class="pgrid">' + left + right + '</div>';
+  app.innerHTML = html + '<div class="pgrid' + (sidebarIsCollapsed() ? ' sidebarCollapsed' : '') + '" id="problemGrid">'
+    + problemSidebarHtml(subject, p.id) + left
+    + '<div class="pdivider" id="problemDivider" role="separator" aria-label="调整题面和作答区宽度" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" tabindex="0"></div>'
+    + right + '</div>';
+  const toggle = app.querySelector('.psideToggle');
+  if (toggle) toggle.textContent = sidebarIsCollapsed() ? '⇥' : '⇤';
+  initProblemLayout();
   renderButtons();
   renderHistory();
   const box = document.getElementById('codeBox');
@@ -1538,6 +1724,10 @@ async function afterJudgeRefresh(){
     const fresh = PROBLEMS.find(x => x.id === CUR.id);
     if (fresh) CUR.best_score = fresh.best_score, CUR.solved = fresh.solved;
   }
+  refreshProblemSidebar();
+  const chip = document.getElementById('problemStatusChip');
+  if (chip && CUR) chip.innerHTML = solvedOf(CUR) ? '<span class="pill p-ok">已解决</span>'
+    : (bestOf(CUR) > 0 ? '<span class="pill p-warn">部分正确 ' + bestOf(CUR) + ' 分</span>' : '');
   if (SET.view === 'set') viewSet(SET.subject);
 }
 
