@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-14 19:57:54",
+ "generated_at": "2026-10-15 10:25:47",
  "count": 204,
  "total_score": 2615,
  "total_testcases": 532,
@@ -7974,7 +7974,7 @@
     "tail -n +1000 file",
     "tail -n -1000 file"
    ],
-   "statement_md": "课程提纲里写「`head -n +1000 file` 从 1000 行开始显示」。\n\n这条命令**会直接报错**。从第 1000 行显示到末尾，正确写法是？",
+   "statement_md": "课程提纲里写「`head -n +1000 file` 从 1000 行开始显示」。实际一跑：这条命令**不报错，但输出的也根本不是「从第 1000 行开始」**。想真的从第 1000 行显示到末尾，正确写法是？",
    "input_format": "",
    "output_format": "一个选项字母（`A`~`D`）",
    "constraints_md": "",

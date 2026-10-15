@@ -161,7 +161,7 @@ LINUX_PROBLEMS: list[dict] = [
             "tail -n -1000 file"
         ],
         "source_section": "基础命令 · 先纠正六处",
-        "statement_md": "课程提纲里写「`head -n +1000 file` 从 1000 行开始显示」。\n\n这条命令**会直接报错**。从第 1000 行显示到末尾，正确写法是？",
+        "statement_md": "课程提纲里写「`head -n +1000 file` 从 1000 行开始显示」。实际一跑：这条命令**不报错，但输出的也根本不是「从第 1000 行开始」**。想真的从第 1000 行显示到末尾，正确写法是？",
         "input_format": "",
         "output_format": "一个选项字母（`A`~`D`）",
         "constraints_md": "",
@@ -175,7 +175,7 @@ LINUX_PROBLEMS: list[dict] = [
                 "expected_stdout": "|C\n",
                 "is_sample": 0,
                 "kind": "manual",
-                "explanation": "**`head` 不认 `+`**，会报 `head: invalid number of lines: '+1000'`。\n\n`+N` 这个语义**只属于 tail**：`tail -n +1000 file` = 从第 1000 行到末尾。\n\n顺便记牢另一半：`-N` 归 head —— `head -n -10 file` 是「去掉**最后** 10 行」。\n\n★ 一句口诀：**`+` 归 tail，`-` 归 head**。\n验证：`tail -n -5 f` 也会报错（tail 的 `-n` 只认数字或 `+数字`）。"
+                "explanation": "实测（GNU coreutils 8.32）：`head -n +1000 file` 退出码 0，输出的是**前 1000 行**——GNU 的 head 把 `+1000` 就当 1000，既不报错、也不做提纲以为的那件事。\n\n「从第 N 行开始」这个语义**只属于 tail**：`tail -n +1000 file` = 从第 1000 行到末尾。\n\n顺便记牢另一半（都实测过）：`head -n -10 file` = 去掉**最后** 10 行；`tail -n -5 file` = 最后 5 行（等价于 `tail -n 5`），同样不报错。\n\n★ 一句口诀：**想表达「从第 N 行开始」，只有 tail 的 `+N` 是那个意思；head 的 `+N` 就是前 N 行。**"
             }
         ]
     },
@@ -497,7 +497,7 @@ LINUX_PROBLEMS: list[dict] = [
                 "expected_stdout": "|错\n|错误\n|×\n|F\n",
                 "is_sample": 0,
                 "kind": "manual",
-                "explanation": "**错**，它是合法的。\n\n`head -n -3 f` 表示「**去掉最后 3 行**，把其余的全部输出」。`-` 在这里是「从末尾砍掉」的意思。\n\n真正非法的是 `head -n +3 f` —— **head 不认 `+`**，会报 `invalid number of lines: '+3'`。\n\n★ 口诀：**`+` 归 tail，`-` 归 head**。\n（反过来说，`tail -n -5 f` 也是非法的 —— tail 的 `-n` 只认数字或 `+数字`。）"
+                "explanation": "**错**，它是合法的。\n\n`head -n -3 f` 表示「**去掉最后 3 行**，把其余的全部输出」。`-` 在这里是「从末尾砍掉」的意思。\n\n（实测：`head -n +3 f` 也是合法的——GNU 的 head 把 `+3` 就当 3，输出前 3 行，不报错；`tail -n -5 f` 同样合法，等价于 `tail -n 5`，输出最后 5 行。）\n\n★ 口诀：**`+N` 只有在 tail 里才是「从第 N 行开始」；head 的 `+N` 就是前 N 行。`-N` 归 head 是「去掉最后 N 行」，归 tail 是「最后 N 行」。**"
             }
         ]
     },

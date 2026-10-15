@@ -408,6 +408,8 @@ Python 56 + 数据结构 31 是**代码题**，必须真执行，仍然要后端
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
 | `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
 | `verify_bank.py` | **204 题 / 532 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
+| `show_text_judge.mjs` | **全过** | 本地判题器的「行为说明书」：多种等价写法都认、变异错答案 71/72 被抓、309 个标准答案全 AC、351 个胡写全 WA |
+| `verify_theory_facts.py` | **39 过 / 0 不符 / 8 无法核验** | **理论题答案的实证核验**：117 道理论题里凡本机（Git Bash GNU coreutils 8.32 / GNU tar 1.35）能跑的，先跑出事实再对答案键；跑不了的如实列「无法核验」。**抓到过真 bug**：91/100 题的 explanation 曾写「`head -n +N` 报错」「`tail -n -N` 非法」——GNU 上全都不成立（`+N` 就是前 N 行；`-N` 归 tail 是最后 N 行），已改 |
 
 跑 `e2e_ui` 的正确姿势（**用测试库，绝不碰真实库**；⚠️ 本机要带 `NO_PROXY`，见下节）：
 
@@ -508,6 +510,13 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
   ```
 
   `e2e_ui` / `httptest_*` / `selfcheck` / `smoke_cloud` 全都要加。
+- ⚠️ **Windows 自带 bsdtar 陷阱**：`subprocess.run(["tar", ...])` 不经过 bash 时拿到的是
+  System32 的 `tar.exe`（bsdtar 3.8.8），行为与 GNU tar 1.35 有差异。要 GNU 版一律
+  `subprocess.run(["bash", "-c", "tar ..."])`（`verify_theory_facts.py` 就这么做）。
+- ⚠️ **MSYS 上符号链接与 chmod 不可信**：`ln -s` 会被降级成副本（`[ -L ]` 为假），
+  且同一命令在不同启动方式下行为不一致（一次建出真链接、一次降级）；`chmod 700`
+  落成 644（ACL 近似映射）。凡是涉及权限位/符号链接的「实证」，在这台机器上做不了，
+  如实降级成「无法核验」，别硬验。
 
 ## 前端（PTA 风格）
 
