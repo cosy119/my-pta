@@ -532,6 +532,61 @@ def _151():
     return (got == "sdut11\nsdut12\n"), "结果 %r" % got
 
 
+# ---------------- 第 11 讲（Shell）：bash 语法不依赖发行版，这几条本机可实证 ----------------
+
+@chk(205, "`[ $v = x ]` 而 v 为空 → 报 unary operator expected（答案键选 B）")
+def _205():
+    rc, out, err = run("v=; [ $v = x ] && echo yes")
+    hit = "unary operator expected" in err
+    return hit, "退出码 %d，stderr=%r（`[` 是命令，空展开后只剩一个操作数）" % (
+        rc, err.strip()[:70])
+
+
+@chk(206, "`[[ 10 > 9 ]]` 为假 —— > 在双方括号里是字符串比较（答案键选 B：small）")
+def _206():
+    rc, out, _ = run("if [[ 10 > 9 ]]; then echo big; else echo small; fi")
+    rc2, out2, _ = run("if [[ 10 -gt 9 ]]; then echo big; else echo small; fi")
+    return (out.strip() == "small" and out2.strip() == "big"), \
+        "`>` -> %s（字典序 '1'<'9'）；`-gt` -> %s" % (out.strip(), out2.strip())
+
+
+@chk(207, "管道里的 while 在子 shell，改的变量出不来（答案键选 B：0）")
+def _207():
+    rc, out, _ = run("n=0; printf 'a\\nb\\nc\\n' | while read x; do n=$((n+1)); done; echo n=$n")
+    return ("n=0" in out.strip()), \
+        "三行数据流过循环后 %r（循环内部确实加到了 3，外面拿不到）" % out.strip()
+
+
+@chk(208, "`local x=$(false)` 之后 $? 恒为 0（判断题答案：对）")
+def _208():
+    rc, out, _ = run("f(){ local n=$(false); return $?; }; f; echo rc=$?")
+    rc2, out2, _ = run("g(){ local n; n=$(false); return $?; }; g; echo rc=$?")
+    return ("rc=0" in out and "rc=1" in out2), \
+        "`local n=$(false)` -> %r；拆成两句 -> %r（拆开后错误码才透得出来）" % (
+            out.strip(), out2.strip())
+
+
+@chk(209, "`for f in $(ls)` 把含空格的文件名切碎（答案键选 B：3 行）")
+def _209():
+    sub("d209")
+    mk("d209/a 1.md", "x")
+    mk("d209/b.md", "x")
+    rc, out, _ = run("cd d209 && for f in $(ls); do echo \"[$f]\"; done | wc -l")
+    # 反证：glob 不切碎
+    rc2, out2, _ = run("cd d209 && for f in *.md; do echo \"[$f]\"; done | wc -l")
+    return (out.strip() == "3" and out2.strip() == "2"), \
+        "`$(ls)` -> %s 行；`*.md` -> %s 行（两个文件，其中一个名里有空格）" % (
+            out.strip(), out2.strip())
+
+
+@chk(210, "`${v:-fallback}` 为空/未定义时替换、有值时保留（答案键）")
+def _210():
+    rc, out, _ = run("v=; echo \"${v:-fallback}\"; v=set; echo \"${v:-fallback}\"")
+    lines = out.split()
+    return (lines[:2] == ["fallback", "set"]), "空值 -> %s；有值 -> %s" % (
+        lines[0] if lines else "?", lines[1] if len(lines) > 1 else "?")
+
+
 # ----------------------------------------------------------------------
 
 

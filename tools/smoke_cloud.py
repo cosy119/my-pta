@@ -234,11 +234,12 @@ def main() -> int:
                 return p.get("reference_solution") or ""
         return ""
 
-    # 数据结构线全是 cpp（见 problems_bank_ds）。列表接口不返回 langs，
-    # 所以这里只挑题，能不能编由后面的提交结果说话。
+    # DS 线既有 cpp 编程题也有 text 理论题（2026-10-15 起）。试编译必须挑
+    # line == "cpp" 的编程题 —— 把理论题的字母答案喂给 g++ 只会收获 CE。
     st, plist = http("/api/problems?subject=ds", base=base)
     items = (plist or {}).get("items") if isinstance(plist, dict) else None
-    ds_item = (items or [None])[0]
+    items = items or []
+    ds_item = next((x for x in items if str(x.get("line")) == "cpp"), None)
 
     if not ds_item:
         check("找到一道数据结构题用来试编译", False, str(plist)[:200])

@@ -12,6 +12,8 @@
 2. 《Linux基础命令》讲义的 **A 组（认命令）/ B 组（写命令）/ C 组（找错）**。
 3. 课程下发的 4 份实验 PDF（实验 2/3/4 各 10 题）—— 抽每题的关键考点。
 4. 第 01 ~ 10 讲讲义里的核心概念。
+5. 第 11 ~ 16 讲讲义（第三部分：Shell / GCC / GTK / Qt / Python 环境 / Eclipse）——
+   取自各讲的「一分钟速览」与「附录 A · 陷阱清单」。
 
 题目形态
 --------
@@ -35,6 +37,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "tar 的 -Z 到底压什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -72,6 +75,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "tar 里「显示处理过程」是哪个选项",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -109,6 +113,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "tar 里「创建归档」是哪个选项",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -146,6 +151,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "从第 1000 行开始显示的正确写法",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -161,7 +167,7 @@ LINUX_PROBLEMS: list[dict] = [
             "tail -n -1000 file"
         ],
         "source_section": "基础命令 · 先纠正六处",
-        "statement_md": "课程提纲里写「`head -n +1000 file` 从 1000 行开始显示」。实际一跑：这条命令**不报错，但输出的也根本不是「从第 1000 行开始」**。想真的从第 1000 行显示到末尾，正确写法是？",
+        "statement_md": "课程提纲里写「`head -n +1000 file` 从 1000 行开始显示」。\n\n这条命令**会直接报错**。从第 1000 行显示到末尾，正确写法是？",
         "input_format": "",
         "output_format": "一个选项字母（`A`~`D`）",
         "constraints_md": "",
@@ -175,7 +181,7 @@ LINUX_PROBLEMS: list[dict] = [
                 "expected_stdout": "|C\n",
                 "is_sample": 0,
                 "kind": "manual",
-                "explanation": "实测（GNU coreutils 8.32）：`head -n +1000 file` 退出码 0，输出的是**前 1000 行**——GNU 的 head 把 `+1000` 就当 1000，既不报错、也不做提纲以为的那件事。\n\n「从第 N 行开始」这个语义**只属于 tail**：`tail -n +1000 file` = 从第 1000 行到末尾。\n\n顺便记牢另一半（都实测过）：`head -n -10 file` = 去掉**最后** 10 行；`tail -n -5 file` = 最后 5 行（等价于 `tail -n 5`），同样不报错。\n\n★ 一句口诀：**想表达「从第 N 行开始」，只有 tail 的 `+N` 是那个意思；head 的 `+N` 就是前 N 行。**"
+                "explanation": "**`head` 不认 `+`**，会报 `head: invalid number of lines: '+1000'`。\n\n`+N` 这个语义**只属于 tail**：`tail -n +1000 file` = 从第 1000 行到末尾。\n\n顺便记牢另一半：`-N` 归 head —— `head -n -10 file` 是「去掉**最后** 10 行」。\n\n★ 一句口诀：**`+` 归 tail，`-` 归 head**。\n验证：`tail -n -5 f` 也会报错（tail 的 `-n` 只认数字或 `+数字`）。"
             }
         ]
     },
@@ -183,6 +189,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "统计文件有多少行的正确命令",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -220,6 +227,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "列出「名字里含数字」的文件",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -257,6 +265,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "cd - 与 cd .. 效果相同吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 2,
         "total_score": 8,
         "tags": [
@@ -291,6 +300,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "查看目录本身（而不是里面）的权限",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -328,6 +338,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "ls -a 与 ls -A 输出一样吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -363,6 +374,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "复制目录并保留符号链接与权限时间",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -400,6 +412,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "rm -rf 删掉的文件能从回收站找回吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 2,
         "total_score": 8,
         "tags": [
@@ -435,6 +448,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "tail -n +5 输出什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -471,6 +485,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "head -n -3 是语法错误吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -497,7 +512,7 @@ LINUX_PROBLEMS: list[dict] = [
                 "expected_stdout": "|错\n|错误\n|×\n|F\n",
                 "is_sample": 0,
                 "kind": "manual",
-                "explanation": "**错**，它是合法的。\n\n`head -n -3 f` 表示「**去掉最后 3 行**，把其余的全部输出」。`-` 在这里是「从末尾砍掉」的意思。\n\n（实测：`head -n +3 f` 也是合法的——GNU 的 head 把 `+3` 就当 3，输出前 3 行，不报错；`tail -n -5 f` 同样合法，等价于 `tail -n 5`，输出最后 5 行。）\n\n★ 口诀：**`+N` 只有在 tail 里才是「从第 N 行开始」；head 的 `+N` 就是前 N 行。`-N` 归 head 是「去掉最后 N 行」，归 tail 是「最后 N 行」。**"
+                "explanation": "**错**，它是合法的。\n\n`head -n -3 f` 表示「**去掉最后 3 行**，把其余的全部输出」。`-` 在这里是「从末尾砍掉」的意思。\n\n真正非法的是 `head -n +3 f` —— **head 不认 `+`**，会报 `invalid number of lines: '+3'`。\n\n★ 口诀：**`+` 归 tail，`-` 归 head**。\n（反过来说，`tail -n -5 f` 也是非法的 —— tail 的 `-n` 只认数字或 `+数字`。）"
             }
         ]
     },
@@ -505,6 +520,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "tar -zcvf 里的 z 是什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -541,6 +557,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "touch 已存在的文件会清空内容吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 2,
         "total_score": 8,
         "tags": [
@@ -576,6 +593,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "mkdir -p 里的 p 是什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 1,
         "total_score": 10,
         "tags": [
@@ -612,6 +630,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "tar xf 不写 z 会解压失败吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 4,
         "total_score": 8,
         "tags": [
@@ -646,6 +665,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "只看 zip 包里有什么，不解压",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -682,6 +702,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "less 比 more 强在哪",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 1,
         "total_score": 8,
         "tags": [
@@ -716,6 +737,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "删掉符号链接会删掉真实目录吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -751,6 +773,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "/etc/shells 是什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 2,
         "total_score": 8,
         "tags": [
@@ -785,6 +808,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "用相对路径切到子目录，`cd share` 与 `cd ../share` 等价吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -820,6 +844,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "一步回到上一个目录",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -850,6 +875,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "列出目录下所有条目（含隐藏）的长格式",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 1,
         "total_score": 10,
         "tags": [
@@ -881,6 +907,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "复制目录并保留权限与时间戳",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 3,
         "total_score": 12,
         "tags": [
@@ -912,6 +939,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "只看目录本身的一行信息",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -942,6 +970,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "取文件的前 50 行",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 1,
         "total_score": 10,
         "tags": [
@@ -972,6 +1001,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "取从第 100 行到末尾",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 3,
         "total_score": 12,
         "tags": [
@@ -1003,6 +1033,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "取除最后 10 行外的全部内容",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 3,
         "total_score": 12,
         "tags": [
@@ -1034,6 +1065,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "打包并 gzip 压缩",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 12,
         "tags": [
@@ -1065,6 +1097,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "查看压缩包里有哪些文件",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -1096,6 +1129,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "把压缩包解压到指定目录",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 4,
         "total_score": 15,
         "tags": [
@@ -1128,6 +1162,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "一次性创建多级目录",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 1,
         "total_score": 10,
         "tags": [
@@ -1158,6 +1193,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "一次建三个空文件",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 12,
         "tags": [
@@ -1189,6 +1225,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "用 gzip 压缩，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1225,6 +1262,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "从第 100 行开始显示，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1262,6 +1300,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "想统计行数，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -1298,6 +1337,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "想删掉一个目录，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1335,6 +1375,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "备份 ssh 私钥，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -1373,6 +1414,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "复制目录，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -1410,6 +1452,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "解压到指定目录，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1447,6 +1490,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "父目录不存在时建多级目录，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 1,
         "total_score": 10,
         "tags": [
@@ -1483,6 +1527,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "zip 压缩目录，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1520,6 +1565,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "取最后 5 行，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -1556,6 +1602,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "列出名字里含数字的文件，哪条对",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1593,6 +1640,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "用相对路径往上走两级",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -1624,6 +1672,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "查看系统支持哪些 shell 类型",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -1655,6 +1704,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "查看当前默认使用的 shell",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 1,
         "total_score": 10,
         "tags": [
@@ -1686,6 +1736,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "su 后面那个减号到底管什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1723,6 +1774,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "把目录列表重定向到文件并带行号查看",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 3,
         "total_score": 12,
         "tags": [
@@ -1755,6 +1807,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "仅列出 /etc 下名字含 pass 的文件",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 3,
         "total_score": 12,
         "tags": [
@@ -1787,6 +1840,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "把目录复制到 /usr 需要什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1824,6 +1878,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "vi 里把内容存下来并退出",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -1861,6 +1916,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "mv 到底是「改名」还是「移进去」",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -1898,6 +1954,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "把 /boot 下 vmlinuz 开头的文件拷到家目录",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 4,
         "total_score": 15,
         "tags": [
@@ -1930,6 +1987,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "ll 在脚本里也能用吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -1965,6 +2023,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "tar 打包时那句 Removing leading / 警告",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2002,6 +2061,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "ln -s 的两个参数谁在前",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2039,6 +2099,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "按字典逆序排序文件内容",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -2071,6 +2132,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "输出字符串但不换行",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -2103,6 +2165,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "man 手册的章节号",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2140,6 +2203,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "在终端启动当前目录下的程序",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2177,6 +2241,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "装 MySQL 到底装哪个包",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -2214,6 +2279,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "把两个文件的内容拼进第三个文件",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 3,
         "total_score": 12,
         "tags": [
@@ -2246,6 +2312,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "反查一个命令属于哪个包",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 4,
         "total_score": 12,
         "tags": [
@@ -2278,6 +2345,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "你敲一条命令，中间经过了什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -2315,6 +2383,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "Linux 的分层结构，Shell 在哪一层",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -2351,6 +2420,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "哪个目录放配置文件",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 1,
         "total_score": 10,
         "tags": [
@@ -2387,6 +2457,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "root 的家目录在哪",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 2,
         "total_score": 8,
         "tags": [
@@ -2421,6 +2492,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "Linux 的文件系统是几棵树",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -2458,6 +2530,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "X Window 是什么角色",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2495,6 +2568,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "自建的应用菜单项放哪里",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -2530,6 +2604,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "LibreOffice 的三个主力组件",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -2566,6 +2641,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "Flatpak 装的软件能在 dnf 里看到吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -2601,6 +2677,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "装本地 rpm 包的正确姿势",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2638,6 +2715,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "编译时提示找不到头文件，该装什么包",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2675,6 +2753,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "DNF5 里怎么装一个软件包组",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -2712,6 +2791,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "装完显卡驱动能不能立刻重启",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -2749,6 +2829,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "Fedora 上有 dpkg 吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -2784,6 +2865,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "一键回滚上一次软件安装",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 4,
         "total_score": 12,
         "tags": [
@@ -2816,6 +2898,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "教材让你敲 ifconfig，但机器上没这个命令",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2853,6 +2936,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "nmcli 改完 IP 为什么不生效",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -2889,6 +2973,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "能 ping 通 IP 但打不开网页",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -2926,6 +3011,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "查看网卡的「真实名字」",
         "subject": "linux",
         "line": "text",
+        "question_type": "fill_blank",
         "difficulty": 3,
         "total_score": 12,
         "tags": [
@@ -2957,6 +3043,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "替代 netstat 看端口",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -2994,6 +3081,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "scp 和 ssh 的端口参数大小写",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3031,6 +3119,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "改主机名的正确方式",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3067,6 +3156,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "ping 不通就一定是网络故障",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 2,
         "total_score": 8,
         "tags": [
@@ -3102,6 +3192,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "systemctl enable 之后服务在跑吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 2,
         "total_score": 10,
         "tags": [
@@ -3139,6 +3230,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "四个服务的「户口本」",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3177,6 +3269,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "服务配好了，外面还是访问不到",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3214,6 +3307,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "chcon 和 semanage 的区别",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3251,6 +3345,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "改完 unit 文件为什么没生效",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3288,6 +3383,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "disable 和 mask 有什么不同",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3325,6 +3421,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "useradd 之后为什么登录不了",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3362,6 +3459,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "usermod 加附加组，-G 还是 -aG",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3399,6 +3497,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "想看系统日志，该打开哪个文件",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3436,6 +3535,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "chmod -R 644 目录的后果",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3473,6 +3573,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "杀进程该用哪个信号",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3510,6 +3611,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "给脚本设 SUID 想以 root 运行",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3547,6 +3649,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "wheel 组能限制 su 吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 4,
         "total_score": 8,
         "tags": [
@@ -3582,6 +3685,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "free 显示的内存很小，是不是不够用",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 3,
         "total_score": 10,
         "tags": [
@@ -3619,6 +3723,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "cron 任务里为什么找不到命令",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3656,6 +3761,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "/etc/hosts.allow 能限制 SSH 来源吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 4,
         "total_score": 8,
         "tags": [
@@ -3691,6 +3797,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "手动加的 iptables 规则为什么消失了",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3728,6 +3835,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "setsebool 忘了加什么会失效",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3765,6 +3873,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "semanage 报 command not found",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3802,6 +3911,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "SELINUX=disabled 有什么代价",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3839,6 +3949,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "firewall-cmd --permanent 之后立刻生效吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -3874,6 +3985,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "改 sshd_config 的正确流程",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -3911,6 +4023,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "pam_tally2 在新系统上还能用吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 5,
         "total_score": 10,
         "tags": [
@@ -3948,6 +4061,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "setenforce 0 是不是解决方案",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 3,
         "total_score": 8,
         "tags": [
@@ -3983,6 +4097,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "make install 之后为什么 GRUB 里没有新内核",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 5,
         "total_score": 10,
         "tags": [
@@ -4020,6 +4135,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "编译内核该用哪个用户",
         "subject": "linux",
         "line": "text",
+        "question_type": "true_false",
         "difficulty": 4,
         "total_score": 8,
         "tags": [
@@ -4055,6 +4171,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "编译内核第一步该做什么",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -4091,6 +4208,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "编译到 80% 报 Killed signal terminated program cc1",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 4,
         "total_score": 10,
         "tags": [
@@ -4128,6 +4246,7 @@ LINUX_PROBLEMS: list[dict] = [
         "title": "uname -r 没变，是编译失败了吗",
         "subject": "linux",
         "line": "text",
+        "question_type": "single_choice",
         "difficulty": 5,
         "total_score": 10,
         "tags": [
@@ -4158,6 +4277,2367 @@ LINUX_PROBLEMS: list[dict] = [
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "**不一定。最常见的原因是「新内核装了，但默认启动项没切过去」。**\n\n**先确认新内核到底装上没**：\n```bash\nsudo grubby --info=ALL              # ★ 列出所有启动项，看有没有你的版本\nls /boot/vmlinuz-*                  # 看文件在不在\nls /lib/modules/                    # 看模块目录有没有新版本\nls /boot/loader/entries/            # Fedora 的 BLS 启动条目\n```\n\n**如果在，就手动切默认启动项**：\n```bash\nsudo grubby --set-default /boot/vmlinuz-<完整版本号>\n```\n★ **必须用 `grubby --info=ALL` 输出里的完整 kernel 路径** —— 写个不带版本号的名字 grubby 找不到，会报错或者干脆没反应。\n\n**另外两个「看起来像失败」的正常现象**：\n| 现象 | 真相 |\n|---|---|\n| GRUB 菜单一闪而过，来不及选 | `GRUB_TIMEOUT` 是 0。改 `/etc/default/grub` 调到 5 秒以上，再 `grub2-mkconfig` |\n| 新内核起来了，但硬件大面积失效 | `make modules_install` 忘了跑 → `ls /lib/modules/<版本>/` 是空的 |\n\n★ **一条不能违背的规矩**：`installonly_limit` **保持默认值 3**。调成 1 的话，装新内核时**旧内核被自动删掉** —— 一旦新内核有问题，你就**没有任何退路**了。\n查：`dnf config-manager getopt installonly_limit`"
+            }
+        ]
+    },
+    {
+        "title": "条件测试里变量不加引号会怎样",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "shell",
+            "条件判断",
+            "引号",
+            "第 11 讲"
+        ],
+        "choices": [
+            "什么都不输出，判断为假",
+            "bash: [: =: unary operator expected",
+            "bash: [: missing ']'",
+            "bash: v: unbound variable"
+        ],
+        "source_section": "第 11 讲 · Shell 程序设计",
+        "statement_md": "脚本里写 `[ $v = x ] && echo yes`，而变量 `v` 从未赋值。bash 会输出什么？\n\n（提示：`[` 在这里不是语法，是一条命令。）",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`[` **是一条命令**（等价于 `test`），不是语法。\n\n`$v` 展开成空串之后，这一行变成了：\n```\n[ = x ]\n```\n命令 `[` 收到两个参数 `=` 和 `x`。它按「两个参数」的规则去解释，发现第一个参数 `=` **不是一个合法的一元运算符**，就报错退出：\n```\nbash: [: =: unary operator expected\n```\n\n★ **修法只有一个：给变量加双引号** —— `[ \"$v\" = x ]`。\n展开后变成 `[ \"\" = x ]`，命令 `[` 收到三个参数，走「二元比较」规则，合法，判为假。\n\n★ 这条是「90% 的 shell 玄学问题都出在没加引号」的典型案例。如果你想彻底避开这类坑，用 `[[ ]]` —— 它是**语法**，不做分词也不做 glob，`[[ $v = x ]]` 里 `$v` 为空也不会报错。"
+            }
+        ]
+    },
+    {
+        "title": "双方括号里的 > 是数值比较吗",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "shell",
+            "条件判断",
+            "字符串比较",
+            "第 11 讲"
+        ],
+        "choices": [
+            "big",
+            "small",
+            "报语法错误",
+            "取决于系统 locale"
+        ],
+        "source_section": "第 11 讲 · Shell 程序设计",
+        "statement_md": "`if [[ 10 > 9 ]]; then echo big; else echo small; fi` 会打印什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**打印 `small`。** `[[ ]]` 里的 `>` 和 `<` 做的是**字符串比较**（字典序），不是数值比较。\n\n`\"10\"` 和 `\"9\"` 从左往右比第一个字符：`'1'` (0x31) < `'9'` (0x39) → 所以 `[[ 10 > 9 ]]` 是**假**。\n\n| 想做的事 | 正确写法 |\n|---|---|\n| 数值比较 | `[[ 10 -gt 9 ]]` 或 `(( 10 > 9 ))` |\n| 字符串比较 | `[[ 10 > 9 ]]` |\n\n★ 顺带一个更凶的坑：**同样写法放进 `[ ]` 里会变成重定向**。\n`[ 10 > 9 ]` 里的 `>` 会被 shell 当成「把输出写进文件 9」，于是当前目录凭空多出一个叫 `9` 的空文件，而判断结果还莫名其妙。\n\n**规律**：`[[ ]]` 内部不重定向、不做分词，是「语法级」的判断；`[ ]` 是普通命令，里面的一切先被 shell 处理一遍。"
+            }
+        ]
+    },
+    {
+        "title": "管道里的 while 为什么改变不了外面的变量",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "shell",
+            "管道",
+            "子shell",
+            "第 11 讲"
+        ],
+        "choices": [
+            "3",
+            "0",
+            "报错 unbound variable",
+            "1"
+        ],
+        "source_section": "第 11 讲 · Shell 程序设计",
+        "statement_md": "`n=0; seq 3 | while read x; do n=$((n+1)); done; echo $n` 输出什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**输出 `0`。** 管道两侧**各在一个子 shell 里跑**，`while` 循环改的 `n` 只活在那个子 shell 里，循环一结束就随子 shell 一起没了。\n\n父 shell 里的 `n` 从头到尾都是 0。\n\n★ 这是 shell 里最典型的「变量设了却出不来」的成因。三种修法：\n\n```bash\n# ① 输入重定向（最常用）—— 循环回到当前 shell 跑\nwhile IFS= read -r x; do n=$((n+1)); done < <(seq 3)\n\n# ② 只把「产生数据」的那步放进管道\nwhile IFS= read -r x; do n=$((n+1)); done < <(seq 3)\n\n# ③ 让子 shell 自己把结果打出来，外面接住\nn=$(seq 3 | wc -l)\n```\n\n⚠️ `for f in $(ls) | ...`、`cmd | while` 都是同一类问题。**判断口诀：管道右侧的整条命令，都在子 shell 里。**"
+            }
+        ]
+    },
+    {
+        "title": "local 会吞掉命令替换的退出码",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 4,
+        "total_score": 8,
+        "tags": [
+            "shell",
+            "函数",
+            "退出码",
+            "第 11 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 11 讲 · Shell 程序设计",
+        "statement_md": "在函数里写 `local n=$(false)`，紧接着 `echo $?` 会打印 `0`。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对。** `local` 本身是一条命令，它自己的退出码（成功 = 0）**覆盖**了命令替换里那条命令的退出码。\n\n所以 `local x=$(cmd)` 之后 `$?` 恒为 0 —— 不管 `cmd` 成功还是失败。\n\n★ 这个坑的后果很隐蔽：`set -e` 不会因为 `cmd` 失败而终止，错误处理分支也永远进不去。\n\n**正确写法**（两条语句分开）：\n```bash\nlocal n\nn=$(cmd) || return 1\n```\n\n★ 同类坑还有 `declare x=$(cmd)`、`export x=$(cmd)` —— 凡是「带赋值能力的命令 + 命令替换」都要当心。"
+            }
+        ]
+    },
+    {
+        "title": "for f in $(ls) 遇到含空格的文件名",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "shell",
+            "循环",
+            "glob",
+            "分词",
+            "第 11 讲"
+        ],
+        "choices": [
+            "2 行",
+            "3 行",
+            "1 行",
+            "报错"
+        ],
+        "source_section": "第 11 讲 · Shell 程序设计",
+        "statement_md": "目录里有 `a 1.md` 和 `b.md` 两个文件。\n\n`for f in $(ls); do echo \"[$f]\"; done` 会打印几行？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**3 行。** `$(ls)` 的结果会**按 `IFS`（默认含空格）分词** —— `a 1.md` 被切成 `a` 和 `1.md` 两个词，加上 `b.md` 就是 3 行。\n\n```\n[a]\n[1.md]\n[b.md]\n```\n\n★ 这是「文件名含空格」类事故的头号成因 —— 在 `rm`/`mv` 上就是**删错文件**。\n\n**正解：用 glob，别用 `$(ls)`**\n```bash\nfor f in *.md; do echo \"[$f]\"; done    # 2 行\n```\nglob 由 shell 直接展开，**每个文件名是一个整体**，不会再分词。\n\n⚠️ 顺带两个配套：glob 无匹配时会把 `*.md` 原样当文件名 → 循环里加 `[ -e \"$f\" ] || continue`，或 `shopt -s nullglob`。"
+            }
+        ]
+    },
+    {
+        "title": "给变量设默认值怎么写",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "fill_blank",
+        "difficulty": 3,
+        "total_score": 12,
+        "tags": [
+            "shell",
+            "变量",
+            "参数扩展",
+            "第 11 讲"
+        ],
+        "choices": [],
+        "source_section": "第 11 讲 · Shell 程序设计",
+        "statement_md": "要求：变量 `v` **为空或未定义**时用字符串 `fallback` 顶上，其他情况用 `v` 自己的值。\n\n请写出这个**参数扩展**表达式（只写表达式本身，不要写 echo、不要写赋值）。\n\n形如 `${变量:-默认值}`，注意中间那个冒号不能少。",
+        "input_format": "",
+        "output_format": "一行答案（不要写解释、不要写命令提示符）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "${v:-fallback}",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|${v:-fallback}\n|${v:-fallback}\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`${v:-fallback}`** —— 冒号 `:` 的意思是「**为空或未定义**都算」。\n\n| 写法 | 何时替换 |\n|---|---|\n| `${v:-fallback}` | v **未定义** 或 v **为空串** |\n| `${v-fallback}` | 只有 v **未定义**时（为空时不替换）|\n\n**差一个冒号，语义就不一样** —— 这是参数扩展里最常见的记混点。\n\n同一族还有几个必须认识的：\n```bash\n${v:=fallback}    # 为空/未定义时替换，并且把结果写回 v\n${#v}             # v 的长度\n${v%.txt}         # 去掉末尾的 .txt（最短匹配）\n${v%.*}           # 去掉最后一个后缀名\n${v//a/b}         # 把 v 里所有 a 换成 b\n${v:2:5}          # 从第 3 个字符起取 5 个\n```\n\n★ 参数扩展是第 11 讲分量最重的一节（★★★）—— 它能在**不启动任何子进程**的前提下做掉一大堆字符串处理。"
+            }
+        ]
+    },
+    {
+        "title": "gcc 的 -c 停在哪一步",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "gcc",
+            "编译流程",
+            "-c",
+            "第 12 讲"
+        ],
+        "choices": [
+            "预处理后停下，产出 hello.i",
+            "编译后停下，产出 hello.s（汇编）",
+            "汇编后停下，产出 hello.o（目标文件）",
+            "一路走到链接，产出可执行文件 hello"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "GCC 把「源码 → 可执行文件」分成四道工序。`gcc -c hello.c` 会停在哪儿、产出什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "C",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|C\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`-c` 停在第三道工序（汇编），产出目标文件 `.o`。**\n\n```\nhello.c\n  │ -E  预处理（cpp）      → hello.i   纯 C 源码\n  │ -S  编译（cc1）        → hello.s   汇编\n  │ -c  汇编（as）         → hello.o   目标文件  ← 停在这里\n  │     链接（ld）         → hello     可执行文件\n```\n\n★ **记法：三个选项对应「停在前三道工序」，不加选项才走到第四道。**\n\n为什么要能分步？因为**报错的责任人不同**：\n\n| 出错阶段 | 典型报错 | 问题在哪 |\n|---|---|---|\n| ①②③ 编译期 | `error: expected ';'` / `No such file or directory` | 语法、类型、缺头文件 |\n| ④ 链接期 | `undefined reference` / `multiple definition` | 名字找不到 |\n\n★ 分步还很实用：**只改了某一个 `.c` 时，只需重编那一个 `.o`，再链接** —— 这正是 `make` 增量构建干的事。"
+            }
+        ]
+    },
+    {
+        "title": "-I、-L、-l 各管什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "gcc",
+            "选项",
+            "-I",
+            "-L",
+            "-l",
+            "第 12 讲"
+        ],
+        "choices": [
+            "-Linclude",
+            "-Iinclude",
+            "-linclude",
+            "-Winclude"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "编译时报 `fatal error: mylib.h: No such file or directory`，头文件在项目下的 `include/` 目录里。应该加哪个选项？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`-Iinclude`**（大写字母 `I`，是 Include 的首字母）。\n\n三个长得像的选项，分工完全不同 —— **敲错一个字母，报错完全看不懂**：\n\n| 选项 | 管什么 | 例子 |\n|---|---|---|\n| **`-I`**（大写 i） | 头文件的**搜索目录** | `-Iinclude` |\n| **`-L`** | 库文件的**搜索目录** | `-L/usr/local/lib` |\n| **`-l`**（小写 L） | 要链接的**库名** | `-lm`（连 libm） |\n\n★ 两条配套规矩：\n1. **`-I` / `-L` 后面直接跟目录，没有等号** —— `-I=include` 是**不合法**的写法。\n2. `-l` 写的是**去掉 `lib` 前缀和扩展名**的名字：`libm.so` → `-lm`。\n\n★ 链接顺序也归这条管：**`-L` 必须写在 `-l` 之前**（`-L` 只影响它**之后**出现的 `-l`），而 `-l` 必须写在「用到它的那个 `.o`」**之后**。"
+            }
+        ]
+    },
+    {
+        "title": "-l 写在 .o 前面会怎样",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "gcc",
+            "链接",
+            "-l",
+            "顺序",
+            "第 12 讲"
+        ],
+        "choices": [
+            "正常链接成功",
+            "报 undefined reference（找不到符号）",
+            "报 multiple definition",
+            "报找不到库目录 lib"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "静态库 `libmyadd.a` 放在 `./lib/` 下，`main.o` 用了它的函数。\n\n`gcc -Llib -lmyadd main.o -o app` 会？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**报 `undefined reference`。** 链接器（ld）**只从左往右扫一遍**：\n\n1. 扫到 `-lmyadd` 时，它去库里找「**目前还没被满足的符号**」—— 可此刻一个都还没有（还没看到 `main.o`）→ **从库里什么都没取**；\n2. 再扫到 `main.o`，这时才冒出一堆「未定义的符号」；\n3. 但库**已经在身后了**，链接器不会回头。\n\n于是最终报：`undefined reference to 'myadd'`。\n\n★ **口诀：依赖者在前，被依赖者在后。**\n```bash\ngcc -Llib main.o -lmyadd -o app      # ✅\ngcc main.o -Llib -lmyadd -o app      # ✅（-L 在 -l 之前就行）\ngcc -Llib -lmyadd main.o -o app      # ❌ undefined reference\n```\n\n★ **同一个库、同一个 `.o`，只换顺序就成败两样** —— 报错看起来像「库坏了」或「函数名写错了」，其实纯粹是顺序问题。\n第 13 讲的 GTK 程序里，这个坑会以「一屏几十行 `undefined reference`」的形式回来。"
+            }
+        ]
+    },
+    {
+        "title": "-Wno-xxx 该放在哪",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "gcc",
+            "-Wall",
+            "-Wno-",
+            "第 12 讲"
+        ],
+        "choices": [
+            "警告被成功关掉",
+            "警告照旧出现（后写的 -Wall 把它又打开了）",
+            "报未知选项，编译失败",
+            "编译通过，但程序行为改变"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "想关掉 `-Wall` 带出来的 `unused-parameter` 警告，写成 `gcc -Wno-unused-parameter -Wall x.c`。结果？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**警告照旧。** GCC 的规则是「**后者覆盖前者**」—— `-Wno-unused-parameter` 先被执行，紧接着 `-Wall` 又把 `unused-parameter` 这一类打开了。\n\n★ **规矩：`-Wno-` 永远写在最后。**\n```bash\ngcc -Wall -Wextra -Wno-unused-parameter x.c    # ✅\ngcc -Wno-unused-parameter -Wall x.c            # ❌ 白写\n```\n\n★ 为什么值得专门记这一条：**默认编译下，严重问题一个警告都不给。**\n讲义里实测过三处：未检查 `malloc` 返回值、double free、内存泄漏 —— 不加 `-Wall` 全部静默通过。\n\n★ 再补两条同族的：\n- **`-Werror` 不要写进项目的默认 `CFLAGS`** —— 编译器一升级就会多出新警告，于是**别人**编不过你的代码。自己作业里用可以，发给别人时只在 CI 里用。\n- `-Wall` 只是「一大把常用警告」的集合，**不是「全部警告」**，配合 `-Wextra` 才接近「该报的都报」。"
+            }
+        ]
+    },
+    {
+        "title": "为什么 -O2 -g 下断点不命中",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "gcc",
+            "-O2",
+            "gdb",
+            "调试",
+            "第 12 讲"
+        ],
+        "choices": [
+            "gdb 版本太旧，认不出新的调试信息格式",
+            "优化把函数内联、变量放进寄存器，已经没有「能设断点的代码位置」",
+            "-g 没生效，根本没生成调试信息",
+            "必须用 -static 才能下断点"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "用 `-O2 -g` 编译后，在 gdb 里 `break sum_to` 打断点，程序跑完了**一次都没停**。原因？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**优化把函数「弄没了」。** `-O2` 会做**内联、常量折叠、循环展开、向量化** —— 你写的 `sum_to` 很可能被**整个内联进调用点**，函数的代码边界在二进制里根本不存在了，断点自然没有落脚的地方。\n\n★ 同一个原因还会导致「变量显示 `optimized out`」、单步乱跳、`print` 出来的值和源码对不上。\n\n| 用途 | 该用什么 |\n|---|---|\n| 调试 | **`-O0 -g`** 或 **`-Og -g`**（`-Og` = 为调试保留结构的优化档）|\n| 发布 | `-O2`（不要带 `-g`）|\n| 要体积小 | `-Os` |\n\n★ 两个常见误解：\n- **`-O2` 不一定让文件变小** —— 内联、展开、向量化都会让代码**变多**。\n- **`-O0` 能复现、`-O2` 不复现，就改用 `-O0` 编译了事** —— 那是在**藏炸弹**。这种差异几乎一定是未定义行为（越界 / 未初始化 / 有符号溢出），该用 `-fsanitize=address,undefined` 把它逼出来修掉。"
+            }
+        ]
+    },
+    {
+        "title": "大写 .S 会先过预处理器",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 3,
+        "total_score": 8,
+        "tags": [
+            "gcc",
+            "汇编",
+            "后缀",
+            "第 12 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "GCC 里 `.S`（大写）后缀的汇编文件会先经过预处理器，`.s`（小写）不会。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对。** 这条大小写差别是 GCC 明确规定的：\n\n| 后缀 | 先过 cpp 吗 | 能写 `#include` / `#define` 吗 |\n|---|---|---|\n| `.s`（小写） | **不** | 不能 —— `#` 开头的行原样交给汇编器 |\n| `.S`（大写） | **会** | 能 |\n\n★ **内核代码里全靠这个区别** —— 汇编文件里要 `#include` 一堆 C 头文件（架构宏、寄存器定义）时，必须用大写 `.S`。\n\n★ 这也解释了一个常见困惑：手写的 `.s` 文件里写 `#define` 为什么「没生效、还报语法错」—— 它压根没被预处理过。"
+            }
+        ]
+    },
+    {
+        "title": "ar 命令里 rcs 的 s 做什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "gcc",
+            "静态库",
+            "ar",
+            "符号索引",
+            "第 12 讲"
+        ],
+        "choices": [
+            "生成/更新库的符号索引",
+            "保留调试符号",
+            "做静态链接",
+            "跳过重复的成员文件"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "`ar rcs libmyadd.a add.o` —— 三个字母里 `s` 负责什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`s` = 写符号索引。** 三个字母分别是：\n\n| 字母 | 作用 |\n|---|---|\n| `r` | **R**eplace —— 插入或替换成员（文件已存在就换掉）|\n| `c` | **C**reate —— 库不存在就创建（并抑制「正在创建」的提示）|\n| `s` | **S**ymbol index —— 写/更新符号索引 |\n\n★ **为什么 `s` 不能省**：索引让链接器能**按名字快速定位**符号属于哪个成员。\n缺了索引，链接器在库里找符号就会失败，报出来的却是普通的 `undefined reference to 'xxx'` —— **报错里一个字都不会提「索引」**。\n这条坑因此极难排查。\n\n漏了也能补救（对已有的 `.a` 补索引）：\n```bash\nranlib libmyadd.a\n```\n\n★ 顺手一条：**`.a` 就是把一堆 `.o` 打包**（跟 tar 一个思路），所以它跟 `.so` 完全不是一回事 —— `:a` 在编译期就被整段复制进可执行文件，`:so` 是**另一份独立程序**，运行时要靠 `ld.so` 去找。"
+            }
+        ]
+    },
+    {
+        "title": "库文件 libmyadd.a 该写哪个 -l",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "gcc",
+            "静态库",
+            "-l",
+            "命名",
+            "第 12 讲"
+        ],
+        "choices": [
+            "-llibmyadd",
+            "-lmyadd",
+            "-lmyadd.a",
+            "-Lmyadd"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "静态库文件叫 `libmyadd.a`。链接它时 `-l` 后面写什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`-lmyadd`。** `-l` 会**自动补上 `lib` 前缀和扩展名**：\n\n```\n-lmyadd  →  去找 libmyadd.a（静态）或 libmyadd.so（动态）\n```\n\n所以写 `-llibmyadd` 会让它去找 **`liblibmyadd.a`** —— 当然找不到。\n写 `-lmyadd.a` 同理，会变成找 `libmyadd.a.a`。\n\n★ 三个选项的分工再巩固一次：\n```bash\ngcc main.o -L./lib -lmyadd -o app\n#          └─库目录  └─库名（不带 lib / 不带扩展名）\n```\n\n★ 想知道「一个可执行文件到底连了哪些库」，用 **`ldd`**；但要处理**不可信**的文件时改用 `objdump -p 文件 | grep NEEDED` —— `ldd` 在极端实现路径下**会真的执行目标程序**（历史上出过提权漏洞）。"
+            }
+        ]
+    },
+    {
+        "title": "编动态库时每个 .o 都要 -fPIC",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 4,
+        "total_score": 8,
+        "tags": [
+            "gcc",
+            "动态库",
+            "-fPIC",
+            "-shared",
+            "第 12 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "要把若干 `.o` 链接成 `.so`，组成它的**每一个** `.o` 都必须用 `-fPIC` 编译。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对。** 动态库会被加载到**进程地址空间的任意位置**，所以库里的代码必须是「位置无关」的 —— 这就是 **PIC = Position Independent Code**。\n\n忘了加 `-fPIC` 的报错长这样（很好认）：\n```\nrelocation R_X86_64_32 against `...' can not be used when making\na shared object; recompile with -fPIC\n```\n★ 报错最后一句已经把答案给你了。\n\n★ 容易混淆的一点：**`-fPIC` 和 `-shared` 不是一回事**。\n| 选项 | 作用 | 加在哪 |\n|---|---|---|\n| `-fPIC` | 让**代码**位置无关 | 编 `.o` 时（每一个）|\n| `-shared` | 让**链接器**产出 `.so` | 最后链接那一步 |\n\n★ 另一个常被误解的：`-static` **不是「链接某个静态库的开关」**，而是**整个程序全静态链接**（连 libc 一起打进去）。只想让某一个库静态连：`-Wl,-Bstatic -lfoo -Wl,-Bdynamic`。"
+            }
+        ]
+    },
+    {
+        "title": "Makefile 的命令行可以用空格缩进",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 3,
+        "total_score": 8,
+        "tags": [
+            "make",
+            "Makefile",
+            "TAB",
+            "第 12 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "Makefile 里命令行用空格缩进就行，只要看起来对齐了。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "错",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|错\n|错误\n|×\n|F\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**错。命令行的缩进必须是 TAB 字符。**\n\n用空格会报：\n```\n*** missing separator. Stop.\n```\n\n★ 这个报错**完全不告诉你是缩进问题**，新手往往去怀疑「规则写错了」「依赖写错了」。\n\n**怎么确认**：把缩进字符直接打出来看：\n```bash\ncat -A Makefile | head\n# TAB 会显示成 ^I，空格就是空格\n```\n\n**怎么避免**：编辑器里把 `.makefile` / `Makefile` 设成「TAB 不转空格」。\n（注意：**变量的赋值行和条件语句不需要 TAB**，只有「规则下面的命令」需要 —— 所以一个文件里会同时出现两种缩进，这是正常的。）\n\n★ 顺带两条 make 的常见坑：\n- `clean` / `all` 这类**伪目标要写 `.PHONY`**，否则目录里真有同名文件时 make 会认为「目标已最新」而**跳过不执行**。\n- **`make -j$(nproc)` 要小心**：并行度按 CPU 核数算，每个 gcc 进程吃几百 MB 内存，小内存机器会被内核 OOM 杀掉（症状是只有 `Killed` 两个字）。降到 `-j2`。"
+            }
+        ]
+    },
+    {
+        "title": "$@ $< $^ 分别是什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "make",
+            "自动变量",
+            "Makefile",
+            "第 12 讲"
+        ],
+        "choices": [
+            "目标 / 第一个依赖 / 全部依赖",
+            "第一个依赖 / 目标 / 全部依赖",
+            "全部依赖 / 目标 / 第一个依赖",
+            "目标 / 全部依赖 / 第一个依赖"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "Makefile 里一条规则写成 `app: main.o util.o`。这条规则的命令里，`$@` / `$<` / `$^` 依次代表？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`$@` 目标、`$<` 第一个依赖、`$^` 全部依赖。**\n\n| 自动变量 | 含义（就着 `app: main.o util.o` 看）|\n|---|---|\n| `$@` | **目标** → `app` |\n| `$<` | **第一个**依赖 → `main.o` |\n| `$^` | **全部**依赖（去重）→ `main.o util.o` |\n| `$?` | 比目标新的那些依赖 |\n| `$*` | 模式规则里 `%` 匹配到的部分 |\n\n所以最经典的一条规则长这样：\n```make\napp: main.o util.o\n\t$(CC) -o $@ $^        # gcc -o app main.o util.o\n\n%.o: %.c\n\t$(CC) -c -o $@ $<     # gcc -c -o main.o main.c\n```\n\n★ `$@` 和 `$<` **记反了命令会完全跑错**，而且往往「看起来也能跑」——\n因为 `-o` 后面接的如果不是你想要的，可能只是产出一个名字奇怪的文件。\n\n⚠️ 另外提醒：Makefile 里的 `$` 要写 `$$` 才能传给 shell —— `$$HOME` 才是 shell 的 `$HOME`，直接写 `$HOME` 会被 make 当自己的变量。"
+            }
+        ]
+    },
+    {
+        "title": "单独编译头文件为什么报找不到 main",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "gcc",
+            "头文件",
+            "链接",
+            "第 12 讲"
+        ],
+        "choices": [
+            "头文件里有语法错误",
+            "头文件只有声明、不产生目标代码，而且它本来就不含 main",
+            "缺少 -I 指定头文件目录",
+            "需要先把 add.c 编译出来"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "`gcc add.h` 报 `undefined reference to 'main'`。为什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**因为头文件是「被包含」的，不是「被编译」的。**\n\n`.h` 里通常只有**声明**（函数原型、宏、类型），真正的**定义**（函数体）在 `.c` 里。把它当源文件喂给 gcc，编译这一关能过，但链接受不了 —— 链接器要找一个程序入口 `main`，而 `.h` 里根本没有。\n\n```\nundefined reference to 'main'\n```\n\n★ 报错里出现的名字**不是 `add`，是 `main`** —— 这一点很关键：\n**链接器在找的是程序入口，不是 `add`。**（讲义里实测过另一半：把 `main` 拼成 `mian`，链接器同样报「找不到 main」，而且报的**不是**「拼写错误」。）\n\n★ 正确的分工：\n```bash\ngcc -c add.c -o add.o      # 编译实现\ngcc -c main.c -o main.o    # 编译调用者\ngcc add.o main.o -o app    # 链接\n```\n\n★ 顺带一条同族的规矩：**头文件里不要写函数体或 `int g;`** —— 每个包含它的 `.c` 都会生成一份定义，链接时报 `multiple definition`。变量在头文件里写 `extern int g;`，定义放进某一个 `.c`。"
+            }
+        ]
+    },
+    {
+        "title": "GTK4 的 pkg-config 名字是什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "pkg-config",
+            "GTK4",
+            "第 13 讲"
+        ],
+        "choices": [
+            "gtk+-4.0",
+            "gtk4",
+            "gtk+4",
+            "gtk-4.0"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "在 Fedora 44 上要拿到 GTK4 的编译参数，`pkg-config --cflags --libs` 后面该写什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`gtk4`** —— **没有加号、没有 `.0`。**\n\n三代命名风格完全不同，这是最容易输错的地方：\n\n| 版本 | pkg-config 名字 | devel 包名 |\n|---|---|---|\n| GTK+ 2 | `gtk+-2.0` | `gtk2-devel` |\n| GTK+ 3（教材用的） | **`gtk+-3.0`** | `gtk3-devel` |\n| GTK 4（你的 Fedora 44） | **`gtk4`** | `gtk4-devel` |\n\n★ **看到加号就是 GTK4 之前的东西。** 有意思的是，三代**头文件的名字完全一样**（都是 `<gtk/gtk.h>`）—— 所以「`#include` 写对了却编不过」时，先怀疑 pkg-config 名字写错。\n\n写错了会看到：\n```\nPackage gtk+-4.0 was not found in the pkg-config search path.\n```\n★ 这句话是 **`pkg-config` 自己发的**，不是 gcc —— 别去怀疑编译器。用 `pkg-config --list-all | grep -i gtk` 看实际有哪些。"
+            }
+        ]
+    },
+    {
+        "title": "几十个 undefined reference 是什么问题",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "编译",
+            "链接",
+            "分诊",
+            "第 13 讲"
+        ],
+        "choices": [
+            "代码里函数名写错了",
+            "漏了 $(pkg-config --libs gtk4)，没连上 GTK 库",
+            "没有安装 gtk4-devel 包",
+            "gcc 版本太旧"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "编译一个 GTK 程序，报错有**四十多行**，全是 `undefined reference to 'gtk_xxx'`。最可能的原因是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**几十年行 GTK 函数未定义 = 配置问题 → 漏了 `$(pkg-config --libs gtk4)`。**\n\n★ 这里有一条**能省一小时的分诊规则**：\n\n| 报错形态 | 结论 |\n|---|---|\n| **一两个**函数未定义 | **代码问题** —— 函数名拼错 / 用了 GTK4 已删的函数 |\n| **几十个** `gtk_xxx` 未定义 | **配置问题** —— 缺 `-lgtk-4` 那一串 |\n| `fatal error: gtk/gtk.h: No such file or directory` | 缺 `$(pkg-config --cflags gtk4)` 或没装 `gtk4-devel` |\n\n**注意报错发生的阶段完全不同**：\n- 找不到头文件 → **编译期**就停了，一行 `fatal error`；\n- 找不到函数 → 编译全过，**链接期**才炸，几十行。\n\n★ 两类问题的根治办法都是**别手敲那一长串参数**：\n```make\nCFLAGS := $(shell pkg-config --cflags gtk4)\nLIBS   := $(shell pkg-config --libs gtk4)\nhello: hello.c\n\t$(CC) $(CFLAGS) hello.c -o $@ $(LIBS)\n```\n\n⭐ 顺带说一句：`pkg-config` 自己的活只有一件事 —— **把一串 `-I` 和一串 `-l` 吐给你**。它读的是 `/usr/lib64/pkgconfig/gtk4.pc` 这种文本文件。看懂 `.pc` 文件，就再也不会被「这个库要怎么连」卡住。"
+            }
+        ]
+    },
+    {
+        "title": "GTK 的 -l 顺序能不能重排",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "链接",
+            "-l",
+            "顺序",
+            "第 13 讲"
+        ],
+        "choices": [
+            "没影响，顺序无关",
+            "必然报 undefined reference",
+            "编译变快",
+            "自动改成动态链接"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "把 `pkg-config --libs gtk4` 吐出来的 `-lgtk-4 -lgdk-4 ... -lglib-2.0` 手工按字母顺序重排一遍，会？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**必然报 `undefined reference`。**\n\n那串顺序是 `pkg-config` 按 `.pc` 文件里的 `Requires` **拓扑排序**出来的，和链接器「从左到右只扫一遍」的规则**严格对应**：\n\n```\nGTK 4  →  依赖 GDK 4  →  依赖 GLib\n-lgtk-4            -lgdk-4            -lglib-2.0\n  （前者必须写在后者的前面）\n```\n\n★ 这和 **第 12 讲的 `-l` 顺序规则是同一件事**：「依赖者在前，被依赖者在后」。第 12 讲你用一个 `.a` 亲手撞过，这里只是放大成「四十行报错」。\n\n★ **好消息**：`pkg-config` 吐出来的顺序**已经排好了**，你只要**别自己重排**就行。真正要守的只有一条：\n```make\n\t$(CC) $(CFLAGS) hello.c -o $@ $(LIBS)\n#     └ cflags 在前      └ 源文件在中        └ libs 在后\n```\n（把 `--cflags --libs` 合并写在源文件**前面**，`-l` 就跑到了 `.c` 前面 —— 顺序违反规则，同样炸。）"
+            }
+        ]
+    },
+    {
+        "title": "GTK4 用什么取代 gtk_main",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "GTK4",
+            "主循环",
+            "第 13 讲"
+        ],
+        "choices": [
+            "gtk_main() 照旧可用",
+            "g_application_run()",
+            "g_main_loop_run()",
+            "gtk_run()"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "教材里的程序结尾是 `gtk_main();`。在 GTK4 里应该用什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`g_application_run()`。GTK4 把 `gtk_main_*` 整族 API 删除了。**\n\n★ 这是 GTK 3 → 4 最大的一处世界观变化：\n\n> **GTK 4 把「一堆独立的函数」换成了「一个 Application 对象」。**\n\n| 要做的事 | GTK+ 3（教材） | GTK 4 |\n|---|---|---|\n| 初始化 | `gtk_init(&argc, &argv)` | 不需要，`g_application_run()` 里做 |\n| 建窗口 | `gtk_window_new(GTK_WINDOW_TOPLEVEL)` | `gtk_application_window_new(app)` |\n| 挂「界面就绪」处理 | 手动在 main 里写 | 连 `\"activate\"` 信号 |\n| 开主循环 | `gtk_main()` | **`g_application_run(app, argc, argv)`** |\n| 退出主循环 | `gtk_main_quit()` | 由应用对象管理 |\n\n所以 GTK4 的骨架是「**先建应用、告诉应用『被激活时干什么』、然后交给应用去跑**」：\n```c\nGtkApplication *app = gtk_application_new(\"com.example.hello\",\n                                          G_APPLICATION_DEFAULT_FLAGS);\ng_signal_connect(app, \"activate\", G_CALLBACK(on_activate), NULL);\nint status = g_application_run(G_APPLICATION(app), argc, argv);\ng_object_unref(app);\n```\n\n★ 记住这一句话，第 13 讲那张「GTK3 与 GTK4 六处对照表」就是它的六个分身。**考试按教材答 `gtk_main()`，动手按 GTK4 写 `g_application_run()`。**"
+            }
+        ]
+    },
+    {
+        "title": "GTK4 怎么建顶层窗口",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "GTK4",
+            "窗口",
+            "API 迁移",
+            "第 13 讲"
+        ],
+        "choices": [
+            "照旧可用，参数不变",
+            "gtk_window_new() 不再接收参数，且推荐用 gtk_application_window_new(app)",
+            "改名成 gtk_widget_new()",
+            "这个函数搬到了 GDK 里"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "教材里用 `gtk_window_new(GTK_WINDOW_TOPLEVEL)` 建窗口。GTK4 里该怎么做？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`gtk_window_new()` 在 GTK4 里不再接收参数，而且更推荐用 `gtk_application_window_new(app)`。**\n\n两处变化：\n1. **窗口类型参数被删了**（`GTK_WINDOW_TOPLEVEL` / `GTK_WINDOW_POPUP` 那一套），`gtk_window_new()` 变成无参函数；\n2. 有了 Application 对象之后，顶层窗口应当**挂在应用上**。\n\n★ 这两个函数**不只是名字不同**：\n\n| | `gtk_window_new()` | `gtk_application_window_new(app)` |\n|---|---|---|\n| 窗口归属 | 独立窗口，跟应用无关 | **隶属于某个 Application** |\n| 单实例 / 生命周期管理 | 没有 | 有 |\n| 桌面集成（图标、任务栏分组） | 没有 | 有 |\n\n★ 同族被删/改名的还有一串，照抄教材就会撞上：\n- `gtk_window_set_position()` → **被删**（Wayland 下窗口位置归合成器管，客户端无权指定）\n- `gtk_widget_show_all()` → **被删**（控件默认可见）\n- `gtk_container_add()` → **被删**（`GtkContainer` 整个基类没了）\n\n★ 一条经验：**报错数量多不一定是你写错了** —— 照抄 GTK3 代码时，往往是「一批 API 整体消失」，而不是个别函数名打错。"
+            }
+        ]
+    },
+    {
+        "title": "二维表格控件在 GTK4 里叫什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "GTK4",
+            "布局",
+            "GtkGrid",
+            "第 13 讲"
+        ],
+        "choices": [
+            "GtkTable，照旧可用",
+            "GtkGrid",
+            "GtkBox",
+            "GtkFixed"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "教材用 `gtk_table_new(4, 4, TRUE)` 做表格布局。GTK4 里对应的控件是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`GtkGrid`。** `GtkTable` **从 GTK 3.4 起就废弃，在 GTK4 里整个类被删了。**\n\n两处改善：\n1. `gtk_grid_new()` **不用指定行列数** —— 用到几行几列自动扩；\n2. 每个格子可以**跨行列**（`gtk_grid_attach(grid, child, col, row, colspan, rowspan)`）。\n\n★ 顺带把布局这一族都记一下，它们在第 12→13 讲的迁移里是重灾区：\n\n| 想做的事 | GTK+ 3 | GTK 4 |\n|---|---|---|\n| 往容器里放控件 | `gtk_container_add()` | `gtk_window_set_child()` / `gtk_box_append()` |\n| 横向/纵向排列 | `gtk_box_pack_start(box, c, exp, fill, pad)` | `gtk_box_append()` + `hexpand` / `valign` |\n| 二维表格 | `gtk_table_new()` | **`gtk_grid_new()`** |\n| 分隔面板 | `gtk_paned_add1/add2` | `gtk_paned_set_start_child()` / `set_end_child()` |\n| 读输入框内容 | `gtk_entry_get_text()` | `gtk_editable_get_text(GTK_EDITABLE(entry))` |\n\n★ 一个必须记住的设计思想：**GTK 布局不用坐标，用「容器套容器」**。\n你永远不写「x=100, y=50」，你写「把按钮放进一个横向盒子的末尾，盒子右边距 16」。窗口被拉大时 GTK 自己重算位置 —— 这是它和 MFC / Win32 最根本的差别，也是 `GtkFixed` 只该用于画板类场景的原因。"
+            }
+        ]
+    },
+    {
+        "title": "GTK4 程序跑完窗口不出现，漏了什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "GTK4",
+            "窗口显示",
+            "排错",
+            "第 13 讲"
+        ],
+        "choices": [
+            "gtk_init()",
+            "gtk_widget_show_all(window)",
+            "gtk_window_present(window)",
+            "gtk_main()"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "一个 GTK4 程序：编译通过、运行没有报错、进程也活着，**但窗口就是不出来**。最可能漏了哪一行？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "C",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|C\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**漏了 `gtk_window_present(window)`。**\n\nGTK4 有个很「反直觉」的变化：\n- **普通控件默认就是可见的** —— 所以 `gtk_widget_show_all()` 被删了，不用也不能再调；\n- **但顶层窗口不会自动呈现** —— 必须显式 `gtk_window_present()`。\n\n★ 这个坑的可怕之处在于：**不报错、不崩溃、进程还在跑**。你看到的只是「程序启动了但什么都没发生」，会本能地去怀疑显示环境、显卡驱动、Wayland 会话……其实就差这一行。\n\n★ 和它配套的两个「看不见的坑」：\n\n| 现象 | 原因 |\n|---|---|\n| 从 cron / systemd 服务里启动 GTK 程序，报 `cannot open display` | 没有 `DISPLAY` / `WAYLAND_DISPLAY` —— 这是「图形程序不能后台跑」的根本原因 |\n| 在 Wayland 会话里用 `xdotool` / `wmctrl` 控制别的 GTK4 窗口，没反应 | Wayland 下**客户端互相隔离**，这是安全性设计不是 bug |\n\n★ 排查 GUI 程序的通用姿势（第 16 讲会再用一次）：**从终端启动**，别双击 —— 双击时 stderr 没有终端接着，错误就凭空消失了（Eclipse 闪退也是这个道理）。"
+            }
+        ]
+    },
+    {
+        "title": "g_signal_connect 的信号名拼错会怎样",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "信号",
+            "排错",
+            "第 13 讲"
+        ],
+        "choices": [
+            "编译期报错，说信号不存在",
+            "编译通过，但运行起来毫无反应",
+            "程序一启动就崩溃",
+            "启动时弹出「未知信号」警告并退出"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "把信号名写成 `\"activatee\"`（多打了一个 e），会发生什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**编译完全通过，运行毫无反应。**\n\n信号名在 `g_signal_connect` 里是一个**字符串**（`gchar *`），**编译器不检查字符串内容** —— 只有运行到那一行、GLib 去信号表里查，才发现「没有这个信号」。而且它**不会让程序退出**，你只会看到「按钮点了没反应」。\n\n★ 这是最典型的「一小时黑洞」：没有报错、没有崩溃、你盯着一堆写对的代码找不到问题。\n\n**排障武器**：让 GLib 把警告当致命错误打出来\n```bash\n./hello --g-fatal-warnings\n```\n\n★ **这条坑正是第 14 讲 Qt 存在的理由**：\n\n| | GTK（C） | Qt（C++） |\n|---|---|---|\n| 信号怎么表示 | **字符串** `\"clicked\"` | **函数指针** `&QPushButton::clicked` |\n| 拼错时 | 编译通过，运行静默失败 | **编译期直接报错并指出位置** |\n\nQt 那套写法（新式 `&Class::method`）就是专门用来消灭这类错误的 —— 这是「类型系统帮你干活」的教科书案例。"
+            }
+        ]
+    },
+    {
+        "title": "GTK4 里控件默认可见",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 3,
+        "total_score": 8,
+        "tags": [
+            "gtk",
+            "GTK4",
+            "可见性",
+            "第 13 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "GTK4 里控件默认就是可见的，不需要再调用 `gtk_widget_show_all()`。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对。** GTK4 里控件创建出来**默认可见**，所以 `gtk_widget_show()` / `gtk_widget_show_all()` 这族函数**被删除了**。\n\n★ 最容易被这条绊住的人是**照抄 GTK3 代码**的：\n教材那 12 行里有一行 `gtk_widget_show_all(window);` —— 在 GTK4 里编译直接报「没有这个函数」。\n\n★ 但**别把这条和上一题记混**：\n\n| 对象 | GTK4 里的可见性 |\n|---|---|\n| 普通控件（按钮、标签、盒子） | **默认可见**，不用管 |\n| **顶层窗口** | **仍然要显式 `gtk_window_present()`** |\n\n一句话：**「控件自动可见」被删掉了 `show_all`，「窗口要显式呈现」是新加的 `present`。** 两者一减一加，别只记住一半。"
+            }
+        ]
+    },
+    {
+        "title": "GtkContainer 在 GTK4 里还在吗",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 3,
+        "total_score": 8,
+        "tags": [
+            "gtk",
+            "GTK4",
+            "容器",
+            "API 迁移",
+            "第 13 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "GTK4 里仍然可以用 `gtk_container_add(GTK_CONTAINER(w), child)` 往窗口里放控件。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "错",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|错\n|错误\n|×\n|F\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**错。`GtkContainer` 这个基类在 GTK4 里整个被删除了。**\n\nGTK3 把所有「能装子控件的对象」统一抽象成 `GtkContainer`，配套一组 `gtk_container_*()` 函数。GTK4 把这层抽象拿掉，改成**每种容器用自己的专用函数**：\n\n| 容器 | GTK4 里怎么加子控件 |\n|---|---|\n| 窗口 | `gtk_window_set_child(window, child)` |\n| 盒子 | `gtk_box_append(box, child)` / `gtk_box_prepend()` |\n| 网格 | `gtk_grid_attach(grid, child, col, row, w, h)` |\n\n★ 顺带两条和「控件归属」有关的硬规矩：\n1. **一个控件只能有一个父容器** —— 把同一个控件 append 到两个容器，会收到 `Gtk-WARNING: Attempting to add widget ... but it already has a parent`。要在两处显示得建两个控件。\n2. **窗口只能有一个子控件** —— 第二次 `set_child` 会把第一个顶掉。要放多个，**先建一个 `GtkBox` 再往里放**。"
+            }
+        ]
+    },
+    {
+        "title": "Makefile 里 pkg-config 该用哪种赋值",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "make",
+            "pkg-config",
+            "GTK4",
+            "第 13 讲"
+        ],
+        "choices": [
+            "用 =，因为更灵活，值变了能跟着变",
+            "用 :=，否则每次用到 CFLAGS 都会重跑一次 pkg-config 子进程",
+            "两者完全等价，随便用",
+            "都不对，应该把参数写死在编译命令里"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "下面两种写法，GTK 项目推荐哪一种、为什么？\n\n```make\nCFLAGS =  $(shell pkg-config --cflags gtk4)\nCFLAGS := $(shell pkg-config --cflags gtk4)\n```",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**用 `:=`（立即展开）。**\n\n| 写法 | 展开时机 | 后果 |\n|---|---|---|\n| `CFLAGS = $(shell ...)` | **递归展开** —— 每次**用到**都重新求值 | 用 2 次就起 2 个子进程 |\n| `CFLAGS := $(shell ...)` | **立即展开** —— 定义时求值一次 | 只起 1 个子进程 |\n\n★ 讲义里实测过：`CFLAGS = $(shell ...)` 在同一个 Makefile 里被引用 2 次，子进程就真的被调起 2 次。项目一大、嵌套一深，这个开销会很难看。\n\n★ 顺带两个同族的坑：\n1. **`make -n` 照样会触发 `$(shell ...)`** —— `-n` 只拦「命令行的执行」，**不拦「变量展开」**。所以别拿 `make -n` 当「零副作用」的预览工具。\n2. **Makefile 里用单引号包 `$(pkg-config ...)` 是不行的** —— **单引号里的 `$( )` 不展开**（这是 make 的行为，不是 shell）——\n   报错会变成 `cannot find '$(pkg-config'`，看起来莫名其妙。\n\n★ 一句话记住：**Makefile 里 `:=` 是「现在就做」，`=` 是「用的时候再做」。**要起子进程、要算时间、要读文件的地方，一律用 `:=`。"
+            }
+        ]
+    },
+    {
+        "title": "gtk_grid_attach 的参数顺序",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "gtk",
+            "GTK4",
+            "GtkGrid",
+            "参数顺序",
+            "第 13 讲"
+        ],
+        "choices": [
+            "列、行、跨列数、跨行数",
+            "行、列、跨行数、跨列数",
+            "x 坐标、y 坐标、宽度、高度（像素）",
+            "行、列、宽度、高度"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "`gtk_grid_attach(grid, child, a, b, c, d)` 里，`a` ~ `d` 依次代表什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`(col, row, width, height)` —— 先列后行。**\n\n```c\ngtk_grid_attach(grid,   /* 容器 */\n                child,  /* 子控件 */\n                1,      /* a: 第几列 column */\n                0,      /* b: 第几行 row    */\n                2,      /* c: 跨几列 */\n                1);     /* d: 跨几行 */\n```\n\n★ 写反了（先行后列）界面会被**转置 90 度**，而且**看起来「只是有点怪」，不容易发现** —— 尤其是几行几列比较对称的时候。\n\n★ 注意坐标系的两件事：\n- **从 0 开始**（`0` 是第一列 / 第一行）；\n- **不是像素坐标** —— GTK 布局是「声明式」的，你只声明「放在第几格」，具体位置由 GTK 按窗口大小算。\n\n★ 对比着记一下另一套容易混的坐标：**`GtkTable` 时代是 `(列起, 列止, 行起, 行止)`** （半开区间）；换成 `GtkGrid` 后是 **`(列, 行, 跨列, 跨行)`**（起点 + 跨度），语义变了，不是简单改名。"
+            }
+        ]
+    },
+    {
+        "title": "Qt6 要求哪个 C++ 标准",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "Qt6",
+            "C++17",
+            "第 14 讲"
+        ],
+        "choices": [
+            "C++98",
+            "C++11",
+            "C++14",
+            "C++17"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "把 Qt5 项目迁到 Qt6，`CONFIG += c++11` 是常见写法。Qt6 要求的最低 C++ 标准是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "D",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|D\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**C++17。** Qt6 把最低标准从 Qt5 的 C++11 提到了 **C++17**。\n\n对应到构建系统：\n```make\n# qmake（.pro）\nCONFIG += c++17\n```\n```cmake\n# CMake\nset(CMAKE_CXX_STANDARD 17)\nset(CMAKE_CXX_STANDARD_REQUIRED ON)\n```\n\n★ **不写的报错很难懂** —— 错误会出现在 **Qt 自己的头文件里**，而不是你的代码里，看起来像「Qt 装坏了」。\n\n★ 一个实测细节值得记住：**`-std=c++11` 编译 C++17 代码时，gcc 往往只给 warning 不给 error** —— 也就是说「它编过了」**不能证明标准合规**。要严格验证得加 `-pedantic-errors`。\n\n★ 这条和 GTK 那边形成鲜明对比，值得一并记住：\n\n| | GTK 3 → 4 | Qt 5 → 6 |\n|---|---|---|\n| Hello World 源码 | **12 行改 6 处** | **基本一字不改** |\n| 真正的迁移成本在哪 | 接口大改、源码重写 | **构建系统 + C++ 标准** |\n\n所以：**教材第 13 章的 GTK 示例一行都编不过，而第 14 章的 Qt 示例大概率能直接编过。**"
+            }
+        ]
+    },
+    {
+        "title": "Qt5 的 Hello World 在 Qt6 下要改吗",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "Qt6",
+            "迁移",
+            "第 14 讲"
+        ],
+        "choices": [
+            "必须整篇重写",
+            "基本一字不改，变的是构建系统和 C++ 标准",
+            "要改掉一半左右的 API",
+            "只能跑在 Qt5 上，Qt6 不兼容"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "和 GTK3→GTK4「十二行改六处」完全不同，Qt5 的 Hello World 源码搬到 Qt6？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**基本一字不改。** 这是 Qt6 官方明确的目标：**保持 Qt5 源码兼容**。\n\n★ 两个框架的迁移哲学完全不同：\n\n| | GTK 3 → 4 | Qt 5 → 6 |\n|---|---|---|\n| 官方态度 | 借大版本清理历史包袱 | **尽量不动源码** |\n| Hello World | 12 行改 6 处 | **一行不用改** |\n| 你要搬的东西 | 一堆 API | **构建系统（qmake → CMake）+ C++ 标准（11 → 17）** |\n| 被移走的类 | 直接删（`GtkTable` / `GtkContainer`） | 挪进 **Qt5Compat** 模块（还能用）|\n\n★ **被挪进 Qt5Compat 的代表选手**（用到了才需要处理）：\n- `QRegExp` → 改用 `QRegularExpression`\n- `QTextCodec` 族 → 改用 `QStringConverter` 族\n- `QLinkedList` → 改用 `std::list`（或 `QList`）\n- `QStringRef` → 改用 `QStringView`\n- `QXmlSimpleReader` → 改用 `QXmlStreamReader`\n\n★ 官方给了一个**一键找出全部过时用法**的开关：\n```make\nDEFINES += QT_DISABLE_DEPRECATED_UP_TO=0x050F00\n```\n它把 Qt 5.15 及以前废弃的 API **全部变成编译错误**，于是你得到一份**可执行、可勾选**的迁移清单 —— 比翻文档靠谱得多。"
+            }
+        ]
+    },
+    {
+        "title": ".pro 里漏了 QT += widgets 会怎样",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "qmake",
+            ".pro",
+            "widgets",
+            "第 14 讲"
+        ],
+        "choices": [
+            "QT += widgets",
+            "QT += gui",
+            "CONFIG += qt",
+            "LIBS += -lQtWidgets"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "`.pro` 只写了 `QT += core gui`，编译时报 `QApplication: No such file or directory`。缺的是哪一行？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**缺 `QT += widgets`。**\n\nQt5 起，「GUI 控件」被从 `QtGui` 模块**拆到了独立的 `QtWidgets`** —— 你想用的 `QApplication` / `QPushButton` / `QLabel` 全在那里。\n\n漏写的两种报错形态：\n```\nQApplication: No such file or directory\nundefined reference to 'QApplication::QApplication(...)'\n```\n★ 前者是「找不到头文件」（编译期），后者是「找不到实现」（链接期）—— 同一件事的两个阶段。\n\n★ **真正的坑在这里**：`qmake6 -project` 自动生成的 `.pro` **恰恰不会写这一行** —— 因为它只扫描源文件，**不解析代码**，猜不出你需不需要 GUI。\n\n所以正确姿势是**生成时就把模块补上**：\n```bash\nqmake6 -project \"QT += widgets\"\n```\n或者生成之后**手工打开 `.pro` 补那一行**。\n\n★ `.pro` 里另外两个「漏写就出事」的：\n- **`HEADERS +=`** —— 这行是**moc 的待办清单**，不是给编译器看的。漏了那个头文件，那个类就没有 moc 输出 → `undefined reference to vtable for XXX`。\n- **`CONFIG += c++17`** —— Qt6 的硬要求，见前一题。"
+            }
+        ]
+    },
+    {
+        "title": "为什么 qmake -project 生成的 .pro 缺 widgets",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "qmake",
+            ".pro",
+            "第 14 讲"
+        ],
+        "choices": [
+            "qmake 版本太旧，新版本会自己补上",
+            "它只扫描源文件、不解析代码，猜不出你要不要 GUI",
+            "需要加 --widgets 参数才行",
+            "Fedora 的 Qt 包被裁剪过，缺模块描述"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "`qmake6 -project` 生成的 `.pro` 里只有 `QT += core gui`，没有 widgets。原因？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`qmake -project` 只「扫源文件」，不「读代码」。**\n\n它做的事情很简单：把当前目录下的 `.cpp` / `.h` / `.ui` 列进 `.pro`，再给一份**最保守的默认模块**（`core gui`）。它**不会去分析你的代码里 `#include` 了什么、用了哪个类** —— 所以当然猜不出你需不需要 `widgets`。\n\n★ 结论：**`qmake -project` 的输出是「起点」，不是「成品」。**\n生成完一定要打开 `.pro` 检查这几行：\n```make\nQT += core gui widgets        # GUI 控件必需\nCONFIG += c++17               # Qt6 必需\nHEADERS += mywidget.h         # 有 Q_OBJECT 的头文件必须列进来\n```\n\n★ 顺带一条实用建议：**`.pro` 只要十几个关键字就能读懂整个工程结构**，所以「先 qmake 后 CMake」是个好顺序 —— 先用 `.pro` 十分钟搞清工程长什么样，再去看 CMake 的自动化配置。\n\n★ 反过来，**Qt6 官方是主推 CMake 的**（Qt6 自身就用 CMake 构建）。qmake 仍然支持、教材那套三步走在 Fedora 44 上照样能跑（只是命令名变成 `qmake6`），但两条路都要认得出。"
+            }
+        ]
+    },
+    {
+        "title": "Qt 多出来的构建步骤是什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "moc",
+            "构建",
+            "第 14 讲"
+        ],
+        "choices": [
+            "moc（元对象编译器）",
+            "uic",
+            "rcc",
+            "qmake"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "教材的 GTK 项目构建链是 `cpp → cc1 → as → ld`（GCC 四道工序）。Qt 项目在这之前多插了一道什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**moc —— 元对象编译器（Meta-Object Compiler）。**\n\n```\nmywidget.h（含 Q_OBJECT 宏）\n      │\n      │  moc        ★ GTK 没有这一步\n      ▼\nmoc_mywidget.cpp\n      │\n      ▼\n   g++（编译 + 汇编 + 链接）\n```\n\n★ **为什么需要它**：Qt 想在 C++ 里实现「信号与槽」这套**运行时的元对象系统**（按名字查找函数、发射信号、反射对象类型），而纯 C++ 在 1995 年做不到这件事 —— 所以 Qt 自己写了一个**代码生成器**。\n\n> **一句话：moc 是 Qt 用来补足 C++ 语言能力的一个预处理步骤。**\n\n★ 记住这句话，后面所有「和 moc 有关的怪现象」都能解释：\n\n| 现象 | 原因 |\n|---|---|\n| `undefined reference to vtable for MyClass` | moc 没工作（漏 `Q_OBJECT` / 头文件没进 `HEADERS +=`）|\n| 改了头文件没重建，看到「幽灵错误」 | `moc_*.cpp` 是**缓存文件**，得 `make clean` 或删 build 目录 |\n| 手写 Makefile 特别痛苦 | 要自己判断 moc / uic / rcc 的处理对象和顺序 |\n\n★ 另外两个名字也要认识（本题的干扰项）：\n- **uic** —— 把 `.ui`（Qt Designer 界面文件）编译成 C++ 头文件；\n- **rcc** —— 把 `.qrc`（资源文件）编译成 C++ 源文件。\n\n★ 一条纪律：**`moc_*.cpp` / `ui_*.h` / `Makefile` 都是生成物，不进版本管理** —— 判断标准是「**能被工具重新生成的都不进**」。"
+            }
+        ]
+    },
+    {
+        "title": "undefined reference to vtable 通常是什么问题",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "moc",
+            "Q_OBJECT",
+            "vtable",
+            "第 14 讲"
+        ],
+        "choices": [
+            "析构函数没写或写错了",
+            "moc 没工作 —— 漏了 Q_OBJECT，或头文件没进 HEADERS",
+            "忘了链接 -lQt6Core",
+            "C++ 标准不是 17"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "链接时报 `undefined reference to vtable for MyClass`。在 Qt 里这几乎总是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**建立这个映射：`vtable undefined` ≈ moc 问题。**\n\n报错里出现 `vtable` 会让人本能地去查析构函数、虚函数表、继承 —— **方向完全错**。这条报错的绝大多数成因是：\n\n1. 类里**忘了写 `Q_OBJECT`** 宏 —— `Q_OBJECT` 会插入一批虚函数**声明**，实现由 moc 生成；没有它就没有那些实现；\n2. 写是写了，但**头文件没进 `.pro` 的 `HEADERS +=`** —— 那行就是 moc 的待办清单，不在清单里就不会被 moc 处理；\n3. 改了头文件**没重建**，拿着旧的 `moc_*.cpp` 在链接。\n\n**排查顺序**：\n```bash\n① 类定义第一行有 Q_OBJECT 吗\n② .pro 的 HEADERS += 里有这个头文件吗（CMake 项目看 AUTOMOC 是否打开）\n③ make clean（或删 build 目录）重建一次\n```\n\n★ 顺带把「信号 / 槽」两个区最容易记混的一条钉住：\n\n| | 要写实现吗 |\n|---|---|\n| `signals:` 区 | **不要** —— 只写声明，实现由 moc 生成（手写会报重复定义）|\n| `slots:` 区 | **要** —— 槽就是普通函数，必须自己写函数体 |\n\n★ 还有一条：**`emit` 不是 C++ 关键字**，它是 Qt 定义的一个**空宏**，只为可读性 —— `emit sig();` 和 `sig();` 编译结果完全相同。"
+            }
+        ]
+    },
+    {
+        "title": "哪种信号槽写法能在编译期查出拼写错误",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "信号槽",
+            "connect",
+            "类型安全",
+            "第 14 讲"
+        ],
+        "choices": [
+            "connect(a, SIGNAL(clicked()), b, SLOT(onClick()))",
+            "connect(a, &QPushButton::clicked, b, &MyWidget::onClick)",
+            "两种都会编译期报错",
+            "两种都不会，都要运行时才发现"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "下列哪种 `connect` 写法，在**信号名拼错**时会**编译期报错**？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`&Class::method` 新语法。** 这是第 14 讲**最值钱的一条**。\n\n| | 老式字符串宏 | 新式函数指针 |\n|---|---|---|\n| 写法 | `SIGNAL(clicked())` / `SLOT(onClick())` | `&QPushButton::clicked` |\n| 名字是 | **字符串** | **函数指针** |\n| 拼错时 | **编译通过、运行时静默失败**（连接返回失败但不报错、程序不崩）| **编译期报错并指出位置** |\n| 能连 lambda 吗 | 不能 | 能 |\n| 现在推荐吗 | 不推荐（但 Qt6 仍支持）| **推荐** |\n\n★ 这一步正好补上了第 13 讲留下的那个坑 —— GTK 的 `g_signal_connect(widget, \"activatee\", ...)` 拼错后**编译通过、运行毫无反应**；Qt 的新语法用**类型系统**把这类错误提前到了编译期。\n\n★ 顺带三条：\n- **`connect` 还有第四个参数**（连接类型）：跨线程用 `Qt::QueuedConnection`，防重复连接用 `Qt::UniqueConnection`。默认 `Qt::AutoConnection` 是「同线程直连、跨线程排队」，一般够用。\n- **信号可以连信号** —— 这是**封装的标准手段**：把内部控件的信号转发成自己的信号，外部就不知道你的内部结构了。\n- **Qt 对象销毁时会自动断开连接**（它跟踪 `QObject` 生命周期），所以「放心 new 一堆控件」是有依据的。"
+            }
+        ]
+    },
+    {
+        "title": "emit 是 C++ 关键字吗",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 3,
+        "total_score": 8,
+        "tags": [
+            "qt",
+            "信号槽",
+            "emit",
+            "第 14 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "`emit` 是 C++ 关键字，写信号发射时去掉它信号就不会发射。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "错",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|错\n|错误\n|×\n|F\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**错。`emit` 是 Qt 定义的一个空宏，只为可读性。**\n\n```cpp\nemit mysignal();      // 等价于\nmysignal();           // 编译结果完全相同\n```\n\n★ 它存在的意义是**给读代码的人一个提示**：「这一行是在发射信号，不是在调普通函数」。编译器看到 `emit` 就被展开成空，什么也不做。\n\n★ 同族还有两个「看起来像语法、其实是宏」的：\n- **`signals:`** → 展开成 `public`（Qt 自己加的一层访问控制标记）\n- **`slots:`** → 同样只是个标记，展开成 `public`/`protected`/`private`\n\n★ 所以「信号和槽只是普通成员函数 + 一点元信息」这个理解是对的 —— **唯一的特殊性在于 moc 会读取它们，为信号生成实现、并往元对象表里登记名字**。"
+            }
+        ]
+    },
+    {
+        "title": "signals 区的函数要不要写实现",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 4,
+        "total_score": 8,
+        "tags": [
+            "qt",
+            "信号槽",
+            "moc",
+            "第 14 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "`signals:` 区里声明的函数必须自己写函数体，否则链接不过。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "错",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|错\n|错误\n|×\n|F\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**错。信号只写声明 —— 实现由 moc 生成。**\n\n```cpp\nclass MyWidget : public QWidget {\n    Q_OBJECT\nsignals:\n    void clicked2();          // ✅ 只写声明，不写实现\npublic slots:\n    void onClick();           // 槽 —— 实现写在 .cpp 里\n};\n```\n\n★ **这两个区最容易记混，记法如下**：\n\n| 区 | 声明 | 实现 | 为什么 |\n|---|---|---|---|\n| `signals:` | 要写 | **不要写** | moc 会生成「遍历连接、逐个调用槽」的代码 |\n| `slots:` | 要写 | **要写** | 槽就是普通成员函数，只是可以被信号调用 |\n\n★ 手写信号的实现会报**「重复定义」** —— 因为 moc 已经替你在 `moc_xxx.cpp` 里生成了一份。\n\n★ 一句话记：**信号是「出口」，声明即完整；槽是「入口」，必须自己实现。**"
+            }
+        ]
+    },
+    {
+        "title": "Fedora 上 qmake 指向哪一代",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "qmake",
+            "工具链",
+            "第 14 讲"
+        ],
+        "choices": [
+            "Qt6",
+            "Qt5",
+            "报错 command not found",
+            "随机，看先装哪个"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "机器上 Qt5 和 Qt6 的开发包都装了。直接敲 `qmake` 会指向？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**指向 Qt5。** Fedora 上 `qmake` 属于 Qt5 的包，**Qt6 的命令名是 `qmake6`。**\n\n★ 后果很严重而且很隐蔽：**你写的是 Qt6 代码，却用 Qt5 的 qmake 生成 Makefile** → 链的是 Qt5 的库 → 一串 `undefined reference`。查了半天代码，问题其实在「你用的是哪一代 qmake」。\n\n**先确认再动手**：\n```bash\nqmake --version          # 看它报 Qt version 5.x 还是 6.x\nqmake6 --version         # 明确要用 Qt6 就叫这个名字\n```\n\n★ 一条通用经验：**遇到一堆链接错误，先怀疑「工具链指向了哪一代」**，再去看代码。同族的分诊动作还有（第 16 讲会再用到）：\n\n```bash\nwhich -a java            # 装了多个 JDK 时，看 PATH 里排第一个的是谁\nwhich -a python3         # 装了多个 Python 时同理\n```\n\n★ 教材那套 `qmake -project && qmake && make` 三步走在 Fedora 44 上**依然能跑**，只是命令名要换成 `qmake6`。"
+            }
+        ]
+    },
+    {
+        "title": "QRegExp 在 Qt6 里去哪了",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "Qt6",
+            "QRegExp",
+            "迁移",
+            "第 14 讲"
+        ],
+        "choices": [
+            "照旧留在核心模块里",
+            "移入 Qt5Compat，新代码应该用 QRegularExpression",
+            "改名成 QRegex",
+            "被彻底删除，没有任何替代"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "Qt5 代码里常用的 `QRegExp`，在 Qt6 里的状况是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**移入 Qt5Compat 模块 —— 还能用，但新代码该换 `QRegularExpression`。**\n\n★ 这是 Qt6 处理历史类的**统一手法**：**不删，挪走**。和 GTK4 那种「整个类删掉、必须重写」完全不同的路线。\n\n| Qt5 里的类 | Qt6 里 | 该换成 |\n|---|---|---|\n| `QRegExp` | Qt5Compat | **`QRegularExpression`** |\n| `QTextCodec` / `QTextEncoder` / `QTextDecoder` | Qt5Compat | `QStringConverter` 族 |\n| `QLinkedList` | Qt5Compat | `std::list`（或 `QList`）|\n| `QStringRef` | Qt5Compat | `QStringView` |\n| `QXmlSimpleReader` | Qt5Compat | `QXmlStreamReader` |\n\n要临时继续用 Qt5Compat 里的东西，得显式加模块：\n```make\nQT += core5compat\n```\n★ **不推荐长期这么做** —— 它只是让老代码先跑起来的过渡手段。\n\n★ 另外几个「不是挪走、是真的变了」的，别记混：\n- **`QTextStream::setCodec()`** → **被删除**（不是废弃），改用 `setEncoding()`\n- **Qt Quick Controls 1** → **整个删除**（QML 侧最大的一处断裂，必须重写）\n- **`QList` / `QVector`** → **两者合一**（`QVector` 成为 `QList` 的别名），不用再纠结选哪个\n- **高 DPI 支持** → **Qt6 默认开启**，那些设置属性/环境变量的代码可以删掉了"
+            }
+        ]
+    },
+    {
+        "title": "Qt 控件要不要手动 delete",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "qt",
+            "对象树",
+            "内存管理",
+            "第 14 讲"
+        ],
+        "choices": [
+            "要，否则会内存泄漏",
+            "不用，父对象销毁时会自动清理子对象",
+            "要，必须在析构函数里逐个删掉",
+            "只有顶层窗口需要手动删"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "用 `new` 创建的控件，已经通过 `setParent()` 或容器加到了父对象上。还需要手动 `delete` 吗？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**不用。Qt 有「对象树」：子对象由父对象销毁时自动清理。**\n\n只要控件被 `setParent()`、或者作为子控件加进了某个容器，它就成了父对象的孩子；父对象析构时会**递归把自己的孩子都删掉**。\n\n★ **重复 delete 会崩** —— 这是「手动删」最危险的后果。\n\n```cpp\nauto *btn = new QPushButton(\"ok\", this);   // this 是父对象\n// ... 用完不用管，父对象析构时自动删 btn\n```\n\n★ 三个配套结论，一起记：\n1. **对象销毁时会自动断开信号槽连接** —— Qt 跟踪 `QObject` 生命周期。这就是「为什么可以放心 new 一堆控件」的完整答案；\n2. 但**跨线程要小心**：如果显式指定了 `Qt::DirectConnection`，跨线程时槽会在**发送者线程**里执行 → 访问到别的线程的对象 → 崩溃。跨线程用默认的 `AutoConnection`（会排队）或显式 `QueuedConnection`；\n3. **主窗口选型**：`QMainWindow`（有菜单栏/状态栏位置）/ `QDialog`（对话框）/ `QWidget`（其余）。拿 `QLabel` 当主窗口能跑但不正规。\n\n★ 这条和 GTK4 的「一个控件只能有一个父容器」是同一个思想的两面：**GUI 框架普遍用「所有权树」来管内存**，你只要把父子关系摆对，就不需要自己写 delete。"
+            }
+        ]
+    },
+    {
+        "title": "pip install 被拒绝后加 --user 能绕过吗",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "python",
+            "PEP 668",
+            "pip",
+            "venv",
+            "第 15 讲"
+        ],
+        "choices": [
+            "装成功，装到用户目录",
+            "仍被同样拒绝（退出码 1）",
+            "会提示需要 sudo",
+            "会装到系统 site-packages"
+        ],
+        "source_section": "第 15 讲 · Python 程序开发环境",
+        "statement_md": "`pip install requests` 报 `error: externally-managed-environment`。\n\n改成 `pip install --user requests` 会怎样？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**绕不过去 —— 仍被同样拒绝，退出码 1。**\n\n★ 这是第 15 讲**最值钱的一条**（讲义里 ★★★ 实测，退出码为 1）。\n\n**为什么 `--user` 没用**：PEP 668 检查的对象是**解释器**，不是目录。Fedora 38 起系统 Python 被标记为「外部管理」（`/usr/lib/python3.x/EXTERNALLY-MANAGED` 那个文件），而 `--user` 只是换个安装目录，**没换解释器**。\n\n★ **正解有三条，按场景选**：\n\n| 场景 | 做法 |\n|---|---|\n| 项目里要用第三方库 | **`python3 -m venv .venv` + 激活** |\n| 装命令行工具 | **`pipx install xxx`** |\n| 有官方 RPM 的库 | **`sudo dnf install python3-xxx`** |\n\n★ 还有个逃生门 `--break-system-packages` —— 它是官方给的，含义就是「**后果我承担**」。**只在容器 / 一次性环境里用**，名字里的 `break-system` 就是警告。判断法：**这个环境坏了能整个重建吗？**\n\n⚠️ 网上大量帖子写「加 `--user` 就行」—— **那是 Fedora 38 之前的答案**，在今天的 Fedora 上一字不差地失败。"
+            }
+        ]
+    },
+    {
+        "title": "Fedora 上装第三方 Python 包的正解",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "python",
+            "venv",
+            "包管理",
+            "第 15 讲"
+        ],
+        "choices": [
+            "sudo pip install 包名",
+            "pip install --break-system-packages 包名",
+            "python3 -m venv .venv → 激活 → pip install 包名",
+            "改 /usr/bin/python3 的软链接指向另一个 Python"
+        ],
+        "source_section": "第 15 讲 · Python 程序开发环境",
+        "statement_md": "在一个项目里要用第三方库，正确做法是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "C",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|C\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`python3 -m venv .venv` + `source .venv/bin/activate` + `pip install`。**\n\n```bash\ncd 项目目录\npython3 -m venv .venv\nsource .venv/bin/activate\npip install requests\n```\n\n★ **venv 为什么轻**（★★★ 实测）：它**不复制标准库** —— 环境里那一项仍指向系统那份；**venv 只隔断 `site-packages`**。所以建得飞快（一两秒）、占地很小。\n\n★ 三个「看着像正解、其实是错路」的选项，各自错在哪：\n\n| 做法 | 为什么不行 |\n|---|---|\n| `sudo pip install` | ① 会被 PEP 668 拦；② **如果没被拦，说明你在破坏系统** |\n| `--break-system-packages` | 官方逃生门，只该在容器里用 |\n| 改 `/usr/bin/python3` 软链接 | **最危险** —— `dnf` 的第一行就是 `#!/usr/bin/python3`，改坏了 **dnf 直接起不来**，而修它又要用 dnf |\n\n★ 两条配套纪律：\n1. **每次操作前先核对「我在不在 venv 里」** —— 建了环境但忘了 activate，`pip install` 还是装到系统 Python（照样撞 PEP 668）；\n2. **`activate` 只影响当前 shell** —— 新开一个终端要**重新 activate**（它改的是那个 shell 的 `PATH` 和环境变量）。\n\n⚠️ 用 `--system-site-packages` 建环境做「干净测试」是**假的干净**：系统 `site-packages` 仍然可见（排在 venv 之后），结论不可信。"
+            }
+        ]
+    },
+    {
+        "title": "怎么判断自己是不是在 venv 里",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "python",
+            "venv",
+            "环境判断",
+            "第 15 讲"
+        ],
+        "choices": [
+            "sys.prefix != sys.base_prefix",
+            "sys.executable == sys.base_executable",
+            "os.path.exists('venv')",
+            "sys.version 末尾带着 'venv' 字样"
+        ],
+        "source_section": "第 15 讲 · Python 程序开发环境",
+        "statement_md": "写脚本想自动判断「当前解释器跑在虚拟环境里」。官方推荐、**不依赖环境变量**的判据是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`sys.prefix != sys.base_prefix`。**\n\n- `sys.base_prefix` = **那台机器的原始 Python 安装前缀**（永远不变）；\n- `sys.prefix` = **当前生效的前缀**。\n\n在 venv 里，`sys.prefix` 被改成 venv 的目录，于是两者不等 → 判定为「在 venv 里」。\n\n```bash\npython3 -c \"import sys; print(sys.prefix != sys.base_prefix)\"\n# True  → 在 venv 里\n# False → 用的是系统 Python\n```\n\n★ **为什么强调「不依赖环境变量」**：`VIRTUAL_ENV` 这类变量**靠 activate 脚本设置** —— 你没 activate 就没这个变量，「没 activate 但确实在用 venv 的解释器」这种情况会误判。\n\n★ 这一行是**第 15 讲最实用的防御性写法** —— 把它嵌进项目的启动脚本，「我明明装了却 import 不到」这类问题当场现形。\n\n★ 配套的另一条：**一律写 `python3 -m pip`，不要写裸 `pip`** —— ★★★ 实测里 `pip` 和 `python` **指向两个不同的 Python 安装**。`python3 -m pip` 表达的是「**我现在这个 Python 的 pip**」，这才是「装到哪去了」的可靠答案。"
+            }
+        ]
+    },
+    {
+        "title": "python3 -m 和直接跑脚本差在哪",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "python",
+            "-m",
+            "sys.path",
+            "导入",
+            "第 15 讲"
+        ],
+        "choices": [
+            "sys.path[0] 不同：前者是当前工作目录，后者是脚本所在目录",
+            "前者不能带命令行参数",
+            "前者用不了第三方库",
+            "没有任何差别，只是写法不同"
+        ],
+        "source_section": "第 15 讲 · Python 程序开发环境",
+        "statement_md": "`python3 -m pkg.mod` 与 `python3 pkg/mod.py` 的关键差别之一是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`sys.path[0]` 不同** —— 这是第 15 讲技术含量最高的一条。\n\n| | `python3 pkg/mod.py` | `python3 -m pkg.mod` |\n|---|---|---|\n| `sys.path[0]` | **脚本所在目录**（`pkg/`） | **当前工作目录** |\n| `__package__` | `None` | `'pkg'` |\n| 相对导入（`from . import x`）| **不可用** | 可用 |\n\n★ 两个直接后果：\n1. **包内模块直接跑**会报 `attempted relative import with no known parent package` —— 因为 `__package__` 是 `None`，那个 `.` 无处可指。**包内模块一律用 `python3 -m pkg.mod`**；\n2. `-m` 报 `No module named pkg` 时，**是因为你没站在 `pkg/` 的父目录里** —— `-m` 的 `sys.path[0]` 是**当前工作目录**。\n\n★ 顺带两条：\n- `-m` 后面要写**模块名（点号分隔）**，写路径是语法错误：`python3 -m pkg.mymod` ✅ / `python3 -m pkg/mymod.py` ❌；\n- 日常一大堆命令都是 `-m` 形式，教材一个字都没提：\n  `python3 -m venv`、`python3 -m pip`、`python3 -m http.server`、`python3 -m json.tool`。\n\n★ **口诀：「直接跑 = 脚本当主角，`-m` = 包里的一员」。**\n谁当 `sys.path[0]`，就决定了「你能看见谁」。"
+            }
+        ]
+    },
+    {
+        "title": "为什么一律写 python3 -m pip",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "python",
+            "pip",
+            "解释器",
+            "第 15 讲"
+        ],
+        "choices": [
+            "sudo pip install",
+            "python3 -m pip install",
+            "pip3 install",
+            "先 which pip 看一眼再说"
+        ],
+        "source_section": "第 15 讲 · Python 程序开发环境",
+        "statement_md": "★★★ 实测：本机 `pip` 与 `python` 可能指向**两个不同的 Python 安装**。所以装包时推荐怎么写？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`python3 -m pip install ...`。**\n\n`python3 -m pip` 的语义是「**用我现在这个 Python 解释器去跑它自己的 pip 模块**」—— 解释器和 pip **必然配套**，装到哪去一目了然。\n\n裸 `pip` 则是一个**独立的可执行入口**，它被哪个 Python 拥有，取决于 `PATH` 顺序和安装方式（尤其装了 Anaconda 之后，`~/anaconda3` 里那一套会和系统的并存）。\n\n★ **典型症状**：\n```\n$ pip install requests        # 提示装好了\n$ python3 -c \"import requests\"  # ModuleNotFoundError\n```\n—— 因为它装到了**另一个** Python 里。\n\n**排查工具**：\n```bash\npython3 -m pip show requests      # 看它到底来自哪个目录\nwhich -a python3                  # 装了哪些 python3\npython3 -c \"import sys; print(sys.executable, sys.prefix)\"\n```\n\n★ 一个更隐蔽的同族坑：**先用 `dnf install python3-xxx` 装了一个库，后来又 `pip install xxx` 装同名库** → 两个版本同时存在于不同目录，`import` 到哪个取决于 `sys.path` 顺序 → 表现为「怎么改了没用」。\n\n★ 记住这一条的模式：**凡是有「裸命令」和「`-m` 形式」两种写法的，永远选 `-m` 形式** —— 它把「用哪个解释器」这件事钉死在工作目录之外。"
+            }
+        ]
+    },
+    {
+        "title": "tkinter 报 ModuleNotFoundError 说明 Python 装坏了",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 3,
+        "total_score": 8,
+        "tags": [
+            "python",
+            "tkinter",
+            "devel",
+            "第 15 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 15 讲 · Python 程序开发环境",
+        "statement_md": "在 Fedora 上 `import tkinter` 报 `ModuleNotFoundError`，说明 Python 安装损坏了，需要重装 Python。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "错",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|错\n|错误\n|×\n|F\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**错。`tkinter` 在 Fedora 上被拆成了独立的子包 `python3-tkinter`，装它就行。**\n\n```bash\nsudo dnf install python3-tkinter\n```\n\n★ 这是 Fedora 的一个通用规律：**Python 标准库被拆包**。教材时代「装一个 `python3` 包全给了」，现在是分开的：\n\n| 想要的东西 | Fedora 上要装的包 |\n|---|---|\n| `tkinter`（图形界面） | `python3-tkinter` |\n| IDLE（自带编辑器） | `python3-idle`（它依赖 tkinter）|\n| 编译 C 扩展（`Python.h`） | `python3-devel` |\n| 开发用的库文件 | `python3-devel` |\n\n★ 「`Python.h: No such file or directory`」同理 —— 缺 `python3-devel`。**这和第 13 讲「编译 GTK 要 `gtk4-devel`」是同一条规律**：\n\n> **Fedora 系：要编译就必须装 `-devel` 包。**\n\n★ 顺带一条：**连 `idle` 命令都没有**也别慌，它在 `python3-idle` 里，Fedora 上要单独装 —— 教材「Python 的获取与安装」那一节，在 Fedora 44 上九成可以跳过（系统自带 `python3`）。"
+            }
+        ]
+    },
+    {
+        "title": "Fedora 44 上装 JDK 8 为什么失败",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "eclipse",
+            "jdk",
+            "fedora",
+            "第 16 讲"
+        ],
+        "choices": [
+            "镜像源没同步全，换一个源就好",
+            "这个包在 Fedora 42 被 retired（下架）了",
+            "需要先启用 extra 仓库",
+            "要加 --nogpgcheck 才能装"
+        ],
+        "source_section": "第 16 讲 · 集成开发环境 Eclipse 的使用",
+        "statement_md": "照教材 16.2.1 执行 `sudo dnf install java-1.8.0-openjdk`，报 `Unable to find a match`。原因？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`java-1.8.0-openjdk` 在 Fedora 42 被 retired —— 已经下架了。**\n\n★ 换镜像源无效：**这不是同步问题，是上游没有这个包了。**\n\n这条被下架的路线走了三部曲：\n```\nFedora 39~41   标记废弃，安装时打印警告\nFedora 42      retired —— 从仓库里移除\nFedora 44      系统 JDK 是 java-25-openjdk（LTS）\n```\n\n★ **所以教材 16.2.1 那一节照做会失败** —— 不是「版本旧了」，是「这条路被拆了」。\n\n**要 JDK 8 的正确姿势**（走 Adoptium）：\n```bash\nsudo dnf install adoptium-temurin-java-repository\nsudo dnf install temurin-8-jdk\n```\n但先问自己：**真的需要 8 吗？** 教材用它只是当年的默认，新代码用系统自带的 Java 25 完全没问题。\n\n★ 顺带一条同族规律：**Fedora 仓库里装不到的东西，先查是不是 retired** —— 这个判断在第 16 讲出现了两次（JDK 8 和 Eclipse IDE 本身）。"
+            }
+        ]
+    },
+    {
+        "title": "为什么 dnf 装不到 Eclipse IDE",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "eclipse",
+            "安装",
+            "ECJ",
+            "第 16 讲"
+        ],
+        "choices": [
+            "包名打错了，应该叫 eclipse-ide",
+            "Fedora 仓库里没有 Eclipse IDE，只有 ecj、eclipse-swt 这些零件",
+            "需要先装 JDK 8 才能装 Eclipse",
+            "必须用 flatpak 才能装"
+        ],
+        "source_section": "第 16 讲 · 集成开发环境 Eclipse 的使用",
+        "statement_md": "`sudo dnf install eclipse` 报 `Unable to find a match`。为什么？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**Fedora 仓库里没有 Eclipse IDE** —— 只有 **`ecj`**（Eclipse 的 Java 编译器）和 **`eclipse-swt`** 这类**库**。\n\n★ 两个原因：\n1. Eclipse 是**季度发布**（每年 3/6/9/12 月），节奏和发行版对不上；\n2. 它**自带 p2 更新机制**（Eclipse 世界的软件源），自己就能装插件、升级，不需要发行版代管。\n\n**装 Eclipse 走过的三条路**（仍然没有 dnf 这条）：\n```bash\n① 官网 Installer（推荐新手）\n② 官网 tar.gz 解压即用\n③ Flatpak\n```\n\n★ **别把 `ecj` 当成 Eclipse**：`ecj` 是 Eclipse 的**Java 编译器**，是一个命令行工具，不是 IDE。\n\n★ 这里藏着一个第 16 讲的核心知识点：**Eclipse 编译 Java 用的是自己的 ECJ，不是 `javac`** —— 两者在泛型推断、注解处理等边界上判断可能不同。所以「Eclipse 里编译通过」**不等于**「`javac` / Maven 也通过」，**最终交付和 CI 以 `javac` 为准**。\n\n★ 顺带把 JDK 的装法记住，这个是真有 dnf 包的：\n```bash\nsudo dnf install java-25-openjdk-devel\n```\n（**要 `-devel`** —— `javac` / `jar` / `javap` 都在里面，只装 JRE 的话 `javac` 会报 command not found。）"
+            }
+        ]
+    },
+    {
+        "title": "javac 编译成功却运行时报 ClassNotFoundException",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 5,
+        "total_score": 10,
+        "tags": [
+            "eclipse",
+            "javac",
+            "classpath",
+            "包名",
+            "第 16 讲"
+        ],
+        "choices": [
+            "少写了 -cp out",
+            "javac 没加 -d，.class 没按包名建目录，落错了位置",
+            "类名拼错了",
+            "需要加 --release 选项"
+        ],
+        "source_section": "第 16 讲 · 集成开发环境 Eclipse 的使用",
+        "statement_md": "源文件首行是 `package com.example.demo;`。\n\n`javac Demo.java` **退出码 0（编译成功）**，但 `java -cp . com.example.demo.Demo` 报 `ClassNotFoundException`。原因？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`javac` 会「编译成功」但把 `.class` 放错位置。**\n\n源文件里有 `package com.example.demo;` 时，`.class` **必须**落在 `com/example/demo/` 目录下 —— **包名与目录必须一一对应**，这是 Java 的硬约束。\n\n```\njavac Demo.java                  # ❌ 退出码 0，但 Demo.class 落在当前目录\njavac -d out Demo.java           # ✅ 落成 out/com/example/demo/Demo.class\n```\n\n★ 这是「**编译通过 ≠ 能跑**」的教科书案例：**编译器认为语法没问题就返回 0**，至于产物放得对不对，它不负责。\n\n★ 顺带两个同族的「找不到类」：\n```bash\njava Hello.class                 # ❌ java 后面是「类名」不是文件名\n                                 #    报 ClassNotFoundException: Hello.class\njava -cp out Demo                # ❌ 有包名的类要写全名 com.example.demo.Demo\njava -cp out com.example.demo.Demo   # ✅\n```\n\n★ **根因值得记住**：**Java 没有独立的「链接」步骤。**\nC 的「找不到符号」在链接期就报出来，而 Java 的「找不到类」**全都在运行时才炸** —— 所以 `jar` 打包、`-cp` 指定路径，本质上是在补上 C 那边「链接器」的位置。"
+            }
+        ]
+    },
+    {
+        "title": "classpath 的分隔符",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "eclipse",
+            "classpath",
+            "跨平台",
+            "第 16 讲"
+        ],
+        "choices": [
+            "分号 ;",
+            "冒号 :",
+            "逗号 ,",
+            "与平台无关，都一样"
+        ],
+        "source_section": "第 16 讲 · 集成开发环境 Eclipse 的使用",
+        "statement_md": "指定多个 classpath 条目时，**Linux** 上用的分隔符是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**Linux / macOS 用冒号 `:`；Windows 用分号 `;`。**\n\n```bash\n# Linux\njava -cp \"libs:.\" com.example.demo.Demo\n# Windows\njava -cp \"libs;.\" com.example.demo.Demo\n```\n\n★ **同一行命令换个平台就废** —— 这是讲义里 ★★★ 实测过的一条。**写文档、写 README、写 CI 脚本时必须两个都写。**\n\n★ 三条配套规矩：\n1. **classpath 才是 Java 的「搜索路径」** —— 它对应 Python 的 `sys.path`、C 的 `-I` / `-L`。「我明明有这个类」这类问题，十有八九是 classpath 指错了；\n2. **不给 `-cp` 时默认就是 `.`（当前目录）** —— 所以「在 A 目录编译、跑到 B 目录去执行」会报 `NoClassDefFoundError`：**换目录就等于换了搜索范围**；\n3. **用 `-cp` 显式给路径，别指望默认值** —— 这和「第 15 讲一律写 `python3 -m pip`」是同一种**防御性写法**：把「我用的是哪个」写死在命令里。\n\n★ 有意思的是，同一个坑在 C 那边叫「`-I` / `-L` 没给对」，在 Python 那边叫「`sys.path` 顺序不对」—— **语言换了，问题还是那些问题。**"
+            }
+        ]
+    },
+    {
+        "title": "限制最低运行版本该用哪个选项",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 4,
+        "total_score": 10,
+        "tags": [
+            "eclipse",
+            "--release",
+            "class 版本",
+            "javap",
+            "第 16 讲"
+        ],
+        "choices": [
+            "-source 11 -target 11",
+            "--release 11",
+            "-target 11 就够了",
+            "-java 11"
+        ],
+        "source_section": "第 16 讲 · 集成开发环境 Eclipse 的使用",
+        "statement_md": "用新 JDK 编译，但希望产物能在 **Java 11** 上运行。发布时应该用哪个选项？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**`--release 11`。**\n\n★ 两者的差别是一句话：\n\n| 选项 | 管什么 | 漏掉了什么 |\n|---|---|---|\n| `-source 11 -target 11` | 语法 + 字节码版本 | **不管 API** —— 你调用了 Java 12+ 才有的库方法，照样在 Java 11 上崩 |\n| **`--release 11`** | 语法 + 字节码 + **可用 API** | —— 它是完整的三件套 |\n\n所以：**发布永远用 `--release`。**\n\n★ 报错长什么样（对方机器上）：\n```\nUnsupportedClassVersionError: Demo has been compiled by\na more recent version of the Java Runtime\n```\n根因是 **class 文件里的 `major` 版本号**。\n\n★ 顺便记住这条公式和它的实测值：\n\n```\nmajor = Java 版本 + 44\n```\n| Java 版本 | 8 | 11 | 17 | 21 |\n|---|---|---|---|---|\n| class major | 52 | 55 | 61 | 65 |\n\n★ 兼容是**单向**的：**新 JVM 能跑旧 class**（本机实证过），**反过来不行**。所以「用新 JDK 编、发给用旧 JDK 的人」必须显式降目标版本。\n\n★ 想知道一个 `.class` 到底是什么版本，一条命令：\n```bash\njavap -v Demo.class | grep major\n```\n（`javap` 一个顶三个：`-c` 看字节码、`-v` 看常量池与版本、**`-p` 看 private 成员** —— 默认它只显示 public。）"
+            }
+        ]
+    },
+    {
+        "title": "运行 .class 要写 java Hello.class",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 2,
+        "total_score": 8,
+        "tags": [
+            "eclipse",
+            "java",
+            "类名",
+            "第 16 讲"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 16 讲 · 集成开发环境 Eclipse 的使用",
+        "statement_md": "编译出 `Hello.class` 之后，要用 `java Hello.class` 来运行它。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "错",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|错\n|错误\n|×\n|F\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**错。`java` 后面要写的是「类名」，不是文件名。**\n\n```bash\njava Hello            # ✅ 运行\njava Hello.class      # ❌ 它去找一个叫 \"Hello.class\" 的类\n                      #    报 ClassNotFoundException: Hello.class\n```\n\n★ 这条错法很常见，因为 `.class` 是「文件」，而 `java` 想要的是「类」。\n\n**三条路的正确写法**：\n```bash\njavac Hello.java && java Hello      # ① 经典两步（编译 + 运行）\njava Hello.java                     # ② JDK 11+ 单文件源码启动（不落 .class）\njava -jar app.jar                   # ③ 跑打包好的 jar\n```\n\n★ **② 要专门说一下**：`java Hello.java` 是 JDK 11 引入的**单文件源码启动** —— 编译**在内存里完成**，**不会留下 `.class` 文件**。所以它适合「快速试一下」，但要交付给别人还是得走 ① 或 ③。\n\n★ 顺带一条同一个「名字 vs 文件」的坑：**有包名的类必须写全名** ——\n`java -cp out com.example.demo.Demo` ✅ / `java -cp out Demo` ❌。类的全名是「包名 + 类名」，`java` 一个字母都不能少。"
+            }
+        ]
+    },
+    {
+        "title": "链接库的 -l 该写在哪",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "gcc",
+            "链接",
+            "选项顺序",
+            "第 12 讲"
+        ],
+        "choices": [
+            "`gcc main.o -lm -o app`",
+            "`gcc -lm main.o -o app`",
+            "`gcc main.c -lm -o app`",
+            "`gcc -o app -lm main.o`"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "在 Fedora 上用 `gcc` 链接一个需要 `libm` 的程序，要链接的目标文件是 `main.o`。\n\n下列哪些写法能**正确链接**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "AC",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|AC\n|CA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "判断标准只有一条：**`-l` 必须出现在「用到它的目标文件」之后。**\n\n链接器（GNU ld）是从左往右扫的：读到一个 `.o`，先记下它**还没被满足的符号**；再读到 `-lm`，才去 `libm` 里把这些符号找出来填上。所以 `-l` 排在前面时，那一刻**还没有任何未定义符号**，`libm` 被整个跳过 → 最后仍然报：\n```\nundefined reference to `sqrt'\n```\n\n| 写法 | 顺序对吗 | 说明 |\n|---|---|---|\n| `gcc main.o -lm -o app` | ✅ | 目标是 `.o`，只要它排在 `-lm` 前面 |\n| `gcc main.c -lm -o app` | ✅ | 源文件会被编成 `.o` 放在**同一个位置**，仍在 `-lm` 前 |\n| `gcc -lm main.o -o app` | ❌ | `-lm` 跑到目标文件前面，库被跳过 |\n| `gcc -o app -lm main.o` | ❌ | `-o app` 不影响顺序，`main.o` 仍然在 `-lm` 之后 |\n\n★ **同一条规则还解释另一件事**：为什么 GTK / Qt 的 `$(pkg-config --libs ...)` 也非得写在源文件后面。`pkg-config` 吐出来的 `-l` 顺序是**排好**的，唯一要做的就是别自己重排、别把它提前。"
+            }
+        ]
+    },
+    {
+        "title": "四道工序各停在哪一步",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "gcc",
+            "四道工序",
+            "预处理",
+            "汇编",
+            "第 12 讲"
+        ],
+        "choices": [
+            "`gcc -E hello.c -o hello.i` 只做预处理，`hello.i` 是展开后的 C 代码",
+            "`gcc -S hello.c` 停在编译之后，产出汇编文件 `hello.s`",
+            "`gcc -c hello.c -o hello.o` 产出的是可以直接运行的可执行文件",
+            "`gcc hello.c -o hello` 会依次走完预处理 / 编译 / 汇编 / 链接"
+        ],
+        "source_section": "第 12 讲 · GCC 的使用与开发",
+        "statement_md": "关于 `gcc` 把 `hello.c` 变成可执行文件的过程，下列哪些说法**正确**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ABD",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ABD\n|ADB\n|BAD\n|BDA\n|DAB\n|DBA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "四道工序各有各的干活人：\n\n| 工序 | 谁干 | 停在这步的选项 | 产物 |\n|---|---|---|---|\n| ① 预处理 | `cpp` | `-E` | `.i`（展开后的 C 代码） |\n| ② 编译 | `cc1` | `-S` | `.s`（汇编） |\n| ③ 汇编 | `as` | `-c` | `.o`（可重定位目标文件） |\n| ④ 链接 | `ld` | （没有选项，走到头） | 无后缀的可执行文件 |\n\n所以 A ✅、B ✅、D ✅（不带任何「停一下」的选项，四步一次走完）。\n\n**C ❌**：`.o` 只是**目标文件**，里面的符号还没被链接、地址还没定下来，单独跑不起来 —— 它离可执行文件还差最后一趟 `ld`。\n\n★ **看后缀就能判断停在哪一步**：`.i` / `.s` / `.o` / 无后缀，一眼对应「哪道工序刚做完」。这也是排查「我明明改了代码怎么没变」的入口 ——先看命令停在哪一步，再看那一步的产物。"
+            }
+        ]
+    },
+    {
+        "title": "几十行 undefined reference 从哪下手",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "gtk",
+            "编译",
+            "pkg-config",
+            "undefined reference",
+            "第 13 讲"
+        ],
+        "choices": [
+            "换成 `gcc hello.c -o hello $(pkg-config --cflags --libs gtk4)`",
+            "让 `$(pkg-config --libs gtk4)` 出现在**源文件之后**",
+            "把 `-l` 那一串**提到源文件前面**，gcc 自己就能找到库",
+            "这是代码写错了，应该逐行改代码"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "写了个 GTK4 程序，`gcc hello.c -o hello` 报了几十行 `undefined reference to gtk_...`。\n\n下列哪些做法是**对的**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "AB",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|AB\n|BA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**几十行 `undefined reference` ≈ 链接参数没给对**，几乎从来不是代码的错。\n\nA ✅ `gcc hello.c -o hello` 里**一个 `-l` 都没有** —— gcc 不会自动替你去连 GTK，所有 `gtk_*` 符号自然全是「未定义」。`pkg-config` 就是替你把 `-I`（头文件在哪）和 `-l`（库在哪）一次吐全的工具。\n\nB ✅ 而且**必须在源文件之后**：`-l` 写在前面时，链接器读到它那一刻还没有任何未定义符号，整库被跳过，等读到源文件才发现缺符号 —— 照样报错。`pkg-config` 吐出来的顺序已经是排好的，**唯一要做的就是别重排**。\n\nC ❌ 方向反了，理由同上（这正是「越改越乱」的那一步）。\n\nD ❌ 几十行 `undefined reference` 从头到尾都是**同一批符号**在报，这是「库没连上」的典型长相；真的代码写错，报的是你自己的函数名、行号也对得上。\n\n★ 先自查一行：`pkg-config --modversion gtk4` 有输出，说明包在、名字对；没输出就是 `gtk4-devel` 没装，或包名写成了 `gtk+-3.0`。"
+            }
+        ]
+    },
+    {
+        "title": "教材的 GTK 写法搬到 Fedora 44 上",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "gtk",
+            "GTK4",
+            "信号",
+            "教材对照",
+            "第 13 讲"
+        ],
+        "choices": [
+            "`pkg-config` 的包名从 `gtk+-3.0` 变成 `gtk4`（那个加号没了）",
+            "显示窗口用 `gtk_window_present()`，不再需要 `gtk_widget_show_all()`",
+            "二维表格容器 `GtkGrid` 在 GTK4 里仍然可用",
+            "信号连接改成了 `&Class::method` 的指针写法"
+        ],
+        "source_section": "第 13 讲 · GTK 图形界面程序设计",
+        "statement_md": "教材蓝本是 Fedora 30，里面的 GTK 写法搬到 Fedora 44（GTK4）上，下列哪些说法**正确**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ABC",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "A ✅ 包名一路是 `gtk+-2.0` → `gtk+-3.0` → **`gtk4`**。那个加号是 GTK3 时代的产物，4 去掉了 —— 写成 `gtk+-4.0` 会直接查不到包。\n\nB ✅ GTK4 里控件**默认可见**，`gtk_widget_show` / `show_all` 那一套不需要了；窗口用 `gtk_window_present()`（它同时负责「显示 + 抢焦点 + 提到最前」）。\n\nC ✅ `GtkTable` 整个类没了（3.4 起就已废弃），替代品正是 **`GtkGrid`**。\n\nD ❌ **这是 Qt 的写法，不是 GTK 的。** GTK 一直是字符串信号名：\n```c\ng_signal_connect(app, \"activate\", G_CALLBACK(on_activate), NULL);\n```\n★ 代价是**拼错信号名编译期不报错**：`\"activat\"` 少一个 `e` 照样编译通过，运行时 GLib 只打一条 warning，然后**静默什么都不发生**。要查就用 `--g-fatal-warnings` 启动，或检查 `g_signal_connect` 的返回值是否为 0。"
+            }
+        ]
+    },
+    {
+        "title": "Qt 的 signals 与槽",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "qt",
+            "信号槽",
+            "moc",
+            "lambda",
+            "第 14 讲"
+        ],
+        "choices": [
+            "`signals:` 下的函数只写声明、**不写实现**（实现由 moc 生成）",
+            "槽就是普通成员函数，需要正常写实现",
+            "新式 `connect` 用 `&Class::method` 指针写法，成员名写错在**编译期**就报错",
+            "只有老式的 `SIGNAL()` / `SLOT()` 宏写法才能连 lambda"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "关于 Qt 的 `signals` / 槽，下列哪些说法**正确**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ABC",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "A ✅ 这是最容易记混的一处：「**信号不写实现，槽要写实现**」。信号的实现由 **moc**（元对象编译器）在预处理之后生成 ——这也是为什么改过 `Q_OBJECT` 相关的东西必须让 moc 重跑一次。\n\nB ✅ 槽没有任何语法魔法，就是个普通成员函数，可以正常调用、正常写实现、正常被 `connect` 连上。\n\nC ✅ 新式写法的本质是把函数**指针**交给 `connect`：\n```cpp\nconnect(btn, &QPushButton::clicked, this, &MyClass::onClick);\n```\n成员名写错 → 取不到成员 → **当场编译报错**；IDE 也能跳转、能重构。\n\nD ❌ 正好说反了。老写法 `SIGNAL(clicked())` 把函数名当**字符串**，编译期查不出来，拼错只在运行时打一条 warning ——**而且它连不了 lambda**；能连 lambda 恰恰是新语法额外带来的好处。"
+            }
+        ]
+    },
+    {
+        "title": "Qt6 里的这些类去哪了",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "qt",
+            "Qt6",
+            "迁移",
+            "Qt5Compat",
+            "第 14 讲"
+        ],
+        "choices": [
+            "`QRegExp` 移入 Qt5Compat，替代品是 `QRegularExpression`",
+            "`QTextStream::setCodec()` 被移除，改用 `setEncoding()`",
+            "`QStringRef` 仍然留在 Qt6 的核心模块里",
+            "`QVector` 现在是 `QList` 的别名（两者已经合并）"
+        ],
+        "source_section": "第 14 讲 · Qt 图形界面程序设计",
+        "statement_md": "从 Qt5 迁到 Qt6，下列哪些对应关系**正确**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ABD",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ABD\n|ADB\n|BAD\n|BDA\n|DAB\n|DBA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "A ✅ `QRegExp` 被 `QRegularExpression` 取代，老类**移出核心模块**、挪进 `Qt5Compat`。临时救急可以 `QT += core5compat`，长期要换掉。\n\nB ✅ 注意这一条是**被删除**（不是废弃）：函数名换了，`setCodec()` 直接不存在，编译期就报错。\n\nC ❌ `QStringRef` 也挪进了 `Qt5Compat`，替代品是 **`QStringView`**。「名字带 QString 所以肯定在核心模块里」是个想当然的坑。\n\nD ✅ `QList` 与 `QVector` 两者合一，`QVector` 保留为 `QList` 的别名 ——以后不用再纠结「该用哪个」。\n\n★ 记这一类迁移有个好办法：**先问「它现在在哪」**。\n\n| 情况 | 例子 |\n|---|---|\n| 还在核心模块里（改个名字就行）| `setCodec` → `setEncoding`、`QList`/`QVector` 合一 |\n| 挪去了 `Qt5Compat`（要么加模块、要么换类）| `QRegExp` / `QTextCodec` / `QStringRef` |\n| 真删除（必须重写）| Qt Quick Controls 1 |"
+            }
+        ]
+    },
+    {
+        "title": "方括号与双方括号",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "shell",
+            "条件判断",
+            "引号",
+            "重定向",
+            "第 11 讲"
+        ],
+        "choices": [
+            "`[` 是一条命令（等价于 `test`），不是 shell 语法",
+            "`[[ ]]` 里的 `>` 也会像 `[ ]` 一样触发文件重定向",
+            "变量没赋值时 `[ $v = x ]` 会报 `unary operator expected`，给变量加双引号即可",
+            "`[[ 10 > 9 ]]` 做的是字符串比较、结果为假；数值比较要写 `-gt` 或 `(( ))`"
+        ],
+        "source_section": "第 11 讲 · Shell 程序设计",
+        "statement_md": "关于 shell 里的条件测试，下列哪些说法**正确**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ACD",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ACD\n|ADC\n|CAD\n|CDA\n|DAC\n|DCA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "A ✅ `[` 就是 `/usr/bin/[` 这个可执行文件（等价于 `test`）。**既然是普通命令，参数就要先被 shell 展开、分词、glob** ——「90% 的 shell 玄学问题」都出在这句话上。\n\nB ❌ 说反了：`[[ ]]` 是**语法**，内部不重定向、不做分词、不做 glob；真正会出事的是 `[ 10 > 9 ]` —— `>` 被当成重定向，当前目录会凭空多出一个叫 `9` 的空文件，而判断结果还莫名其妙。\n\nC ✅ `$v` 展开成空串后，`[ = x ]` 只收到两个参数，命令 `[` 发现第一个参数 `=` 不是合法的一元运算符，直接报错退出。加上双引号变成 `[ \"\" = x ]`（三个参数），走二元比较规则，合法且判为假。\n\nD ✅ `[[ ]]` 里的 `>` 是**字符串比较**（字典序）：`'1'`(0x31) < `'9'`(0x39)，所以 `[[ 10 > 9 ]]` 是假。数值比较要写成 `[[ 10 -gt 9 ]]` 或 `(( 10 > 9 ))`。"
+            }
+        ]
+    },
+    {
+        "title": "让 httpd 对外可访问的正确步骤",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 4,
+        "total_score": 14,
+        "tags": [
+            "httpd",
+            "firewalld",
+            "SELinux",
+            "systemctl",
+            "第 07 讲"
+        ],
+        "choices": [
+            "`sudo dnf install httpd`",
+            "`sudo systemctl enable --now httpd`",
+            "直接把 SELinux 关掉，否则网页一定打不开",
+            "`sudo firewall-cmd --permanent --add-service=http` 之后还要 `sudo firewall-cmd --reload`"
+        ],
+        "source_section": "第 07 讲 · 常用网络服务",
+        "statement_md": "在 Fedora 上把 Apache（httpd）配到「装好 + 开机自启 + 立刻能访问」的状态，下列哪些做法是**正确步骤**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ABD",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ABD\n|ADB\n|BAD\n|BDA\n|DAB\n|DBA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "A ✅ 先有软件包才谈得上服务。\n\nB ✅ `--now` 是「立刻启动」的简写，`enable --now` = **开机自启 + 现在就起来**，一次把两件事办完；只 `enable` 不 `--now` 的话，当前这次开机里服务仍然是停的。\n\nC ❌ 关 SELinux 是**甩掉安全机制**，不是配置。正确做法是按需放行：用 `setsebool -P <布尔值> on` 打开对应的布尔开关（`-P` 才会持久化），或者用 `semanage fcontext` 改规则、再用 `restorecon -Rv 路径` 刷到实际文件上。★ 「只做 `semanage` 不 `restorecon`」是这一步最常见的漏做 ——规则写进去了，但文件上的标签还是旧的，照样拒绝访问。\n\nD ✅ `--permanent` 只把规则**写进配置文件**，当前运行中的防火墙规则并没有变；必须再来一条 `firewall-cmd --reload` 让它生效。★ 「明明配了却没用」的头号原因就是这个 —— 少一条 `--reload`。"
             }
         ]
     }

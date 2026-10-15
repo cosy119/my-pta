@@ -14,6 +14,8 @@
 检查项
 ------
 1. **单选题**：正确选项 AC；**其余每个选项都必须 WA**（逐个试，不能只试一个）
+1b. **多选题**：正确答案 AC 判过；**选项集合的所有其它子集**（含只选一个、
+    多选一个）全部 WA —— 漏选/多选都算错；同一组答案写反顺序也认
 2. **判断题**：`对` / `正确` / `√` / `T` / `是` 都 AC；`错` / `×` / `F` 都 WA
 3. **命令填空题**：多种等价写法（选项顺序颠倒、空格多少、`-l -a` 与 `-la`）都 AC
 4. **命令填空题**：形近但**错误**的命令必须 WA（`head -n +100` 之类）
@@ -31,6 +33,7 @@ from __future__ import annotations
 import os
 import re
 import sys
+from itertools import combinations
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -78,8 +81,12 @@ def main() -> int:
     print("=" * 78)
 
     # ---------- 1 · 单选题：其余选项必须判错 ----------
-    mc_probs = [p for p in LINUX_PROBLEMS
-                if p.get("choices") and p["choices"] != ["对", "错"]]
+    #   ★ 多选题也是「有选项」的题，但判法不同（正确选项不止一个），
+    #     所以先按 question_type 分开，单选走这一节、多选走 1b。
+    choice_probs = [p for p in LINUX_PROBLEMS
+                    if p.get("choices") and p["choices"] != ["对", "错"]]
+    mc_probs = [p for p in choice_probs if p.get("question_type") != "multiple_choice"]
+    multi_probs = [p for p in choice_probs if p.get("question_type") == "multiple_choice"]
     bad_mc: list[str] = []
     for p in mc_probs:
         letters = "ABCDEFGH"
@@ -98,6 +105,38 @@ def main() -> int:
                 bad_mc.append("%s（错误选项 %s 被误判为对）" % (p["title"], L))
     check("单选题 %d 道：正确答案判过、其余选项全部判错" % len(mc_probs),
           not bad_mc, "; ".join(bad_mc[:3]))
+
+    # ---------- 1b · 多选题：正确答案判过，**其它任何字母组合**都必须判错 ----------
+    #   ★ 这里不做「抽查」，直接把选项集合的所有子集穷举一遍：
+    #     多选题最怕的不是「答案判不过」，而是「漏选也判对」——
+    #     只选一半就能 AC 的话，这道题等于白出。
+    bad_multi: list[str] = []
+    for p in multi_probs:
+        n = len(p["choices"])
+        letters = "ABCDEFGH"[:n]
+        right = oneof_alternatives(p["cases"][0]["expected_stdout"])[0].strip().upper()
+        if len(right) < 2 or any(L not in letters for L in right):
+            bad_multi.append("%s（正确答案 %r 不是两个以上的有效选项）" % (p["title"], right))
+            continue
+        if len(set(right)) != len(right):
+            bad_multi.append("%s（答案里有重复字母 %r）" % (p["title"], right))
+            continue
+        if not judge(p, right):
+            bad_multi.append("%s（正确答案 %s 竟然判不过）" % (p["title"], right))
+            continue
+        right_set = set(right)
+        for k in range(1, n + 1):
+            for combo in combinations(letters, k):
+                if set(combo) == right_set:
+                    continue
+                got = "".join(combo)
+                if judge(p, got):
+                    bad_multi.append("%s（错误组合 %s 被误判为对）" % (p["title"], got))
+        # 同一组正确答案、顺序写反 → 也要认（工厂对 ≤3 个字母会列全排列）
+        if len(right) <= 3 and not judge(p, right[::-1]):
+            bad_multi.append("%s（同一组答案换个顺序 %s 判不过）" % (p["title"], right[::-1]))
+    check("多选题 %d 道：答案判过、其它字母组合全判错、顺序写反也认" % len(multi_probs),
+          bool(multi_probs) and not bad_multi, "; ".join(bad_multi[:3]))
 
     # ---------- 2 · 判断题的各种写法 ----------
     tf_probs = [p for p in LINUX_PROBLEMS if p.get("choices") == ["对", "错"]]

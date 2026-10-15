@@ -33,7 +33,7 @@ SQLite（题库 + 提交记录 + 进度）
 
 ```bat
 python tools\export_static.py      &rem ★ 改题库/前端后必须重跑，重新生成 docs/
-python tools\verify_bank.py        &rem 204 题 / 532 点，双实现对拍
+python tools\verify_bank.py        &rem 308 题 / 715 点，双实现对拍
 python tools\selftest_cpp.py       &rem 9 项
 python tools\selftest_theory.py    &rem 14 项
 python tools\selfcheck.py          &rem 62 项
@@ -257,20 +257,61 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（204 题 / 2615 分 / 532 测试点）
+## 题库（308 题 / 3833 分 / 715 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
-| `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(53) | 56 | 860 | python | Python |
-| `ds` | `problems_bank_ds.py` | 31 | 595 | cpp | **C 或 C++ 任选** |
-| `linux` | `problems_bank_linux.py` | 117 | 1160 | text | 理论题（选择/判断/填空） |
+| `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(67 = 53 + ext2 14) | 70 | 1060 | python | Python |
+| `ds` | `problems_bank_ds.py` | 59 | 979 | cpp | **C 或 C++ 任选** |
+| `linux` | `problems_bank_linux.py` | 179 | 1794 | text | 理论题（单选 / 多选 / 判断 / 填空） |
 
 - ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
   **CORE 那 3 题连单撞都没有**。现在 `LINES` 用的是 `CORE_PROBLEMS + BANK_PROBLEMS`。
   **加题库时先确认对拍覆盖到了。**
-- Python 讲次分布：02→4 / 03→7 / 04→5 / 05→7 / 06→6 / 07→4 / 08→6 / 09→5 / 10→5 / 11→7。⏳ 第 12 讲及以后尚无题。
+- Python 讲次分布：02→4 / 03→7 / 04→5 / 05→7 / 06→6 / 07→4 / 08→6 / 09→5 / 10→5 / 11→7 / 12→5 / 13→5 / 14→4（第 12~14 讲由 `problems_bank_ext2.py` 覆盖，全书 01~14 全有题）。
+- Linux 讲次分布：01→5 / 03→2 / 04→2 / 05→6 / 06→8 / 07→**7** / 08→9 / 09→9 / 10→5 /
+  **11→7 / 12→14 / 13→14 / 14→14 / 15→6 / 16→6**；另加「基础命令」45 + 「实验」20。
+  （第 02 讲的内容由「基础命令」组覆盖 —— 那 45 道就是围绕 Shell 命令出的。）
+  - 2026-10-15 再补：`part_multi()` 8 道**多选**，落在 07 / 11 / 12（×2）/ 13（×2）/ 14（×2）。
+- **题型分布（全库）**：编程 113 / 单选 123 / 判断 35 / 填空 25 / **多选 10** / 简答 2。
 - `seed.py`：`SEED_PROBLEMS = CORE + BANK + DS + LINUX`；`SUBJECT_LABELS` 给三科目中文名；
   `_seed_specs()` 返回四元组 `(total, pts, section, subject)`，`backfill_points()` 同步 `subject`。
+
+### ★ 题型分类（`app/question_types.py`，2026-10-15）
+
+七类 `LABELS`：`single_choice` 单选 / `multiple_choice` 多选 / `true_false` 判断 /
+`fill_blank` 填空 / `short_answer` 简答 / `programming` 编程 / `practical` 实操。
+
+- **题型是题目的显式元数据，和 `subject`（科目）、`line`（提交方式）是三件不同的事。**
+  老库靠 `infer()` 按「有没有选项 / 选项是不是对错 / `line` 是不是 text」兜底补标；
+  **新题一律由题库自己盖章** —— `infer()` 不凭答案长短猜「简答」，更不许猜出「实操」。
+- 入库路径：`seed.ensure()` 写 `question_type = infer(题库条目)`；
+  `seed.sync_question_types()` 给老库补标（**种子题按题库同步，人工题保留已标类型，幂等**）。
+  ★ 两条都是**读题库模块**，所以改完题库必须重新 seed 一次，否则库里还是旧标。
+
+**判定口径（照这个对，别凭感觉）**
+
+| 类型 | 判定标准 | Linux 线现状 |
+|---|---|---|
+| 单选 | 有 2~8 个选项，答案是**一个**字母 | 115 |
+| 多选 | 有选项，答案是**两个以上**字母（库里按升序存，如 `AC`） | **8**（新补） |
+| 判断 | 选项恰好是 `对 / 错` | 31 |
+| 填空 | 一行文本答案、机器可判（术语 / 参数 / **单条命令**） | 25 |
+| 简答 | 用自己的话讲要点，答案不唯一 | 0（本轮刻意留空） |
+| 编程 | `line != text`，交源代码给判题机 | 0（Python/DS 线的 113 道都是） |
+| 实操 | 必须真在机器上按步骤做完才能答 | 0（本轮刻意留空） |
+
+- ★ **「填空」和「实操」的界线是「动不动手」，不是「答案长不长」**：
+  「写出查看网卡名的命令」动脑就能答 → 填空；「装好 httpd、放行防火墙、贴出验证输出」→ 实操。
+  本轮只做到「填空」，实操题（要真操作、平台判不了）留给下一轮。
+- ★ **多选题的答案口径**（`app/bank_kit.py::multi()`）：
+  1. 库里存**字母升序**串 —— 网页端是多选点选，字母按选项顺序拼，**天然就是升序**；
+  2. 字母数 ≤ 3 时把**全排列**一并列为可接受答案（`AC` 与 `CA` 都认），
+     免得 API 直接提交时把顺序写反白判一次 WA；4 个以上不列（24 种会把提示刷屏）；
+  3. 分值 `SCORE_MULTI = 14`（比单选 10 高 —— 要对若干个才对）。
+- ★ **多选题的验收点不是「答案判得过」，而是「漏选也必须判错」**：
+  `selftest_theory.py` 把选项集合的**所有子集**穷举一遍（只选一个、多选一个、全选…），
+  除了正确答案本身，其余必须全 WA —— 否则「只选一半也能 AC」等于这道题白出。
 
 ### ★ 加题铁律「三件套」
 
@@ -290,6 +331,32 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
 
 - `_dump()` 输出 Python 字面量（把 JSON 的 `null`/`true`/`false` 换掉）。
 - ⚠️ 生成器里**不能把 `def oracle` 写进 `add(...)` 的实参列表** —— `def` 是语句不是表达式，整份文件一行都跑不了。
+
+### ★ 第 11 ~ 16 讲题库（2026-10-15 补，第三部分「Linux 平台上的程序设计」）
+
+`gen_linux_bank.py` 里新增 `part_lectures_c()`，六讲共 **54 题**：
+
+| 讲 | 主题 | 题数 | | 讲 | 主题 | 题数 |
+|---|---|---|---|---|---|---|
+| 11 | Shell 程序设计 | 6 | | 14 | Qt 图形界面 | **12** |
+| 12 | GCC 的使用与开发 | **12** | | 15 | Python 程序开发环境 | 6 |
+| 13 | GTK 图形界面 | **12** | | 16 | Eclipse | 6 |
+
+- **重点讲（12 / 13 / 14）加倍** —— 那三讲是第三部分的硬骨头（四道工序 / 链接顺序 / moc / moc 与 vtable）。
+- 题源：各讲的「**一分钟速览**」+「**附录 A · 陷阱清单**」——
+  后者每条本来就是讲义里已核过的结论（本机实跑 / 官方文档 / 包仓库），不是现编的。
+- ★ **加题入库三步**（少一步就出错）：
+  1. 改 `tools/gen_linux_bank.py` → 跑它（会重写 `app/problems_bank_linux.py`）；
+  2. **跑一次 seed 把它灌进本地库**：`db.init_db()` → `seed.ensure()` → `backfill_points()`
+     → `backfill_choice_alts()`（幂等，只新增，不删改）；
+  3. `export_static.py --with-cases` 重导 `docs/`。
+- ⚠️ **第 2 步最容易忘，而后果最隐蔽**：`verify_text_judge.py` 和 `export_static.py`
+  **读的是数据库，不是题库模块** —— 忘了 seed 的话这两个脚本看到的还是旧题量，
+  而且**不会报错**（表现为「明明加了题，静态站上却没有」）。
+- ★ 判题口径的两个数字会自动跟着涨（**别写死**）：`verify_text_judge` 现在是 **195 题 / 5785 条**，
+  `selftest_theory` 是 **115 道单选 + 8 道多选**（多选另把选项集合的全部子集穷举一遍）。
+- ★ 其中**第 11 讲的 6 道全部进了 `verify_theory_facts.py` 的可实证名单**（ID 205~210）——
+  bash 语法不依赖发行版，本机能真跑出事实再对答案键。
 
 ### 理论题样板工厂 `app/bank_kit.py`
 
@@ -365,7 +432,7 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
 
 `tools/selftest_theory.py`（14 项）负责证明「错误答案判得**错**」：
 
-- 逐题试**单选题其余每一个选项**（72 道）
+- 逐题试**单选题其余每一个选项**（115 道）
 - 判断题双向
 - 命令填空的宽容度
 - **全库扫三条**：每道题的参考答案都判得过自己 / 期望值里每条可接受答案都判得过 / 乱写加料仍判错
@@ -380,9 +447,9 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   移植时按原函数逐个对着写 —— `normalize_answer` / `answer_forms` / `_norm_cmd` /
   `oneof_alternatives` / `_uses_oneof` / `compare` / `scoring.grade` 一个不落。
 - ★★ **口径分叉是这里最大的风险**，而且极其隐蔽：大多数答案仍然判得对，只在边角处悄悄不一致。
-  所以配了 `tools/verify_text_judge.mjs` —— 题库全部 **117 道理论题 × 多种答案 = 3463 条**，
+  所以配了 `tools/verify_text_judge.mjs` —— 题库全部 **195 道理论题 × 多种答案 = 5785 条**，
   在 JS 侧跑一遍、在 Python 侧（**真实实现**，不是另写一套「差不多的」）跑一遍，
-  逐字段比对 verdict / score。现状：**3463 条全部一致**（1854 AC / 1609 非 AC —— 正反两面都有，不是恒真）。
+  逐字段比对 verdict / score。现状：**5785 条全部一致**（3127 AC / 2658 非 AC —— 正反两面都有，不是恒真）。
   改 `judge_text.js` 之后必须重跑它。
 
 移植时踩到的坑（都写在文件头了）：
@@ -396,7 +463,7 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
 
 文件是 UMD：浏览器挂 `window.TextJudge`，Node 里 `require` 得到同一个对象（对拍脚本用）。
 
-**离线本地判题的边界（2026-10-15 更新）**：最初只有 `line === 'text'` 的题（Linux 线 117 道）能本地判；
+**离线本地判题的边界（2026-10-15 更新）**：最初只有 `line === 'text'` 的题（Linux 线 179 道）能本地判；
 现在 **三条线都能在浏览器里判** —— 理论题走 `judge_text.js`，Python 走 **Pyodide**（`web/pyodide/`，约 13 MB，随仓库分发）、
 C/C++ 走 **Clang/WASI**（`web/clang/`，约 29 MB，随仓库分发），引擎全部**从本站加载、零 CDN 依赖**。
 后端从「必须」变成「可选增强」：跨设备进度、更准的 GCC 环境、防作弊。
@@ -423,7 +490,7 @@ C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
 | `selfcheck.py` | **62/62** | 内核 41 + 评分 21 |
 | `selftest_sandbox.py` | **19/19** | 超时杀孙进程、爆内存判 MLE、`exit(1)` 反向不误判、**MLE 判据矩阵（7 项纯函数断言）** |
 | `selftest_cpp.py` | **9/9** | C/C++ AC·CE·WA·TLE、**同目录产物不串**、编译器路径无效给人话、别名收敛 |
-| `selftest_theory.py` | **14/14** | 72 道单选其余选项全判错、判断题双向、命令宽容度、全库扫 |
+| `selftest_theory.py` | **15/15** | 115 道单选其余选项全判错、**8 道多选穷举全部子集**、判断题双向、命令宽容度、全库扫 |
 | `smoke_cloud.py` | **13/13** | **云端启动路径**：真起 `python run.py`（`PTA_CLOUD=1` + `$PORT`）、绑 0.0.0.0、三科目齐、**真编 C++ / 真跑 Python 各 AC 一次** |
 | `e2e_ui.py` | **33/33** | 端到端过 HTTP（**需先起服务**） |
 | `ui_smoke.mjs` | **41/41** | jsdom 真渲染前端（离线 + 假后端两遍） |
@@ -434,9 +501,9 @@ C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
 | `httptest_users.py` | **23/23** | 多用户隔离、越权 404、CORS |
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
 | `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
-| `verify_bank.py` | **204 题 / 532 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
+| `verify_bank.py` | **308 题 / 715 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
 | `show_text_judge.mjs` | **全过** | 本地判题器的「行为说明书」：多种等价写法都认、变异错答案 71/72 被抓、309 个标准答案全 AC、351 个胡写全 WA |
-| `verify_theory_facts.py` | **39 过 / 0 不符 / 8 无法核验** | **理论题答案的实证核验**：117 道理论题里凡本机（Git Bash GNU coreutils 8.32 / GNU tar 1.35）能跑的，先跑出事实再对答案键；跑不了的如实列「无法核验」。**抓到过真 bug**：91/100 题的 explanation 曾写「`head -n +N` 报错」「`tail -n -N` 非法」——GNU 上全都不成立（`+N` 就是前 N 行；`-N` 归 tail 是最后 N 行），已改 |
+| `verify_theory_facts.py` | **45 过 / 0 不符 / 8 无法核验** | **理论题答案的实证核验**：179 道理论题里凡本机（Git Bash GNU coreutils 8.32 / GNU tar 1.35）能跑的，先跑出事实再对答案键；跑不了的如实列「无法核验」。**抓到过真 bug**：91/100 题的 explanation 曾写「`head -n +N` 报错」「`tail -n -N` 非法」——GNU 上全都不成立（`+N` 就是前 N 行；`-N` 归 tail 是最后 N 行），已改 |
 
 跑 `e2e_ui` 的正确姿势（**用测试库，绝不碰真实库**；⚠️ 本机要带 `NO_PROXY`，见下节）：
 
@@ -501,7 +568,7 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
    改用持久的测试库之后，第二次跑必定数到上一次留下的记录 → 假失败。
    → 加 `_testdb.fresh_test_db()`：开跑前把测试库**删掉重建**
    （schema 不用管，`app/db.py` 的 `connect()` 会自己建表）。
-2. **等待时限刚好卡边界**：删库重建后服务要重新播种 204 题 / 532 个测试点，
+2. **等待时限刚好卡边界**：删库重建后服务要重新播种 308 题 / 715 个测试点，
    本机实测约 40 秒，而 `wait_port` / `wait_http` 的默认上限**正好是 40 秒**。
    → 提到 120 秒。
 
@@ -511,7 +578,7 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 
 | 旧断言 | 现实 |
 |---|---|
-| `problems.json` 的 `count == 56` | 题库早就 204 题了 → 改成**对着 `docs/problems.json` 自己数一遍**，别硬编码 |
+| `problems.json` 的 `count == 56` | 题库早就 308 题了 → 改成**对着 `docs/problems.json` 自己数一遍**，别硬编码 |
 | HTML 里有 `pta.backend` | 新前端的键是 `pta.apiBase` |
 | HTML 里有 `get("api")` | 新前端是 `new URLSearchParams(location.search).get('api')` |
 
@@ -656,13 +723,13 @@ editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_
 
 ## 进度
 
-**P0 + P1 + 评分系统 + 三科目题库(204 道) + C/C++ 双通道 + 理论题判题 + PTA 风格前端 +
-数据备份 + 多用户隔离 + Pages 发布 + 前端本地判题（Linux 理论 117 道）+ 进度导出/导入 +
+**P0 + P1 + 评分系统 + 三科目题库(308 道) + C/C++ 双通道 + 理论题判题 + PTA 风格前端 +
+数据备份 + 多用户隔离 + Pages 发布 + 前端本地判题（Linux 理论 179 道）+ 进度导出/导入 +
 智能编辑器（自托管 CodeMirror 6，Python/C/C++ 题）** 已完成。
 
 ### 部署路线（2026-10-14 定）：不是「VPS vs 纯前端」二选一，而是三步走
 
-1. ✅ **Linux 117 道理论题改前端本地判** —— 零依赖、当天可见，已落地并验证
+1. ✅ **Linux 179 道理论题改前端本地判** —— 零依赖、当天可见，已落地并验证
 2. ⏳ **Python 56 道走 Pyodide** —— 可行性已在 `experiments/pyodide-judge/` 真跑验证
    （Node 15/15 + 真浏览器 10/10；CPython 3.14.2；单样例中位 0.2 ms；死循环 2 s 被 terminate 且不冻页面）
 3. ⏳ **C/C++ 31 道缓做** —— 浏览器内跑 clang 要下 ≈95 MB 换 15% 覆盖，不划算；
@@ -671,7 +738,7 @@ editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_
 后端的定位因此**从「必须」降级为「可选增强」**，只干三件事：
 **跨设备进度、C/C++ 判题、防作弊**。
 
-> ★★ 代价必须记住：`docs/problems.json` 现在**带全部 532 个测试点**（`--with-cases`），
+> ★★ 代价必须记住：`docs/problems.json` 现在**带全部 715 个测试点**（`--with-cases`），
 > 也就是**期望输出是公开的**（仓库公开、Pages 公开）。自学平台无所谓（随时对答案反而是加分项），
 > 但**分享给别人刷题就有作弊空间**。**参考解 `reference_solution` 仍然绝不外传**。
 > 想回退到「不下发」：不加该参数重导一次即可（前端会自动退回手动标记，不会报错）。
@@ -687,3 +754,12 @@ editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_
 
 1. 在 Render 部署后端（连 GitHub → 读 `render.yaml` → ★ **挂 Disk 到 `/data`**）
 2. 回 Pages 点「设置」填后端地址（或 `?api=` 一步到位）
+
+## 2026-10-15 · 题库扩容 + 题型分类（DS 窗口完成部分）
+
+- **题库 204 → 308 题 / 715 测试点**（python 70 / ds 59 / linux 179），verify_bank 全过。
+- **DS 线补齐 4 讲**（tools/gen_ds_bank.py）：06 图 4 编程题（邻接表头插法/BFS 跳数/Dijkstra/拓扑字典序）、07 查找 4 题（折半过程/BST/散列线性探测/链地址）、08 排序 4 题（冒泡逐趟/快排一趟划分/堆排/归并逐趟）——全部 oracle+solution+alt 三件套对拍。
+- **题型六类标注齐了**（question_type 列，前端徽标/筛选/多选交互由另一窗口完成）：单选 123 / 判断 35 / 填空 25 / 多选 10 / 简答 2 / 编程 113。DS 侧多选 2 + 简答 2 用 bank_kit.multi() 和 gen_ds_bank 本地 _sa()（简答工厂没动共享的 bank_kit）。
+- ★ smoke_cloud 被理论题坑过：它拿 subject=ds 的**第一道题**喂 g++ 试编译，理论题排前就会 CE——已改成只挑 `line=="cpp"` 的题。
+- ★ 本机跑 smoke_cloud 用 `D:/Pythontools/Python/python.exe`（fastapi 装在系统 Python，venv 里没有）。
+- 未推送：工作树混着另一窗口的未提交改动，push 由两窗口协调后统一做。

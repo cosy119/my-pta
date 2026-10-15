@@ -15,7 +15,8 @@
    C++ 走 g++ -std=c++17，C 走 gcc -std=gnu11（教材是 C 语言版）。
    判题时按提交里带的语言选编译器，见 `app/judge/runner_cpp.py`。
 
-覆盖范围：数据结构第 02 ~ 05 讲（线性表 / 栈与队列 / 串数组广义表 / 树与二叉树）。
+覆盖范围：数据结构第 01 ~ 08 讲（绪论理论题 / 线性表 / 栈与队列 / 串数组广义表 /
+树与二叉树 / 图 / 查找 / 排序）。编程题集中在 02~08 讲；01 讲纯理论（考概念）。
 """
 from __future__ import annotations
 
@@ -2181,6 +2182,1758 @@ DS_PROBLEMS: list[dict] = [
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "无向图的邻接表（头插法）",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "邻接表",
+            "头插法",
+            "链式存储"
+        ],
+        "statement_md": "读入一个无向图，用**头插法**建立邻接表，然后按顶点序号 `1` ~ `n` 依次输出每个顶点的邻接点链。\n\n★ 教材的 `firstedge/nextarc` 写法就是**头插法**：后读入的边结点插到链的最前面。所以每个顶点的邻接点顺序与输入顺序**正好相反**——这也是判题的点：你要是按 `vector.push_back` 顺序输出，样例第一个就过不去。\n\n孤立顶点输出 `i:`（冒号后什么都没有，也没有空格）。",
+        "input_format": "第一行 `n m`（顶点数、边数）。\n\n接下来 `m` 行，每行 `u v` 表示一条无向边（`1 ≤ u,v ≤ n`，无重边、无自环）。",
+        "output_format": "`n` 行，第 `i` 行为顶点 `i` 的邻接链，格式 `i: v1 v2 ...`（邻接点按头插法顺序，即与输入顺序相反；孤立顶点输出 `i:`）。",
+        "constraints_md": "- 1 ≤ n ≤ 100\n- 0 ≤ m ≤ n(n-1)/2",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 06 讲 · 图",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 105\n#define MAXE 4005\nint head[MAXN], nxt[MAXE], to[MAXE], ecnt = 0;\n/* 教材式头插法：新边结点插到链的最前面 */\nvoid add_edge(int u, int v) {\n    ++ecnt; to[ecnt] = v; nxt[ecnt] = head[u]; head[u] = ecnt;\n}\nint main(void) {\n    int n, m;\n    scanf(\"%d %d\", &n, &m);\n    for (int k = 0; k < m; k++) {\n        int u, v; scanf(\"%d %d\", &u, &v);\n        add_edge(u, v); add_edge(v, u);\n    }\n    for (int i = 1; i <= n; i++) {\n        printf(\"%d:\", i);\n        for (int e = head[i]; e; e = nxt[e]) printf(\" %d\", to[e]);\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n/* 另一套：不用链表，用 vector 顺序收、输出时整体 reverse */\nint main() {\n    int n, m; cin >> n >> m;\n    vector<vector<int>> adj(n + 1);\n    for (int k = 0; k < m; k++) {\n        int u, v; cin >> u >> v;\n        adj[u].push_back(v); adj[v].push_back(u);\n    }\n    for (int i = 1; i <= n; i++) {\n        vector<int> r = adj[i];\n        reverse(r.begin(), r.end());     // 头插法的效果 = 逆输入序\n        cout << i << \":\";\n        for (int v : r) cout << \" \" << v;\n        cout << \"\\n\";\n    }\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "4 5\n1 2\n1 3\n1 4\n2 3\n3 4\n",
+                "expected_stdout": "1: 4 3 2\n2: 3 1\n3: 4 2 1\n4: 3 1\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "3 1\n2 3\n",
+                "expected_stdout": "1:\n2: 3\n3: 2\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1 0\n",
+                "expected_stdout": "1:\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 6\n1 2\n2 3\n3 4\n4 5\n5 1\n2 4\n",
+                "expected_stdout": "1: 5 2\n2: 4 3 1\n3: 4 2\n4: 2 5 3\n5: 1 4\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "2 1\n1 2\n",
+                "expected_stdout": "1: 2\n2: 1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "无权图的最短跳数（BFS）",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "BFS",
+            "队列",
+            "最短路径"
+        ],
+        "statement_md": "给一个无权无向图和两个顶点 `s`、`t`，求从 `s` 走到 `t` 最少要经过几条边（跳数）。到不了输出 `-1`。\n\n★ BFS 是「按跳数分层」的：队列里先放跳数 0 的、再放跳数 1 的……所以**第一次摸到 `t` 时记录的跳数就是答案**。这题用的正是讲义里「BFS 副产品：最短跳数」的那套写法——用 `dist[]` 边入队边标距离，别用「出队时才标记」的反面教材。",
+        "input_format": "第一行 `n m s t`（顶点数、边数、起点、终点，`s ≠ t`）。\n\n接下来 `m` 行，每行 `u v` 表示一条无向边（无重边、无自环）。",
+        "output_format": "一行，一个整数：最少跳数；不可达为 `-1`。",
+        "constraints_md": "- 2 ≤ n ≤ 100\n- 0 ≤ m ≤ n(n-1)/2",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 06 讲 · 图",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <iostream>\n#include <vector>\n#include <queue>\nusing namespace std;\nint main() {\n    int n, m, s, t; cin >> n >> m >> s >> t;\n    vector<vector<int>> g(n + 1);\n    for (int k = 0; k < m; k++) {\n        int u, v; cin >> u >> v;\n        g[u].push_back(v); g[v].push_back(u);\n    }\n    vector<int> dist(n + 1, -1);\n    queue<int> q;\n    dist[s] = 0; q.push(s);              // 入队即标记\n    while (!q.empty()) {\n        int x = q.front(); q.pop();\n        for (int y : g[x])\n            if (dist[y] < 0) { dist[y] = dist[x] + 1; q.push(y); }\n    }\n    cout << dist[t] << \"\\n\";\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：不用队列，按「层」扩展——cur 是跳数为 k 的全部顶点 */\nint main() {\n    int n, m, s, t; cin >> n >> m >> s >> t;\n    vector<vector<int>> g(n + 1);\n    for (int k = 0; k < m; k++) {\n        int u, v; cin >> u >> v;\n        g[u].push_back(v); g[v].push_back(u);\n    }\n    vector<char> seen(n + 1, 0);\n    vector<int> cur = {s};\n    seen[s] = 1;\n    int hops = 0, ans = -1;\n    while (!cur.empty()) {\n        vector<int> nxt;\n        for (int x : cur) {\n            if (x == t) { ans = hops; cur.clear(); break; }\n            for (int y : g[x]) if (!seen[y]) { seen[y] = 1; nxt.push_back(y); }\n        }\n        if (ans >= 0) break;\n        cur = nxt; hops++;\n    }\n    cout << ans << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "6 7 1 5\n1 2\n1 3\n2 4\n3 4\n4 5\n3 5\n2 6\n",
+                "expected_stdout": "2\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "4 2 1 4\n1 2\n3 4\n",
+                "expected_stdout": "-1\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "2 1 1 2\n1 2\n",
+                "expected_stdout": "1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 5 1 4\n1 2\n2 3\n3 4\n4 5\n5 1\n",
+                "expected_stdout": "2\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "3 0 1 3\n",
+                "expected_stdout": "-1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "单源最短路径（Dijkstra）",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 3,
+        "total_score": 20,
+        "tags": [
+            "Dijkstra",
+            "贪心",
+            "最短路径"
+        ],
+        "statement_md": "给一个**边权非负**的有向图和源点 `s`，输出 `s` 到每个顶点的最短距离，到不了的输出 `-1`（`s` 到自己是 `0`）。\n\n★ Dijkstra 的贪心内核：每轮从「未定」的顶点里挑 `dist` 最小的（用不用堆都行，数据规模小，O(n²) 的教材写法就够），把它标成「已定」，再用它松驰出边。\n\n**它不能处理负权边**——讲义里给过反例（Dijkstra 会翻车而 Floyd 正确），所以本题保证所有边权 > 0。",
+        "input_format": "第一行 `n m s`（顶点数、边数、源点）。\n\n接下来 `m` 行，每行 `u v w` 表示一条 `u → v`、权 `w`（1 ≤ w ≤ 100）的有向边；可能有重边（取最小即可），无自环。",
+        "output_format": "一行 `n` 个整数（空格分隔）：`s` 到各顶点的最短距离；不可达为 `-1`。",
+        "constraints_md": "- 1 ≤ n ≤ 50\n- 0 ≤ m ≤ n(n-1)\n- 1 ≤ w ≤ 100",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 06 讲 · 图",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    int n, m, s; cin >> n >> m >> s;\n    const long long INF = (long long)1e18;\n    vector<vector<long long>> w(n + 1, vector<long long>(n + 1, INF));\n    for (int k = 0; k < m; k++) {\n        int u, v; long long c; cin >> u >> v >> c;\n        if (u != v && c < w[u][v]) w[u][v] = c;\n    }\n    vector<long long> dist(n + 1, INF);\n    vector<char> done(n + 1, 0);\n    dist[s] = 0;\n    for (int round = 0; round < n; round++) {\n        int x = -1;\n        for (int i = 1; i <= n; i++)\n            if (!done[i] && dist[i] < INF && (x < 0 || dist[i] < dist[x])) x = i;\n        if (x < 0) break;\n        done[x] = 1;\n        for (int y = 1; y <= n; y++)\n            if (w[x][y] < INF && dist[x] + w[x][y] < dist[y])\n                dist[y] = dist[x] + w[x][y];\n    }\n    for (int i = 1; i <= n; i++) {\n        if (i > 1) cout << \" \";\n        if (dist[i] < INF) cout << dist[i]; else cout << -1;\n    }\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：Floyd 全源最短路，最后只打印 s 那一行（n ≤ 50，三次方也毫无压力） */\nint main() {\n    int n, m, s; cin >> n >> m >> s;\n    const long long INF = (long long)1e18;\n    vector<vector<long long>> d(n + 1, vector<long long>(n + 1, INF));\n    for (int i = 1; i <= n; i++) d[i][i] = 0;\n    for (int k = 0; k < m; k++) {\n        int u, v; long long c; cin >> u >> v >> c;\n        if (c < d[u][v]) d[u][v] = c;\n    }\n    for (int k = 1; k <= n; k++)\n        for (int i = 1; i <= n; i++)\n            for (int j = 1; j <= n; j++)\n                if (d[i][k] < INF && d[k][j] < INF && d[i][k] + d[k][j] < d[i][j])\n                    d[i][j] = d[i][k] + d[k][j];\n    for (int j = 1; j <= n; j++) {\n        if (j > 1) cout << \" \";\n        if (d[s][j] < INF) cout << d[s][j]; else cout << -1;\n    }\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "4 5 1\n1 2 5\n1 3 1\n3 2 1\n2 4 2\n3 4 6\n",
+                "expected_stdout": "0 2 1 4\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "3 1 1\n1 2 7\n",
+                "expected_stdout": "0 7 -1\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "2 0 1\n",
+                "expected_stdout": "0 -1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "4 6 2\n1 2 3\n2 3 1\n3 4 1\n1 3 5\n2 4 10\n1 4 100\n",
+                "expected_stdout": "-1 0 1 2\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 7 1\n1 2 10\n1 4 30\n1 5 100\n2 3 50\n3 5 10\n4 3 20\n4 5 60\n",
+                "expected_stdout": "0 10 50 30 60\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "拓扑排序（字典序最小）",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 3,
+        "total_score": 20,
+        "tags": [
+            "拓扑排序",
+            "AOV 网",
+            "贪心"
+        ],
+        "statement_md": "给一个有向无环图（也可能有环），输出它的一个拓扑序——要求**字典序最小**的那个；如果图里有环（顶点数不足 `n`），输出 `loop`。\n\n★ 教材用**栈**存入度为 0 的顶点，弹出来的顺序是「某种」合法拓扑序；本题要字典序最小，把栈换成**小根堆**就行，算法骨架一模一样。\n\n环检测就是讲义里那句：**出堆个数 < n ⇒ 有环**。",
+        "input_format": "第一行 `n m`（顶点数、弧数）。\n\n接下来 `m` 行，每行 `u v` 表示弧 `<u, v>`（无重边、无自环）。",
+        "output_format": "一行：字典序最小的拓扑序（`n` 个数，空格分隔）；有环输出 `loop`。",
+        "constraints_md": "- 1 ≤ n ≤ 100\n- 0 ≤ m ≤ n(n-1)",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 06 讲 · 图",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <iostream>\n#include <vector>\n#include <queue>\n#include <functional>\nusing namespace std;\nint main() {\n    int n, m; cin >> n >> m;\n    vector<vector<int>> g(n + 1);\n    vector<int> indeg(n + 1, 0);\n    for (int k = 0; k < m; k++) {\n        int u, v; cin >> u >> v;\n        g[u].push_back(v); indeg[v]++;\n    }\n    priority_queue<int, vector<int>, greater<int>> pq;   // 小根堆\n    for (int i = 1; i <= n; i++) if (indeg[i] == 0) pq.push(i);\n    vector<int> order;\n    while (!pq.empty()) {\n        int x = pq.top(); pq.pop();\n        order.push_back(x);\n        for (int y : g[x]) if (--indeg[y] == 0) pq.push(y);\n    }\n    if ((int)order.size() < n) { cout << \"loop\\n\"; return 0; }\n    for (size_t i = 0; i < order.size(); i++)\n        cout << (i ? \" \" : \"\") << order[i];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：不用堆，每轮线性扫「未用过的入度 0 顶点里编号最小的」（O(n²)） */\nint main() {\n    int n, m; cin >> n >> m;\n    vector<vector<int>> g(n + 1);\n    vector<int> indeg(n + 1, 0);\n    for (int k = 0; k < m; k++) {\n        int u, v; cin >> u >> v;\n        g[u].push_back(v); indeg[v]++;\n    }\n    vector<char> used(n + 1, 0);\n    vector<int> order;\n    for (int round = 0; round < n; round++) {\n        int x = -1;\n        for (int i = 1; i <= n; i++)\n            if (!used[i] && indeg[i] == 0) { x = i; break; }\n        if (x < 0) break;\n        used[x] = 1;\n        order.push_back(x);\n        for (int y : g[x]) indeg[y]--;\n    }\n    if ((int)order.size() < n) { cout << \"loop\\n\"; return 0; }\n    for (size_t i = 0; i < order.size(); i++)\n        cout << (i ? \" \" : \"\") << order[i];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "5 6\n1 2\n1 3\n3 4\n2 4\n4 5\n2 5\n",
+                "expected_stdout": "1 2 3 4 5\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 6\n1 3\n1 2\n2 4\n3 4\n4 5\n3 5\n",
+                "expected_stdout": "1 2 3 4 5\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 5\n2 1\n2 3\n1 4\n3 4\n4 5\n",
+                "expected_stdout": "2 1 3 4 5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "3 3\n1 2\n2 3\n3 1\n",
+                "expected_stdout": "loop\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "6 6\n1 4\n2 4\n2 5\n3 5\n4 6\n5 6\n",
+                "expected_stdout": "1 2 3 4 5 6\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "折半查找的每次比较",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "折半查找",
+            "判定树",
+            "有序表"
+        ],
+        "statement_md": "对一张**严格递增**的有序表做折半查找，输出**依次与之比较的元素**，以及查找结果。\n\n★ 口径钉死（教材写法）：下标 `low=1`、`high=n`，`mid = ⌊(low+high)/2⌋`；`a[mid] == x` 命中，`a[mid] < x` 去 `[mid+1, high]`，否则去 `[low, mid-1]`。\n\n查不到也要把比较过的元素列全——失败 happens 在 `low > high` 那一刻，比较次数和成功一样有讲究（讲义里 n=11 时查 25 也是 4 次）。",
+        "input_format": "第一行 `n`（表长）。\n\n第二行 `n` 个严格递增的整数。\n\n第三行 `x`，要找的值。",
+        "output_format": "第一行：依次与 `x` 比较过的元素（空格分隔）。\n\n第二行：命中位序（1 基）；查不到为 `-1`。",
+        "constraints_md": "- 1 ≤ n ≤ 1000\n- 表元素严格递增且互不相同",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 07 讲 · 查找",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint a[MAXN];\nint main(void) {\n    int n, x;\n    scanf(\"%d\", &n);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &a[k]);\n    scanf(\"%d\", &x);\n    int low = 1, high = n, pos = -1, first = 1;\n    while (low <= high) {\n        int mid = (low + high) / 2;      /* 教材口径：向下取整 */\n        printf(first ? \"%d\" : \" %d\", a[mid - 1]);\n        first = 0;\n        if (a[mid - 1] == x) { pos = mid; break; }\n        else if (a[mid - 1] < x) low = mid + 1;\n        else high = mid - 1;\n    }\n    printf(\"\\n%d\\n\", pos);\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：递归折半，探到的元素攒在 vector 里最后一起打 */\nvector<int> probes;\nint pos = -1;\nvoid bsearch(const vector<int>& a, int low, int high, int x) {\n    if (low > high) return;\n    int mid = low + (high - low) / 2;    // 与 (low+high)/2 等价，防溢出写法\n    probes.push_back(a[mid - 1]);\n    if (a[mid - 1] == x) { pos = mid; return; }\n    if (a[mid - 1] < x) bsearch(a, mid + 1, high, x);\n    else bsearch(a, low, mid - 1, x);\n}\nint main() {\n    int n, x; cin >> n;\n    vector<int> a(n);\n    for (int &v : a) cin >> v;\n    cin >> x;\n    bsearch(a, 1, n, x);\n    for (size_t i = 0; i < probes.size(); i++)\n        cout << (i ? \" \" : \"\") << probes[i];\n    cout << \"\\n\" << pos << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "11\n7 14 18 21 23 29 31 35 38 42 46\n23\n",
+                "expected_stdout": "29 18 21 23\n5\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "11\n7 14 18 21 23 29 31 35 38 42 46\n25\n",
+                "expected_stdout": "29 18 21 23\n-1\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "11\n7 14 18 21 23 29 31 35 38 42 46\n7\n",
+                "expected_stdout": "29 18 7\n1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "11\n7 14 18 21 23 29 31 35 38 42 46\n46\n",
+                "expected_stdout": "29 38 42 46\n11\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "11\n7 14 18 21 23 29 31 35 38 42 46\n5\n",
+                "expected_stdout": "29 18 7\n-1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "二叉排序树：建树、遍历与查找",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 3,
+        "total_score": 20,
+        "tags": [
+            "二叉排序树",
+            "BST",
+            "中序遍历"
+        ],
+        "statement_md": "按输入顺序把 `n` 个互不相同的数插入一棵**空的二叉排序树**，然后：\n\n1. 输出**中序遍历**序列（BST 的中序 = 升序，这是它的招牌性质）；\n2. 输出树高（**空树为 0，只有根为 1**；树高 = 最长路径上的结点数）；\n3. 在树中查找 `x`，输出**比较次数**（沿根往下走，每碰一个结点记 1 次，走到空指针为止——不存在也是这个口径）。\n\n★ 讲义里 n=11 顺序插入 1..15 那组实测：BST 会退化成链，树高直接飙到 n——插入顺序决定一切。",
+        "input_format": "第一行 `n`（插入个数）。\n\n第二行 `n` 个互不相同的整数（按插入顺序给出）。\n\n第三行 `x`，要查找的值。",
+        "output_format": "第一行：中序遍历序列（空格分隔）。\n\n第二行：树高。\n\n第三行：查找 `x` 的比较次数。",
+        "constraints_md": "- 1 ≤ n ≤ 500\n- 插入值互不相同，|值| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 07 讲 · 查找",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#include <stdlib.h>\ntypedef struct Btnode {\n    int v;\n    struct Btnode *l, *r;\n} Btnode;\nBtnode* New(int v) {\n    Btnode* p = (Btnode*)malloc(sizeof(Btnode));\n    p->v = v; p->l = p->r = NULL;\n    return p;\n}\n/* 教材式递归插入 */\nBtnode* Insert(Btnode* t, int v) {\n    if (!t) return New(v);\n    if (v < t->v) t->l = Insert(t->l, v);\n    else if (v > t->v) t->r = Insert(t->r, v);\n    return t;\n}\nvoid Inorder(Btnode* t, int* first) {\n    if (!t) return;\n    Inorder(t->l, first);\n    if (*first) printf(\"%d\", t->v); else printf(\" %d\", t->v);\n    *first = 0;\n    Inorder(t->r, first);\n}\nint Height(Btnode* t) {\n    if (!t) return 0;\n    int a = Height(t->l), b = Height(t->r);\n    return 1 + (a > b ? a : b);\n}\nint main(void) {\n    int n, x;\n    scanf(\"%d\", &n);\n    Btnode* root = NULL;\n    for (int k = 0; k < n; k++) {\n        int v; scanf(\"%d\", &v);\n        root = Insert(root, v);\n    }\n    scanf(\"%d\", &x);\n    int first = 1;\n    Inorder(root, &first);\n    printf(\"\\n%d\\n\", Height(root));\n    int cnt = 0;\n    Btnode* p = root;\n    while (p) {\n        cnt++;\n        if (p->v == x) break;\n        p = (x < p->v) ? p->l : p->r;\n    }\n    printf(\"%d\\n\", cnt);\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：插入/查找/求高全用迭代写法，结构上不碰递归 */\nstruct N { int v; N *l = nullptr, *r = nullptr; };\nint main() {\n    int n, x; cin >> n;\n    N *root = nullptr;\n    for (int k = 0; k < n; k++) {\n        int v; cin >> v;\n        if (!root) { root = new N{v}; continue; }\n        N *p = root;\n        while (true) {\n            if (v < p->v) { if (!p->l) { p->l = new N{v}; break; } p = p->l; }\n            else          { if (!p->r) { p->r = new N{v}; break; } p = p->r; }\n        }\n    }\n    cin >> x;\n    vector<int> in;\n    vector<N*> st;\n    N *p = root;                          // 迭代中序（模拟栈）\n    while (p || !st.empty()) {\n        while (p) { st.push_back(p); p = p->l; }\n        p = st.back(); st.pop_back();\n        in.push_back(p->v);\n        p = p->r;\n    }\n    for (size_t i = 0; i < in.size(); i++) cout << (i ? \" \" : \"\") << in[i];\n    cout << \"\\n\";\n    vector<vector<N*>> lvl;               // 层序求高\n    if (root) lvl.push_back({root});\n    for (size_t i = 0; i < lvl.size(); i++) {\n        vector<N*> nx;\n        for (N* q : lvl[i]) {\n            if (q->l) nx.push_back(q->l);\n            if (q->r) nx.push_back(q->r);\n        }\n        if (!nx.empty()) lvl.push_back(nx);\n    }\n    cout << lvl.size() << \"\\n\";\n    int cnt = 0; p = root;\n    while (p) { cnt++; if (p->v == x) break; p = (x < p->v) ? p->l : p->r; }\n    cout << cnt << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "6\n45 24 53 12 37 93\n37\n",
+                "expected_stdout": "12 24 37 45 53 93\n3\n3\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "6\n45 24 53 12 37 93\n40\n",
+                "expected_stdout": "12 24 37 45 53 93\n3\n3\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1\n10\n10\n",
+                "expected_stdout": "10\n1\n1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "3\n2 1 3\n4\n",
+                "expected_stdout": "1 2 3\n2\n2\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n5 4 3 2 1\n1\n",
+                "expected_stdout": "1 2 3 4 5\n5\n5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "散列表：除留余数 + 线性探测",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 3,
+        "total_score": 20,
+        "tags": [
+            "散列表",
+            "线性探测",
+            "ASL"
+        ],
+        "statement_md": "表长 `m`，散列函数 `H(key) = key % p`，冲突用**线性探测**（`Hi = (H(key) + i) % m`，i = 0,1,2,…）处理。\n\n输出两行：\n\n1. 槽位 `0` ~ `m-1` 的最终分布（空槽输出 `#`，空格分隔）；\n2. **成功查找的平均查找长度** = 各键探测次数之和 ÷ `n`，保留 2 位小数（`printf(\"%.2f\")` 的口径）。\n\n★ 讲义实测：教材那组 12 个键（m=16, p=13）里，`79` 因为探到 `1%13` 之后的一长串占用，**整整探了 9 次**才落进 `[9]`——「一次冲突不算什么，连锁冲突才是线性探测的命门」。",
+        "input_format": "第一行 `m p n`（表长、模数、键个数，保证 n < m 且都能插进去）。\n\n第二行 `n` 个互不相同的非负整数。",
+        "output_format": "第一行：`m` 个槽位的分布（空槽 `#`，空格分隔）。\n\n第二行：成功查找 ASL，保留 2 位小数。",
+        "constraints_md": "- 2 ≤ p ≤ m ≤ 100\n- 1 ≤ n < m\n- 0 ≤ key ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 07 讲 · 查找",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXM 105\nlong long slot[MAXM];                    /* -1 = 空 */\nint has[MAXM];\nint main(void) {\n    int m, p, n;\n    scanf(\"%d %d %d\", &m, &p, &n);\n    long long sum = 0;\n    for (int k = 0; k < n; k++) {\n        long long key; scanf(\"%lld\", &key);\n        int h = (int)(key % p), cnt = 0;\n        while (1) {\n            cnt++;\n            if (!has[h]) { has[h] = 1; slot[h] = key; break; }\n            h = (h + 1) % m;\n        }\n        sum += cnt;\n    }\n    for (int i = 0; i < m; i++)\n        printf(i ? has[i] ? \" %lld\" : \" #\" : has[i] ? \"%lld\" : \"#\",\n               slot[i]);\n    printf(\"\\n%.2f\\n\", (double)sum / n);\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：先算好每键落点与探测次数存进 pair，再统一输出 */\nint main() {\n    int m, p, n; cin >> m >> p >> n;\n    vector<long long> key(n);\n    vector<int> land(n), cost(n);\n    vector<long long> slot(m, -1);\n    long long sum = 0;\n    for (int k = 0; k < n; k++) {\n        cin >> key[k];\n        int h = (int)(key[k] % p), c = 0;\n        while (slot[h] != -1) { h = (h + 1) % m; c++; }\n        c++;                              /* 命中空槽也算一次探测 */\n        slot[h] = key[k];\n        land[k] = h; cost[k] = c;\n        sum += c;\n    }\n    vector<string> cell(m);\n    for (int i = 0; i < m; i++)\n        cell[i] = (slot[i] == -1) ? \"#\" : to_string(slot[i]);\n    for (int i = 0; i < m; i++) cout << (i ? \" \" : \"\") << cell[i];\n    cout << \"\\n\";\n    printf(\"%.2f\\n\", (double)sum / n);\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "16 13 12\n19 14 23 1 68 20 84 27 55 11 10 79\n",
+                "expected_stdout": "# 14 1 68 27 55 19 20 84 79 23 11 10 # # #\n2.50\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "7 7 5\n10 3 17 24 31\n",
+                "expected_stdout": "31 # # 10 3 17 24\n3.00\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 5 5\n0 5 10 15 20\n",
+                "expected_stdout": "0 5 10 15 20\n3.00\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "8 5 4\n1 6 11 16\n",
+                "expected_stdout": "# 1 6 11 16 # # #\n2.50\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "6 3 3\n3 6 9\n",
+                "expected_stdout": "3 6 9 # # #\n2.00\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "散列表：链地址法（头插法）",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 3,
+        "total_score": 20,
+        "tags": [
+            "散列表",
+            "链地址",
+            "同义词"
+        ],
+        "statement_md": "表长 `m`，散列函数 `H(key) = key % p`，冲突用**链地址法**处理：同义词挂一条链，新结点用**头插法**插进链头（教材 `Unsorted` 链的插法）。\n\n输出：\n\n1. `m` 行，桶 `i` 的链：`i: k1 k2 ...`（**链头在前**，即与插入顺序相反；空桶输出 `i:`）；\n2. 最后一行：成功查找 ASL = 每个键在**自己链上**的位置（1 基）之和 ÷ `n`，保留 2 位小数。\n\n★ 同一组教材键，链地址的 ASL（1.75）比线性探测（2.50）好看得多——代价是额外的指针空间。",
+        "input_format": "第一行 `m p n`（表长、模数、键个数）。\n\n第二行 `n` 个互不相同的非负整数。",
+        "output_format": "前 `m` 行：桶分布，格式 `i: k1 k2 ...`（链头在前，空桶为 `i:`）。\n\n第 `m+1` 行：成功查找 ASL，保留 2 位小数。",
+        "constraints_md": "- 2 ≤ p ≤ m ≤ 100\n- 1 ≤ n ≤ 200\n- 0 ≤ key ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 07 讲 · 查找",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#include <stdlib.h>\n#define MAXM 105\ntypedef struct Node {\n    long long v;\n    struct Node *next;\n} Node;\nNode* bucket[MAXM];\nlong long keys[205];\nint main(void) {\n    int m, p, n;\n    scanf(\"%d %d %d\", &m, &p, &n);\n    for (int k = 0; k < n; k++) {\n        scanf(\"%lld\", &keys[k]);\n        int h = (int)(keys[k] % p);\n        Node* q = (Node*)malloc(sizeof(Node));\n        q->v = keys[k]; q->next = bucket[h];\n        bucket[h] = q;                   /* 头插法 */\n    }\n    for (int i = 0; i < m; i++) {\n        printf(\"%d:\", i);\n        for (Node* q = bucket[i]; q; q = q->next) printf(\" %lld\", q->v);\n        printf(\"\\n\");\n    }\n    long long sum = 0;\n    for (int k = 0; k < n; k++) {\n        int pos = 1;\n        for (Node* q = bucket[keys[k] % p]; q && q->v != keys[k]; q = q->next)\n            pos++;\n        sum += pos;\n    }\n    printf(\"%.2f\\n\", (double)sum / n);\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n/* 另一套：桶用 vector 顺序收，输出时 reverse；ASL 按「值在桶里的下标」算 */\nint main() {\n    int m, p, n; cin >> m >> p >> n;\n    vector<vector<long long>> buck(m);\n    vector<long long> keys(n);\n    for (int k = 0; k < n; k++) {\n        cin >> keys[k];\n        buck[keys[k] % p].push_back(keys[k]);\n    }\n    for (int i = 0; i < m; i++) {\n        vector<long long> r = buck[i];\n        reverse(r.begin(), r.end());     // 头插法效果\n        cout << i << \":\";\n        for (long long v : r) cout << \" \" << v;\n        cout << \"\\n\";\n    }\n    long long sum = 0;\n    for (int k = 0; k < n; k++) {\n        const vector<long long>& b = buck[keys[k] % p];\n        int pos = 0;\n        while (b[pos] != keys[k]) pos++;\n        sum += (int)b.size() - pos;      // reverse 后的位置 = 链上位序\n    }\n    printf(\"%.2f\\n\", (double)sum / n);\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "13 13 12\n19 14 23 1 68 20 84 27 55 11 10 79\n",
+                "expected_stdout": "0:\n1: 79 27 1 14\n2:\n3: 55 68\n4:\n5:\n6: 84 19\n7: 20\n8:\n9:\n10: 10 23\n11: 11\n12:\n1.75\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 5 6\n0 5 10 15 20 25\n",
+                "expected_stdout": "0: 25 20 15 10 5 0\n1:\n2:\n3:\n4:\n3.50\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "3 3 3\n1 4 7\n",
+                "expected_stdout": "0:\n1: 7 4 1\n2:\n2.00\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "7 7 4\n2 9 16 23\n",
+                "expected_stdout": "0:\n1:\n2: 23 16 9 2\n3:\n4:\n5:\n6:\n2.50\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "6 6 3\n12 18 6\n",
+                "expected_stdout": "0: 6 18 12\n1:\n2:\n3:\n4:\n5:\n2.00\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "冒泡排序：逐趟输出",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "冒泡",
+            "交换排序",
+            "提前终止"
+        ],
+        "statement_md": "对 `n` 个整数做**冒泡排序**（升序），把**每一趟结束后的序列**都打出来。\n\n★ 口径（教材写法）：第 `i` 趟（`i` 从 1 起）让下标 `j` 从 `0` 扫到 `n-i-1`，`a[j] > a[j+1]` 就交换。**用严格大于**——相等的元素不交换，这正是冒泡「稳定」的原因。\n\n某趟一次交换都没发生就**提前终止**，且这趟本身要输出（它是最后一行）。最后一行输出实际执行的趟数。",
+        "input_format": "第一行 `n`（2 ≤ n，元素互异性不保证——相等元素不影响确定性）。\n\n第二行 `n` 个整数。",
+        "output_format": "若干行：每趟结束后的序列（空格分隔），最后一趟之后再输出一行趟数。",
+        "constraints_md": "- 2 ≤ n ≤ 1000\n- |元素| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 08 讲 · 排序",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint a[MAXN];\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &a[k]);\n    int rounds = 0;\n    for (int i = 0; i < n - 1; i++) {\n        int swapped = 0;\n        for (int j = 0; j < n - i - 1; j++)\n            if (a[j] > a[j + 1]) {\n                int t = a[j]; a[j] = a[j + 1]; a[j + 1] = t;\n                swapped = 1;\n            }\n        rounds++;\n        for (int k = 0; k < n; k++)\n            printf(k ? \" %d\" : \"%d\", a[k]);\n        printf(\"\\n\");\n        if (!swapped) break;             /* 提前终止 */\n    }\n    printf(\"%d\\n\", rounds);\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：「无交换就重来一遍」的写法——效果等价于带提前终止的冒泡 */\nint main() {\n    int n; cin >> n;\n    vector<int> a(n);\n    for (int &v : a) cin >> v;\n    int rounds = 0;\n    while (rounds < n - 1) {\n        bool moved = false;\n        for (int j = 0; j + 1 < n - rounds; j++)\n            if (a[j] > a[j + 1]) { swap(a[j], a[j + 1]); moved = true; }\n        rounds++;\n        for (int k = 0; k < n; k++) cout << (k ? \" \" : \"\") << a[k];\n        cout << \"\\n\";\n        if (!moved) break;\n    }\n    cout << rounds << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "5\n5 4 3 2 1\n",
+                "expected_stdout": "4 3 2 1 5\n3 2 1 4 5\n2 1 3 4 5\n1 2 3 4 5\n4\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n1 2 3 4 5\n",
+                "expected_stdout": "1 2 3 4 5\n1\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "6\n3 1 4 1 5 9\n",
+                "expected_stdout": "1 3 1 4 5 9\n1 1 3 4 5 9\n1 1 3 4 5 9\n3\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "4\n2 3 1 5\n",
+                "expected_stdout": "2 1 3 5\n1 2 3 5\n1 2 3 5\n3\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "7\n49 38 65 97 76 13 27\n",
+                "expected_stdout": "38 49 65 76 13 27 97\n38 49 65 13 27 76 97\n38 49 13 27 65 76 97\n38 13 27 49 65 76 97\n13 27 38 49 65 76 97\n13 27 38 49 65 76 97\n6\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "快速排序的一趟划分",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 3,
+        "total_score": 20,
+        "tags": [
+            "快速排序",
+            "Partition",
+            "枢轴"
+        ],
+        "statement_md": "对 `n` 个**互不相同**的整数做快排的**第一趟划分**（教材双向扫描法），输出划分后的序列和枢轴最终落位。\n\n★ 口径（教材写法，一个字都不能变）：\n\n- 枢轴 `pivot = a[0]`（取**第一个**元素），`low=0`、`high=n-1`；\n- `high` 从右往左找第一个 **< pivot** 的元素，填到 `a[low]`；\n- `low` 从左往右找第一个 **> pivot** 的元素，填到 `a[high]`；\n- 反复直到 `low == high`，把枢轴放进去。\n\n位序输出为 **1 基**（`low+1`）。这一趟做完，枢轴左边的全比它小、右边的全比它大——它就位了，以后再也不动。",
+        "input_format": "第一行 `n`。\n\n第二行 `n` 个互不相同的整数。",
+        "output_format": "第一行：一趟划分后的序列（空格分隔）。\n\n第二行：枢轴最终位序（1 基）。",
+        "constraints_md": "- 1 ≤ n ≤ 1000\n- 元素互不相同，|元素| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 08 讲 · 排序",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint a[MAXN];\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &a[k]);\n    int pivot = a[0], low = 0, high = n - 1;\n    while (low < high) {\n        while (low < high && a[high] > pivot) high--;   /* 右找小 */\n        a[low] = a[high];\n        while (low < high && a[low] < pivot) low++;     /* 左找大 */\n        a[high] = a[low];\n    }\n    a[low] = pivot;                      /* 枢轴就位 */\n    for (int k = 0; k < n; k++) printf(k ? \" %d\" : \"%d\", a[k]);\n    printf(\"\\n%d\\n\", low + 1);\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：把「挖坑」改成「swap 对调」，落位序列与教材法完全一致 */\nint main() {\n    int n; cin >> n;\n    vector<int> a(n);\n    for (int &v : a) cin >> v;\n    int pivot = a[0], low = 0, high = n - 1;\n    while (low < high) {\n        while (low < high && a[high] > pivot) high--;\n        if (low < high) { a[low] = a[high]; }\n        while (low < high && a[low] < pivot) low++;\n        if (low < high) { a[high] = a[low]; }\n    }\n    a[low] = pivot;\n    for (int k = 0; k < n; k++) cout << (k ? \" \" : \"\") << a[k];\n    cout << \"\\n\" << low + 1 << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "8\n49 38 65 97 76 13 27 50\n",
+                "expected_stdout": "27 38 13 49 76 97 65 50\n4\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n3 1 2 5 4\n",
+                "expected_stdout": "2 1 3 5 4\n3\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1\n1\n",
+                "expected_stdout": "1\n1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "2\n2 1\n",
+                "expected_stdout": "1 2\n2\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "6\n50 20 70 10 90 60\n",
+                "expected_stdout": "10 20 50 70 90 60\n3\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "堆排序：建大顶堆与排序结果",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 3,
+        "total_score": 20,
+        "tags": [
+            "堆排序",
+            "大顶堆",
+            "筛选"
+        ],
+        "statement_md": "把 `n` 个**互不相同**的整数建成一棵**大顶堆**，再做堆排序。\n\n输出两行：\n\n1. **建成的堆**（1 基数组，即完全二叉树的层序）；\n2. 升序排序结果。\n\n★ 口径（教材写法）：堆用 1 起点的数组存（`i` 的孩子是 `2i`、`2i+1`，这就是全书「下标从 1 起」隐形坑的主场）；建堆从**最后一个非叶结点 `⌊n/2⌋** 倒着到 1 逐个**下沉筛选**；排序阶段每轮「堆顶与末尾交换 → 堆大小减一 → 堆顶重新下沉」。\n\n想看反例的话：升序排序用**大顶**堆——新手十次有九次先想成小顶堆。",
+        "input_format": "第一行 `n`。\n\n第二行 `n` 个互不相同的整数。",
+        "output_format": "第一行：建成后的大顶堆（层序，空格分隔）。\n\n第二行：升序排序结果（空格分隔）。",
+        "constraints_md": "- 1 ≤ n ≤ 1000\n- 元素互不相同，|元素| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 08 讲 · 排序",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint h[MAXN];\nvoid sift(int i, int size) {             /* 迭代下沉 */\n    while (1) {\n        int c = 2 * i;\n        if (c > size) break;\n        if (c + 1 <= size && h[c + 1] > h[c]) c++;\n        if (h[c] > h[i]) { int t = h[i]; h[i] = h[c]; h[c] = t; i = c; }\n        else break;\n    }\n}\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int k = 1; k <= n; k++) scanf(\"%d\", &h[k]);\n    for (int i = n / 2; i >= 1; i--) sift(i, n);\n    for (int k = 1; k <= n; k++) printf(k > 1 ? \" %d\" : \"%d\", h[k]);\n    printf(\"\\n\");\n    int size = n;                        /* 排序：堆顶换末尾后重沉 */\n    while (size > 1) {\n        int t = h[1]; h[1] = h[size]; h[size] = t;\n        size--;\n        sift(1, size);\n    }\n    for (int k = 1; k <= n; k++) printf(k > 1 ? \" %d\" : \"%d\", h[k]);\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：递归版下沉 + 边排边输出 */\nvector<int> h;\nvoid sift(int i, int size) {\n    int c = 2 * i;\n    if (c > size) return;\n    if (c + 1 <= size && h[c + 1] > h[c]) c++;\n    if (h[c] > h[i]) { swap(h[i], h[c]); sift(c, size); }\n}\nint main() {\n    int n; cin >> n;\n    h.assign(n + 1, 0);\n    for (int k = 1; k <= n; k++) cin >> h[k];\n    for (int i = n / 2; i >= 1; i--) sift(i, n);\n    vector<int> built(h.begin() + 1, h.end());\n    for (size_t k = 0; k < built.size(); k++) cout << (k ? \" \" : \"\") << built[k];\n    cout << \"\\n\";\n    for (int size = n; size > 1; size--) {\n        swap(h[1], h[size]);\n        sift(1, size - 1);\n    }\n    for (int k = 1; k <= n; k++) cout << (k > 1 ? \" \" : \"\") << h[k];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "8\n49 38 65 97 76 13 27 50\n",
+                "expected_stdout": "97 76 65 50 49 13 27 38\n13 27 38 49 50 65 76 97\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n1 2 3 4 5\n",
+                "expected_stdout": "5 4 3 1 2\n1 2 3 4 5\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1\n7\n",
+                "expected_stdout": "7\n7\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "6\n12 5 9 20 3 15\n",
+                "expected_stdout": "20 12 15 5 3 9\n3 5 9 12 15 20\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "4\n4 3 2 1\n",
+                "expected_stdout": "4 3 2 1\n1 2 3 4\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "二路归并排序：逐趟输出（非递归）",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 3,
+        "total_score": 20,
+        "tags": [
+            "归并排序",
+            "分治",
+            "稳定性"
+        ],
+        "statement_md": "对 `n` 个整数做**非递归**的二路归并排序（升序），输出**每一趟**结束后的序列。\n\n★ 口径：`width` 从 1 开始，每趟把 `[0..n)` 按 `2*width` 分组，组内 `[i, i+width)` 与 `[i+width, i+2*width)` 两段归并（右段不足整段就原样保留）；`width ≥ n` 时结束。**归并时两边相等取左段**——这就是归并排序稳定的实现根据。\n\n和递归版「先分后合」不同，非递归版**自底向上**：第 1 趟 length-1 有序段两两归并出 length-2，第 2 趟出 length-4……趟数就是 `⌈log₂n⌉`。",
+        "input_format": "第一行 `n`（2 ≤ n，元素可重复）。\n\n第二行 `n` 个整数。",
+        "output_format": "若干行：第 `k` 趟结束后的完整序列（空格分隔），共 `⌈log₂n⌉` 行。",
+        "constraints_md": "- 2 ≤ n ≤ 1000\n- |元素| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 08 讲 · 排序",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint a[MAXN], b[MAXN];\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &a[k]);\n    for (int w = 1; w < n; w *= 2) {\n        int len = 0;\n        for (int i = 0; i < n; i += 2 * w) {\n            int p = i, q = i + w, pe = i + w, qe = i + 2 * w;\n            if (pe > n) pe = n;\n            if (qe > n) qe = n;\n            while (p < pe && q < qe)\n                b[len++] = (a[p] <= a[q]) ? a[p++] : a[q++];\n            while (p < pe) b[len++] = a[p++];\n            while (q < qe) b[len++] = a[q++];\n        }\n        for (int k = 0; k < n; k++) a[k] = b[k];\n        for (int k = 0; k < n; k++) printf(k ? \" %d\" : \"%d\", a[k]);\n        printf(\"\\n\");\n    }\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：in-place merge 用「切开重拼」的思路，先拷左段再按序插右段 */\nint main() {\n    int n; cin >> n;\n    vector<int> a(n);\n    for (int &v : a) cin >> v;\n    for (int w = 1; w < n; w *= 2) {\n        vector<int> nxt;\n        for (int i = 0; i < n; i += 2 * w) {\n            vector<int> L(a.begin() + i, a.begin() + min(i + w, n));\n            vector<int> R(a.begin() + min(i + w, n),\n                          a.begin() + min(i + 2 * w, n));\n            size_t p = 0, q = 0;\n            while (p < L.size() && q < R.size())\n                nxt.push_back(L[p] <= R[q] ? L[p++] : R[q++]);\n            while (p < L.size()) nxt.push_back(L[p++]);\n            while (q < R.size()) nxt.push_back(R[q++]);\n        }\n        a = nxt;\n        for (int k = 0; k < n; k++) cout << (k ? \" \" : \"\") << a[k];\n        cout << \"\\n\";\n    }\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "10\n49 38 65 97 76 13 27 50 5 62\n",
+                "expected_stdout": "38 49 65 97 13 76 27 50 5 62\n38 49 65 97 13 27 50 76 5 62\n13 27 38 49 50 65 76 97 5 62\n5 13 27 38 49 50 62 65 76 97\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "2\n2 1\n",
+                "expected_stdout": "1 2\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n3 1 2 5 4\n",
+                "expected_stdout": "1 3 2 5 4\n1 2 3 5 4\n1 2 3 4 5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "8\n8 7 6 5 4 3 2 1\n",
+                "expected_stdout": "7 8 5 6 3 4 1 2\n5 6 7 8 1 2 3 4\n1 2 3 4 5 6 7 8\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "6\n2 2 1 1 3 3\n",
+                "expected_stdout": "2 2 1 1 3 3\n1 1 2 2 3 3\n1 1 2 2 3 3\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "「逻辑结构」到底指什么",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "逻辑结构",
+            "基本概念"
+        ],
+        "choices": [
+            "数据在计算机内存里的具体存放方式",
+            "数据元素之间的逻辑关系，与怎么存储无关",
+            "算法执行时间的度量方法",
+            "数据的运算在机器上的实现"
+        ],
+        "source_section": "第 01 讲 · 绪论",
+        "statement_md": "数据结构里说的**逻辑结构**，指的是下面哪一个？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**逻辑结构描述的是「元素之间什么关系」**——集合、线性、树、图四种，只跟数据本身有关。\n\n「放到内存里怎么放」是**存储结构**（顺序/链式/索引/散列）的事，同一张线性表既可以用数组存也可以用链表存，逻辑结构不变。"
+            }
+        ]
+    },
+    {
+        "title": "同一逻辑结构可以有多种存储结构",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 1,
+        "total_score": 8,
+        "tags": [
+            "逻辑结构",
+            "存储结构"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 01 讲 · 绪论",
+        "statement_md": "同一种逻辑结构（比如线性表）可以采用多种不同的存储结构来实现——顺序存储、链式存储都行，两边互不影响逻辑结构本身。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对**。逻辑结构与存储结构是两个层面：线性表逻辑上就是「一对一」的关系，落地时用顺序表还是链表任选，各有优劣——教材后面「顺序表 vs 链表怎么选」整节都在讲这件事。"
+            }
+        ]
+    },
+    {
+        "title": "常数次内层循环的时间复杂度",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "时间复杂度",
+            "大 O 记法"
+        ],
+        "choices": [
+            "O(1)",
+            "O(log n)",
+            "O(n)",
+            "O(n²)"
+        ],
+        "source_section": "第 01 讲 · 绪论",
+        "statement_md": "看这段代码：\n\n```c\nfor (int i = 1; i <= n; i++)\n    for (int j = 1; j <= 100; j++)\n        s++;\n```\n\n它的时间复杂度是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "C",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|C\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "内层循环**固定跑 100 次**，跟 n 无关——它是常数。总执行次数 ≈ 100n，大 O 记法丢掉常数因子，就是 **O(n)**。\n\n★ 常见错误是看到两层循环就条件反射选 O(n²)。判 O(n²) 的标准是**内层次数也随 n 增长**（比如 `j <= i`）。"
+            }
+        ]
+    },
+    {
+        "title": "无向完全图的边数",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "基本术语",
+            "完全图"
+        ],
+        "choices": [
+            "n(n-1)/2",
+            "n(n-1)",
+            "n²",
+            "n-1"
+        ],
+        "source_section": "第 06 讲 · 图",
+        "statement_md": "`n` 个顶点的**无向完全图**有多少条边？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "每个顶点都和其余 `n-1` 个顶点相连，共 `n(n-1)` 个「端点计数」，但每条边被数了两次（无向边两端各记一次）→ **n(n-1)/2**。\n\n有向完全图才是 `n(n-1)`——弧有方向，`<u,v>` 和 `<v,u>` 是两条。"
+            }
+        ]
+    },
+    {
+        "title": "邻接矩阵第 i 行的非零元个数 = 顶点 i 的出度",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 1,
+        "total_score": 8,
+        "tags": [
+            "邻接矩阵",
+            "出度入度"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 06 讲 · 图",
+        "statement_md": "对**有向图**，邻接矩阵 `A[i][j] = 1` 表示弧 `<vi, vj>` 存在，所以第 `i` 行的非零元素个数就是顶点 `vi` 的出度，第 `i` 列的非零元素个数是入度。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对**。行是「我指向谁」（出度），列是「谁指向我」（入度）。这就是讲义 demo 里「行和出度、列和入度」那句实测结论——求度数连邻接表都不用建。"
+            }
+        ]
+    },
+    {
+        "title": "单源最短路径该用哪个算法",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "Dijkstra",
+            "最短路径"
+        ],
+        "choices": [
+            "Prim",
+            "Kruskal",
+            "Floyd",
+            "Dijkstra"
+        ],
+        "source_section": "第 06 讲 · 图",
+        "statement_md": "求**边权非负**的带权图上，从一个源点到其余各顶点的最短路径，经典教材算法是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "D",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|D\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**Dijkstra**：贪心地一轮一轮把「离源点最近的未定顶点」定下来。Prim/Kruskal 是**最小生成树**的算法（树，不是路径）；Floyd 求**全源**最短路，用它求单源是杀鸡用牛刀，而且它靠三重循环动态规划、复杂度 O(n³)。\n\n★ Dijkstra 的命门：**不能有负权边**——讲义给过实测反例。"
+            }
+        ]
+    },
+    {
+        "title": "折半查找的适用前提",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "折半查找",
+            "有序表"
+        ],
+        "choices": [
+            "链式存储即可，元素有无序都行",
+            "顺序存储，且元素按关键字有序",
+            "任意存储，只要元素互不相同",
+            "必须是用散列函数组织好的表"
+        ],
+        "source_section": "第 07 讲 · 查找",
+        "statement_md": "折半查找（二分查找）要求线性表满足什么条件？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "两个条件**缺一不可**：**有序**（才能判断去左半还是右半）＋**顺序存储**（才能 O(1) 跳到 mid）。\n\n链表虽然也可以有序，但找 mid 只能顺着链走 O(n)，折半的效率优势整个消失——所以教材口径是「顺序存储的有序表」。"
+            }
+        ]
+    },
+    {
+        "title": "11 个元素折半查找的平均查找长度",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "折半查找",
+            "ASL",
+            "判定树"
+        ],
+        "choices": [
+            "3.0",
+            "4.0",
+            "11/4 ≈ 2.75",
+            "log₂11 ≈ 3.46"
+        ],
+        "source_section": "第 07 讲 · 查找",
+        "statement_md": "对含 `n = 11` 个元素的有序表做折半查找，**成功查找**的平均查找长度 ASL 是多少？\n\n（提示：比较次数分布为 1 次 ×1、2 次 ×2、3 次 ×4、4 次 ×4）",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "ASL = (1×1 + 2×2 + 3×4 + 4×4) / 11 = 33/11 = **3.0**。\n\n这是讲义 demo 的实测值：判定树逐层数结点，最多比较层数是 `⌊log₂11⌋ + 1 = 4`，失败查找同样 4 次。选 D 的人是把「层数公式」当成了平均长度。"
+            }
+        ]
+    },
+    {
+        "title": "散列冲突可以完全避免",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 1,
+        "total_score": 8,
+        "tags": [
+            "散列表",
+            "冲突"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 07 讲 · 查找",
+        "statement_md": "只要散列函数设计得足够好，散列表的冲突就可以完全避免。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "错",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|错\n|错误\n|×\n|F\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**错**。散列是「任意键 → 有限槽位」的映射，键的取值空间通常远大于槽位数，冲突在数学上**不可避免**（鸽笼原理）。\n\n好的散列函数只能**减少**冲突，真正的功夫在**怎么处理冲突**：线性探测、链地址法……这正是 7.4 节半章篇幅的内容。"
+            }
+        ]
+    },
+    {
+        "title": "下列排序算法中稳定的是",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "稳定性",
+            "内部排序"
+        ],
+        "choices": [
+            "直接插入排序",
+            "简单选择排序",
+            "快速排序",
+            "堆排序"
+        ],
+        "source_section": "第 08 讲 · 排序",
+        "statement_md": "下面几种内部排序中，**稳定**的是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**直接插入稳定**：相等元素只从后往前找插入点、遇到相等就停，不会越过同类。\n\n另外三个都不稳定（讲义 demo 用 {3a, 3h, 1} 最小反例实测现形）：\n- **简单选择**：first-min 远距离交换会跨越等值元素；\n- **快排**：双向扫描会把等值元素甩到枢轴另一侧；\n- **堆排**：堆顶换末尾的远距离交换同理。\n\n★ 稳定的还有：冒泡、归并、基数——口诀「插冒归基稳」。"
+            }
+        ]
+    },
+    {
+        "title": "快速排序最坏情况的时间复杂度",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "快速排序",
+            "时间复杂度"
+        ],
+        "choices": [
+            "O(n)",
+            "O(n log n)",
+            "O(n²)",
+            "O(log n)"
+        ],
+        "source_section": "第 08 讲 · 排序",
+        "statement_md": "快速排序在**最坏情况**（比如每次枢轴都选到最值、序列已经有序）下，时间复杂度是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "C",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|C\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "最坏时每趟划分只分出「1 个 vs n-1 个」，递归深度退到 n 层，总比较次数是等差数列之和 → **O(n²)**。\n\n平均才是 O(n log n)。这就是「快排怕有序」——讲义实测 1..15 顺序插入再快排，划分退化得一模一样。工程上用三者取中/随机枢轴来躲开这个坑。"
+            }
+        ]
+    },
+    {
+        "title": "基本有序时直接插入排序接近 O(n)",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 1,
+        "total_score": 8,
+        "tags": [
+            "直接插入",
+            "希尔排序",
+            "时间复杂度"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 08 讲 · 排序",
+        "statement_md": "如果初始序列**基本有序**，直接插入排序的比较和移动次数都会很少，整体时间接近 O(n)。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对**。每个元素的插入点都几乎在原地，内层 while 基本一两次就停。极端情况：完全有序时每趟只比较 1 次，共 n-1 次——O(n)。\n\n这正是**希尔排序**存在的理由：先用大步长把序列「拍得基本有序」，最后一趟直接插入收尾时就是 O(n) 的舒适区。"
+            }
+        ]
+    },
+    {
+        "title": "稳定的排序算法有哪些",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "稳定性",
+            "内部排序",
+            "多选"
+        ],
+        "choices": [
+            "直接插入排序",
+            "冒泡排序",
+            "堆排序",
+            "归并排序"
+        ],
+        "source_section": "第 08 讲 · 排序",
+        "statement_md": "下列内部排序算法中，**稳定**的有哪些？\n\n（提醒：稳定性 = 相等元素排序后相对次序不变）\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ABD",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ABD\n|ADB\n|BAD\n|BDA\n|DAB\n|DBA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "稳定的三个：**直接插入**（相等就停，不越过同类）、**冒泡**（严格大于才交换）、**归并**（两边相等取左段）。\n\n**堆排序不稳定**：堆顶与末尾的远距离交换会把等值元素甩开——讲义 demo 用 {3a, 3h, 1} 实测现形。\n\n口诀：**插冒归基稳，选择快希堆不稳**。"
+            }
+        ]
+    },
+    {
+        "title": "邻接矩阵与邻接表的说法辨析",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "multiple_choice",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "邻接矩阵",
+            "邻接表",
+            "存储结构",
+            "多选"
+        ],
+        "choices": [
+            "无向图的邻接矩阵一定是对称矩阵",
+            "邻接表更适合存稀疏图",
+            "邻接矩阵更适合存稀疏图",
+            "邻接矩阵判断两个顶点是否邻接是 O(1)"
+        ],
+        "source_section": "第 06 讲 · 图",
+        "statement_md": "关于图的两种存储结构，下列说法**正确**的有哪些？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+        "input_format": "",
+        "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ABD",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ABD\n|ADB\n|BAD\n|BDA\n|DAB\n|DBA\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "A 对：无向边 (u,v) 在矩阵里两个方向都置 1，必然对称。\n\nB 对、**C 错**：邻接表空间 O(n+e)，稀疏图省得厉害；邻接矩阵固定 O(n²)——边少时全是浪费，它适合**稠密图**。\n\nD 对：矩阵下标直接查 `A[u][v]`，一步到位；邻接表反而要扫链 O(deg)。"
+            }
+        ]
+    },
+    {
+        "title": "一句话说明什么是稳定排序",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "short_answer",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": [
+            "稳定性",
+            "简答"
+        ],
+        "choices": [],
+        "source_section": "第 08 讲 · 排序",
+        "statement_md": "**简答题**：用一句话说明「稳定排序」的含义。\n\n按下面的句式作答：`相等元素……相对次序……`",
+        "input_format": "",
+        "output_format": "一句话作答（不要写解释、不要抄题目）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "相等元素排序后相对次序保持不变",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|相等元素排序后相对次序保持不变\n|相等元素排序后相对次序不变\n|相等的元素排序后相对次序保持不变\n|值相同的元素排序后相对次序不变\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "参考答案：**相等元素排序后相对次序保持不变**。\n\n展开说：序列里若有多个关键字相同的记录，稳定排序保证排完序后它们的先后顺序与排序前一致（如 49a 一直在 49h 前面）；不稳定排序则可能交换它们的相对位置。\n\n稳定性有什么用？对**多关键字排序**是刚需：先按次要关键字排好，再用稳定的主关键字排序，次要关键字的次序得以保留——基数排序就是靠「每趟都用稳定排序」立住的。"
+            }
+        ]
+    },
+    {
+        "title": "写出数据结构的三要素",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "short_answer",
+        "difficulty": 1,
+        "total_score": 12,
+        "tags": [
+            "三要素",
+            "基本概念",
+            "简答"
+        ],
+        "choices": [],
+        "source_section": "第 01 讲 · 绪论",
+        "statement_md": "**简答题**：写出**数据结构的三要素**，用顿号或空格分隔（按讲义顺序：两个「结构」在前，运算在后）。",
+        "input_format": "",
+        "output_format": "一句话作答（不要写解释、不要抄题目）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "逻辑结构、存储结构、运算",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|逻辑结构、存储结构、运算\n|逻辑结构 存储结构 运算\n|数据的逻辑结构、数据的存储结构、数据的运算\n|逻辑结构、存储结构、数据的运算\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "参考答案：**逻辑结构、存储结构、运算**。\n\n- **逻辑结构**：元素之间「什么关系」（集合/线性/树/图）；\n- **存储结构**：关系「怎么落进内存」（顺序/链式/索引/散列）；\n- **运算**：在这种结构上「能干什么」（定义在逻辑结构上、实现在存储结构上）。\n\n三者缺一不可：只讲关系不讲落地是数学，只讲落地不讲关系是纯编程。"
+            }
+        ]
+    },
+    {
+        "title": "顺序表插入的平均移动次数",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "顺序表",
+            "平均移动次数"
+        ],
+        "choices": [
+            "n/2",
+            "n",
+            "(n-1)/2",
+            "n-1"
+        ],
+        "source_section": "第 02 讲 · 线性表",
+        "statement_md": "长度为 `n` 的顺序表，在**等概率**下按位序插入一个元素，平均要移动多少个元素？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "插到第 `i` 位要移动 `n-i+1` 个，i 取 1..n+1 等概率平均：Σ(n-i+1)/(n+1) = **n/2**。\n\n对照记忆：删除的平均移动是 **(n-1)/2** —— 插删这两个公式考试最爱配对出现，别背混。"
+            }
+        ]
+    },
+    {
+        "title": "头插法建单链表的结点次序",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "单链表",
+            "头插法"
+        ],
+        "choices": [
+            "a1 a2 a3",
+            "a3 a2 a1",
+            "a2 a1 a3",
+            "a1 a3 a2"
+        ],
+        "source_section": "第 02 讲 · 线性表",
+        "statement_md": "用**头插法**把 `a1, a2, a3` 依次插入空单链表，建好后的结点次序是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "头插法 = 新结点总插在**表头**。a1 先进，a2 插到它前面，a3 再插到最前面 → **a3 a2 a1**，与输入顺序**正好相反**。\n\n图、散列桶的邻接链用的也是这个插法（教材惯例）——PTA 里那道「无向图的邻接表（头插法）」考的就是这条。想保持原序就得用**尾插法**。"
+            }
+        ]
+    },
+    {
+        "title": "循环单链表尾结点的 next 指向头结点",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 1,
+        "total_score": 8,
+        "tags": [
+            "循环链表",
+            "单链表"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 02 讲 · 线性表",
+        "statement_md": "在**带头结点**的循环单链表里，尾结点的 `next` 域指向**头结点**。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对**。这正是「循环」的含义：`尾.next == 头`，整条链成环。\n\n实战价值：判空是 `head->next == head`（而不是普通单链表的 `head->next == NULL`）；从任一结点出发都能扫全表——所以「只设尾指针 R」的循环链表能做到两头 O(1) 操作。"
+            }
+        ]
+    },
+    {
+        "title": "哪个出栈序列是不可能的",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "栈",
+            "出栈序列",
+            "卡特兰数"
+        ],
+        "choices": [
+            "1 2 3",
+            "3 2 1",
+            "2 1 3",
+            "3 1 2"
+        ],
+        "source_section": "第 03 讲 · 栈和队列",
+        "statement_md": "三个元素按 `1, 2, 3` 的顺序依次进栈（进出可以交错），**不可能**得到的出栈序列是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "D",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|D\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**3 1 2 不可能**：想先弹出 3，必须 1、2、3 都已进栈；3 出来后栈顶是 2，第二个只能弹 2，弹不出 1。\n\n判定法（讲义里的「逐个模拟」）：把出栈序列当目标，元素按 1..n 进栈，栈顶一等于目标就弹——弹不动还不齐，就是假序列。\n\n★ n 个元素合法出栈序列数 = 卡特兰数 C(2n,n)/(n+1)，n=3 时 5 种（总共 6 种排列，恰好只有 `3 1 2` 这一种不合法）。"
+            }
+        ]
+    },
+    {
+        "title": "循环队列牺牲一格的队满条件",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 2,
+        "total_score": 8,
+        "tags": [
+            "循环队列",
+            "队满条件",
+            "假溢出"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 03 讲 · 栈和队列",
+        "statement_md": "循环队列用「牺牲一个存储单元」区分队空与队满时，队满条件是`(rear + 1) % m == front`（m 为队列容量）。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对**。不牺牲一格的话，队空（`front == rear`）和队满（也 `front == rear`）没法区分——这就是讲义里「假溢出」之后必须做的取舍。\n\n代价：实际最多存 `m-1` 个元素。另两种方案：设 size 计数器、设 tag 标记上一次是入队还是出队。"
+            }
+        ]
+    },
+    {
+        "title": "递归调用背后是什么结构",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "栈",
+            "递归",
+            "递归工作栈"
+        ],
+        "choices": [
+            "队列",
+            "栈",
+            "线性表（顺序）",
+            "树"
+        ],
+        "source_section": "第 03 讲 · 栈和队列",
+        "statement_md": "函数递归调用（比如阶乘、汉诺塔）的「保存现场、返回时恢复」，系统背后用的是哪种数据结构？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**栈**——递归工作栈。每次调用压一帧（参数+局部变量+返回地址），返回时弹一帧。后进先出正好匹配「最后调用的最先返回」。\n\n所以任何递归都能**用显式栈改成非递归**（3.4.4 的方法）；递归太深爆的「栈溢出」就是这栈满了。"
+            }
+        ]
+    },
+    {
+        "title": "教材口径的 next[1] 等于几",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "KMP",
+            "next 数组",
+            "下标口径"
+        ],
+        "choices": [
+            "-1",
+            "0",
+            "1",
+            "不存在"
+        ],
+        "source_section": "第 04 讲 · 串、数组和广义表",
+        "statement_md": "KMP 算法里，模式串位序**从 1 开始**（教材口径），`next[1]` 的值是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "教材（位序从 1 起）规定 **next[1] = 0**——它是个「哨兵」：表示「主串指针 i 前移一位、模式串回到开头重比」。\n\n★ 下标从 1 起是全书的隐形坑：网上不少资料位序从 0 起、next[0] = -1，那套值和教材的整套差一位，抄之前先看清自己的下标口径。"
+            }
+        ]
+    },
+    {
+        "title": "对称矩阵下三角压缩的下标公式",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 3,
+        "total_score": 10,
+        "tags": [
+            "特殊矩阵",
+            "压缩存储",
+            "下标口径"
+        ],
+        "choices": [
+            "i(i-1)/2 + j",
+            "i(i-1)/2 + j - 1",
+            "j(j-1)/2 + i",
+            "i(i+1)/2 + j"
+        ],
+        "source_section": "第 04 讲 · 串、数组和广义表",
+        "statement_md": "`n` 阶对称矩阵按**下三角**（含对角线）行优先压缩进一维数组 `sa`，且 `sa` 的**位序也从 1 起**。元素 `a[i][j]`（`i ≥ j`）存在 `sa[k]`，则 `k` = ？\n\n提示：题面已钉死「sa 位序从 1 起」，套公式前先验算 a[1][1]",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "A",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|A\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "第 `i` 行之前有 1..i-1 行，共 `1+2+…+(i-1) = i(i-1)/2` 个元素；行内 `a[i][j]` 前面还有 `j-1` 个 → k = i(i-1)/2 + (j-1) + 1 = **i(i-1)/2 + j**。\n\n验算两头：`a[1][1]` → k=1（sa 第一个），`a[2][1]` → k=2，`a[2][2]` → k=3 —— 全对得上。\n\n★ 本讲最大的坑就是**下标口径**：教材位序从 1 起，网上不少资料从 0 起（那种口径才是 `i(i-1)/2 + j - 1`，即 B 项）。套公式前先核对题面的「从几起」，B/C/D 都是一个符号位错出来的干扰项。"
+            }
+        ]
+    },
+    {
+        "title": "快速转置需要预先算 num 和 cpot",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 2,
+        "total_score": 8,
+        "tags": [
+            "稀疏矩阵",
+            "快速转置",
+            "三元组"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 04 讲 · 串、数组和广义表",
+        "statement_md": "稀疏矩阵的**快速转置**之所以快，是因为它先用一遍扫描统计每列非零元个数 `num[]`，再推出每列第一个非零元在目标三元组表中的位置 `cpot[]`，然后一遍放好——不需要按列反复扫描整个表。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对**。普通转置 O(nu × tu)（对每一列扫全表），快速转置O(nu + tu)（两个线性趟）。\n\n★ 讲义实测大坑：`cpot[col+1] = cpot[col] + num[col]` 这步的累加基准要是写漏，数据会整段错位——demo 里「漏 cpot++ 丢数据」那条陷阱说的就是它。"
+            }
+        ]
+    },
+    {
+        "title": "二叉树叶子数与度 2 结点数的关系",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "二叉树性质",
+            "叶子结点"
+        ],
+        "choices": [
+            "n0 = n2",
+            "n0 = n2 + 1",
+            "n2 = n0 + 1",
+            "n0 = 2·n2"
+        ],
+        "source_section": "第 05 讲 · 树和二叉树",
+        "statement_md": "任意一棵二叉树，叶子结点数 `n0` 与度数为 2 的结点数 `n2` 满足？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**n0 = n2 + 1**。从边的条数推：n 个结点 n-1 条边，每条边出自一个非叶结点，即 n-1 = n1 + 2·n2；又 n = n0+n1+n2，两式一消就得到 n0 = n2+1。\n\n它跟「度数」无关地恒成立——考题常给几个 n1/n2 让你算叶子数，直接套这个式子比画树快。"
+            }
+        ]
+    },
+    {
+        "title": "哪种遍历组合能唯一确定一棵二叉树",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "single_choice",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": [
+            "遍历",
+            "唯一确定",
+            "先序中序"
+        ],
+        "choices": [
+            "先序 + 后序",
+            "先序 + 中序",
+            "只有先序",
+            "层次 + 后序"
+        ],
+        "source_section": "第 05 讲 · 树和二叉树",
+        "statement_md": "已知两种遍历序列，**能唯一确定**一棵二叉树的组合是？",
+        "input_format": "",
+        "output_format": "一个选项字母（`A`~`D`）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**先序 + 中序**（以及中序 + 后序、中序 + 层次）可以；**先序 + 后序不行**——两个都缺「左右子树的分界」信息，只有一个结点的子树时分不清它在左还是右（反例：任何一条链都有多棵树对应）。\n\n原理：先序首个是根 → 在中序里切出左右子树 → 递归。教材 5.5.1「由遍历序列确定二叉树」的高频大题就考这个。"
+            }
+        ]
+    },
+    {
+        "title": "哈夫曼树没有度为 1 的结点",
+        "subject": "ds",
+        "line": "text",
+        "question_type": "true_false",
+        "difficulty": 2,
+        "total_score": 8,
+        "tags": [
+            "哈夫曼树",
+            "二叉树性质",
+            "WPL"
+        ],
+        "choices": [
+            "对",
+            "错"
+        ],
+        "source_section": "第 05 讲 · 树和二叉树",
+        "statement_md": "哈夫曼树（最优二叉树）中不存在度数为 1 的结点。",
+        "input_format": "",
+        "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "对",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|对\n|正确\n|√\n|T\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "**对**。哈夫曼树每次合并**两个**最小权结点成一个新的度 2 结点，从不产生独苗——所以结点只有叶（n0）和度 2（n2），且 n0 = n2+1，总结点数 = 2·n0 − 1（奇数）。\n\n推论也是考点：n 个权值建哈夫曼树，一共要合并 n−1 次。「WPL = Σ 权值 × 路长」另有一条捷径：WPL 也等于**所有非叶结点权值之和**——讲义 demo 双路复算对过。"
             }
         ]
     }

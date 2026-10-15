@@ -27,9 +27,16 @@ with tempfile.TemporaryDirectory(prefix="pta-types-") as tmp:
     assert counts["single_choice"] > 0
     assert counts["true_false"] > 0
     assert counts["fill_blank"] > 0
-    assert counts["multiple_choice"] == 0  # 当前种子题没有多选，不能误标
-    assert counts["short_answer"] == 0
-    assert counts["practical"] == 0
+    # ★ 「多选 / 简答 / 实操」这三类**只能来自题库里的显式标注**，
+    #   推断（infer）不许凭答案长短或字母个数猜出来 —— 所以库里这三类的数量
+    #   必须与「题库里显式写了这几类的条数」**完全相等**，
+    #   多一条就是误标，少一条就是漏入库。这样两边同时加题也不会互相踩。
+    explicit = Counter(p["question_type"] for p in seed.SEED_PROBLEMS
+                       if p.get("question_type"))
+    for k in ("multiple_choice", "short_answer", "practical"):
+        assert counts[k] == explicit.get(k, 0), \
+            f"{k} 只能来自题库显式标注：库里 {counts[k]} 条 / 题库 {explicit.get(k, 0)} 条"
+    assert counts["multiple_choice"] > 0, "题库里应当有多选题"
 
     # 老库补标幂等；人工题显式类型不应被种子同步覆盖。
     old_id = rows[0]["id"]
