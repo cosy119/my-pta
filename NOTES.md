@@ -499,6 +499,14 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 - ⚠️ 日志**不要写 `/tmp`**（触发安全策略 SIGTERM），写项目目录（如 `data/vb.log`）。
 - ⚠️ 后台跑的脚本**重定向到文件时输出是全缓冲**，跑完才落盘 —— 别拿「日志还是 0 行」当失败。
 - ⚠️ 本机 curl 报 `CRYPT_E_REVOCATION_OFFLINE` → 加 `--ssl-no-revoke`。
+- ⚠️ **git push 也会撞 `CRYPT_E_REVOCATION_OFFLINE`**（2026-10-15 起出现过一次；昨天还好的，
+  疑似杀软 TLS 拦截/系统代理波动）。`-c http.schannelCheckRevoke=false` **不生效**，
+  有效的是换 openssl 后端：
+
+  ```bash
+  git -c http.sslBackend=openssl \
+      -c http.sslCAInfo="C:/Program Files/Git/mingw64/etc/ssl/certs/ca-bundle.crt" push ...
+  ```
 - ⚠️ **`HTTP_PROXY` / `HTTPS_PROXY` 会被注进环境**（端口每次不一定一样，2026-10-14 实测是 `127.0.0.1:51814`）。
   curl 测本机端口用 `--noproxy '*'`（`"*"` 在 Git Bash 里会被 glob 展开，要加单引号）。
 - ★★ **Python `urllib` 同样会走它** —— 笔记里原先写的「urllib 实测能直连、不受影响」**是错的**
