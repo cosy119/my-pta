@@ -5,7 +5,7 @@
 前端要放到 GitHub Pages（纯静态，没有 Python）。所以：
 
 1. **题目列表**必须能在没有后端时也显示出来 → 导出成 `docs/problems.json`
-2. 理论题和 Python 题在浏览器本地判；C/C++ 题仍需后端
+2. 理论题、Python 和 C/C++ 题在浏览器本地判
 3. 后端连不上时，前端仍能浏览题目、运行 Python、保存本地进度
 
 产出（都在 docs/ 下）
@@ -132,7 +132,7 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
         for f in WEB.iterdir():
             if f.is_file():
                 shutil.copy2(f, out_dir / f.name)
-        for name in ("python", "pyodide"):
+        for name in ("python", "pyodide", "clang"):
             src = WEB / name
             if src.is_dir():
                 shutil.copytree(src, out_dir / name, dirs_exist_ok=True)
@@ -146,8 +146,8 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
 
     # 4) 一个最小的 CORS 说明，免得以后忘了
     (out_dir / "backend.txt").write_text(
-        "理论题和 Python 题可直接在浏览器中判题，无需安装后端。\n"
-        "C/C++ 题需要判题后端；如需连接后端，请在页面右上角「设置」中填写地址。\n",
+        "理论题、Python 和 C/C++ 题可直接在浏览器中判题，无需安装后端。\n"
+        "浏览器 C/C++ 使用 Clang/WASI，首次加载约 29 MB；与 GCC 后端可能略有差异。\n",
         encoding="utf-8")
 
     print("\n产物清单：")
