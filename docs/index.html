@@ -348,6 +348,14 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
   line-height:1.62; padding:12px 13px; outline:0; tab-size:4;
 }
 .pedit.hasCode .editor{flex:1 0 300px}
+.codeEditor{flex:1 0 300px; min-height:300px; border:1px solid var(--border); border-radius:9px; overflow:hidden; background:var(--panel2)}
+.codeEditor:focus-within{border-color:var(--primary); background:var(--panel)}
+.codeEditor .cm-editor{height:100%; min-height:300px; font:15px/1.62 var(--mono); color:var(--text); background:transparent}
+.codeEditor .cm-scroller{font-family:var(--mono); overflow:auto}
+.codeEditor .cm-gutters{background:var(--panel2); color:var(--muted); border-color:var(--border)}
+.codeEditor .cm-content{padding:12px 8px; min-height:100%}
+.codeEditor .cm-focused{outline:0}
+.editorKeys{font-size:11.5px; color:var(--muted); line-height:1.4}
 .pedit.hasCode #resultBox,.pedit.hasCode #histBox{flex:0 0 auto}
 .editor:focus{border-color:var(--primary); background:var(--panel)}
 .editor::placeholder{color:var(--muted)}
@@ -374,6 +382,7 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
   .pdivider{display:none}
   .pedit{position:relative; top:auto; height:auto; min-height:500px}
   .pedit.hasCode .editor{min-height:380px}
+  .codeEditor{min-height:380px}
 }
 @media (max-width:560px){
   .nav{gap:7px; padding:0 9px}
@@ -510,6 +519,48 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
 <script src="python-local.js"></script>
 <script src="cpp-local.js"></script>
 <script>
+let smartEditor = null;
+let smartEditorProblemId = null;
+let smartEditorLoad = null;
+let smartEditorTry = 0;
+function codeValue(){
+  if (smartEditor && CUR && smartEditorProblemId === CUR.id) return smartEditor.getValue();
+  const box = document.getElementById('codeBox');
+  return box ? box.value : '';
+}
+async function initSmartEditor(problemId){
+  const host = document.getElementById('codeEditor');
+  const fallback = document.getElementById('codeBox');
+  if (!host || !fallback) return;
+  try {
+    /* ★★ 两个「失败被缓存」叠在一起，必须一起处理：
+       ① 我们自己把这个 import() 的 promise 缓存了 —— 它一旦 rejected，
+          之后每次 await 都立刻失败，等于「一次没加载上，终生用回退」；
+       ② 浏览器对**加载失败的动态 import** 也会按 URL 记住结果，
+          光把变量清空、再 import 同一个地址，它连请求都不发。
+       所以失败时既清缓存，也换个 URL 再试（?retry=N）。成功后就固定在没后缀的那个。 */
+    if (!smartEditorLoad) {
+      const url = './editor/editor.js' + (smartEditorTry ? '?retry=' + smartEditorTry : '');
+      smartEditorLoad = import(url).catch(err => { smartEditorLoad = null; smartEditorTry++; throw err; });
+    }
+    const { mountEditor } = await smartEditorLoad;
+    if (!CUR || CUR.id !== problemId || !host.isConnected) return;
+    const lang = document.getElementById('langSel')?.value || 'python';
+    const editor = mountEditor({ parent: host, doc: fallback.value, lang, onChange(value){
+      fallback.value = value;
+      if (CUR && CUR.id === problemId) onCodeInput();
+    }});
+    smartEditor = editor;
+    smartEditorProblemId = problemId;
+    fallback.style.display = 'none';
+    host.hidden = false;
+  } catch (e) {
+    console.warn('CodeMirror failed; using textarea', e);
+    host.hidden = true;
+    fallback.style.display = '';
+    toast('智能编辑器没能加载，已回退到简易输入框（功能不受影响）');
+  }
+}
 "use strict";
 
 /* =========================================================================
@@ -1332,6 +1383,7 @@ async function viewProblem(id){
 }
 
 function renderProblem(){
+  if (smartEditor) { smartEditor.destroy(); smartEditor = null; smartEditorProblemId = null; }
   const p = CUR;
   const app = document.getElementById('app');
   const subject = p.subject || 'python';
@@ -1339,7 +1391,7 @@ function renderProblem(){
   const isTheory = p.line === 'text';
   const isChoice = !!p.is_choice;
   const isJudge = isTheory && (p.choices || []).length === 2 && p.choices.indexOf('对') >= 0 && p.choices.indexOf('错') >= 0;
-  const draftKey = LS.draft + p.id;
+  const draftKey = LS.draft(p.id);
 
   const sequence = problemSequence(subject);
   const position = sequence.findIndex(x => x.id === p.id);
@@ -1428,7 +1480,9 @@ function renderProblem(){
     const pre = p.last_submission && p.last_submission.code;
     const val = pre || draftOf(draftKey) || '';
     right += '<div class="hintline" id="langHint"></div>'
+      + '<div id="codeEditor" class="codeEditor" hidden></div>'
       + '<textarea class="editor" id="codeBox" spellcheck="false" placeholder="在这里写代码…">' + esc(val) + '</textarea>'
+      + '<div class="editorKeys">Ctrl+空格查看提示 · Tab 接受提示或缩进 · Shift+Tab 减少缩进 · Esc 后按 Tab 离开编辑器</div>'
       + '<details><summary class="hintline" style="cursor:pointer">运行自测用的输入（可选）</summary>'
       + '<textarea class="stdinBox" id="stdinBox" style="margin-top:7px">'
       + esc(samples.length ? samples[0].stdin : '') + '</textarea></details>';
@@ -1450,12 +1504,27 @@ function renderProblem(){
   renderHistory();
   const box = document.getElementById('codeBox');
   if (box) box.addEventListener('input', onCodeInput);
+  if (!isTheory) initSmartEditor(p.id);
 }
 
-function draftOf(k){ try { return localStorage.getItem(k) || ''; } catch(e){ return ''; } }
+function draftOf(k){
+  try {
+    const v = localStorage.getItem(k);
+    if (v) return v;
+    /* ★★ 历史遗留下来的坑：早期版本把 `LS.draft + id` 直接当 key 用了，
+       可 `LS.draft` 是个**函数**，参与字符串拼接时会被转成源码文本，
+       于是那些草稿的真实 key 长这样：`p => 'pta.draft.' + p1`。
+       读写两边用的是同一个错 key，所以自己用着没感觉；
+       但「导出进度」是按 `pta.draft.` **前缀**去捞草稿的 → 一份都捞不到。
+       现在统一成 `pta.draft.<id>`，旧的在这里顺手搬过来，别让人丢草稿。 */
+    const legacy = String(LS.draft) + k.slice('pta.draft.'.length);
+    const old = localStorage.getItem(legacy);
+    if (old){ localStorage.setItem(k, old); localStorage.removeItem(legacy); return old; }
+    return '';
+  } catch(e){ return ''; }
+}
 function onCodeInput(){
-  const box = document.getElementById('codeBox');
-  if (box) { try { localStorage.setItem(LS.draft + CUR.id, box.value); } catch(e){} }
+  if (CUR) { try { localStorage.setItem(LS.draft(CUR.id), codeValue()); } catch(e){} }
 }
 
 function renderButtons(){
@@ -1519,6 +1588,7 @@ function onLangChange(){
                 c:'C 用 gcc -std=gnu11 编译；教材里的 `&` 引用在 gcc 下编不过，要么改指针，要么改用 C++ 提交',
                 python:'Python 解释执行' };
   if (hint) hint.textContent = map[sel.value] || '';
+  if (smartEditor && CUR && smartEditorProblemId === CUR.id) smartEditor.setLanguage(sel.value);
 }
 function copySample(i){
   const s = (CUR.samples || [])[i];
@@ -1558,8 +1628,7 @@ async function doSubmit(){
     code = readTheoryAnswer();
     if (code === null) return;
   } else {
-    const box = document.getElementById('codeBox');
-    code = box ? box.value : '';
+    code = codeValue();
     if (!code.trim()){ toast('代码不能为空', 'err'); return; }
     const ls = document.getElementById('langSel');
     if (ls) lang = ls.value;
@@ -1607,8 +1676,7 @@ function doSubmitLocal(){
 }
 
 async function doSubmitPythonLocal(){
-  const p = CUR, box = document.getElementById('codeBox');
-  const code = box ? box.value : '';
+  const p = CUR, code = codeValue();
   if (!code.trim()){ toast('代码不能为空', 'err'); return; }
   const btn = document.getElementById('btnSubmit');
   if (btn) btn.disabled = true;
@@ -1627,8 +1695,7 @@ async function doSubmitPythonLocal(){
 }
 
 async function doSubmitCppLocal(){
-  const p = CUR, box = document.getElementById('codeBox');
-  const code = box ? box.value : '';
+  const p = CUR, code = codeValue();
   if (!code.trim()){ toast('代码不能为空', 'err'); return; }
   const lang = document.getElementById('langSel')?.value || 'cpp';
   const btn = document.getElementById('btnSubmit');
@@ -1651,8 +1718,7 @@ async function doSubmitCppLocal(){
 }
 
 async function doRunCppLocal(){
-  const box = document.getElementById('codeBox');
-  const code = box ? box.value : '';
+  const code = codeValue();
   if (!code.trim()){ toast('代码不能为空', 'err'); return; }
   const lang = document.getElementById('langSel')?.value || 'cpp';
   const btn = document.getElementById('btnRun');
@@ -1674,8 +1740,7 @@ async function doRunCppLocal(){
 }
 
 async function doRunPythonLocal(){
-  const box = document.getElementById('codeBox');
-  const code = box ? box.value : '';
+  const code = codeValue();
   if (!code.trim()){ toast('代码不能为空', 'err'); return; }
   const btn = document.getElementById('btnRun');
   if (btn) btn.disabled = true;
@@ -1789,9 +1854,8 @@ function toggleCase(head){
 }
 
 async function doRun(){
-  const box = document.getElementById('codeBox');
   const stdinEl = document.getElementById('stdinBox');
-  const code = box ? box.value : '';
+  const code = codeValue();
   if (!code.trim()){ toast('代码不能为空', 'err'); return; }
   const ls = document.getElementById('langSel');
   const isel = document.getElementById('interpSel');

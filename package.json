@@ -1,0 +1,16 @@
+{
+  "private": true,
+  "scripts": {
+    "build:editor": "esbuild editor-src/index.js --bundle --format=esm --target=es2020 --minify --outfile=web/editor/editor.js"
+  },
+  "dependencies": {
+    "@codemirror/autocomplete": "^6.20.0",
+    "@codemirror/commands": "^6.8.0",
+    "@codemirror/lang-cpp": "^6.0.3",
+    "@codemirror/lang-python": "^6.2.1",
+    "@codemirror/language": "^6.11.0",
+    "@codemirror/state": "^6.5.0",
+    "@codemirror/view": "^6.38.0",
+    "esbuild": "^0.25.0"
+  }
+}

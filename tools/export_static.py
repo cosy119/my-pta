@@ -132,7 +132,7 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
         for f in WEB.iterdir():
             if f.is_file():
                 shutil.copy2(f, out_dir / f.name)
-        for name in ("python", "pyodide", "clang"):
+        for name in ("python", "pyodide", "clang", "editor"):
             src = WEB / name
             if src.is_dir():
                 shutil.copytree(src, out_dir / name, dirs_exist_ok=True)

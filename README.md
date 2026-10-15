@@ -91,6 +91,7 @@ run.bat
 | **每题进度（最高分 / 最后一次 / 首次满分时间）** | ✅ |
 | **提交历史 + 一键回填某次代码** | ✅ |
 | **打开题目自动回填上次提交的代码** | ✅ |
+| **智能编辑器（自托管 CodeMirror：缩进 / 括号配对 / 本地关键词与片段提示）** | ✅ |
 | **题库 204 道 / 2615 分 / 532 个测试点（三科目）** | ✅ |
 | **数据备份 / 导出 JSON / 恢复** | ✅ |
 | AI 按讲义出题 | ⏳ P3 |
@@ -116,6 +117,42 @@ PTA 的模型是「**测试点**」：一道题由若干测试点组成，**每�
 
 老库升级不用手动做什么：启动时会自动补列（`ALTER TABLE ADD COLUMN`，不动老数据）、
 同步种子题的分值与讲次、把旧口径的提交换算成得分制。
+
+## 智能编辑器（Python / C / C++ 题）
+
+编程题的代码框是**自托管的 CodeMirror 6**，不连任何在线服务、不调 AI、不依赖后端 ——
+`docs/` 是纯静态站点，打开就能用。理论题保持原来的输入框（选择题没有代码可写）。
+
+| 能力 | 怎么做 |
+|---|---|
+| 语言缩进 | 回车按当前语言的语法自动缩进（Python 冒号后缩进、C/C++ 大括号后缩进） |
+| 括号 / 引号配对 | 输入 `(` `[` `{` `"` `'` 自动补另一半；**选中一段文字**再敲括号或引号，直接包起来 |
+| 补全提示 | 打字时提示**本地关键词**（`for` `if` `return` `printf`…）与**代码片段**（`main` `class` `fori`…），`Ctrl+空格` 主动打开 |
+| Tab | 有候选词时**接受补全**；没有候选时**缩进一级**；`Shift+Tab` **减少缩进**；`Enter` 照常换行 |
+| 离开编辑器 | 按 `Esc` 关掉补全面板后再按 `Tab`，焦点移到下一个控件（键盘可全程操作，不用摸鼠标） |
+| 切 C ↔ C++ | 只换语言高亮与补全源，**代码不清空**，草稿 / 提交 / 自测 / 分栏高度行为都不变 |
+| 加载失败 | 自动回退到原来的 `textarea`，并提示一句；回退后功能一切照旧 |
+| 草稿 | 与原来同一套 `localStorage` 草稿，切题再切回来、刷新页面都还在 |
+
+源码在 `editor-src/index.js`（约 6 KB），用 esbuild 打成单文件：
+
+```bat
+cd /d E:\学习\001\pta
+npm install                                     &rem 首次
+npm run build:editor                            &rem → web/editor/editor.js（约 500 KB，已进仓库）
+D:\Pythontools\Python\python.exe -X utf8 tools\export_static.py --with-cases   &rem → docs/editor/
+```
+
+改完源码记得**两条都跑**：`web/editor/` 是本地服务用的，`docs/editor/` 是 Pages 用的，
+`export_static.py` 会把前者拷进后者（顺手把 `web/index.html` 也同步过去）。
+
+★ 两个实现上的细节，免得再踩：
+
+- **CodeMirror 没有单独的 C 语法** —— `@codemirror/lang-cpp` 一个 grammar 同时服务 C 和 C++，
+  所以 C ↔ C++ 切换时**高亮本来就不变**，真正跟着变的是**补全源与片段**
+  （C 的 `main` 展开成 `int main(void)`，C++ 的展开成 `int main()`）。跨语言（Python ↔ C++）高亮才不同。
+- **编辑器加载失败的 promise 不能缓存** —— 早期写法把「第一次失败」永久缓存成「这辈子都用不上编辑器」，
+  网络恢复、换题都不会再试。现在失败会把缓存清掉，下一题重新加载。
 
 ## 题库（三个科目，共 204 道 / 2615 分 / 532 个测试点）
 
@@ -213,9 +250,13 @@ pta/
 │     ├─ runner_text.py    ★ 理论题 runner（提交内容即输出，复用整条管道）
 │     └─ worker.py         判题队列（单线程，按测试点分值计分，按用户记账）
 ├─ web/index.html          前端（单文件，无构建工具；三层 hash 路由）
+├─ web/editor/editor.js    ★ 智能编辑器产物（CodeMirror 打包结果，已进仓库）
+├─ editor-src/index.js     ★ 智能编辑器源码（改完 `npm run build:editor`）
+├─ package.json            ★ 编辑器构建脚本与依赖（esbuild + @codemirror/*）
 ├─ docs/                   ★ GitHub Pages 发布目录（由 export_static.py 生成）
 │  ├─ index.html           前端副本
 │  ├─ problems.json        题库快照（含 subject / choices，**不含参考答案**）
+│  ├─ editor/editor.js     ★ 编辑器副本
 │  └─ .nojekyll            别让 Jekyll 处理
 ├─ tools/
 │  ├─ selfcheck.py         判题内核 + 评分 自检（62 项）
@@ -230,6 +271,7 @@ pta/
 │  ├─ gen_ds_bank.py       ★ 数据结构题库生成器（含 _sanity 把关）
 │  ├─ gen_linux_bank.py    ★ Linux 题库生成器（含 _sanity 把关）
 │  ├─ verify_bank.py       题库校验（三线双实现撞独立算出的期望输出）
+│  ├─ ui_e2e_editor.mjs    ★ 智能编辑器真浏览器测试（63 项：缩进/配对/补全/Tab/切题/回退/语言切换）
 │  ├─ _console.py          ★ 把控制台切成 UTF-8（被上面这些脚本 import）
 │  ├─ _testdb.py           ★ 把自检脚本的库钉到测试库（导入即生效，别写进真实库）
 │  ├─ export_static.py     ★ 导出静态题库 + 生成 docs/ 站点
@@ -266,6 +308,21 @@ D:\Pythontools\Python\python.exe -X utf8 tools\reset_progress.py    &rem 清空�
 
 CI（`.github/workflows/ci.yml`）在 Ubuntu 和 Windows 上各跑一遍 ——
 **Linux 那份专门用来验证沙箱的 setrlimit + killpg 分支**（本机是 Windows，测不到）。
+
+前端另有一组 **Node 测试**（不依赖 Python、不在 CI 里跑，因为要真浏览器）：
+
+```bat
+cd /d E:\学习\001\pta
+node tools\ui_smoke.mjs              &rem jsdom 冒烟：界面渲染、路由、提交流程
+node tools\ui_test_local_judge.mjs   &rem 本地判题（含草稿导入导出）
+node tools\ui_e2e_local_judge.mjs    &rem 真 Chrome 跑发布产物的判题全流程
+node tools\ui_e2e_editor.mjs         &rem ★ 真 Chrome 测智能编辑器（63 项，约 2 分钟）
+node tools\verify_text_judge.mjs     &rem 前端判题器口径与后端对拍
+```
+
+`ui_e2e_editor.mjs` 是本机唯一会**真的敲键盘**的测试：它用系统 Chrome 打开 `docs/` 静态站点，
+逐条验证缩进、括号配对、补全面板、Tab / Shift+Tab / `Esc`+`Tab`、切题草稿、C↔C++ 语言切换，
+以及「加载失败回退到 `textarea` 且不缓存失败」。跑之前确保 `docs/` 是刚导出的。
 
 ★ 三条实操注意：
 

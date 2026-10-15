@@ -40,6 +40,14 @@ python tools\selfcheck.py          &rem 62 项
 git add -A && git commit && git push（用上面的内联 token 姿势）
 ```
 
+★ 改了 `editor-src/` 或 `web/index.html` 还要多两步（顺序不能反）：
+
+```bat
+npm run build:editor                        &rem editor-src → web/editor/editor.js
+python tools\export_static.py --with-cases  &rem 顺手把 web/editor/ + web/index.html 同步进 docs/
+node tools\ui_e2e_editor.mjs                &rem 真 Chrome 复验 63 项（必须对着刚导出的 docs/）
+```
+
 `export_static.py` 的 `_STRIP_FIELDS` 会剥掉 `reference_solution` / `ref_interpreter` / `ai_meta` / `ai_model` —— 静态站上绝不出现参考解。验收时要复查这一条。
 
 ## CI（`.github/workflows/ci.yml`）
@@ -404,6 +412,7 @@ Python 56 + 数据结构 31 是**代码题**，必须真执行，仍然要后端
 | `ui_smoke.mjs` | **41/41** | jsdom 真渲染前端（离线 + 假后端两遍） |
 | `ui_test_local_judge.mjs` | **45/45** | 离线本地判题：**真 jsdom + 真加载 `judge_text.js`**（专门起静态服务，让外链脚本真被取到）。含「答对后再答错最高分不被冲掉」「导入低分备份不冲掉高分」两条回归 |
 | `ui_e2e_local_judge.mjs` | **25/25** | **真 Chrome**（puppeteer-core + 系统 Chrome）跑 `docs/` **发布产物**：真点按钮判题、**真下载**进度 JSON、**真上传**导入回来 |
+| `ui_e2e_editor.mjs` | **63/63** | ★ **真 Chrome 测智能编辑器**（唯一真敲键盘的测试）：三种语言的缩进 / 配对 / 补全 / Tab / Shift+Tab / `Esc`+`Tab` / 切题草稿 / C↔C++ 语言切换 / 加载失败回退 |
 | `httptest_users.py` | **23/23** | 多用户隔离、越权 404、CORS |
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
 | `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
@@ -551,9 +560,60 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 - `prefers-color-scheme` 双主题。
 - ⚠️ `Write` 工具对**未 Read 过的已有文件**会报 `File has not been read yet` —— 要么先 Read，要么先 `cp` 备份再 `rm` 腾路径。
 
+## 智能编辑器（CodeMirror 6，2026-10-15）
+
+把编程题的代码框从 `textarea` 换成**自托管 CodeMirror 6**：不连 CDN、不调 AI、不需要后端，
+纯静态站打开就能用（理论题保持原输入框不动）。
+
+```
+editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_static──▶  docs/editor/editor.js
+   （约 6 KB 源码）                  （约 500 KB，进仓库）                   （Pages 用）
+```
+
+- `web/index.html` 里 `smartMountEditor()` 动态 `import('./editor/editor.js')` → `mountEditor({parent, doc, lang, onChange})`；
+  任何一步失败就回退到原来的 `textarea`，功能不受影响。
+- 只对 Python / C / C++ 题挂载；`line === 'text'` 的理论题不走这条路。
+
+### 关键实现点
+
+| 需求 | 做法 |
+|---|---|
+| Tab 三种含义 | keymap 用 `Prec.highest` 抢在默认键位之前：有补全 → `acceptCompletion`；有片段占位符 → `nextSnippetField`；否则 `indentMore` |
+| `Esc` 后按 Tab 离开编辑器 | `Escape` 关补全面板时置「刚按过 Esc」标志，下一次 `Tab` 直接 `blur()` 把焦点放出去（键盘可全程操作） |
+| 切 C↔C++ | `Compartment.reconfigure` 只换语言扩展与补全源，**代码不清空**，草稿 / 提交 / 自测 / 分栏高度都不变 |
+| 括号 / 引号配对 | `closeBrackets()`（含「选中文字再敲括号或引号 → 直接包起来」） |
+| 补全提示 | `autocompletion({override:[本地 source]})`，source = 代码片段（`snippet()`）+ 本地关键词词表，**零网络、零 AI** |
+
+### ★★ 踩过的坑（都钉进 `ui_e2e_editor.mjs` 了）
+
+1. **CodeMirror 没有单独的 C 语法** —— `@codemirror/lang-cpp` 一个 grammar 同时服务 C 和 C++。
+   所以 **C↔C++ 切换时高亮本来就不变**，真正跟着变的只有补全源与片段。
+   想验「高亮跟着语言换」必须**跨语言比**（Python ↔ C++）。第一版测试断言 C↔C++ 高亮不同 → 假失败。
+   顺带：判据也不能用「有没有着色 span」——`defaultHighlightStyle` 里 `definition(variableName)` 会让普通变量名也有样式。
+2. **`acceptCompletion` 有 75 ms 的 `interactionDelay`** —— 面板刚弹出就按 Tab 会被拒。
+   真人不这么快，**测试脚本会**。测「Tab 接受补全」之前必须等够 100 ms。
+3. **puppeteer 25 不认合并键名** —— `'Control+Space'` / `'Shift+Tab'` 整串拿去查键表 → `Unknown key`。
+   组合键一律 `down` / `press` / `up` 拆开写。
+4. **`${}` 是合法的 snippet 空占位符**（查过 `@codemirror/autocomplete` 的 `parseSnippet`），里面可以什么都不填。
+5. ★★ **加载失败的 promise 不能缓存** —— `if (!p) p = import(...)` 会把 rejected 的 promise 一直留着，
+   于是「第一次加载失败」变成「这辈子都用不上编辑器」：换题、网络恢复都不会再试。
+   现在失败时把缓存清空，下一题重新加载（测试 [9] 拿「先屏蔽脚本、再放开切题」验这条）。
+6. **切题后等编辑器就绪，不能只看 `#codeEditor` 在不在** —— 那个宿主 div 一开始就在（hidden），
+   是给回退留的位置。可靠信号是「`#codeEditor` 不再 hidden **且** 里面真有 `.cm-content`」。
+
+### ★★ 顺手修掉的既有 bug：草稿 key 拼错了
+
+`web/index.html` 里 `LS.draft` 是**函数** `p => 'pta.draft.' + p`，但三处调用都写成 `LS.draft + p.id`
+—— 字符串拼函数对象，真实 key 是 `"p => 'pta.draft.' + p1"` 这么个东西。
+
+- 为什么一直没暴露：**读和写用的是同一个错 key**，答题、切题、刷新全都正常。
+- 什么时候会炸：**「导出进度」按 `pta.draft.` 前缀筛草稿** → 永远筛不到 → 导出的备份里草稿恒为 0 份。
+  真踩了：`ui_test_local_judge` 的「已导出：3 道题 + **1 份草稿**」原来是「+ 0 份」。
+- 修法：抽 `draftKey(id)` 统一出口，并**带旧 key 迁移**（新 key 读不到时回查旧 key，命中就搬过来再删旧的），已存草稿一份不丢。
+
 ## 数据工具
 
-- `tools/export_static.py`：导出 `docs/`（题库快照 + 前端 + `.nojekyll`）。
+- `tools/export_static.py`：导出 `docs/`（题库快照 + 前端 + `.nojekyll`；`web/editor/` 也会一起拷过去，2026-10-15 加）。
   **`--with-cases`**（2026-10-14 加）会把**完整测试点**一并写进 `problems.json`，
   前端本地判题就靠它。★ 不开这个开关时**不加 `cases` 键**，默认导出与历史产物**字节级一致**
   （只差 `generated_at` 时间戳）—— 这条专门回归过，免得顺手把默认行为改掉。
@@ -579,7 +639,8 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 ## 进度
 
 **P0 + P1 + 评分系统 + 三科目题库(204 道) + C/C++ 双通道 + 理论题判题 + PTA 风格前端 +
-数据备份 + 多用户隔离 + Pages 发布 + 前端本地判题（Linux 理论 117 道）+ 进度导出/导入** 已完成。
+数据备份 + 多用户隔离 + Pages 发布 + 前端本地判题（Linux 理论 117 道）+ 进度导出/导入 +
+智能编辑器（自托管 CodeMirror 6，Python/C/C++ 题）** 已完成。
 
 ### 部署路线（2026-10-14 定）：不是「VPS vs 纯前端」二选一，而是三步走
 
