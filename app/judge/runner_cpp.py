@@ -66,7 +66,7 @@ LANG_ALIAS = {
 }
 
 # 编译阶段单独的额度（★ 不能沿用题目的限额，见模块 docstring）
-COMPILE_TIME_MS = 20000
+COMPILE_TIME_MS = 45000
 COMPILE_MEMORY_MB = 1024
 
 # 编译期的干净环境：让 gcc/g++ 的错误信息不要因本机 locale 变成乱码
