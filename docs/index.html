@@ -1355,6 +1355,8 @@ async function doSubmit(){
   let code, lang = 'python', interp = 'py313';
 
   if (p.is_choice || theory){
+    lang = 'text';
+    interp = 'text';
     code = readTheoryAnswer();
     if (code === null) return;
   } else {
