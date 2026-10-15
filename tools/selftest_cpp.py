@@ -162,17 +162,22 @@ def main() -> int:
 
     try:
         # --- 1 / 2 ---
-        res, _ = run(make("cpp"), CPP_OK, "hello\n", BASE / "cpp_ok")
+        # ★ res 为 None 时必须把 msg 打出来 —— 2026-10-15 CI 上这一项失败却
+        #   因详情为空查不到原因（本地 9/9 过，判定为 runner 抖动，但下次再
+        #   失败要能一眼看到 verdict 背后的编译/运行错误原话）。
+        res, msg = run(make("cpp"), CPP_OK, "hello\n", BASE / "cpp_ok")
         check("C++ 正常程序判 AC",
               res is not None and res.verdict == "OK"
               and compare("olleh\n", res.stdout).ok,
-              "" if res is None else "%s / %r" % (res.verdict, res.stdout[:40]))
+              (msg or "")[:90] if res is None
+              else "%s / %r" % (res.verdict, res.stdout[:40]))
 
-        res, _ = run(make("c"), C_OK, "hello\n", BASE / "c_ok")
+        res, msg = run(make("c"), C_OK, "hello\n", BASE / "c_ok")
         check("C   正常程序判 AC",
               res is not None and res.verdict == "OK"
               and compare("olleh\n", res.stdout).ok,
-              "" if res is None else "%s / %r" % (res.verdict, res.stdout[:40]))
+              (msg or "")[:90] if res is None
+              else "%s / %r" % (res.verdict, res.stdout[:40]))
 
         # --- 3 / 4 ---
         res, msg = run(make("cpp"), CPP_CE, "", BASE / "cpp_ce")
