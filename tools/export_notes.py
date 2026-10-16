@@ -254,10 +254,25 @@ class Preprocessor:
             anchor = ""
             if "#" in target:
                 target, _, anchor = target.partition("#")
+            target_s, anchor_s = target.strip(), anchor.strip()
+
+            # ① 空目标 + 无锚点：不是双链。笔记里有一句「三兄弟：test / [ / [[ ]] 的差异」，
+            #    那个 `[[ ]]` 是**没加反引号护住**的 bash 条件式，会被当成"目标为空的双链"。
+            #    原样留着当文本，别记进 unknown —— 否则导出一场就多一条无从下手的告警。
+            if not target_s and not anchor_s:
+                return m.group(0)
+
+            # ② 空目标 + 有锚点：**同页锚点链接** `[[#小标题]]`（Python「习题工具箱」整表在用）。
+            #    目标就是当前这篇笔记自己，label 退回用锚点名。旧版没这条分支，
+            #    于是 resolve("") 必然失败、unknown 里多一个空字符串目标。
+            if not target_s:
+                label = (alias or anchor_s).strip()
+                return f"[{label}](#/notes/{self.src['slug']}#{anchor_s})"
+
             note = self.resolve(target, self.src)
             label = (alias or target).strip()
             if note is None:
-                self.unknown.add(target.strip())
+                self.unknown.add(target_s)
                 return label
             url = "#/notes/" + note["slug"]
             if anchor:
