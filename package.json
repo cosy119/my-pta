@@ -1,7 +1,8 @@
 {
   "private": true,
   "scripts": {
-    "build:editor": "esbuild editor-src/index.js --bundle --format=esm --target=es2020 --minify --outfile=web/editor/editor.js"
+    "build:editor": "esbuild editor-src/index.js --bundle --format=esm --target=es2020 --minify --outfile=web/editor/editor.js",
+    "build:notes": "esbuild notes-src/index.js --bundle --format=esm --target=es2020 --minify --outfile=web/notes/notes.js"
   },
   "dependencies": {
     "@codemirror/autocomplete": "^6.20.0",
@@ -11,6 +12,11 @@
     "@codemirror/language": "^6.11.0",
     "@codemirror/state": "^6.5.0",
     "@codemirror/view": "^6.38.0",
-    "esbuild": "^0.25.0"
+    "esbuild": "^0.25.0",
+    "highlight.js": "^11.12.0",
+    "marked": "^18.1.1"
+  },
+  "devDependencies": {
+    "jsdom": "^30.1.3"
   }
 }

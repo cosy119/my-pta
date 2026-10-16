@@ -81,6 +81,28 @@ def connect_ctx(db_path: Path | None = None) -> Iterator[sqlite3.Connection]:
         conn.close()
 
 
+@contextmanager
+def bulk(db_path: Path | None = None) -> Iterator[sqlite3.Connection]:
+    """★ 一个连接 + 一个事务里连做一批写。
+
+    默认的 insert() 每条都新开一次连接（连接 + 3 条 PRAGMA + 提交 + 关闭）；
+    写 320 道种子题 ≈ 1050 条 INSERT 实测要 78 秒（杀软拦文件读写时更慢），
+    云端冷启动直接顶掉健康检查窗口。改走一个事务后这批写只提交一次。
+    传 conn 给 insert() / query_one() 即可加入本事务。
+    """
+    conn = connect(db_path)
+    try:
+        conn.execute("BEGIN")
+        try:
+            yield conn
+        except BaseException:
+            conn.execute("ROLLBACK")
+            raise
+        conn.execute("COMMIT")
+    finally:
+        conn.close()
+
+
 def init_db(db_path: Path | None = None) -> Path:
     """建表（幂等）+ 补列（迁移）。返回数据库路径。
 
@@ -270,7 +292,11 @@ def query(sql: str, params: Sequence[Any] = (), db_path: Path | None = None) -> 
         return [dict(r) for r in cur.fetchall()]
 
 
-def query_one(sql: str, params: Sequence[Any] = (), db_path: Path | None = None) -> dict | None:
+def query_one(sql: str, params: Sequence[Any] = (), db_path: Path | None = None,
+              conn: sqlite3.Connection | None = None) -> dict | None:
+    if conn is not None:
+        row = conn.execute(sql, params).fetchone()
+        return dict(row) if row else None
     rows = query(sql, params, db_path)
     return rows[0] if rows else None
 
@@ -284,10 +310,14 @@ def execute(sql: str, params: Sequence[Any] = (), db_path: Path | None = None) -
     return _with_retry(once)
 
 
-def insert(table: str, data: dict[str, Any], db_path: Path | None = None) -> int:
+def insert(table: str, data: dict[str, Any], db_path: Path | None = None,
+           conn: sqlite3.Connection | None = None) -> int:
     cols = ", ".join(data.keys())
     marks = ", ".join("?" for _ in data)
     sql = f"INSERT INTO {table} ({cols}) VALUES ({marks})"
+    if conn is not None:                       # 已在 bulk() 事务里，别再另开连接
+        cur = conn.execute(sql, tuple(data.values()))
+        return cur.lastrowid if cur.lastrowid else cur.rowcount
     return execute(sql, tuple(data.values()), db_path)
 
 

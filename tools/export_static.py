@@ -134,7 +134,7 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
         for f in WEB.iterdir():
             if f.is_file():
                 shutil.copy2(f, out_dir / f.name)
-        for name in ("python", "pyodide", "clang", "editor"):
+        for name in ("python", "pyodide", "clang", "editor", "notes"):
             src = WEB / name
             if src.is_dir():
                 shutil.copytree(src, out_dir / name, dirs_exist_ok=True)
@@ -142,6 +142,23 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
         shutil.copy2(ROOT / "app" / "judge" / "compare.py",
                      out_dir / "python" / "compare.py")
         print("前端已拷到", out_dir)
+
+    # 2.5) 笔记（Obsidian）
+    # ★ vault 在别人的 Obsidian 目录里，CI 上没有 → 扫不到就跳过。
+    #   注意**不要**去清空 docs/notes：那份产物是提交进仓库、由 Pages 直接发布的。
+    sys.path.insert(0, str(ROOT / "tools"))
+    try:
+        import export_notes                                            # noqa: E402
+        vault = export_notes.default_vault()
+        if vault.is_dir():
+            res = export_notes.build(vault, out_dir / "notes")
+            print("笔记 %d 篇 / %.1f 万字 → %s"
+                  % (res["index"]["count"], res["index"]["total_chars"] / 10000,
+                     out_dir / "notes"))
+        else:
+            print("跳过笔记导出（vault 不存在：%s）" % vault)
+    except Exception as e:                                             # noqa: BLE001
+        print("⚠ 笔记导出失败：%s（docs/notes 里已有的产物保持不动）" % e)
 
     # 3) 别让 Jekyll 处理（否则 _ 开头的文件会被吃掉）
     (out_dir / ".nojekyll").write_text("", encoding="utf-8")

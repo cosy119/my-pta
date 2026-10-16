@@ -246,7 +246,7 @@ async function run() {
   await page.reload({ waitUntil: 'load' });
   await waitBooted(page);
   const navCleared = await page.$eval('#navScore', el => el.textContent.trim());
-  check('清空后顶栏总分为 0', /^0\s*\/\s*2615/.test(navCleared), navCleared);
+  check('清空后顶栏总分为 0', navCleared === '0 / ' + BANK.total_score + ' 分', navCleared);
 
   await page.evaluate(() => window.openSettings());
   await page.waitForSelector('#impFile', { timeout: 10000 });
@@ -263,7 +263,7 @@ async function run() {
     : fill.total_score;
   const navBack = await page.$eval('#navScore', el => el.textContent.trim());
   check('导入后顶栏总分 = 包里所有题的分数之和（' + expectTotal + '）',
-    navBack === expectTotal + ' / 2615 分', navBack);
+    navBack === expectTotal + ' / ' + BANK.total_score + ' 分', navBack);
   check('导入的是整份备份，不止一道题',
     bundle && Object.keys(bundle.local).length >= 2, bundle ? Object.keys(bundle.local).length + ' 道' : '');
 

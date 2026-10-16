@@ -204,7 +204,7 @@ async function run() {
     dom.window.toggleAllGroups();
     await sleep(60);
     check('「展开 / 折叠」：还有开着的 → 全部收起',
-      app.querySelectorAll('.grpbox.closed').length === 4,
+      app.querySelectorAll('.grpbox.closed').length === subjectGroups('ds'),
       String(app.querySelectorAll('.grpbox.closed').length));
     dom.window.toggleAllGroups();
     await sleep(60);

@@ -480,7 +480,7 @@ C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
   **任何 `if (!p) p = somethingAsync()` 的写法都要配 catch 清缓存。**
 - Python 侧（`python-local.js`）本来就写对了：`ready` 失败即置 null，重试会起新 worker。
 - 顺手把英文报错翻成人话（`localJudgeHint` / `friendlyLoad`）：「下载中断了，再点一次就会重新下载，不用刷新页面」。
-- 回归测试 `tools/ui_e2e_local_engines.mjs`（9/9）：本地服务器**故意掐断**第一次传输（先给 1 KB 正文再 destroy，
+- 回归测试 `tools/ui_e2e_local_engines.mjs`（C/C++ 5/5；Python 两项本机环境跳过）：本地服务器**故意掐断**第一次传输（先给 1 KB 正文再 destroy，
   比 404 更接近真实故障），断言 IE + 提示 → 重试 → 引擎重新下载并真判出来。
 
 ## 自检脚本
@@ -492,18 +492,26 @@ C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
 | `selftest_cpp.py` | **9/9** | C/C++ AC·CE·WA·TLE、**同目录产物不串**、编译器路径无效给人话、别名收敛 |
 | `selftest_theory.py` | **15/15** | 115 道单选其余选项全判错、**8 道多选穷举全部子集**、判断题双向、命令宽容度、全库扫 |
 | `smoke_cloud.py` | **13/13** | **云端启动路径**：真起 `python run.py`（`PTA_CLOUD=1` + `$PORT`）、绑 0.0.0.0、三科目齐、**真编 C++ / 真跑 Python 各 AC 一次** |
-| `e2e_ui.py` | **33/33** | 端到端过 HTTP（**需先起服务**） |
+| `e2e_ui.py` | **33/33（待修）** | 端到端过 HTTP（**需先起服务**）。⚠️ 里面三处硬编码（`总分=2615`、`ds 31 题/4 组`、`linux 117 题/16 组`）被题库扩容打挂，2026-10-16 未能跑到，见文末 |
 | `ui_smoke.mjs` | **41/41** | jsdom 真渲染前端（离线 + 假后端两遍） |
 | `ui_test_local_judge.mjs` | **45/45** | 离线本地判题：**真 jsdom + 真加载 `judge_text.js`**（专门起静态服务，让外链脚本真被取到）。含「答对后再答错最高分不被冲掉」「导入低分备份不冲掉高分」两条回归 |
 | `ui_e2e_local_judge.mjs` | **25/25** | **真 Chrome**（puppeteer-core + 系统 Chrome）跑 `docs/` **发布产物**：真点按钮判题、**真下载**进度 JSON、**真上传**导入回来 |
-| `ui_e2e_local_engines.mjs` | **9/9** | ★★ **浏览器判题引擎的「下载被掐 → 重试恢复」回归**：本地伺服 `docs/`，第一次故意掐断 `clang.wasm.gz` / `pyodide.asm.wasm` 传输（模拟线上 2026-10-15 的 `network error`），断言第一次判 IE + 有人话指引、**重试后引擎重新下载并真判出来**（Python A+B 浏览器内满分；C++ 真编译运行判 WA）。这也是浏览器 C/C++ 判题的第一条端到端测试 |
+| `ui_e2e_local_engines.mjs` | **5 通过 / 2 跳过**（本机环境拦 `.zip`，详见文末） | ★★ **浏览器判题引擎的「下载被掐 → 重试恢复」回归**：本地伺服 `docs/`，第一次故意掐断 `clang.wasm.gz` / `pyodide.asm.wasm` 传输（模拟线上 2026-10-15 的 `network error`），断言第一次判 IE + 有人话指引、**重试后引擎重新下载并真判出来**（Python A+B 浏览器内满分；C++ 真编译运行判 WA）。这也是浏览器 C/C++ 判题的第一条端到端测试 |
 | `ui_e2e_editor.mjs` | **63/63** | ★ **真 Chrome 测智能编辑器**（唯一真敲键盘的测试）：三种语言的缩进 / 配对 / 补全 / Tab / Shift+Tab / `Esc`+`Tab` / 切题草稿 / C↔C++ 语言切换 / 加载失败回退 |
+| `ui_e2e_notes.mjs` | **29/29** | ★ **真 Chrome 测笔记区**：目录树导航、双链跳转（含**重名消歧**）、带锚点的链接定位、折叠答案（`<details>`）展开、全文搜索（首次拉 3 MB 索引）、上下节导航、**题目 ↔ 笔记双向互跳**、零外部主机。跑之前先 `export_notes.py` 再 `export_static.py` |
 | `httptest_users.py` | **23/23** | 多用户隔离、越权 404、CORS |
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
 | `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
-| `verify_bank.py` | **308 题 / 715 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
+| `verify_bank.py` | **320 题 / 727 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
 | `show_text_judge.mjs` | **全过** | 本地判题器的「行为说明书」：多种等价写法都认、变异错答案 71/72 被抓、309 个标准答案全 AC、351 个胡写全 WA |
 | `verify_theory_facts.py` | **45 过 / 0 不符 / 8 无法核验** | **理论题答案的实证核验**：179 道理论题里凡本机（Git Bash GNU coreutils 8.32 / GNU tar 1.35）能跑的，先跑出事实再对答案键；跑不了的如实列「无法核验」。**抓到过真 bug**：91/100 题的 explanation 曾写「`head -n +N` 报错」「`tail -n -N` 非法」——GNU 上全都不成立（`+N` 就是前 N 行；`-N` 归 tail 是最后 N 行），已改 |
+
+
+> ★ **jsdom 的两个测试**（`ui_smoke.mjs` 41/41、`ui_test_local_judge.mjs` 45/45）需要 jsdom：
+> 已作为 devDependency 装进 `pta/node_modules`。跑的时候指一下路径 ——
+> `NODE_MODULES_DIR="E:/学习/001/pta" node tools/ui_smoke.mjs`（Windows 下反斜杠亦可）。
+> **必须给绝对路径**：写 `.` 会让 ESM loader 直接抛 `ERR_INVALID_ARG_VALUE`，
+> 而没装 jsdom 时脚本只吐一句「找不到 jsdom」就退出（容易被误当成「测试没跑」而漏掉）。
 
 跑 `e2e_ui` 的正确姿势（**用测试库，绝不碰真实库**；⚠️ 本机要带 `NO_PROXY`，见下节）：
 
@@ -763,3 +771,106 @@ editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_
 - ★ smoke_cloud 被理论题坑过：它拿 subject=ds 的**第一道题**喂 g++ 试编译，理论题排前就会 CE——已改成只挑 `line=="cpp"` 的题。
 - ★ 本机跑 smoke_cloud 用 `D:/Pythontools/Python/python.exe`（fastapi 装在系统 Python，venv 里没有）。
 - 未推送：工作树混着另一窗口的未提交改动，push 由两窗口协调后统一做。
+
+## 2026-10-16 · 笔记区：Obsidian 480 篇讲义搬上静态站
+
+**目标**：把 `D:\work\Obsidian` 三条学习线的全部笔记（含习题、实验题库、代码解释）部署到
+Pages，并且和题库双向互跳。
+
+**产出**：`tools/export_notes.py`（vault → 静态数据）+ `notes-src/index.js`（渲染器，
+esbuild 打包 **124.8 KB**）+ 前端 `#/notes` 路由 + `tools/ui_e2e_notes.mjs`（**29/29** 真浏览器）。
+480 篇 / 248.6 万字，`docs/notes` 共 **8.4 MB**（`search.json` 3.2 MB 是最大头，懒加载）。
+
+### ★ 三个坑（都真踩了）
+
+1. **代码块与行内代码必须先护住，再替换双链**。笔记里满是 bash：`[[ -f $f ]]`、`[[ 10 > 9 ]]`、
+   `[[ "$a" < "$b" ]]` —— 跟 Obsidian 的 `[[双链]]` **字面完全一样**。第一版只护了围栏、
+   没护行内代码，导出后冒出 11 个「未解析的双链目标」，全是 shell 条件表达式。
+   修法：先按反引号把行切成段，只有非代码段才做替换。
+   （和 `moc_check.py` 当年加「行内码方括号盾牌」是**同一个坑的第二次显形**。）
+
+2. **callout 必须先摘 `>` 前缀，再递归处理内容**。2210 个 callout 里有 **574 个内部嵌着代码块**，
+   而源文件里那些代码块**每行都带 `> `** —— 不先摘前缀，围栏检测根本认不出来。
+   正确顺序是「识别 callout → 逐行摘 `>` → 递归回同一套逐行状态机」；引用块里的围栏也靠这个递归解决。
+
+3. **`this.lexer` 在 marked 18 的 renderer 里不存在**。callout 扩展原本在 renderer 里
+   `this.lexer.inlineTokens(标题)` → `Cannot read properties of undefined`，
+   marked 还会附一句 "Please report this to github.com/markedjs/marked"，
+   **把人往它自己的 bug 上引**。标题的 inline token 要**在 tokenizer 阶段**算好塞进 token，
+   renderer 里用 `this.parser.parseInline` 取。
+
+### 设计取舍
+
+- **渲染器自己打包（marked + highlight.js），不复用题面那个 `mdRender`**：那个是为短题面写的
+  简化版，而笔记是 248 万字真实 markdown（嵌套 callout / 表格 / 任务列表 / 1500+ 带语言代码块）。
+  124.8 KB 按需加载，值这个钱。highlight.js 只注册笔记里真出现的十几门语言
+  （4167 个代码块**没标语言**，直接跳过不高亮）。
+- **wikilink 重名按线消歧**：`NN-01 一页速览` 在 Python 和 DS **同名**（8 组），
+  解析顺序是「同学习线 → 同讲 → 同目录」逐级收敛；DS 的索引链接是**路径式**
+  （`[[02讲_线性表/00 本讲分节索引|…]]`），两条路径都得认。
+- **锚点里带方括号**：`#4.2 切片：[start:stop:step]` 这种锚点，正则 `[^\[\]]+` 会整个漏掉
+  （页面上原样显示 `[[…]]`）。改成允许一层内嵌 `[...]`，源文件里多打的第三个 `]`（`]]]`）一并收掉。
+- **折叠 callout 保持原样**：1237 处 `> [!x]-`（笔记里的「答案收起」）转成 `<details>` 默认关闭，
+  但**正文照旧进搜索索引** —— 藏起来的内容也该能被搜到。
+- **和编辑器同款的两个缓存坑**：动态 import 失败要「清缓存 + 换 URL（`?retry=N`）」，
+  因为浏览器对加载失败的 import 也按 URL 记结果，只清变量没用。渲染器 124.8 KB 同理。
+- **题目 ↔ 笔记靠讲号对，不靠讲名**：题目写「第 07 讲 · 函数」，笔记目录是「07讲_函数上」，
+  讲名两边写法不一致。Linux 线另有两类非讲次来源：「基础命令 · X」→ `linux-cmd`、
+  「实验 N · X」→ `linux-bank`。
+- 导出分三块：`index.json`（目录树，63 KB）、`p/<slug>.json`（480 篇单篇，按需取）、
+  `search.json`（全文索引）。`export_static.py` 已带上这一步，**vault 不存在时自动跳过**，
+  CI 上没有 Obsidian 也不会炸。
+
+### ★ 顺手修掉的过时断言（不是本次引入）
+
+复跑时 `ui_smoke` / `ui_e2e_local_judge` 各有失败，查下来是**题库扩容（204 → 320 题）
+之后没跟上的硬编码**：
+
+- `ui_smoke.mjs`：「展开 / 折叠」断言 `=== 4`，而 DS 分组已变 8 → 改用 `subjectGroups('ds')`。
+- `ui_e2e_local_judge.mjs`：两处写死 `2615`（旧总分），实际已是 **3945** → 改用 `BANK.total_score`。
+- ★ `tools/e2e_ui.py` 里**同样的病还在**（`总分 = 2615`、`ds 31 题 / 4 组`、`linux 117 题 / 16 组`）——
+  它要起服务，这次没跑到，下次谁跑谁修。
+
+这正是 memory 里那条约定说的：**「断言写成与题库定义对齐，而非硬编码数字」**。
+
+### 收尾时顺手挖出的两个真问题（2026-10-16 补）
+
+**1. `ui_e2e_local_engines.mjs` 的 Python 侧一直挂，根因不在产品，在本机浏览器**
+
+表现为重试后 `浏览器判题失败 / Program terminated with exit(1)`（第一次还见过 `[object Object]`）。逐层剥：
+
+- 页面里直接 `fetch('pyodide/python_stdlib.zip')` → **HTTP 204 / 0 字节**；
+  而**服务端日志明明写着 `status=200 bytes=2545637`**。
+- 同一份内容改叫 `zzprobe.bin`（`application/octet-stream`）→ 200 / 2545637 字节全量到达。
+  只换后缀就变，说明拦的是**URL 后缀 `.zip`**，与 Content-Type 无关。
+- 排除了两个常见嫌疑：`--no-proxy-server` **无效**（不是代理）；
+  `HKLM/HKCU\SOFTWARE\Policies\Google\Chrome` **都不存在**（不是企业策略）。
+- 结论：**本机环境拦 `.zip`**（多半是安全软件/浏览器策略），不是产品缺陷。
+
+而 Pyodide 的标准库恰好就是 `python_stdlib.zip`，所以 Python 起不来。
+**★ Pyodide 会把这一步的失败吞掉** —— `pyodide.mjs` 的 `installStdlib` 里
+`catch (r) { console.error(...) }` 之后照常继续启动，Python 于是崩在一句
+没头没脑的 `Failed to import encodings module`。两条改进：
+
+- `python-worker.js` 先自己拉一遍 `python_stdlib.zip` **验字节数**（`assertStdlib`），
+  再交给 `loadPyodide`；并把 bootstrap 阶段的 `encodings` / `Program terminated` 报错翻译成人话
+  （含「再点一次」的出路）。顺带加了 `describe()` —— 之前 Pyodide/浏览器抛**普通对象**时
+  `String(e)` 会变成毫无信息量的 `[object Object]`。
+- 副产物：Python 判题失败现在**秒失败 + 人话**，不再先干等 90 秒超时。
+- 测试加了 **[0] 环境预检**：fetch 一遍 stdlib，字节数对不上就**明说环境阻断并跳过 Python 两项**，
+  C/C++ 两项照跑 → 5 通过 / 2 跳过 / 0 失败。**不把环境问题伪装成产品失败，也不静默跳过。**
+- 一次性探针留在 `data/probe_py_retry.mjs`（`data/` 整个被 gitignore），
+  下次再遇到「引擎加载失败但看不出为什么」可以直接改它复现。
+
+**2. 种子题写了 78 秒，`smoke_cloud` 因此超时挂掉**
+
+`smoke_cloud` 报 `[FAIL] 90 秒内 /api/health 变 healthy`，日志里 `20:04:42 数据库就绪` →
+`20:06:00 写入 320 道种子题` —— **78 秒**。
+
+- 根因：`db.insert` 每条都是 `with connect_ctx(...)`，即**每条 INSERT 新开一次连接**
+  （连接 + 3 条 PRAGMA + 提交 + 关闭）。320 题 ≈ **1050 条 INSERT** → 78 秒
+  （杀软拦文件读写时更慢）。`isolation_level=None`（自动提交）让每条都真的落盘。
+- 修法：`app/db.py` 加 `bulk()` —— **一个连接 + 一个事务**；`insert()` / `query_one()`
+  多一个可选 `conn` 参数（带了就用现成连接，不再另开）；`seed.ensure()` 整批走 `bulk()`。
+- 实测：**78 秒 → 0.1 秒**；题数 / 测试点数一字不差（320 / 727）；幂等仍成立（第二次 0 道）。
+- ★ 对部署是实打实的收益：Render 免费档冷启动本来就可能顶掉健康检查窗口。

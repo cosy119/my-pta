@@ -93,6 +93,8 @@ run.bat
 | **打开题目自动回填上次提交的代码** | ✅ |
 | **智能编辑器（自托管 CodeMirror：缩进 / 括号配对 / 本地关键词与片段提示）** | ✅ |
 | **Python、数据结构、Linux 三科目题库（题数以页面统计为准）** | ✅ |
+| **笔记区：Obsidian 讲义搬上网页（480 篇 / 248 万字 · 目录树 · 全文搜索 · 双链跳转）** | ✅ |
+| **题目 ↔ 笔记双向互跳（题目页「看本讲笔记」／笔记页「本讲配了 N 道题」）** | ✅ |
 | **数据备份 / 导出 JSON / 恢复** | ✅ |
 | AI 按讲义出题 | ⏳ P3 |
 | Linux Shell 判题（SSH 到 Fedora） | ⏳ P4 |
@@ -153,6 +155,72 @@ D:\Pythontools\Python\python.exe -X utf8 tools\export_static.py --with-cases   &
   （C 的 `main` 展开成 `int main(void)`，C++ 的展开成 `int main()`）。跨语言（Python ↔ C++）高亮才不同。
 - **编辑器加载失败的 promise 不能缓存** —— 早期写法把「第一次失败」永久缓存成「这辈子都用不上编辑器」，
   网络恢复、换题都不会再试。现在失败会把缓存清掉，下一题重新加载。
+
+## 笔记区（Obsidian 讲义搬上网页）
+
+顶栏第二个入口「笔记」是**三本教材的完整讲义**：480 篇、约 248 万字。
+构建期从 Obsidian vault 转成静态数据，跟题库一样「打开网页就能看」——
+不登录、不连后端、也不需要装 Obsidian。
+
+| 里面有什么 | 说明 |
+|---|---|
+| 目录树 | 三条学习线（Linux 16 讲 / Python 14 讲 / 数据结构 8 讲）→ 讲 → 分节，左侧常驻 |
+| 全文搜索 | 480 篇正文建索引（构建期生成，约 3 MB），标题命中优先，命中词高亮 |
+| 双向链接 | Obsidian 的 `[[…]]` 全转成站内跳转；**重名的按「同一条学习线」消歧** |
+| 折叠答案 | 笔记里 1200+ 处「答案收起」原样保留（`<details>`），点标题展开 |
+| 代码高亮 | 1500+ 个带语言的代码块真高亮（highlight.js，只打包用到的语法） |
+| 题目互跳 | 题目页有「📖 看本讲笔记」，笔记页反过来显示「本讲配了 N 道题」 |
+
+### 它怎么来的
+
+笔记源在 Obsidian vault（默认 `D:\work\Obsidian`，用 `--vault` 或环境变量
+`PTA_NOTES_VAULT` 可以指到别处），由 `tools/export_notes.py` 转成 `docs/notes/`：
+
+```bat
+set PYTHONUTF8=1
+D:\Pythontools\Python\python.exe tools\export_notes.py    &rem 480 篇 → docs/notes/
+```
+
+产出三样：`index.json`（目录树）、`p/<slug>.json`（单篇正文）、`search.json`（全文索引）。
+`export_static.py` 已经带上这一步，所以平时**跑了 `export_static.py` 就不用单独跑它**；
+vault 不在的机器上（比如 CI）会自动跳过，不会因为那儿没有 Obsidian 就报错。
+
+### Obsidian 语法是怎么转的
+
+| Obsidian 写法 | 转成 | 说明 |
+|---|---|---|
+| `[[目标\|别名]]` | `[别名](#/notes/<slug>)` | 解析不出来就退化成纯文本，页面上不留 `[[ ]]` |
+| `> [!info] 标题` | `:::callout note open 标题` | 2210 个 callout，其中 574 个内部还嵌着代码块 |
+| `> [!success]- 答案` | `:::callout ok fold 答案` | `-` = 默认折叠，就是笔记里的「答案收起」 |
+| `==高亮==` / `%%注释%%` | `<mark>` / 删掉 | — |
+| `← 返回本讲 · ← 上一节 · 下一节 →` | 整行删掉 | 前端按目录结构生成统一导航条，留着就重复了 |
+
+★ 三个必须知道的坑（都真踩过）：
+
+- **代码块里的一切原样保留**。笔记里全是 bash，`[[ -f $f ]]`、`[[ 10 > 9 ]]`
+  跟 Obsidian 双链**长得一模一样**，误替换就把命令改坏了；行内代码
+  ``` `[[ -f $f ]]` ``` 同理，都得先护住（第一版就是这么毁了 11 处）。
+- **callout 必须先摘掉 `>` 前缀再递归处理**。callout 里的代码块在源文件里每行都带 `> `，
+  不先摘前缀，围栏检测根本认不出来 —— 顺序写反，那 574 个内嵌代码块会全乱。
+- **重名消歧**：`NN-01 一页速览` 在 Python 和数据结构里**同名**（8 组），
+  双链解析按「同一条学习线 → 同一讲 → 同目录」逐级收敛，否则索引页会跳到隔壁教材去。
+
+### 改了笔记之后
+
+改的是 Obsidian 里的 `.md`（源在 vault，不在这个仓库），改完重跑：
+
+```bat
+D:\Pythontools\Python\python.exe tools\export_notes.py
+D:\Pythontools\Python\python.exe tools\export_static.py --with-cases
+node tools\ui_e2e_notes.mjs          &rem 29 项真浏览器验收
+```
+
+渲染器（`notes-src/index.js`，marked + highlight.js）只在改渲染逻辑时才要重打包：
+`npm run build:notes` → `web/notes/notes.js` → 导出时拷进 `docs/notes/`。
+
+★ 渲染器加载失败的处理跟编辑器同款：**不缓存失败的 promise**，而且换个 URL
+（`?retry=N`）再试一次 —— 浏览器对加载失败的动态 import 也按 URL 记住结果，
+光清变量、不换地址是没用的。
 
 ## 题库与题型
 
@@ -266,12 +334,16 @@ pta/
 │     └─ worker.py         判题队列（单线程，按测试点分值计分，按用户记账）
 ├─ web/index.html          前端（单文件，无构建工具；三层 hash 路由）
 ├─ web/editor/editor.js    ★ 智能编辑器产物（CodeMirror 打包结果，已进仓库）
+├─ web/notes/notes.js      ★ 笔记渲染器产物（marked + highlight.js 打包结果，已进仓库）
 ├─ editor-src/index.js     ★ 智能编辑器源码（改完 `npm run build:editor`）
-├─ package.json            ★ 编辑器构建脚本与依赖（esbuild + @codemirror/*）
+├─ notes-src/index.js      ★ 笔记渲染器源码（改完 `npm run build:notes`）
+├─ package.json            ★ 前端构建脚本与依赖（esbuild + CodeMirror / marked / highlight.js）
 ├─ docs/                   ★ GitHub Pages 发布目录（由 export_static.py 生成）
 │  ├─ index.html           前端副本
 │  ├─ problems.json        题库快照（含 subject / choices，**不含参考答案**）
 │  ├─ editor/editor.js     ★ 编辑器副本
+│  ├─ notes/               ★ 笔记区：index.json（目录树）+ p/<slug>.json（480 篇）
+│  │                            + search.json（全文索引）+ notes.js（渲染器）
 │  └─ .nojekyll            别让 Jekyll 处理
 ├─ tools/
 │  ├─ selfcheck.py         判题内核 + 评分 自检（62 项）
@@ -287,6 +359,8 @@ pta/
 │  ├─ gen_linux_bank.py    ★ Linux 题库生成器（含 _sanity 把关）
 │  ├─ verify_bank.py       题库校验（三线双实现撞独立算出的期望输出）
 │  ├─ ui_e2e_editor.mjs    ★ 智能编辑器真浏览器测试（63 项：缩进/配对/补全/Tab/切题/回退/语言切换）
+│  ├─ ui_e2e_notes.mjs     ★ 笔记区真浏览器测试（29 项：目录树/双链重名消歧/锚点/搜索/题目互跳）
+│  ├─ export_notes.py      ★ 把 Obsidian vault 导成笔记区数据（480 篇，Obsidian 语法 → 前端 markdown）
 │  ├─ _console.py          ★ 把控制台切成 UTF-8（被上面这些脚本 import）
 │  ├─ _testdb.py           ★ 把自检脚本的库钉到测试库（导入即生效，别写进真实库）
 │  ├─ export_static.py     ★ 导出静态题库 + 生成 docs/ 站点
@@ -328,11 +402,13 @@ CI（`.github/workflows/ci.yml`）在 Ubuntu 和 Windows 上各跑一遍 ——
 
 ```bat
 cd /d E:\学习\001\pta
-node tools\ui_smoke.mjs              &rem jsdom 冒烟：界面渲染、路由、提交流程
-node tools\ui_test_local_judge.mjs   &rem 本地判题（含草稿导入导出）
+set NODE_MODULES_DIR=E:\学习\001\pta  &rem ★ jsdom 测试要它；必须绝对路径（写 . 会 ERR_INVALID_ARG_VALUE）
+node tools\ui_smoke.mjs              &rem jsdom 冒烟：界面渲染、路由、提交流程（41 项）
+node tools\ui_test_local_judge.mjs   &rem 本地判题（含草稿导入导出）（45 项）
 node tools\ui_e2e_local_judge.mjs    &rem 真 Chrome 跑发布产物的判题全流程
 node tools\ui_e2e_editor.mjs         &rem ★ 真 Chrome 测智能编辑器（63 项，约 2 分钟）
-node tools\ui_e2e_local_engines.mjs  &rem ★ 真 Chrome 测浏览器判题引擎的「下载被掐→重试恢复」（9 项）
+node tools\ui_e2e_notes.mjs          &rem ★ 真 Chrome 测笔记区（29 项，含 3 MB 搜索索引首次加载）
+node tools\ui_e2e_local_engines.mjs  &rem ★ 真 Chrome 测浏览器判题引擎的「下载被掐→重试恢复」（C/C++ 5 项；Python 2 项本机拦 .zip 时跳过）
 node tools\verify_text_judge.mjs     &rem 前端判题器口径与后端对拍
 ```
 

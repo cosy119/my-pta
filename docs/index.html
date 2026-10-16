@@ -155,6 +155,9 @@ input,select,textarea{font-family:inherit; color:var(--text)}
 .pill.p-ok{background:var(--okWeak); color:var(--ok); border-color:rgba(18,161,80,.24)}
 .pill.p-pri{background:var(--primaryWeak); color:var(--primary); border-color:rgba(47,107,237,.24)}
 .pill.p-warn{background:var(--warnWeak); color:var(--warn); border-color:rgba(224,140,0,.26)}
+/* 题目 → 笔记的入口（笔记与题库互跳的那一半） */
+.pill.p-note{background:var(--primaryWeak); color:var(--primary); border-color:rgba(47,107,237,.3); font-weight:600; cursor:pointer}
+a.pill.p-note:hover{border-color:var(--primary); text-decoration:none; filter:brightness(.97)}
 .setStats{display:flex; gap:26px; flex-wrap:wrap; margin-top:14px; font-size:12.5px; color:var(--muted)}
 .setStats b{display:block; font-size:18px; color:var(--text); font-weight:700; font-variant-numeric:tabular-nums}
 .setBarRow{display:flex; align-items:center; gap:12px; margin-top:13px}
@@ -491,6 +494,202 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
 .toast.ok{background:var(--ok); color:#fff}
 @keyframes pop{from{opacity:0; transform:translateY(9px)}to{opacity:1; transform:none}}
 .loading{text-align:center; padding:60px 20px; color:var(--muted); font-size:13.5px}
+
+/* ---------- 笔记区（#/notes） ----------
+   配色全部走 :root 里的变量，所以深色模式自动跟着变。
+   代码高亮是 highlight.js 的 token 类名，颜色在本块末尾统一给。 */
+#app.notesView{max-width:1520px; margin:0 auto; padding:20px 22px 70px}
+.notesView{ --codeBg:var(--panel3); --codeFg:var(--text);
+  --hl-key:#a626a4; --hl-str:#50a14f; --hl-com:#a0a1a7; --hl-num:#986801;
+  --hl-fn:#4078f2; --hl-bi:#c18401; --hl-var:#e45649; --hl-attr:#986801; }
+
+/* 首页 */
+.notesHero{
+  display:flex; gap:24px; align-items:center; flex-wrap:wrap; padding:22px 24px; margin-bottom:22px;
+  border-radius:16px; color:#fff; box-shadow:var(--shadow2);
+  background:linear-gradient(120deg,#2f6bed 0%,#4a54e0 55%,#7b5cf0 100%);
+}
+.notesHeroL{flex:1 1 300px; min-width:240px}
+.notesHeroT{font-size:20px; font-weight:700; margin-bottom:5px}
+.notesHeroS{font-size:13px; color:rgba(255,255,255,.85); line-height:1.7}
+.notesHeroR{flex:0 0 420px; min-width:260px}
+.notesLines{display:flex; flex-direction:column; gap:16px}
+.noteLineCard{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:16px 18px 15px; box-shadow:var(--shadow);
+}
+.noteLineHead{display:flex; align-items:baseline; gap:10px; margin-bottom:12px}
+.noteLineName{font-size:15px; font-weight:700}
+.noteLineHead .cnt{font-size:12px; color:var(--muted)}
+.noteLecGrid{display:grid; grid-template-columns:repeat(auto-fill,minmax(178px,1fr)); gap:8px}
+.noteLec{
+  display:flex; align-items:center; gap:8px; padding:9px 11px; border-radius:var(--radius2);
+  background:var(--panel2); border:1px solid var(--border2); color:inherit; font-size:13px;
+}
+.noteLec:hover{border-color:var(--primary); background:var(--primaryWeak); text-decoration:none}
+.noteLec b{color:var(--primary); font-variant-numeric:tabular-nums; font-size:13.5px}
+.noteLecT{flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.noteLecC{font-size:11.5px; color:var(--muted); white-space:nowrap}
+.noteExtras{display:flex; flex-wrap:wrap; gap:8px; margin-top:11px; padding-top:11px; border-top:1px dashed var(--border)}
+.noteExtras a{
+  font-size:12.5px; padding:5px 11px; border-radius:20px; background:var(--panel3);
+  border:1px solid var(--border2); color:var(--text2);
+}
+.noteExtras a:hover{border-color:var(--primary); color:var(--primary); text-decoration:none}
+
+/* 搜索 */
+.noteSearch{position:relative}
+.noteSearch input{
+  width:100%; padding:11px 14px; border-radius:10px; border:1px solid var(--border);
+  background:var(--panel); font-size:13.5px; outline:none;
+}
+.notesHeroR .noteSearch input{border-color:transparent; box-shadow:0 2px 10px rgba(0,0,0,.12)}
+.noteSearch input:focus{border-color:var(--primary); box-shadow:0 0 0 3px var(--primaryWeak)}
+.noteSearchOut{
+  display:none; position:absolute; z-index:40; top:calc(100% + 6px); left:0; right:0;
+  max-height:60vh; overflow:auto; background:var(--panel); border:1px solid var(--border);
+  border-radius:var(--radius); box-shadow:var(--shadow2); padding:6px;
+}
+.nsHint,.nsCnt{padding:8px 10px; font-size:12.5px; color:var(--muted)}
+.nsItem{display:block; padding:9px 11px; border-radius:var(--radius2); color:inherit}
+.nsItem:hover{background:var(--panel2); text-decoration:none}
+.nsTitle{font-weight:600; font-size:13.5px; margin-bottom:2px}
+.nsCrumb{font-size:11.5px; color:var(--muted); margin-bottom:3px}
+.nsSnip{font-size:12.5px; color:var(--text2); line-height:1.6}
+.nsSnip mark,.nsTitle mark{background:var(--warnWeak); color:inherit; padding:0 2px; border-radius:3px}
+
+/* 单篇布局 */
+.noteLayout{display:grid; grid-template-columns:250px minmax(0,1fr); gap:22px; align-items:start}
+.noteSide{position:sticky; top:72px; max-height:calc(100vh - 92px); overflow:auto;
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius); padding:12px}
+.noteTreeHead{display:flex; align-items:baseline; justify-content:space-between; gap:8px;
+  padding:2px 4px 9px; margin-bottom:8px; border-bottom:1px solid var(--border2); font-size:12.5px}
+.noteTreeHead .back{color:var(--text2)}
+.noteTreeHead .cnt{color:var(--muted)}
+.treeLec{margin-bottom:2px}
+.treeLec>summary{
+  cursor:pointer; list-style:none; padding:6px 8px; border-radius:var(--radius2);
+  font-size:13px; display:flex; gap:7px; align-items:baseline;
+}
+.treeLec>summary::-webkit-details-marker{display:none}
+.treeLec>summary:hover{background:var(--panel3)}
+.treeLec>summary b{color:var(--primary); font-variant-numeric:tabular-nums; flex:0 0 auto}
+.treeLec[open]>summary{background:var(--panel3); font-weight:600}
+.treePages{display:flex; flex-direction:column; padding:2px 0 6px 10px; border-left:2px solid var(--border2); margin-left:9px}
+.treePages a{
+  padding:5px 8px; border-radius:6px; font-size:12.5px; color:var(--text2); line-height:1.5;
+}
+.treePages a:hover{background:var(--panel2); color:var(--text); text-decoration:none}
+.treePages a.on{background:var(--primaryWeak); color:var(--primary); font-weight:600}
+.treeExtra{display:flex; flex-direction:column; gap:2px; margin-top:9px; padding-top:9px; border-top:1px dashed var(--border)}
+.treeExtra a{padding:6px 8px; border-radius:6px; font-size:12.5px; color:var(--text2)}
+.treeExtra a.on{background:var(--primaryWeak); color:var(--primary); font-weight:600}
+
+.noteMain{min-width:0}
+.noteTitle{font-size:22px; font-weight:700; margin:2px 0 12px; line-height:1.4}
+.noteMeta{display:flex; flex-wrap:wrap; gap:7px; margin-bottom:14px}
+.fmTag{font-size:11.5px; color:var(--text2); background:var(--panel3); border:1px solid var(--border2);
+  padding:3px 9px; border-radius:20px}
+.notePbar{
+  font-size:13px; padding:10px 14px; margin-bottom:16px; border-radius:var(--radius2);
+  background:var(--primaryWeak); border:1px solid rgba(47,107,237,.2); color:var(--text2);
+}
+.notePbar b{color:var(--primary)}
+.notePager{display:flex; justify-content:space-between; gap:14px; margin-top:34px; padding-top:18px;
+  border-top:1px solid var(--border); font-size:13.5px}
+.notePager a{max-width:48%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.anchorFlash{animation:anchorFlash 1.6s ease}
+@keyframes anchorFlash{0%,55%{background:var(--warnWeak); box-shadow:0 0 0 6px var(--warnWeak)}100%{background:transparent; box-shadow:none}}
+
+/* 正文排版 */
+.noteBody{font-size:14.5px; line-height:1.85; color:var(--text); word-wrap:break-word}
+.noteBody h1,.noteBody h2,.noteBody h3,.noteBody h4,.noteBody h5,.noteBody h6{
+  line-height:1.4; margin:1.6em 0 .6em; scroll-margin-top:76px; font-weight:700;
+}
+.noteBody h1{font-size:21px}
+.noteBody h2{font-size:19.5px; padding-bottom:7px; border-bottom:1px solid var(--border)}
+.noteBody h3{font-size:16.5px}
+.noteBody h4{font-size:15px; color:var(--text2)}
+.noteBody h5,.noteBody h6{font-size:14px; color:var(--text2)}
+.noteBody p{margin:.75em 0}
+.noteBody ul,.noteBody ol{margin:.7em 0; padding-left:1.6em}
+.noteBody li{margin:.28em 0}
+.noteBody li>ul,.noteBody li>ol{margin:.25em 0}
+.noteBody blockquote{
+  margin:.9em 0; padding:6px 14px; border-left:3px solid var(--border);
+  background:var(--panel2); color:var(--text2); border-radius:0 var(--radius2) var(--radius2) 0;
+}
+.noteBody hr{border:0; border-top:1px solid var(--border); margin:1.7em 0}
+.noteBody a{border-bottom:1px solid rgba(47,107,237,.35)}
+.noteBody a:hover{text-decoration:none; border-bottom-color:var(--primary)}
+.noteBody mark{background:var(--warnWeak); color:inherit; padding:0 3px; border-radius:3px}
+.noteBody img{max-width:100%; border-radius:var(--radius2); border:1px solid var(--border)}
+.noteBody pre.code-block{
+  background:var(--codeBg); border:1px solid var(--border); border-radius:var(--radius2);
+  padding:12px 14px; overflow:auto; margin:1em 0; font-size:13px; line-height:1.65;
+}
+.noteBody pre.code-block code{font-family:var(--mono); background:none; padding:0; border:0; color:var(--codeFg)}
+.noteBody code{font-family:var(--mono); font-size:12.8px; background:var(--panel3);
+  padding:1.5px 5px; border-radius:5px; border:1px solid var(--border2)}
+.noteBody table{border-collapse:collapse; margin:1em 0; font-size:13px; display:block; overflow-x:auto; max-width:100%}
+.noteBody th,.noteBody td{border:1px solid var(--border); padding:7px 11px; text-align:left; vertical-align:top}
+.noteBody th{background:var(--panel3); font-weight:600}
+.noteBody tbody tr:nth-child(even){background:var(--panel2)}
+.noteBody input[type=checkbox]{margin-right:5px}
+
+/* callout（笔记里 2210 个，折叠的那 1200 个是「答案收起」） */
+.noteBody .callout{
+  margin:1.05em 0; border-radius:var(--radius2); border:1px solid var(--border);
+  border-left-width:3px; background:var(--panel2); overflow:hidden;
+}
+.noteBody .callout-title{
+  font-weight:600; font-size:13.5px; padding:9px 14px; display:flex; align-items:center; gap:7px;
+}
+.noteBody .callout-body{padding:2px 14px 10px; font-size:14px}
+.noteBody .callout-body> :first-child{margin-top:.4em}
+.noteBody .callout-body> :last-child{margin-bottom:.2em}
+.noteBody details.callout>summary{cursor:pointer; list-style:none; user-select:none}
+.noteBody details.callout>summary::-webkit-details-marker{display:none}
+.noteBody details.callout>summary::before{content:'▸'; font-size:11px; opacity:.75}
+.noteBody details.callout[open]>summary::before{content:'▾'}
+.noteBody details.callout>summary:hover{filter:brightness(.98)}
+.callout-ok{border-left-color:var(--ok); background:var(--okWeak)}
+.callout-ok>.callout-title{color:var(--ok)}
+.callout-tip{border-left-color:var(--info); background:var(--infoWeak)}
+.callout-tip>.callout-title{color:var(--info)}
+.callout-warn{border-left-color:var(--warn); background:var(--warnWeak)}
+.callout-warn>.callout-title{color:var(--warn)}
+.callout-danger{border-left-color:var(--err); background:var(--errWeak)}
+.callout-danger>.callout-title{color:var(--err)}
+.callout-imp{border-left-color:var(--purple); background:var(--panel3)}
+.callout-imp>.callout-title{color:var(--purple)}
+.callout-note{border-left-color:var(--primary); background:var(--primaryWeak)}
+.callout-note>.callout-title{color:var(--primary)}
+.callout-ask{border-left-color:var(--purple); background:var(--panel2)}
+.callout-ask>.callout-title{color:var(--purple)}
+.noteBody .callout .callout-body code,.noteBody .callout .callout-body pre{background:var(--panel)}
+
+/* 代码高亮 token */
+.hljs-comment,.hljs-quote{color:var(--hl-com); font-style:italic}
+.hljs-keyword,.hljs-selector-tag,.hljs-literal,.hljs-type{color:var(--hl-key)}
+.hljs-string,.hljs-regexp,.hljs-addition{color:var(--hl-str)}
+.hljs-number,.hljs-symbol,.hljs-bullet{color:var(--hl-num)}
+.hljs-title,.hljs-section,.hljs-name,.hljs-selector-id{color:var(--hl-fn)}
+.hljs-built_in,.hljs-class .hljs-title,.hljs-attr,.hljs-attribute{color:var(--hl-bi)}
+.hljs-variable,.hljs-template-variable,.hljs-params{color:var(--hl-var)}
+.hljs-meta,.hljs-tag{color:var(--hl-com)}
+.hljs-emphasis{font-style:italic}
+.hljs-strong{font-weight:700}
+@media (prefers-color-scheme:dark){
+  .notesView{ --codeBg:#0f1620;
+    --hl-key:#c678dd; --hl-str:#98c379; --hl-com:#7f848e; --hl-num:#d19a66;
+    --hl-fn:#61afef; --hl-bi:#e5c07b; --hl-var:#e06c75; --hl-attr:#d19a66; }
+}
+@media (max-width:1000px){
+  .noteLayout{grid-template-columns:1fr}
+  .noteSide{position:static; max-height:none; order:2}
+  .notesHeroR{flex:1 1 100%}
+}
 </style>
 </head>
 <body>
@@ -501,6 +700,7 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
   </div>
   <nav class="navlinks">
     <a href="#/" id="navHome">题集广场</a>
+    <a href="#/notes" id="navNotes">笔记</a>
     <a href="#/subs" id="navSubs">我的提交</a>
   </nav>
   <div class="navsp"></div>
@@ -936,18 +1136,36 @@ function parseHash(){
   if (parts[0] === 'set' && parts[1]) return { view:'set', subject: parts[1] };
   if (parts[0] === 'p'   && parts[1]) return { view:'p', id: parseInt(parts[1],10) };
   if (parts[0] === 'subs') return { view:'subs' };
+  if (parts[0] === 'notes'){
+    if (!parts[1]) return { view:'notes' };
+    /* `#/notes/py-05-05#4.2 切片：[start:stop:step]`
+       —— 笔记内部锚点用的是**第二个** `#`，所以不能按 `/` 切完就当 slug 用。
+       ★ 锚点里的中文和方括号浏览器会编码，取出来得 decode 才能跟标题 id 对上。 */
+    const raw = parts.slice(1).join('/');
+    const at = raw.indexOf('#');
+    const slug = at < 0 ? raw : raw.slice(0, at);
+    let anchor = at < 0 ? '' : raw.slice(at + 1);
+    try { anchor = decodeURIComponent(anchor); } catch(e){}
+    return { view:'note', slug, anchor };
+  }
   return { view:'home' };
 }
 
 function route(){
   SET = parseHash();
-  document.getElementById('app').classList.toggle('problemView', SET.view === 'p');
+  const app = document.getElementById('app');
+  app.classList.toggle('problemView', SET.view === 'p');
+  app.classList.toggle('notesView', SET.view === 'notes' || SET.view === 'note');
   document.getElementById('navHome').className = SET.view === 'home' ? 'on' : '';
   document.getElementById('navSubs').className = SET.view === 'subs' ? 'on' : '';
+  document.getElementById('navNotes').className =
+    (SET.view === 'notes' || SET.view === 'note') ? 'on' : '';
   window.scrollTo(0, 0);
-  if (SET.view === 'set')  return viewSet(SET.subject);
-  if (SET.view === 'p')    return viewProblem(SET.id);
-  if (SET.view === 'subs') return viewSubmissions();
+  if (SET.view === 'set')   return viewSet(SET.subject);
+  if (SET.view === 'p')     return viewProblem(SET.id);
+  if (SET.view === 'subs')  return viewSubmissions();
+  if (SET.view === 'notes') return viewNotes();
+  if (SET.view === 'note')  return viewNote(SET.slug, SET.anchor);
   return viewHome();
 }
 window.addEventListener('hashchange', route);
@@ -1426,6 +1644,7 @@ function renderProblem(){
     +   '<span class="pill p-pri">#' + p.id + '</span>'
     +   '<span class="tyTag ' + typeClass(p) + '">' + esc(problemType(p)) + '</span>'
     +   '<span class="pill">' + esc(p.source_section || '') + '</span>'
+    +   noteChipFor(p)
     +   '<span class="pill">难度 ' + stars(p.difficulty) + '</span>'
     +   '<span class="pill">满分 ' + (p.total_score||0) + ' 分</span>'
     +   (p.testcase_count ? '<span class="pill">' + p.testcase_count + ' 个测试点</span>' : '')
@@ -1964,6 +2183,322 @@ async function viewSubmissions(){
       + '</tbody></table></div>';
   }
   app.innerHTML = html;
+}
+
+/* =========================================================================
+   10.5 视图五：笔记（Obsidian 笔记区）
+   ------------------------------------------------------------------
+   数据是构建期由 tools/export_notes.py 转好的静态 JSON，全部同源 fetch，
+   离线（没有后端）时照样能看 —— 跟题库一个待遇。
+   ========================================================================= */
+let NOTES_INDEX = null;       // notes/index.json    目录树
+let NOTES_SEARCH = null;      // notes/search.json   全文索引（进搜索才拉）
+let NOTES_RENDER = null;      // notes/notes.js 里的 renderNotes
+let NOTES_LOAD = null;
+let NOTES_TRY = 0;
+let SEARCH_TIMER = null;
+
+/* 渲染器按需下载（124 KB）。★ 与编辑器同款的两个坑：
+   ① 我们自己缓存了 promise，一旦 rejected 就会「一次没加载上、终生用不了」；
+   ② 浏览器对加载失败的动态 import 也按 URL 记住结果。
+   所以失败时既清缓存、也换个 URL 再试。 */
+async function notesRender(){
+  if (!NOTES_RENDER){
+    if (!NOTES_LOAD){
+      const url = './notes/notes.js' + (NOTES_TRY ? '?retry=' + NOTES_TRY : '');
+      NOTES_LOAD = import(url).catch(err => { NOTES_LOAD = null; NOTES_TRY++; throw err; });
+    }
+    NOTES_RENDER = (await NOTES_LOAD).renderNotes;
+  }
+  return NOTES_RENDER;
+}
+
+async function loadNotesIndex(){
+  if (NOTES_INDEX) return NOTES_INDEX;
+  const res = await fetch('notes/index.json', { cache:'no-store' });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  NOTES_INDEX = await res.json();
+  return NOTES_INDEX;
+}
+
+async function loadNotesSearch(){
+  if (NOTES_SEARCH) return NOTES_SEARCH;
+  const res = await fetch('notes/search.json', { cache:'no-store' });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  NOTES_SEARCH = await res.json();
+  return NOTES_SEARCH;
+}
+
+async function loadNotesPage(slug){
+  const res = await fetch('notes/p/' + slug + '.json', { cache:'no-store' });
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  return await res.json();
+}
+
+const SUBJECT_LINE = { python:'py', ds:'ds', linux:'linux' };
+const LINE_SUBJECT = { py:'python', ds:'ds', linux:'linux' };
+
+function lectureNo(group){ const m = /^(\d+)/.exec(String(group||'')); return m ? m[1] : ''; }
+
+/* 笔记里的 slug → 题目来源 section 是「第 NN 讲 · XXX」，两边靠**讲号**对上
+   （讲名对不上：题目写「第 07 讲 · 函数」，笔记目录是「07讲_函数上」）。 */
+function probsOfLecture(line, lectureNoStr){
+  const n = parseInt(lectureNoStr, 10);
+  if (!n) return [];
+  return (PROBLEMS || []).filter(p =>
+    SUBJECT_LINE[p.subject] === line && lecOf(p.source_section) === n);
+}
+
+/* 题目 → 笔记。靠 subject + 「第 NN 讲」的**讲号**对上：
+   讲名两边写法不一致（题目写「第 07 讲 · 函数」，笔记目录是「07讲_函数上」），
+   只有讲号是稳的。另外 Linux 线有两类来源不是讲次：
+   「基础命令 · X」→ Linux基础命令.md，「实验 N · X」→ Linux实验题库.md。 */
+function noteSlugForProblem(p){
+  const sec = String(p.source_section || '');
+  const line = SUBJECT_LINE[p.subject || 'python'];
+  if (!line) return '';
+  if (/基础命令/.test(sec)) return 'linux-cmd';
+  if (/^实验/.test(sec)) return 'linux-bank';
+  const m = /第\s*(\d+)\s*讲/.exec(sec);
+  if (m) return line + '-' + String(parseInt(m[1], 10)).padStart(2, '0') + '-00';
+  return '';
+}
+
+function noteChipFor(p){
+  const slug = noteSlugForProblem(p);
+  if (!slug) return '';
+  return '<a class="pill p-note" href="#/notes/' + slug
+    + '" title="打开这一讲的笔记">📖 看本讲笔记</a>';
+}
+
+function searchBoxHtml(id, ph){
+  return '<div class="noteSearch">'
+    + '<input id="' + id + '" type="search" autocomplete="off" placeholder="'
+    + esc(ph || '搜笔记：标题、正文都能搜') + '">'
+    + '<div class="noteSearchOut" id="' + id + 'Out"></div></div>';
+}
+
+function escRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
+
+function searchSnippet(text, term){
+  const i = text.toLowerCase().indexOf(term.toLowerCase());
+  if (i < 0) return esc(text.slice(0, 90)) + '…';
+  const from = Math.max(0, i - 45);
+  const raw = (from ? '…' : '') + text.slice(from, i + 75) + '…';
+  return esc(raw).replace(new RegExp(escRe(esc(term)), 'gi'), m => '<mark>' + m + '</mark>');
+}
+
+function runNoteSearch(q){
+  const kw = q.trim().toLowerCase();
+  if (!kw || !NOTES_SEARCH) return [];
+  const terms = kw.split(/\s+/).filter(Boolean);
+  const hit = [];
+  for (const it of NOTES_SEARCH.items){
+    const title = (it.t || '').toLowerCase();
+    const body = (it.x || '').toLowerCase();
+    let score = 0, ok = true;
+    for (const t of terms){
+      const inT = title.indexOf(t) >= 0, inB = body.indexOf(t) >= 0;
+      if (!inT && !inB){ ok = false; break; }
+      score += inT ? 12 : 1;                    // 命中标题远比命中正文值钱
+    }
+    if (!ok) continue;
+    hit.push({ s: it.s, t: it.t, b: it.b, score, snip: searchSnippet(it.x || '', terms[0]) });
+  }
+  hit.sort((a, b) => b.score - a.score);
+  return hit.slice(0, 40);
+}
+
+function renderNoteSearch(outId, q){
+  const out = document.getElementById(outId);
+  if (!out) return;
+  const kw = q.trim();
+  if (!kw){ out.innerHTML = ''; out.style.display = 'none'; return; }
+  if (!NOTES_SEARCH){
+    out.style.display = '';
+    out.innerHTML = '<div class="nsHint">正在加载搜索索引…</div>';
+    loadNotesSearch().then(() => {
+      if (document.getElementById(outId)) renderNoteSearch(outId, q);
+    }).catch(e => {
+      out.innerHTML = '<div class="nsHint">搜索索引加载失败：' + esc(String(e.message || e)) + '</div>';
+    });
+    return;
+  }
+  const hits = runNoteSearch(kw);
+  out.style.display = '';
+  if (!hits.length){
+    out.innerHTML = '<div class="nsHint">没搜到「' + esc(kw) + '」</div>';
+    return;
+  }
+  out.innerHTML = '<div class="nsCnt">命中 ' + hits.length + ' 篇</div>' + hits.map(h =>
+    '<a class="nsItem" href="#/notes/' + h.s + '">'
+    + '<div class="nsTitle">' + esc(h.t) + '</div>'
+    + '<div class="nsCrumb">' + esc(h.b) + '</div>'
+    + '<div class="nsSnip">' + h.snip + '</div></a>').join('');
+}
+
+function bindNoteSearch(inputId){
+  const el = document.getElementById(inputId);
+  if (!el) return;
+  el.addEventListener('input', () => {
+    clearTimeout(SEARCH_TIMER);
+    SEARCH_TIMER = setTimeout(() => renderNoteSearch(inputId + 'Out', el.value), 140);
+  });
+  el.addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    const first = document.querySelector('#' + inputId + 'Out .nsItem');
+    if (first) location.hash = first.getAttribute('href');
+  });
+}
+
+/* ---- 笔记首页：三条线 + 讲次网格 + 搜索 ---- */
+async function viewNotes(){
+  const app = document.getElementById('app');
+  app.innerHTML = '<div class="loading">正在加载笔记目录…</div>';
+  let idx;
+  try { idx = await loadNotesIndex(); }
+  catch(e){
+    app.innerHTML = '<div class="empty">笔记目录加载失败：' + esc(String(e.message || e))
+      + '<br><span style="color:var(--muted)">（笔记还没导出？跑 <code>python tools/export_notes.py</code>）</span></div>';
+    return;
+  }
+  if (SET.view !== 'notes') return;
+
+  let html = '<div class="notesHero">'
+    + '<div class="notesHeroL"><div class="notesHeroT">学习笔记</div>'
+    + '<div class="notesHeroS">' + idx.count + ' 篇 · ' + Math.round((idx.total_chars || 0) / 10000)
+    + ' 万字：三本教材的逐节讲义、陷阱清单、习题与代码解释，离线可读</div></div>'
+    + '<div class="notesHeroR">' + searchBoxHtml('notesSearchTop') + '</div></div>'
+    + '<div class="notesLines">';
+
+  for (const ln of idx.lines){
+    html += '<section class="noteLineCard">'
+      + '<div class="noteLineHead"><span class="noteLineName">' + esc(ln.name) + '</span>'
+      + '<span class="cnt">' + ln.lectures.length + ' 讲 · ' + ln.pages + ' 节</span></div>'
+      + '<div class="noteLecGrid">'
+      + ln.lectures.map(L =>
+          '<a class="noteLec" href="#/notes/' + L.index + '">'
+          + '<b>' + esc(lectureNo(L.group)) + '</b>'
+          + '<span class="noteLecT">' + esc(L.title) + '</span>'
+          + '<span class="noteLecC">' + L.pages.length + ' 节</span></a>').join('')
+      + '</div>';
+    if (ln.extras.length){
+      html += '<div class="noteExtras">'
+        + ln.extras.map(x => '<a href="#/notes/' + x.slug + '">' + esc(x.title) + '</a>').join('')
+        + '</div>';
+    }
+    html += '</section>';
+  }
+  html += '</div>';
+  app.innerHTML = html;
+  bindNoteSearch('notesSearchTop');
+}
+
+/* ---- 目录树（当前那一条线）---- */
+function noteTreeHtml(idx, page){
+  const line = idx.lines.find(L =>
+    L.key === page.line) || idx.lines[0];
+  if (!line) return '';
+  let h = '<div class="noteTreeHead"><a href="#/notes" class="back">← 笔记目录</a>'
+    + '<span class="cnt">' + esc(line.name) + '</span></div><div class="noteTree">';
+  for (const L of line.lectures){
+    const cur = L.pages.some(p => p.slug === page.slug);
+    h += '<details class="treeLec"' + (cur ? ' open' : '') + '>'
+      + '<summary><b>' + esc(lectureNo(L.group)) + '</b>' + esc(L.title) + '</summary>'
+      + '<div class="treePages">'
+      + L.pages.map(p => '<a class="' + (p.slug === page.slug ? 'on' : '')
+          + '" href="#/notes/' + p.slug + '">' + esc(p.title) + '</a>').join('')
+      + '</div></details>';
+  }
+  if (line.extras.length){
+    h += '<div class="treeExtra">'
+      + line.extras.map(x => '<a class="' + (x.slug === page.slug ? 'on' : '')
+          + '" href="#/notes/' + x.slug + '">' + esc(x.title) + '</a>').join('')
+      + '</div>';
+  }
+  return h + '</div>';
+}
+
+function findHeading(a){
+  const want = String(a).trim();
+  const slug = want.replace(/\s+/g, '-');
+  let el = document.getElementById(slug) || document.getElementById(want);
+  if (el) return el;
+  for (const h of document.querySelectorAll('#noteBody h1,#noteBody h2,#noteBody h3,#noteBody h4,#noteBody h5,#noteBody h6')){
+    const t = (h.textContent || '').trim();
+    if (t === want || t.replace(/\s+/g, '-') === slug) return h;
+  }
+  return null;
+}
+
+/* ---- 单篇 ---- */
+async function viewNote(slug, anchor){
+  const app = document.getElementById('app');
+  app.innerHTML = '<div class="loading">正在加载笔记…</div>';
+  let page, idx, render;
+  try {
+    page = await loadNotesPage(slug);
+    idx = await loadNotesIndex();
+    render = await notesRender();
+  } catch(e){
+    app.innerHTML = '<div class="empty">这篇笔记没打开：' + esc(slug)
+      + '<br><span style="color:var(--muted)">' + esc(String(e.message || e)) + '</span>'
+      + '<br><br><a href="#/notes">← 回笔记目录</a></div>';
+    return;
+  }
+  if (SET.view !== 'note' || SET.slug !== slug) return;   // 期间用户切走了
+
+  const body = render(page.md || '');
+  const fmKeys = Object.keys(page.fm || {});
+
+  let html = '<div class="noteLayout">'
+    + '<aside class="noteSide">' + noteTreeHtml(idx, page) + '</aside>'
+    + '<article class="noteMain">'
+    + '<div class="crumb">'
+    + '<a href="#/notes">笔记</a><span class="sep">/</span>'
+    + (page.lecture
+        ? '<a href="#/notes/' + page.lectureIndex + '">' + esc(page.crumb[page.crumb.length - 1]) + '</a>'
+        : esc(page.crumb[page.crumb.length - 1]))
+    + '</div>'
+    + '<h1 class="noteTitle">' + esc(page.title) + '</h1>';
+
+  if (fmKeys.length){
+    html += '<div class="noteMeta">'
+      + fmKeys.map(k => '<span class="fmTag">' + esc(k) + '：' + esc(page.fm[k]) + '</span>').join('')
+      + '</div>';
+  }
+  html += '<div id="noteProbs"></div>';
+  html += '<div class="noteBody" id="noteBody">' + body + '</div>';
+
+  if (page.prev || page.next){
+    html += '<nav class="notePager">'
+      + (page.prev ? '<a href="#/notes/' + page.prev.slug + '">← ' + esc(page.prev.title) + '</a>' : '<span></span>')
+      + (page.next ? '<a href="#/notes/' + page.next.slug + '">' + esc(page.next.title) + ' →</a>' : '<span></span>')
+      + '</nav>';
+  }
+  html += '</article></div>';
+  app.innerHTML = html;
+
+  /* 「本讲有 N 道题」——笔记与题库双向联动的另一半 */
+  const pb = document.getElementById('noteProbs');
+  if (pb && page.lecture){
+    const list = probsOfLecture(page.line, page.lecture);
+    if (list.length){
+      const done = list.filter(p => (bestOf(p) || 0) > 0).length;
+      pb.innerHTML = '<div class="notePbar">本讲配了 <b>' + list.length + '</b> 道题'
+        + (done ? '（已做 ' + done + '）' : '') + ' · '
+        + '<a href="#/set/' + (LINE_SUBJECT[page.line] || 'python') + '">去题集练手 →</a></div>';
+    }
+  }
+
+  if (anchor){
+    const el = findHeading(anchor);
+    if (el){
+      el.scrollIntoView({ block:'start' });
+      el.classList.add('anchorFlash');
+      setTimeout(() => el.classList.remove('anchorFlash'), 1600);
+    }
+  }
 }
 
 /* =========================================================================

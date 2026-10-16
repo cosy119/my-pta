@@ -202,48 +202,53 @@ SEED_PROBLEMS: list[dict] = (CORE_PROBLEMS + BANK_PROBLEMS
 
 
 def ensure() -> int:
-    """写种子题。返回新增条数（已存在则跳过，可反复调用）。"""
+    """写种子题。返回新增条数（已存在则跳过，可反复调用）。
+
+    ★ 整批走一个事务（db.bulk）：逐条 db.insert 会每条新开一次连接，
+      320 道题 ≈ 1050 条 INSERT 实测 78 秒，云端冷启动顶掉健康检查。同批改一次提交。
+    """
     added = 0
-    for raw in SEED_PROBLEMS:
-        spec = dict(raw)
-        cases = spec.pop("cases", [])
-        # alt_solution 是「第二套独立实现」，只在 tools/verify_bank.py 里对拍用，
-        # 平台运行不需要，所以不入库。
-        spec.pop("alt_solution", None)
-        title = spec["title"]
-        if db.query_one("SELECT id FROM problems WHERE title = ?", (title,)):
-            continue
+    with db.bulk() as conn:
+        for raw in SEED_PROBLEMS:
+            spec = dict(raw)
+            cases = spec.pop("cases", [])
+            # alt_solution 是「第二套独立实现」，只在 tools/verify_bank.py 里对拍用，
+            # 平台运行不需要，所以不入库。
+            spec.pop("alt_solution", None)
+            title = spec["title"]
+            if db.query_one("SELECT id FROM problems WHERE title = ?", (title,), conn=conn):
+                continue
 
-        spec["tags"] = db.jdumps(spec.get("tags", []))
-        # 选择题的选项也存 JSON（空数组 = 不是选择题，前端据此决定渲染成选项还是编辑器）
-        spec["choices"] = db.jdumps(spec.get("choices", []) or [])
-        spec["question_type"] = infer_question_type(raw)
-        spec["created_at"] = db.now_iso()
-        # 没写 subject 的一律归 Python 线（核心题与早期题库都没写）
-        spec.setdefault("subject", "python")
-        spec.setdefault("status", "published")
-        spec.setdefault("origin", "manual")
-        spec.setdefault("checker", "standard")
-        spec.setdefault("ref_interpreter", "py313")
-        spec["total_score"] = int(spec.get("total_score") or 100)
+            spec["tags"] = db.jdumps(spec.get("tags", []))
+            # 选择题的选项也存 JSON（空数组 = 不是选择题，前端据此决定渲染成选项还是编辑器）
+            spec["choices"] = db.jdumps(spec.get("choices", []) or [])
+            spec["question_type"] = infer_question_type(raw)
+            spec["created_at"] = db.now_iso()
+            # 没写 subject 的一律归 Python 线（核心题与早期题库都没写）
+            spec.setdefault("subject", "python")
+            spec.setdefault("status", "published")
+            spec.setdefault("origin", "manual")
+            spec.setdefault("checker", "standard")
+            spec.setdefault("ref_interpreter", "py313")
+            spec["total_score"] = int(spec.get("total_score") or 100)
 
-        # 测试点分值：写了就用写的；没写就按满分均分（余数给前面的测试点）
-        pts = scoring.normalize_points([c.get("points", 0) for c in cases],
-                                       spec["total_score"])
+            # 测试点分值：写了就用写的；没写就按满分均分（余数给前面的测试点）
+            pts = scoring.normalize_points([c.get("points", 0) for c in cases],
+                                           spec["total_score"])
 
-        pid = db.insert("problems", spec)
-        for i, c in enumerate(cases):
-            db.insert("testcases", {
-                "problem_id": pid,
-                "ord": i,
-                "kind": c.get("kind", "manual"),
-                "stdin": c.get("stdin", ""),
-                "expected_stdout": c.get("expected_stdout", ""),
-                "is_sample": c.get("is_sample", 0),
-                "points": int(pts[i] if i < len(pts) else 0),
-                "explanation": c.get("explanation", ""),
-            })
-        added += 1
+            pid = db.insert("problems", spec, conn=conn)
+            for i, c in enumerate(cases):
+                db.insert("testcases", {
+                    "problem_id": pid,
+                    "ord": i,
+                    "kind": c.get("kind", "manual"),
+                    "stdin": c.get("stdin", ""),
+                    "expected_stdout": c.get("expected_stdout", ""),
+                    "is_sample": c.get("is_sample", 0),
+                    "points": int(pts[i] if i < len(pts) else 0),
+                    "explanation": c.get("explanation", ""),
+                }, conn=conn)
+            added += 1
     return added
 
 
