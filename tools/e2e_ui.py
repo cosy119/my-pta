@@ -5,6 +5,10 @@
     POST /api/submissions  ->  GET /api/submissions/<id>?with_cases=1
   再加上 GET /api/catalog /api/problems 的分类字段。
 
+★ 目录那一节的期望值（题数 / 满分 / 分组数 / 顺序）**从题库定义现算**
+  （`bank_stats()` 读 `app.seed.SEED_PROBLEMS`），不写死数字。写死的后果是
+  题库一加题这里就报假红，红多了就没人看它了。
+
 用法：
     python tools/e2e_ui.py            # 默认 http://127.0.0.1:8792
     python tools/e2e_ui.py 8793
@@ -20,6 +24,11 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))     # 为了能 import _console
 import _console                                               # noqa: E402
 import _testdb                                                # noqa: E402  （只用它的 guard_live_db）
+
+# 期望值要从**题库定义**里读（见 bank_stats），所以要能 import app.*
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+from app.api.problems import _order_key                        # noqa: E402
+from app.seed import SEED_PROBLEMS, SUBJECT_LABELS             # noqa: E402
 
 PORT = sys.argv[1] if len(sys.argv) > 1 else "8792"
 BASE = f"http://127.0.0.1:{PORT}"
@@ -78,6 +87,27 @@ def find_by_title(title: str) -> dict | None:
     return None
 
 
+def bank_stats() -> dict:
+    """从**题库定义**现算每个科目的（题数、满分、分组数）。
+
+    ★ 为什么不写死数字：这里的期望值以前是「某天测出来的 2615 分 / ds 31 题」。
+      题库一加题（现在的真实数字是 320 题 / 3945 分 / ds 71 题），这个端到端
+      脚本立刻报一片红 —— 而它红的原因**不是产品坏了**。假失败报几次之后，
+      就没人再认真看它的输出了，真出问题也发现不了。
+      断言应当跟着「题库怎么写的」走，而不是跟着「上次跑出来多少」走。
+    """
+    out: dict = {}
+    for p in SEED_PROBLEMS:
+        key = str(p.get("subject") or "python")
+        s = out.setdefault(key, {"total": 0, "max_score": 0, "sections": set()})
+        s["total"] += 1
+        s["max_score"] += int(p.get("total_score") or 0)
+        s["sections"].add(str(p.get("source_section") or "未分组"))
+    return out
+
+
+EXPECT = bank_stats()
+
 print(f"== 端到端验证 -> {BASE} ==")
 
 # ★ 先问一句对面连的是哪个库。这个脚本**会真的写进去**（提交、进度），
@@ -87,39 +117,86 @@ try:
     _h = req("/api/health")
     _warn = _testdb.guard_live_db(_h)
     print("  " + _warn.replace("\n", "\n  "))
-    if "真实库" in _warn:
+    # ★ 别用「'真实库' in _warn」当判据 —— 安全的那句话里也写着「不是真实库，安全」，
+    #   于是连测试库时也会多印一行「这次的数据进了真实库」，把不存在的事说得跟真的一样。
+    #   认那条警告自己的标记（它以 ⚠️⚠️ 开头）。
+    if _warn.startswith("⚠️"):
         print("  （继续跑，但请知悉：这次的数据进了真实库）")
 except Exception as _e:  # noqa: BLE001
     print("  （读 /api/health 失败，跳过数据库归属检查：%s）" % _e)
 
 # ---------------------------------------------------------------- 1. 目录
+print("  （期望值来自题库定义：%s）" % "、".join(
+    f"{k} {v['total']} 题/{len(v['sections'])} 组" for k, v in sorted(EXPECT.items())))
 cat = req("/api/catalog")
 keys = [s["key"] for s in cat["subjects"]]
 check("catalog 三科目齐全且有序", keys == ["python", "ds", "linux"], str(keys))
-check("catalog 总分 = 2615", cat["user_max_score"] == 2615, str(cat["user_max_score"]))
-ds = [s for s in cat["subjects"] if s["key"] == "ds"][0]
-check("ds 题数 31 / 4 个分组", ds["total"] == 31 and len(ds["sections"]) == 4,
-      f"{ds['total']} 题 / {len(ds['sections'])} 组")
-linux = [s for s in cat["subjects"] if s["key"] == "linux"][0]
-check("linux 题数 117 / 16 个分组", linux["total"] == 117 and len(linux["sections"]) == 16,
-      f"{linux['total']} 题 / {len(linux['sections'])} 组")
+want_score = sum(s["max_score"] for s in EXPECT.values())
+check("catalog 总分 = 题库所有题的满分之和",
+      cat["user_max_score"] == want_score,
+      f"{cat['user_max_score']} / 期望 {want_score}")
+
+for _key in ("ds", "linux"):
+    _want = EXPECT[_key]
+    _got = [s for s in cat["subjects"] if s["key"] == _key][0]
+    check(f"{_key} 题数与分组数 = 题库定义",
+          _got["total"] == _want["total"] and len(_got["sections"]) == len(_want["sections"]),
+          f"{_got['total']} 题 / {len(_got['sections'])} 组"
+          f"（期望 {_want['total']} / {len(_want['sections'])}）")
 
 # ---------------------------------------------------------------- 2. 列表字段
 items = req("/api/problems?subject=ds")["items"]
 check("?subject=ds 只回 ds", all(p["subject"] == "ds" for p in items), f"{len(items)} 题")
-check("编程题 langs 给了 C 与 C++ 两条路",
-      [l["lang"] for l in items[0]["langs"]] == ["cpp", "c"], str(items[0]["langs"]))
-check("列表按讲次排序", items[0]["source_section"].startswith("第 02 讲"), items[0]["source_section"])
+
+# 「给了 C 与 C++ 两条路」说的是**编程题**，不是列表的第一题。
+# 老写法拿 items[0] 断 langs —— DS 线补进「第 01 讲 · 绪论」那批理论题之后，
+# 列表第一题变成理论题（langs 本来就该是空的），当场假失败。
+prog_items = [p for p in items if p["langs"]]
+check("数据结构编程题 langs 给了 C 与 C++ 两条路",
+      bool(prog_items) and [l["lang"] for l in prog_items[0]["langs"]] == ["cpp", "c"],
+      str(prog_items[0]["langs"]) if prog_items else "一道编程题都没有")
+
+# 列表顺序是 `_order_key` 定的学习顺序（科目 → 讲次 → 录入顺序）。
+# 这里**不重抄一遍排序规则**，直接借接口用的那个 key 去排题库，两边逐项比。
+# 题库条目没有 id，用它在 SEED_PROBLEMS 里的位置当 id：
+# 新库就是按这个顺序 insert 的（`ORDER BY p.id` 与题库顺序同构）。
+# 老写法是「首题 source_section 以『第 02 讲』开头」—— 题库补了绪论就假死。
+_bank_pos = {id(p): i for i, p in enumerate(SEED_PROBLEMS)}
+want_titles = [str(p["title"]) for p in sorted(
+    (p for p in SEED_PROBLEMS if str(p.get("subject") or "python") == "ds"),
+    key=lambda p: _order_key({"subject": p.get("subject"),
+                              "source_section": p.get("source_section"),
+                              "id": _bank_pos[id(p)]}))]
+got_titles = [p["title"] for p in items]
+check("列表顺序 = 讲义讲次循序（与题库同一套排序键）",
+      got_titles == want_titles,
+      f"{items[0]['source_section']} 起，共 {len(got_titles)} 题")
 
 lin = req("/api/problems?subject=linux")["items"]
 check("Linux 理论题 is_choice 有值", any(p["is_choice"] for p in lin))
 check("Linux 理论题 langs 为空（不用选语言）", lin[0]["langs"] == [], str(lin[0]["langs"]))
 
 # ---------------------------------------------------------------- 3. 数据结构：同一题 C 与 C++ 各交一次
-p57 = req("/api/problems/57")
-check("题目详情带 subject_label", p57["subject_label"] == "数据结构（C 语言版）", p57["subject_label"])
-check("题目详情不外泄参考解", "reference_solution" not in p57)
-check("样例已给（题面要用）", len(p57["samples"]) >= 1, f"{len(p57['samples'])} 个")
+#
+# ★ 题目 id **不写死**。id 只说明「这条题什么时候第一次被写进库」：
+#   测试库是跟着题库一路 seed 过来的，id 早就漂了 —— 写死的 57 号
+#   现在是一道 Python 题（「wc 三件套」），于是这里连着假报了好几项：
+#   subject_label 拿到 Python 的标签、C/C++ 提交自然全 WA、
+#   下游「取历史最高分 / 已解决 / 总分」跟着一起塌。
+#   标题才是题目的身份 —— 按标题找 id，找不到就直接停机报错，别硬跑。
+TARGET = "顺序表按位插入"
+_target = find_by_title(TARGET)
+if _target is None:
+    raise SystemExit(f"[ABORT] 题库里找不到「{TARGET}」——题目改名了？改这个脚本的 TARGET")
+PID = _target["id"]
+print(f"  （目标题：{TARGET} -> id={PID}）")
+
+pdet = req(f"/api/problems/{PID}")
+check("数据结构题详情带 subject_label",
+      pdet["subject_label"] == SUBJECT_LABELS["ds"], pdet["subject_label"])
+check("题目详情不外泄参考解", "reference_solution" not in pdet)
+check("样例已给（题面要用）", len(pdet["samples"]) >= 1, f"{len(pdet['samples'])} 个")
+FULL = int(pdet["total_score"] or 0)          # 这道题的满分（后面断言不写死 15）
 
 CPP = r"""
 #include <cstdio>
@@ -143,22 +220,25 @@ int main(void){int n; if(scanf("%d",&n)!=1) return 0;
  for(int j=0;j<=n;j++) printf("%d%c",a[j], j==n?'\n':' ');
  return 0;}
 """
-r_cpp = submit(57, CPP, "cpp", "gpp")
+r_cpp = submit(PID, CPP, "cpp", "gpp")
 print("  C++ ->", r_cpp["verdict"], r_cpp["score"], "/", r_cpp["max_score"],
       f"{r_cpp['passed']}/{r_cpp['total']}")
 check("C++ 提交拿到 AC", r_cpp["verdict"] == "AC" and r_cpp["score"] == r_cpp["max_score"])
 
-r_c = submit(57, C, "c", "gcc")
+r_c = submit(PID, C, "c", "gcc")
 print("  C   ->", r_c["verdict"], r_c["score"], "/", r_c["max_score"],
       f"{r_c['passed']}/{r_c['total']}")
 check("C 提交拿到 AC（同一道题、不同编译器）",
       r_c["verdict"] == "AC" and r_c["score"] == r_c["max_score"])
 
 # 两套语言各有一份自己的提交记录
-subs = req("/api/submissions?problem_id=57&limit=10")["items"]
+subs = req(f"/api/submissions?problem_id={PID}&limit=10")["items"]
 langs = {s["lang"] for s in subs}
 check("两条提交分别记成 cpp / c", langs == {"cpp", "c"}, str(langs))
-check("逐测试点明细在（前端要展开）", len(r_c["cases"]) == 5, f"{len(r_c['cases'])} 个")
+check("逐测试点明细条数 = 这道题的测试点数",
+      len(r_c["cases"]) == pdet["testcase_count"],
+      f"{len(r_c['cases'])} / {pdet['testcase_count']} 个")
+
 check("每个测试点都带分值", all(c["points"] for c in r_c["cases"]),
       str([c["points"] for c in r_c["cases"]]))
 
@@ -175,7 +255,7 @@ int main(){int n; if(scanf("%d",&n)!=1) return 0;
  for(int j=0;j<=n;j++) printf("%d%c",a[j], j==n?'\n':' ');
  return 0;}
 """
-r_bad = submit(57, BROKEN, "cpp", "gpp")
+r_bad = submit(PID, BROKEN, "cpp", "gpp")
 print("  只对一部分 ->", r_bad["verdict"], r_bad["score"], "/", r_bad["max_score"],
       f"{r_bad['passed']}/{r_bad['total']}")
 check("拿不到满分不是 AC", r_bad["score"] < r_bad["max_score"])
@@ -191,14 +271,16 @@ check("结论出来时逐测试点明细已经齐了（没有明细落库竞态�
 
 # ---------------------------------------------------------------- 5. 进度按人隔离 + 取历史最高分
 prog = req("/api/progress")
-p57row = [x for x in prog["items"] if x["id"] == 57][0]
-check("进度取历史最高分（后面那次只拿 9 分，不影响 15）",
-      p57row["best_score"] == 15 and p57row["solved_at"],
-      f"best={p57row['best_score']}")
-check("满分题计入「已解决」", prog["solved"] >= 1 and p57row["solved_at"] != "",
+prow = [x for x in prog["items"] if x["id"] == PID][0]
+# 前面已经交过两次满分（C++ / C），最后一次是只对一部分的 BROKEN：
+# 取历史最高分意味着 best_score 应当是**这道题的满分**，不被后一次的 0 分冲掉。
+check(f"进度取历史最高分（后面那次没满分，不影响 {FULL}）",
+      prow["best_score"] == FULL and prow["solved_at"],
+      f"best={prow['best_score']} / 满分 {FULL}")
+check("满分题计入「已解决」", prog["solved"] >= 1 and prow["solved_at"] != "",
       f"solved={prog['solved']} attempted={prog['attempted']}")
 me = req("/api/me")
-check("my score = 已解决题目的满分之和（15 + 主观题）", me["score"] >= 15, str(me["score"]))
+check(f"my score ≥ 这道题的满分（{FULL}）", me["score"] >= FULL, str(me["score"]))
 other = urllib.request.Request(BASE + "/api/me")
 other.add_header("X-User-Token", OTHER_TOKEN)
 with urllib.request.urlopen(other, timeout=20) as resp:
@@ -255,7 +337,7 @@ if fill_items:
     check("乱写的填空题判错", rf["verdict"] != "AC", rf["verdict"])
 
 # ---------------------------------------------------------------- 7. 编译错误给人话
-r_ce = submit(57, "#include <cstdio>\nint main(){ 这不是C++ }", "cpp", "gpp")
+r_ce = submit(PID, "#include <cstdio>\nint main(){ 这不是C++ }", "cpp", "gpp")
 check("CE 带编译器原话", r_ce["verdict"] == "CE" and bool(r_ce.get("message")
       or r_ce.get("compile_output")), (r_ce.get("message") or "")[:60])
 
