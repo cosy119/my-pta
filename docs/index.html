@@ -811,6 +811,13 @@ td.c-tt .wbStarSm.on,td.c-tt .wbStarSm:hover{opacity:1}
   border-radius:9px; padding:9px 12px; margin-bottom:14px; line-height:1.65;
 }
 .wbHint b{color:var(--text)}
+/* 空态里的「别的分组还有：待攻克 3 / 收藏 1」—— 可点，直接切筛选 */
+.wbJump{margin-top:9px; display:flex; flex-wrap:wrap; gap:6px; align-items:center; justify-content:center}
+.wbChip{
+  border:1px solid var(--border); background:var(--panel); border-radius:999px;
+  padding:2px 10px; font-size:12.3px; color:var(--text2); cursor:pointer; font-variant-numeric:tabular-nums;
+}
+.wbChip:hover{border-color:var(--primary); color:var(--primary)}
 
 /* 题目页：收藏按钮 + 我的备注 */
 .pStarBtn{
@@ -2515,14 +2522,18 @@ async function viewSubmissions(){
    ★ 本地标注永远覆盖服务端值：写操作先落本地（见 saveMastery 的注释），
      服务端那趟还在路上时，界面不能先把你刚写的字抹掉。
    ========================================================================= */
+/* ★ 默认是「全部」，不是「待攻克」。
+   教训（线上 Pages 实测踩到）：点个星标收藏一道**还没做过**的题，它的 attempts 是 0，
+   按 `is_wrong = attempts>0 && best_score<total` 压根不算错题 —— 于是统计卡明明写着
+   「已收藏 1」，列表里却是空的，看着像收藏没生效。默认给并集就没这个坑。 */
 const WB_FILTERS = [
+  { k:'all',     t:'全部' },
   { k:'wrong',   t:'待攻克' },
   { k:'starred', t:'收藏' },
   { k:'noted',   t:'有备注' },
   { k:'solved',  t:'已攻克' },
-  { k:'all',     t:'全部' },
 ];
-let WB_FILTER = 'wrong';
+let WB_FILTER = 'all';
 let WB_SUBJECT = 'all';
 let WB_Q = '';
 const WB_SUBJ_ORDER = ['python', 'ds', 'linux'];
@@ -2698,7 +2709,20 @@ async function viewWrongbook(opts){
     + '</div>';
 
   if (!shown.length){
-    html += '<div class="empty">这个筛选下没有题目。换个条件，或者点上面的数字看看别的。</div>';
+    const curName = (WB_FILTERS.find(f => f.k === WB_FILTER) || {}).t || '这个筛选';
+    /* 空态不能只说「没有」—— 得告诉人「东西在哪」，而且能一键跳过去。
+       老用户的 localStorage 里可能还存着旧的默认值 `wrong`，全靠这块兜。 */
+    const other = [['wrong', '待攻克', cnt.wrong], ['starred', '收藏', cnt.starred],
+                   ['noted', '有备注', cnt.noted], ['solved', '已攻克', cnt.solved]]
+                  .filter(x => x[0] !== WB_FILTER && x[2] > 0);
+    html += '<div class="empty">'
+      + (WB_Q ? '没有匹配「' + esc(WB_Q) + '」的题目。' : '「' + curName + '」里暂时是空的。')
+      + (other.length
+          ? '<div class="wbJump">别的分组还有：'
+            + other.map(x => '<button type="button" class="wbChip" data-act="filter" data-k="'
+                + x[0] + '">' + x[1] + ' ' + x[2] + '</button>').join('') + '</div>'
+          : '')
+      + '</div>';
   } else {
     /* 按科目分组，组内保持题库顺序（讲次顺序） */
     const bySubj = {};

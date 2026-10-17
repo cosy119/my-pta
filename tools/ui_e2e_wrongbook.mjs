@@ -175,6 +175,18 @@ async function runOnline(browser) {
   });
   ok('统计卡「已收藏」= 1', starredN === 1, 'got=' + starredN);
 
+  /* ★ 回归用例（线上 Pages 实测踩到）：刚收藏的题还没做过，attempts=0，
+     按 is_wrong 的定义它**不是错题**。默认筛选若是「待攻克」，用户点完星标进来
+     看到的是空列表，只有统计卡写着「已收藏 1」—— 看着像收藏没生效。
+     默认改「全部」之后，这里必须直接看得见。 */
+  const defFilter = await page.evaluate(() => {
+    const on = document.querySelector('.wbSeg button.on');
+    return { k: on ? on.dataset.k : '', t: on ? on.textContent.trim() : '',
+             items: document.querySelectorAll('.wbItem').length };
+  });
+  ok('默认筛选是「全部」', defFilter.k === 'all', 'k=' + defFilter.k + ' t=' + defFilter.t);
+  ok('默认筛选下直接看得见刚收藏的题（未做过也算）', defFilter.items === 1, 'items=' + defFilter.items);
+
   await page.click('.wbSeg button[data-k="starred"]');
   await page.waitForSelector('.wbItem', { timeout: 15000 });
   ok('收藏筛选里正好这一题',
@@ -321,6 +333,98 @@ async function runOffline(browser) {
   await page.close();
 }
 
+/* ---------- 三、线上 Pages（--live，可选） ----------
+   前面两轮跑的是本地 docs/，能证明"代码是对的"；这一轮跑真实部署，
+   证明"推上去真的生效了"。两者会分开是因为线上有自己的坑：
+   Pages 没有后端，前端会先探 /api/* 再降级 —— 那三个 404 是**设计如此**，
+   但 Chrome 会把它们记成 console error，所以这轮的报错断言按 URL 白名单放过。
+   跑法：node tools/ui_e2e_wrongbook.mjs --live */
+const LIVE_URL = 'https://cosy119.github.io/my-pta/';
+
+async function runLive(browser) {
+  console.log('\n[3] 线上 Pages（' + LIVE_URL + '）');
+  const page = await browser.newPage();
+  await page.setViewport({ width: 1400, height: 950 });
+  const errs = [];
+  const bad = [];
+  page.on('pageerror', e => errs.push('JS: ' + String(e).slice(0, 200)));
+  page.on('response', r => {
+    if (r.status() >= 400 && !/\/api\//.test(r.url())) bad.push(r.status() + ' ' + r.url().slice(0, 90));
+  });
+
+  const t0 = Date.now();
+  await page.goto(LIVE_URL + '#/wrongbook', { waitUntil: 'domcontentloaded', timeout: 60000 });
+  await waitApp(page, '.wbHero', 90000);
+  console.log('    首屏 %.1fs（Pages CDN）', (Date.now() - t0) / 1000);
+
+  ok('线上错题本首屏渲染', await page.evaluate(() => !!document.querySelector('.wbHero')));
+  ok('线上导航「错题本」高亮',
+    await page.evaluate(() => (document.getElementById('navWB') || {}).className === 'on'));
+  ok('线上统计卡 4 张', await page.evaluate(() => document.querySelectorAll('.wbStats .wbStat').length) === 4);
+  ok('线上识别为离线（Pages 无后端）',
+    await page.evaluate(() => /离线/.test((document.getElementById('offlineTag') || {}).textContent || '')));
+
+  // 收藏一道没做过的题
+  await page.goto(LIVE_URL + '#/set/python', { waitUntil: 'domcontentloaded' });
+  await waitApp(page, 'table.ptable .wbStarSm', 90000);
+  const pid = await page.evaluate(() => {
+    const b = document.querySelector('table.ptable .wbStarSm');
+    return b ? parseInt(b.dataset.star, 10) : 0;
+  });
+  ok('线上题集列表每题都有星标', pid > 0, 'pid=' + pid);
+  await page.click('table.ptable .wbStarSm');
+  await sleep(700);
+  ok('线上点星变实心',
+    await page.evaluate(id => {
+      const b = document.querySelector('.wbStarSm[data-star="' + id + '"]');
+      return !!b && b.classList.contains('on');
+    }, pid));
+
+  await page.goto(LIVE_URL + '#/wrongbook', { waitUntil: 'domcontentloaded' });
+  await waitApp(page, '.wbStats', 90000);
+  const st = await page.evaluate(() => ({
+    on: (document.querySelector('.wbSeg button.on') || {}).dataset?.k || '',
+    items: document.querySelectorAll('.wbItem').length,
+    starred: (() => { const c = document.querySelector('.wbStat[data-k="starred"] .n'); return c ? parseInt(c.textContent, 10) : -1; })(),
+  }));
+  ok('线上统计卡「已收藏」>= 1', st.starred >= 1, 'got=' + st.starred);
+  ok('线上默认「全部」直接看得见收藏的题', st.on === 'all' && st.items >= 1,
+    'filter=' + st.on + ' items=' + st.items);
+
+  // 备注：写 → 刷新 → 还在（Pages 无后端，全靠 localStorage）
+  await page.click('.wbItem .wbNote');
+  await page.waitForSelector('.wbItem .wbEditor:not([hidden]) textarea', { timeout: 10000 });
+  const NOTE = '线上实测：边界没判，先写特殊值再动循环';
+  await page.type('.wbItem .wbEditor textarea', NOTE, { delay: 5 });
+  await page.evaluate(() => {
+    const box = document.querySelector('.wbItem');
+    [...box.querySelectorAll('button')].find(b => /保存/.test(b.textContent))?.click();
+  });
+  await sleep(900);
+  ok('线上备注保存进 localStorage',
+    await page.evaluate(t => (localStorage.getItem('pta.mastery') || '').includes(t), NOTE));
+
+  await page.reload({ waitUntil: 'domcontentloaded' });
+  await waitApp(page, '.wbStats', 90000);
+  ok('线上刷新后备注还在',
+    await page.evaluate(t => document.body.innerText.includes(t), NOTE));
+
+  // 按备注文字搜索
+  await page.evaluate(() => {
+    const i = document.getElementById('wbQ');
+    if (!i) return;
+    i.value = '线上实测';
+    i.dispatchEvent(new Event('input', { bubbles: true }));
+  });
+  await sleep(700);
+  ok('线上按备注文字搜索命中', await page.evaluate(() => document.querySelectorAll('.wbItem').length >= 1));
+
+  ok('线上零 JS 抛错', errs.length === 0, errs.slice(0, 2).join(' | '));
+  /* 白名单：/api/* 的 404 是静态站降级探测，属设计；其余 404 都算回归 */
+  ok('线上无非预期的 404（/api 降级探测不计）', bad.length === 0, bad.slice(0, 3).join(' | '));
+  await page.close();
+}
+
 /* ---------- main ---------- */
 console.log('='.repeat(72));
 console.log('错题本 / 收藏 —— 真 Chrome 端到端');
@@ -363,6 +467,7 @@ try {
 
   await runOnline(browser);
   await runOffline(browser);
+  if (process.argv.includes('--live')) await runLive(browser);
 } catch (e) {
   failed++;
   fails.push('异常：' + String(e && e.message || e));
