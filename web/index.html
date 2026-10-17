@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>cosy 题集 · 在线判题</title>
+<!-- ★ 内联 SVG 图标：浏览器默认会去要 /favicon.ico，没图标就每次控制台一个 404。
+     写成 data: URI 既不产生请求，也不用往 docs/ 里塞二进制。 -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232f6bed'/%3E%3Ctext x='16' y='23' font-size='19' font-family='system-ui,sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
 <style>
 :root{
   --bg:#f4f6fa; --panel:#ffffff; --panel2:#f9fafc; --panel3:#f1f4f9;
@@ -690,6 +693,142 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
   .noteSide{position:static; max-height:none; order:2}
   .notesHeroR{flex:1 1 100%}
 }
+
+/* ---------- 收藏 / 错题本（#/wrongbook） ----------
+   所有颜色走 :root 变量，深色模式自动跟着变。
+   星标用金色（--star），不用 primary —— 它跟「得分/进度」是两回事，别混。 */
+:root{ --star:#f0a500; --starWeak:#fff4d6; }
+@media (prefers-color-scheme:dark){ :root{ --star:#ffc233; --starWeak:#33280c; } }
+
+.wbStarSm{
+  border:0; background:none; cursor:pointer; padding:0 5px 0 0; font-size:14px;
+  color:var(--muted); line-height:1; vertical-align:1px; transition:color .12s, transform .12s;
+}
+.wbStarSm:hover{color:var(--star); transform:scale(1.15)}
+.wbStarSm.on{color:var(--star)}
+td.c-tt .wbStarSm{opacity:.55}
+td.c-tt .wbStarSm.on,td.c-tt .wbStarSm:hover{opacity:1}
+
+.wbHero{display:flex; align-items:flex-end; gap:18px; flex-wrap:wrap; margin-bottom:16px}
+.wbHero .ttl{font-size:20px; font-weight:750; letter-spacing:-.2px}
+.wbHero .sub{font-size:12.5px; color:var(--muted); margin-top:3px}
+.wbStats{display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; margin-bottom:16px}
+.wbStat{
+  background:var(--panel); border:1px solid var(--border); border-radius:var(--radius);
+  padding:12px 14px; cursor:pointer; transition:border-color .13s, box-shadow .13s;
+}
+.wbStat:hover{border-color:var(--primary); box-shadow:var(--shadow)}
+.wbStat.on{border-color:var(--primary); background:var(--primaryWeak)}
+.wbStat .n{font-size:22px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1.1}
+.wbStat .lb{font-size:12px; color:var(--text2); margin-top:2px}
+.wbStat .n.bad{color:var(--err)}
+.wbStat .n.warn{color:var(--warn)}
+.wbStat .n.ok{color:var(--ok)}
+.wbStat .n.star{color:var(--star)}
+
+.wbBar{display:flex; align-items:center; gap:9px; flex-wrap:wrap; margin-bottom:14px}
+.wbSeg{display:flex; background:var(--panel3); border-radius:9px; padding:3px; gap:2px}
+.wbSeg button{
+  border:0; background:none; cursor:pointer; padding:5px 11px; border-radius:7px;
+  font-size:12.8px; color:var(--text2); font-weight:500;
+}
+.wbSeg button:hover{color:var(--text)}
+.wbSeg button.on{background:var(--panel); color:var(--primary); font-weight:650; box-shadow:0 1px 2px rgba(20,32,60,.09)}
+.wbBar input[type=search]{
+  flex:1 1 200px; min-width:160px; border:1px solid var(--border); background:var(--panel);
+  border-radius:9px; padding:7px 11px; font-size:13px; outline:0;
+}
+.wbBar input[type=search]:focus{border-color:var(--primary)}
+.wbBtn{
+  border:1px solid var(--border); background:var(--panel); border-radius:9px;
+  padding:7px 13px; font-size:13px; cursor:pointer; color:var(--text2); font-weight:500;
+}
+.wbBtn:hover{border-color:var(--primary); color:var(--primary)}
+.wbBtn.primary{background:var(--primary); border-color:var(--primary); color:#fff}
+.wbBtn.primary:hover{background:var(--primary2); color:#fff}
+.wbBtn:disabled{opacity:.5; cursor:not-allowed}
+
+.wbGrp{font-size:12.5px; font-weight:700; color:var(--text2); margin:16px 0 8px; letter-spacing:.3px}
+.wbGrp:first-child{margin-top:0}
+.wbList{display:flex; flex-direction:column; gap:9px}
+.wbItem{
+  display:flex; gap:10px; background:var(--panel); border:1px solid var(--border);
+  border-radius:var(--radius); padding:12px 14px; transition:border-color .13s, box-shadow .13s;
+}
+.wbItem:hover{border-color:var(--border); box-shadow:var(--shadow)}
+.wbItem.isWrong{border-left:3px solid var(--err)}
+.wbItem.isStar{border-left:3px solid var(--star)}
+.wbItem .star{
+  border:0; background:none; cursor:pointer; font-size:17px; line-height:1.1; padding:0 2px;
+  color:var(--muted); flex:0 0 auto; transition:color .12s, transform .12s;
+}
+.wbItem .star:hover{transform:scale(1.16)}
+.wbItem .star.on{color:var(--star)}
+.wbMain{flex:1 1 auto; min-width:0}
+.wbTitle{font-size:14px; font-weight:600; line-height:1.45}
+.wbTitle .tyTag{margin-left:7px; vertical-align:1px}
+.wbMeta{font-size:12px; color:var(--muted); margin-top:3px; display:flex; gap:9px; flex-wrap:wrap; align-items:center}
+.wbMeta .vd{font-weight:700}
+.wbMeta .vd.v-AC{color:var(--ok)} .wbMeta .vd.v-bad{color:var(--err)}
+.wbOps{display:flex; flex-direction:column; gap:7px; align-items:flex-end; flex:0 0 auto}
+.wbLvl{display:flex; gap:2px; background:var(--panel3); border-radius:7px; padding:2px}
+.wbLvl button{
+  border:0; background:none; cursor:pointer; font-size:11.5px; padding:2px 6px;
+  border-radius:5px; color:var(--muted);
+}
+.wbLvl button:hover{color:var(--text)}
+.wbLvl button.on{background:var(--panel); color:var(--primary); font-weight:700; box-shadow:0 1px 2px rgba(20,32,60,.08)}
+.wbLvl button.on[data-l="0"]{color:var(--muted)}
+.wbLvl button.on[data-l="1"]{color:var(--warn)}
+.wbLvl button.on[data-l="2"]{color:var(--ok)}
+.wbGo{font-size:12.3px; padding:4px 10px; border-radius:7px; border:1px solid var(--border); color:var(--text2)}
+.wbGo:hover{text-decoration:none; border-color:var(--primary); color:var(--primary)}
+
+.wbNote{
+  margin-top:8px; font-size:12.8px; color:var(--text2); background:var(--panel2);
+  border:1px dashed var(--border); border-radius:8px; padding:7px 10px; cursor:text;
+  white-space:pre-wrap; word-break:break-word; line-height:1.6;
+}
+.wbNote:hover{border-color:var(--primary); background:var(--panel3)}
+.wbNote.empty{color:var(--muted); font-style:italic; border-style:dotted}
+.wbEditor{margin-top:8px}
+.wbEditor textarea{
+  width:100%; min-height:74px; resize:vertical; border:1px solid var(--primary);
+  background:var(--panel); border-radius:8px; padding:8px 10px; font-size:12.8px;
+  line-height:1.65; outline:0;
+}
+.wbEditorRow{display:flex; align-items:center; gap:8px; margin-top:6px; flex-wrap:wrap}
+.wbEditorRow .cnt{font-size:11.5px; color:var(--muted); font-variant-numeric:tabular-nums}
+.wbEditorRow .sp{flex:1}
+.wbEditorRow .sm{
+  border:1px solid var(--border); background:var(--panel); border-radius:7px;
+  padding:4px 11px; font-size:12.3px; cursor:pointer; color:var(--text2);
+}
+.wbEditorRow .sm.pri{background:var(--primary); border-color:var(--primary); color:#fff}
+.wbEditorRow .sm.del:hover{border-color:var(--err); color:var(--err)}
+.wbHint{
+  font-size:12.3px; color:var(--text2); background:var(--infoWeak); border:1px solid var(--info);
+  border-radius:9px; padding:9px 12px; margin-bottom:14px; line-height:1.65;
+}
+.wbHint b{color:var(--text)}
+
+/* 题目页：收藏按钮 + 我的备注 */
+.pStarBtn{
+  border:1px solid var(--border); background:var(--panel); border-radius:999px;
+  padding:2px 11px; font-size:12.3px; cursor:pointer; color:var(--text2); display:inline-flex;
+  align-items:center; gap:4px; font-weight:500;
+}
+.pStarBtn:hover{border-color:var(--star); color:var(--star)}
+.pStarBtn.on{background:var(--starWeak); border-color:var(--star); color:var(--star); font-weight:650}
+.wbMyNote{margin-top:14px; border-top:1px solid var(--border2); padding-top:12px}
+.wbMyNote h4{margin:0 0 7px; font-size:13px; color:var(--text2); display:flex; align-items:center; gap:7px}
+.wbMyNote h4 .tip{font-size:11.5px; color:var(--muted); font-weight:400}
+
+@media (max-width:760px){
+  .wbStats{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .wbItem{flex-wrap:wrap}
+  .wbOps{flex-direction:row; width:100%; justify-content:flex-end}
+}
 </style>
 </head>
 <body>
@@ -700,6 +839,7 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
   </div>
   <nav class="navlinks">
     <a href="#/" id="navHome">题集广场</a>
+    <a href="#/wrongbook" id="navWB">错题本</a>
     <a href="#/notes" id="navNotes">笔记</a>
     <a href="#/subs" id="navSubs">我的提交</a>
   </nav>
@@ -777,6 +917,12 @@ const LS = {
   draft:  p => 'pta.draft.' + p,
   local:  'pta.localProgress',
   seen:   'pta.lastProblem',
+  /* 收藏 / 掌握度 / 备注的本地副本。★ 后端 mastery 表是权威，但写操作永远
+     **先落本地**：静态站（GitHub Pages）根本没有后端，离线也得能收藏、能写备注。
+     后端连上时再异步同步过去，同步失败只提示、不回滚 —— 用户刚写的东西不能消失。 */
+  mastery:'pta.mastery',
+  wbFilter: 'pta.wbFilter',
+  wbSubject:'pta.wbSubject',
   problemSidebar: 'pta.problemSidebarCollapsed',
   problemSplit: 'pta.problemSplitRatio',
 };
@@ -858,6 +1004,158 @@ function setLocalProgress(pid, best, total, opts){
 function nowStamp(){
   const d = new Date(), p = n => String(n).padStart(2,'0');
   return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes())+':'+p(d.getSeconds());
+}
+
+/* =========================================================================
+   2.5 收藏 / 掌握度 / 备注（个人标注）
+
+   ★ 存储策略：**本地优先，后端兜底**
+     静态站（GitHub Pages）根本没有后端，离线也必须能收藏、能写备注；
+     而本地 localStorage 又是「换浏览器就没了」的。
+     所以两边都写：本地立刻生效（UI 不等待），后端连上时异步同步。
+     写失败**不回滚**本地 —— 用户刚敲的那段字不能因为网络抖一下就没。
+
+   ★ 与「进度」的区别：进度是判题算出来的，这里的三样是**人写的**。
+     收藏不增加 attempts（见 app/api/mastery.py 的 _ensure_row 注释）。
+   ========================================================================= */
+const NOTE_MAX = 2000;              // 与 app/api/mastery.py 的 NOTE_MAX 对齐
+const LEVEL_TXT = ['未掌握', '薄弱', '熟练'];
+
+function masteryAll(){
+  try { return JSON.parse(localStorage.getItem(LS.mastery) || '{}') || {}; } catch(e){ return {}; }
+}
+function masteryOf(pid){
+  const m = masteryAll()[String(pid)];
+  return (m && typeof m === 'object') ? m : {};
+}
+function _masteryWrite(all){
+  try { localStorage.setItem(LS.mastery, JSON.stringify(all)); } catch(e){}
+}
+/* 整行替换（校验失败时回滚用） */
+function _setMasteryRaw(pid, obj){
+  const all = masteryAll();
+  if (obj) all[String(pid)] = obj; else delete all[String(pid)];
+  _masteryWrite(all);
+  const p = (PROBLEMS || []).find(x => x.id === pid);
+  if (p) Object.assign(p, { is_starred: obj ? (obj.is_starred ? 1 : 0) : 0 });
+  if (CUR && CUR.id === pid){
+    Object.assign(CUR, { is_starred: obj ? (obj.is_starred ? 1 : 0) : 0 });
+    if (CUR.mastery) Object.assign(CUR.mastery, obj || {});
+  }
+}
+/* 合并写入本地缓存，并同步内存里的题目对象（列表星标、题面按钮靠它） */
+function applyMasteryLocal(pid, patch){
+  const all = masteryAll();
+  const k = String(pid);
+  const cur = (all[k] && typeof all[k] === 'object') ? all[k] : {};
+  all[k] = Object.assign({}, cur, patch);
+  _masteryWrite(all);
+  const p = (PROBLEMS || []).find(x => x.id === pid);
+  if (p) Object.assign(p, patch);
+  if (CUR && CUR.id === pid){
+    Object.assign(CUR, patch);
+    if (CUR.mastery && typeof CUR.mastery === 'object') Object.assign(CUR.mastery, patch);
+  }
+  return all[k];
+}
+
+/* 保存一处标注。返回后端给的 item；离线或纯网络失败时返回本地对象，校验失败返回 null。 */
+async function saveMastery(pid, patch){
+  const body = Object.assign({}, patch);
+  if ('note' in body){
+    body.note = String(body.note == null ? '' : body.note).replace(/\r\n?/g, '\n').trim();
+    if (body.note.length > NOTE_MAX){
+      toast('备注最多 ' + NOTE_MAX + ' 字（现在 ' + body.note.length + ' 字）', 'err');
+      return null;
+    }
+  }
+  if ('level' in body && [0,1,2].indexOf(parseInt(body.level, 10)) < 0){
+    toast('掌握度只能是 0/1/2', 'err');
+    return null;
+  }
+  if ('is_starred' in body) body.is_starred = body.is_starred ? 1 : 0;
+
+  const prev = Object.assign({}, masteryOf(pid));   // 400 时回滚用
+  applyMasteryLocal(pid, body);
+  if (OFFLINE) return body;
+
+  try {
+    const r = await api('/api/mastery/' + pid, { method:'PATCH', body });
+    const it = r && r.item;
+    if (it) applyMasteryLocal(pid, { is_starred: it.is_starred, level: it.level, note: it.note });
+    return it || body;
+  } catch(e){
+    const msg = String((e && e.message) || e);
+    if (/^(HTTP )?4\d\d/.test(msg)){
+      /* 后端明确不认（参数越界/题目不存在）→ 把本地改回去，别留个假状态 */
+      _setMasteryRaw(pid, Object.keys(prev).length ? prev : null);
+      toast('没保存上：' + msg, 'err');
+      return null;
+    }
+    toast('已存在本地，后端暂时没同步上', 'err');
+    return body;
+  }
+}
+
+/* 页面上「这颗星亮不亮」的唯一判据：本地缓存优先，其次用接口给的字段 */
+function isStarred(p){
+  const pid = (p && typeof p === 'object') ? p.id : p;
+  const m = masteryOf(pid);
+  if ('is_starred' in m) return !!m.is_starred;
+  return !!(p && typeof p === 'object' && p.is_starred);
+}
+function levelOf(pid){
+  const m = masteryOf(pid);
+  if ('level' in m) return parseInt(m.level, 10) || 0;
+  return 0;
+}
+function noteOf(pid){
+  const m = masteryOf(pid);
+  return typeof m.note === 'string' ? m.note : '';
+}
+/* 点星星：本地立刻翻面，再异步同步（失败会 toast，但星星不弹回去） */
+async function toggleStar(pid, ev){
+  if (ev) { ev.preventDefault(); ev.stopPropagation(); }
+  const next = isStarred(pid) ? 0 : 1;
+  applyMasteryLocal(pid, { is_starred: next });
+  renderStarsFor(pid);
+  const r = await saveMastery(pid, { is_starred: next });
+  if (r === null) renderStarsFor(pid);            // 被后端驳回 → 按真实状态重画
+  else if (SET.view === 'wrongbook') viewWrongbook({ keepScroll: true });
+}
+/* 一页上同一道题可能出现在多处（列表 / 题面 / 错题本），全部就地翻面 */
+function renderStarsFor(pid){
+  const on = isStarred(pid);
+  document.querySelectorAll('[data-star="' + pid + '"]').forEach(el => {
+    el.classList.toggle('on', on);
+    if (el.classList.contains('wbStarSm')) el.textContent = on ? '★' : '☆';
+    else if (el.classList.contains('wbItemStar')) el.textContent = on ? '★' : '☆';
+    el.title = on ? '取消收藏' : '收藏';
+    el.setAttribute('aria-pressed', on ? 'true' : 'false');
+  });
+  const big = document.getElementById('pStarBtn');
+  if (big && CUR && CUR.id === pid){
+    big.classList.toggle('on', on);
+    big.textContent = on ? '★ 已收藏' : '☆ 收藏';
+    big.title = on ? '取消收藏' : '收藏这道题';
+    big.setAttribute('aria-pressed', on ? 'true' : 'false');
+  }
+}
+
+/* 首屏从后端拉一次标注，补齐「换了浏览器/清了缓存」的那一半。
+   服务端是权威，但本地独有的键保留（可能是刚写还没推上去的）。 */
+let MASTERY_SYNCED = false;
+async function syncMasteryFromServer(){
+  if (MASTERY_SYNCED || OFFLINE) return;
+  try {
+    const r = await api('/api/mastery');
+    const all = masteryAll();
+    (r.items || []).forEach(it => {
+      all[String(it.id)] = { is_starred: it.is_starred, level: it.level, note: it.note };
+    });
+    _masteryWrite(all);
+    MASTERY_SYNCED = true;
+  } catch(e){ /* 后端不可用就算了，本地照样能用 */ }
 }
 
 /* =========================================================================
@@ -1124,6 +1422,7 @@ async function loadProblems(){
 async function refreshAll(){
   await loadProblems();      // 先题库、后目录（离线兜底要拿它聚合）
   await loadCatalog();
+  await syncMasteryFromServer();   // 换浏览器/清了缓存时把收藏与备注补回来
   renderNav();
 }
 
@@ -1136,6 +1435,7 @@ function parseHash(){
   if (parts[0] === 'set' && parts[1]) return { view:'set', subject: parts[1] };
   if (parts[0] === 'p'   && parts[1]) return { view:'p', id: parseInt(parts[1],10) };
   if (parts[0] === 'subs') return { view:'subs' };
+  if (parts[0] === 'wrongbook') return { view:'wrongbook' };
   if (parts[0] === 'notes'){
     if (!parts[1]) return { view:'notes' };
     /* `#/notes/py-05-05#4.2 切片：[start:stop:step]`
@@ -1158,12 +1458,14 @@ function route(){
   app.classList.toggle('notesView', SET.view === 'notes' || SET.view === 'note');
   document.getElementById('navHome').className = SET.view === 'home' ? 'on' : '';
   document.getElementById('navSubs').className = SET.view === 'subs' ? 'on' : '';
+  document.getElementById('navWB').className = SET.view === 'wrongbook' ? 'on' : '';
   document.getElementById('navNotes').className =
     (SET.view === 'notes' || SET.view === 'note') ? 'on' : '';
   window.scrollTo(0, 0);
   if (SET.view === 'set')   return viewSet(SET.subject);
   if (SET.view === 'p')     return viewProblem(SET.id);
   if (SET.view === 'subs')  return viewSubmissions();
+  if (SET.view === 'wrongbook') return viewWrongbook();
   if (SET.view === 'notes') return viewNotes();
   if (SET.view === 'note')  return viewNote(SET.slug, SET.anchor);
   return viewHome();
@@ -1440,7 +1742,12 @@ function rowHtml(p){
     + '<td class="c-st"><span class="st ' + stCls + '" title="'
       + ({solved:'已解决', partial:'部分正确', att:'尝试过', none:'未做'}[st]) + '">' + stTxt + '</span></td>'
     + '<td class="c-no">' + p.id + '</td>'
-    + '<td class="c-tt"><a href="#/p/' + p.id + '">' + esc(p.title) + '</a></td>'
+    + '<td class="c-tt">'
+      + '<button type="button" class="wbStarSm' + (isStarred(p) ? ' on' : '') + '"'
+      +   ' data-star="' + p.id + '" aria-pressed="' + (isStarred(p) ? 'true' : 'false') + '"'
+      +   ' title="' + (isStarred(p) ? '取消收藏' : '收藏') + '">'
+      +   (isStarred(p) ? '★' : '☆') + '</button>'
+      + '<a href="#/p/' + p.id + '">' + esc(p.title) + '</a></td>'
     + '<td class="c-ty"><span class="tyTag ' + typeClass(p) + '">' + esc(problemType(p)) + '</span></td>'
     + '<td class="c-df">' + stars(p.difficulty) + '</td>'
     + '<td class="c-tg">' + tags + '</td>'
@@ -1651,6 +1958,10 @@ function renderProblem(){
     +   '<span id="problemStatusChip">'
     +   (solvedOf(p) ? '<span class="pill p-ok">已解决</span>' : (bestOf(p) > 0 ? '<span class="pill p-warn">部分正确 ' + bestOf(p) + ' 分</span>' : ''))
     +   '</span>'
+    +   '<button type="button" class="pStarBtn' + (isStarred(p) ? ' on' : '') + '" id="pStarBtn"'
+    +     ' data-star="' + p.id + '" aria-pressed="' + (isStarred(p) ? 'true' : 'false') + '"'
+    +     ' title="' + (isStarred(p) ? '取消收藏' : '收藏这道题') + '">'
+    +     (isStarred(p) ? '★ 已收藏' : '☆ 收藏') + '</button>'
     + '</div>'
     + '<div class="mdsec"><h4>题目描述</h4><div class="md">' + mdRender(p.statement_md) + '</div></div>';
 
@@ -1682,6 +1993,7 @@ function renderProblem(){
   if ((p.tags||[]).length){
     left += '<div style="margin-top:14px">' + p.tags.map(t => '<span class="tag">' + esc(t) + '</span>').join('') + '</div>';
   }
+  left += pNoteBoxHtml(p);
   left += '</div>';
 
   /* ------- 右边：作答区 ------- */
@@ -2186,7 +2498,351 @@ async function viewSubmissions(){
 }
 
 /* =========================================================================
-   10.5 视图五：笔记（Obsidian 笔记区）
+   10.4 视图五：错题本 / 收藏（#/wrongbook）
+
+   为什么单独一个视图
+   ------------------
+   判题只管「对/错」，但复习要的是「我为什么错、下次注意什么」。
+   这一页把三样东西摆在一起：**错题**（做过但没满分，算出来的）、
+   **收藏**（手动星的）、**备注**（自己写的一句话错因）。
+   它的核心不是列表，而是那个**能改的备注框** —— 巩固靠的是自己写的那句话。
+
+   ★ 数据来源两条腿：
+     - 在线：`GET /api/wrongbook`（服务端归集，跨设备一致）
+     - 离线：题库 + localStorage 里的进度/标注现算（静态站照样能用）
+     两条腿出来的 items 形状完全一样，后面的筛选/编辑不用分叉。
+
+   ★ 本地标注永远覆盖服务端值：写操作先落本地（见 saveMastery 的注释），
+     服务端那趟还在路上时，界面不能先把你刚写的字抹掉。
+   ========================================================================= */
+const WB_FILTERS = [
+  { k:'wrong',   t:'待攻克' },
+  { k:'starred', t:'收藏' },
+  { k:'noted',   t:'有备注' },
+  { k:'solved',  t:'已攻克' },
+  { k:'all',     t:'全部' },
+];
+let WB_FILTER = 'wrong';
+let WB_SUBJECT = 'all';
+let WB_Q = '';
+const WB_SUBJ_ORDER = ['python', 'ds', 'linux'];
+const WB_SUBJ_SHORT = { python:'Python', ds:'数据结构', linux:'Linux' };
+
+function wbState(key, val){
+  if (key === 'filter') WB_FILTER = val;
+  else if (key === 'subject') WB_SUBJECT = val;
+  else if (key === 'q') WB_Q = val;
+  try { localStorage.setItem(LS.wbFilter, WB_FILTER); } catch(e){}
+  try { localStorage.setItem(LS.wbSubject, WB_SUBJECT); } catch(e){}
+}
+
+/* 归集：在线走接口，离线现算，最后统一叠上本地标注 */
+async function wrongbookData(){
+  let items = [], served = false;
+  if (!OFFLINE){
+    try { const r = await api('/api/wrongbook'); items = r.items || []; served = true; } catch(e){}
+  }
+  if (!served){
+    const lp = localProgress();
+    items = (PROBLEMS || []).map(p => {
+      const g = lp[p.id] || {};
+      const best = parseInt(g.best_score || 0, 10) || 0;
+      const tot = parseInt(p.total_score || 0, 10) || 0;
+      const att = parseInt(g.attempts || 0, 10) || 0;
+      return {
+        id: p.id, title: p.title, subject: p.subject || 'python', line: p.line,
+        question_type: p.question_type || '', total_score: tot, best_score: best,
+        attempts: att, last_verdict: '', is_starred: isStarred(p) ? 1 : 0,
+        level: levelOf(p.id), note: noteOf(p.id), source_section: p.source_section || '',
+        solved_at: g.solved_at || '', is_wrong: att > 0 && best < tot,
+        solved: !!g.solved_at,
+      };
+    }).filter(it => it.attempts > 0 || it.is_starred || it.note || it.level > 0);
+  }
+  /* 本地标注覆盖服务端（判据同上：本地是「刚刚发生的事」） */
+  return items.map(it => {
+    const m = masteryOf(it.id);
+    const x = Object.assign({}, it);
+    if ('is_starred' in m) x.is_starred = m.is_starred ? 1 : 0;
+    if ('level' in m) x.level = parseInt(m.level, 10) || 0;
+    if ('note' in m) x.note = m.note || '';
+    x.is_wrong = !!x.is_wrong;
+    return x;
+  });
+}
+
+function wbMatch(it, f, subj, q){
+  if (subj !== 'all' && (it.subject || 'python') !== subj) return false;
+  if (f === 'wrong'   && !it.is_wrong) return false;
+  if (f === 'starred' && !it.is_starred) return false;
+  if (f === 'noted'   && !it.note) return false;
+  if (f === 'solved'  && !it.solved) return false;
+  if (q){
+    const hay = (it.title + ' ' + (it.note || '') + ' ' + (it.source_section || '')).toLowerCase();
+    if (hay.indexOf(q.toLowerCase()) < 0) return false;
+  }
+  return true;
+}
+
+/* 题目详情页底部的「我的备注」。与错题本里那个框共用 .wbNote / .wbEditor，
+   所以事件委托只需一份（wbBind 里认 [data-pnotebox]）。 */
+function pNoteBoxHtml(p){
+  const note = noteOf(p.id);
+  return '<div class="wbMyNote" data-pnotebox="' + p.id + '">'
+    + '<h4>我的错题备注 <span class="tip">只自己看得见 · 有后端时跟着账号走</span></h4>'
+    + '<div class="wbNote' + (note ? '' : ' empty') + '" data-act="edit">'
+      + (note ? esc(note) : '＋ 写一句错因 / 下次注意什么') + '</div>'
+    + '<div class="wbEditor" hidden>'
+      + '<textarea maxlength="' + NOTE_MAX + '"'
+        + ' placeholder="例：边界忘了判 n=0；下次先写特殊值再动循环"></textarea>'
+      + '<div class="wbEditorRow">'
+        + '<button type="button" class="sm pri" data-act="save">保存</button>'
+        + '<button type="button" class="sm" data-act="cancel">取消</button>'
+        + '<button type="button" class="sm del" data-act="delnote">删除</button>'
+        + '<span class="sp"></span><span class="cnt"></span>'
+      + '</div></div></div>';
+}
+
+function wbRow(it){
+  const star = !!it.is_starred;
+  const lvl = parseInt(it.level, 10) || 0;
+  const vd = String(it.last_verdict || '');
+  const vCls = vd === 'AC' ? 'v-AC' : (vd ? 'v-bad' : '');
+  const cls = 'wbItem' + (it.is_wrong ? ' isWrong' : '') + (star ? ' isStar' : '');
+  return '<div class="' + cls + '" data-pid="' + it.id + '">'
+    + '<button type="button" class="star wbItemStar' + (star ? ' on' : '') + '"'
+      + ' data-star="' + it.id + '" aria-pressed="' + (star ? 'true' : 'false') + '"'
+      + ' title="' + (star ? '取消收藏' : '收藏') + '">' + (star ? '★' : '☆') + '</button>'
+    + '<div class="wbMain">'
+      + '<div class="wbTitle"><a href="#/p/' + it.id + '">' + esc(it.title) + '</a>'
+        + '<span class="tyTag ' + typeClass(it) + '">' + esc(problemType(it)) + '</span></div>'
+      + '<div class="wbMeta">'
+        + '<span>' + esc(it.source_section || '未分组') + '</span>'
+        + '<span>最好 <b>' + (it.best_score || 0) + '</b> / ' + (it.total_score || 0) + ' 分</span>'
+        + (it.attempts ? '<span>做过 ' + it.attempts + ' 次</span>' : '')
+        + (vd ? '<span class="vd ' + vCls + '">' + esc(VERDICT_TXT[vd] || vd) + '</span>' : '')
+        + (it.solved ? '<span style="color:var(--ok)">已满分</span>' : '')
+      + '</div>'
+      + '<div class="wbNote' + (it.note ? '' : ' empty') + '" data-act="edit"'
+        + ' title="点一下就能改">' + (it.note ? esc(it.note) : '＋ 写一句错因 / 下次注意什么') + '</div>'
+      + '<div class="wbEditor" hidden>'
+        + '<textarea maxlength="' + NOTE_MAX + '" placeholder="例：边界忘了判 n=0；下次先写特殊值再动循环"></textarea>'
+        + '<div class="wbEditorRow">'
+          + '<button type="button" class="sm pri" data-act="save">保存</button>'
+          + '<button type="button" class="sm" data-act="cancel">取消</button>'
+          + '<button type="button" class="sm del" data-act="delnote">删除备注</button>'
+          + '<span class="sp"></span><span class="cnt">0 / ' + NOTE_MAX + '</span>'
+        + '</div>'
+      + '</div>'
+    + '</div>'
+    + '<div class="wbOps">'
+      + '<div class="wbLvl" data-act="lvl" title="掌握度">'
+        + [0,1,2].map(n => '<button type="button" data-l="' + n + '" class="'
+            + (lvl === n ? 'on' : '') + '">' + LEVEL_TXT[n] + '</button>').join('')
+      + '</div>'
+      + '<a class="wbGo" href="#/p/' + it.id + '">去重做</a>'
+    + '</div>'
+    + '</div>';
+}
+
+async function viewWrongbook(opts){
+  const app = document.getElementById('app');
+  const keep = !!(opts && opts.keepScroll);
+  if (!keep) app.innerHTML = '<div class="loading">正在整理错题本…</div>';
+  const y = window.scrollY;
+
+  const all = await wrongbookData();
+  const cnt = {
+    wrong: all.filter(x => x.is_wrong).length,
+    starred: all.filter(x => x.is_starred).length,
+    noted: all.filter(x => x.note).length,
+    solved: all.filter(x => x.solved).length,
+  };
+  const shown = all.filter(it => wbMatch(it, WB_FILTER, WB_SUBJECT, WB_Q));
+
+  const statCard = (k, n, lb, cls) =>
+    '<div class="wbStat' + (WB_FILTER === k ? ' on' : '') + '" data-act="filter" data-k="' + k + '">'
+    + '<div class="n ' + cls + '">' + n + '</div><div class="lb">' + lb + '</div></div>';
+
+  let html = '<div class="wbHero"><div><div class="ttl">错题本</div>'
+    + '<div class="sub">收藏随时打星 · 点备注框就能改 · 写完的错因会跟着题目走</div></div></div>';
+
+  html += '<div class="wbStats">'
+    + statCard('wrong',   cnt.wrong,   '待攻克', 'bad')
+    + statCard('starred', cnt.starred, '已收藏', 'star')
+    + statCard('noted',   cnt.noted,   '写了备注', 'warn')
+    + statCard('solved',  cnt.solved,  '已攻克', 'ok')
+    + '</div>';
+
+  if (!all.length){
+    html += '<div class="wbHint">还什么都没有。<b>两种方式能往这里放东西</b>：'
+      + '① 做题时点题号旁边的 ☆ 收藏；② 提交一次（哪怕错了）就会自动进「待攻克」。<br>'
+      + '离线也能收藏和写备注 —— 先存本地，等连上后端再同步。</div>';
+    html += '<div class="empty">去 <a href="#/">题集广场</a> 挑一道题开始吧。</div>';
+    if (keep) { app.innerHTML = html; window.scrollTo(0, y); } else app.innerHTML = html;
+    return;
+  }
+
+  html += '<div class="wbBar">'
+    + '<div class="wbSeg">' + WB_FILTERS.map(f =>
+        '<button type="button" data-act="filter" data-k="' + f.k + '" class="'
+        + (WB_FILTER === f.k ? 'on' : '') + '">' + f.t + '</button>').join('') + '</div>'
+    + '<select class="sel" id="wbSubj" data-act="subject">'
+      + '<option value="all"' + (WB_SUBJECT === 'all' ? ' selected' : '') + '>全部科目</option>'
+      + WB_SUBJ_ORDER.map(s => '<option value="' + s + '"'
+          + (WB_SUBJECT === s ? ' selected' : '') + '>' + WB_SUBJ_SHORT[s] + '</option>').join('')
+    + '</select>'
+    + '<input type="search" id="wbQ" placeholder="搜题目 / 搜你写的备注" value="' + escAttr(WB_Q) + '">'
+    + '<button type="button" class="wbBtn primary" data-act="random"'
+      + (shown.length ? '' : ' disabled') + '>随机巩固一题</button>'
+    + '</div>';
+
+  if (!shown.length){
+    html += '<div class="empty">这个筛选下没有题目。换个条件，或者点上面的数字看看别的。</div>';
+  } else {
+    /* 按科目分组，组内保持题库顺序（讲次顺序） */
+    const bySubj = {};
+    shown.forEach(it => { (bySubj[it.subject || 'python'] = bySubj[it.subject || 'python'] || []).push(it); });
+    const order = WB_SUBJ_ORDER.filter(s => bySubj[s])
+      .concat(Object.keys(bySubj).filter(s => WB_SUBJ_ORDER.indexOf(s) < 0));
+    order.forEach(s => {
+      html += '<div class="wbGrp">' + (WB_SUBJ_SHORT[s] || s) + ' · ' + bySubj[s].length + ' 题</div>';
+      html += '<div class="wbList">' + bySubj[s].map(wbRow).join('') + '</div>';
+    });
+  }
+
+  app.innerHTML = html;
+  if (keep) window.scrollTo(0, y);
+  else window.scrollTo(0, 0);
+}
+
+/* ---------- 错题本里的交互（事件委托，避免把标题拼进 onclick） ---------- */
+function wbItemOf(el){ const box = el.closest('.wbItem'); return box ? parseInt(box.dataset.pid, 10) : 0; }
+
+function wbOpenEditor(box, it){
+  const view = box.querySelector('.wbNote');
+  const ed = box.querySelector('.wbEditor');
+  const ta = ed.querySelector('textarea');
+  ta.value = (it && it.note) || '';
+  const cnt = ed.querySelector('.cnt');
+  const sync = () => { cnt.textContent = ta.value.length + ' / ' + NOTE_MAX; };
+  sync();
+  ta.oninput = sync;
+  view.hidden = true;
+  ed.hidden = false;
+  ta.focus();
+  ta.setSelectionRange(ta.value.length, ta.value.length);
+  ed.dataset.open = '1';
+}
+
+function wbCloseEditor(box){
+  const ed = box.querySelector('.wbEditor');
+  ed.hidden = true;
+  delete ed.dataset.open;
+  box.querySelector('.wbNote').hidden = false;
+}
+
+async function wbSaveNote(box, pid){
+  const ta = box.querySelector('.wbEditor textarea');
+  const val = ta.value;
+  const r = await saveMastery(pid, { note: val });
+  if (r === null) return;                      // 校验没过，编辑器留着让人改
+  const v = (r.note !== undefined ? r.note : val) || '';
+  const view = box.querySelector('.wbNote');
+  view.textContent = v || '＋ 写一句错因 / 下次注意什么';
+  view.classList.toggle('empty', !v);
+  wbCloseEditor(box);
+  if (v) toast('备注已保存', 'ok');
+  /* 筛选是「有备注」时，清空备注这一行就该消失 —— 重绘一下最省事。
+     ★ 只在错题本页重绘：题面里也有同一个备注框，在那里保存不该把人
+       甩到错题本去。 */
+  if (SET.view === 'wrongbook' && WB_FILTER === 'noted') viewWrongbook({ keepScroll: true });
+}
+
+function wbBind(){
+  const app = document.getElementById('app');
+  if (!app || app.dataset.wbBound === '1') return;
+  app.addEventListener('click', async (ev) => {
+    /* 星标：列表 / 题面 / 错题本三处共用 [data-star] */
+    const st = ev.target.closest('[data-star]');
+    if (st){ ev.preventDefault(); ev.stopPropagation(); toggleStar(parseInt(st.dataset.star, 10), ev); return; }
+
+    const actEl = ev.target.closest('[data-act]');
+    if (!actEl) return;
+    const act = actEl.dataset.act;
+
+    if (act === 'filter'){
+      wbState('filter', actEl.dataset.k);
+      viewWrongbook();
+      return;
+    }
+    if (act === 'random'){
+      const all = await wrongbookData();
+      const pool = all.filter(it => wbMatch(it, WB_FILTER, WB_SUBJECT, WB_Q));
+      if (!pool.length) return;
+      const pick = pool[Math.floor(Math.random() * pool.length)];
+      toast('来，第 ' + pick.id + ' 题：' + pick.title);
+      location.hash = '#/p/' + pick.id;
+      return;
+    }
+    const box = actEl.closest('.wbItem') || actEl.closest('[data-pnotebox]');
+    if (!box) return;
+    const pid = parseInt(box.dataset.pid || box.dataset.pnotebox, 10);
+    if (!pid) return;
+
+    if (act === 'edit'){
+      const it = (await wrongbookData()).find(x => x.id === pid) || {};
+      wbOpenEditor(box, it);
+      return;
+    }
+    if (act === 'cancel'){ wbCloseEditor(box); return; }
+    if (act === 'save'){ await wbSaveNote(box, pid); return; }
+    if (act === 'delnote'){
+      box.querySelector('.wbEditor textarea').value = '';
+      await wbSaveNote(box, pid);
+      return;
+    }
+    if (act === 'lvl'){
+      const btn = ev.target.closest('button[data-l]');
+      if (!btn) return;
+      const n = parseInt(btn.dataset.l, 10);
+      const r = await saveMastery(pid, { level: n });
+      if (r === null) return;
+      box.querySelectorAll('.wbLvl button').forEach(b =>
+        b.classList.toggle('on', parseInt(b.dataset.l, 10) === n));
+      return;
+    }
+  });
+  app.addEventListener('change', (ev) => {
+    if (ev.target.id === 'wbSubj'){ wbState('subject', ev.target.value); viewWrongbook(); }
+  });
+  app.addEventListener('input', (ev) => {
+    if (ev.target.id !== 'wbQ') return;
+    clearTimeout(window._wbQT);
+    const v = ev.target.value;
+    window._wbQT = setTimeout(() => {
+      wbState('q', v);
+      viewWrongbook({ keepScroll: true });
+      const q = document.getElementById('wbQ');
+      if (q){ q.focus(); q.setSelectionRange(q.value.length, q.value.length); }
+    }, 220);
+  });
+  app.dataset.wbBound = '1';
+}
+
+/* 每次进错题本先把上次的筛选读回来（换页不丢设置） */
+function wbRestoreState(){
+  try {
+    const f = localStorage.getItem(LS.wbFilter);
+    if (f && WB_FILTERS.some(x => x.k === f)) WB_FILTER = f;
+    const s = localStorage.getItem(LS.wbSubject);
+    if (s) WB_SUBJECT = s;
+  } catch(e){}
+}
+
+
+/* =========================================================================
+   10.5 视图六：笔记（Obsidian 笔记区）
    ------------------------------------------------------------------
    数据是构建期由 tools/export_notes.py 转好的静态 JSON，全部同源 fetch，
    离线（没有后端）时照样能看 —— 跟题库一个待遇。
@@ -2646,11 +3302,15 @@ function importProgress(ev){
 async function boot(isReload){
   TOKEN = ensureToken();
   document.getElementById('navUser').textContent = nickname();
+  wbBind();            // 错题本的交互委托（#app 一直存在，绑一次就够）
+  wbRestoreState();    // 上次的筛选条件读回来
   /* ★ 顺序不能换：离线兜底的科目目录是**从题库现聚合出来的**，
      题库还没到手就去聚合，主页会渲染出「0 个题集」的空壳。 */
   await loadMeta();
   await loadProblems();
   await loadCatalog();
+  /* 收藏/备注的本地副本要等 loadProblems 定下 OFFLINE 再决定要不要拉服务端 */
+  await syncMasteryFromServer();
   renderNav();
   route();
   if (isReload) toast(OFFLINE ? '仍连不上后端，保持离线浏览' : '已连上后端', OFFLINE ? 'err' : 'ok');

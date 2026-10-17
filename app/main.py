@@ -13,7 +13,7 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
 from . import config, db, seed
-from .api import problems, submissions
+from .api import mastery, problems, submissions
 from .judge import sandbox
 from .judge.worker import get_worker
 
@@ -97,6 +97,7 @@ app.add_middleware(
 
 app.include_router(problems.router)
 app.include_router(submissions.router)
+app.include_router(mastery.router)   # 收藏 / 错题本 / 备注（mastery 的写通道）
 
 if WEB_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
