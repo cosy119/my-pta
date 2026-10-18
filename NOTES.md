@@ -33,7 +33,7 @@ SQLite（题库 + 提交记录 + 进度）
 
 ```bat
 python tools\export_static.py      &rem ★ 改题库/前端后必须重跑，重新生成 docs/
-python tools\verify_bank.py        &rem 308 题 / 715 点，双实现对拍
+python tools\verify_bank.py        &rem 333 题 / 791 点，双实现对拍
 python tools\selftest_cpp.py       &rem 9 项
 python tools\selftest_theory.py    &rem 14 项
 python tools\selfcheck.py          &rem 62 项
@@ -257,12 +257,12 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（308 题 / 3833 分 / 715 测试点）
+## 题库（333 题 / 4110 分 / 791 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
 | `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(67 = 53 + ext2 14) | 70 | 1060 | python | Python |
-| `ds` | `problems_bank_ds.py` | 59 | 979 | cpp | **C 或 C++ 任选** |
+| `ds` | `problems_bank_ds.py`（含 12 理论 + 13 经典题型编程，见下） | **84** | **1256** | cpp | **C 或 C++ 任选** |
 | `linux` | `problems_bank_linux.py` | 179 | 1794 | text | 理论题（单选 / 多选 / 判断 / 填空） |
 
 - ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
@@ -273,7 +273,20 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   **11→7 / 12→14 / 13→14 / 14→14 / 15→6 / 16→6**；另加「基础命令」45 + 「实验」20。
   （第 02 讲的内容由「基础命令」组覆盖 —— 那 45 道就是围绕 Shell 命令出的。）
   - 2026-10-15 再补：`part_multi()` 8 道**多选**，落在 07 / 11 / 12（×2）/ 13（×2）/ 14（×2）。
-- **题型分布（全库）**：编程 113 / 单选 123 / 判断 35 / 填空 25 / **多选 10** / 简答 2。
+- **题型分布（全库）**：编程 126 / 单选 123 / 判断 35 / 填空 25 / **多选 10** / 简答 2。
+
+### ★ DS 经典题型编程题（2026-10-18 补，_oracle_44~56）
+
+按三张经典题型图举一反三，难度 easy→medium 递进，全部「参考解 + alt 双撞」：
+
+| 讲 | 题目（13 道） |
+|---|---|
+| 02 线性表 | 顺序表建立遍历 / 有序插入 / 合并有序数组（哨兵法 alt）/ 循环右移（三次逆置 + 下标映射 alt）/ 最大子列和（Kadane + 前缀和 alt）/ 单词逆置 / 头插法建链表 / 两有序链表合并（哑结点）/ 约瑟夫环 / 单链表建表与就地逆置 |
+| 03 栈和队列 | 括号匹配检验 / 进制转换（递归 alt）/ 出栈序列的合法性 |
+
+- ★ 约瑟夫环参考解曾因 **0 基 idx 与 1 基数组混用**死循环（`%n` 只走 0..n-1、数组填 1..n）→ 已改纯 0 基；ref+alt 均加 `m % 剩余人数` 折算（约束 m ≤ 10⁹，逐个报数必 TLE）。
+- ★ 「单词逆置」「两表全空合并」的期望输出是**合法的 `"\n"` 空行**——`gen_ds_bank` 的空输出警示已放行 `"\n"`，仍拦截真空串。
+- ★ 尚未覆盖的题型（下轮「举一反三」候选）：链表去重、两有序链表交集、重排链表、双向循环链表、猴子选大王、表达式转换（中缀转后缀）、后缀式求值、堆栈模拟队列、银行业务队列、全排列、直方图最大矩形、一元多项式乘加。
 - `seed.py`：`SEED_PROBLEMS = CORE + BANK + DS + LINUX`；`SUBJECT_LABELS` 给三科目中文名；
   `_seed_specs()` 返回四元组 `(total, pts, section, subject)`，`backfill_points()` 同步 `subject`。
 
@@ -504,7 +517,7 @@ C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
 | `ui_e2e_wrongbook.mjs` | **23/23** | ★ **真 Chrome 测错题本**，两轮：① 在线（真 uvicorn + `/api` 反代）——点星、写备注、**刷新后备注还在**（= 真进库）、掌握度、题面收藏与备注、删备注归零；② 离线（只服务 `docs/`）——收藏与备注靠 localStorage，刷新不丢。零 JS 报错 |
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
 | `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
-| `verify_bank.py` | **320 题 / 727 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
+| `verify_bank.py` | **333 题 / 791 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |
 | `show_text_judge.mjs` | **全过** | 本地判题器的「行为说明书」：多种等价写法都认、变异错答案 71/72 被抓、309 个标准答案全 AC、351 个胡写全 WA |
 | `verify_theory_facts.py` | **45 过 / 0 不符 / 8 无法核验** | **理论题答案的实证核验**：179 道理论题里凡本机（Git Bash GNU coreutils 8.32 / GNU tar 1.35）能跑的，先跑出事实再对答案键；跑不了的如实列「无法核验」。**抓到过真 bug**：91/100 题的 explanation 曾写「`head -n +N` 报错」「`tail -n -N` 非法」——GNU 上全都不成立（`+N` 就是前 N 行；`-N` 归 tail 是最后 N 行），已改 |
 
@@ -633,6 +646,7 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
 ## 前端（PTA 风格）
 
 - **三层 hash 路由**：`#/` 题集广场（hero 总分进度 + 科目卡片）→ `#/set/<subject>` 题集内（状态筛选 + 搜索 + 按 `source_section` 分组折叠表格）→ `#/p/<id>` 题目页（左题面右编辑区）。另有 `#/subs` 我的提交、`#/notes` 笔记区、`#/wrongbook` 错题本。
+- ★ **科目独立编号（2026-10-18）**：每科从 1 起独立编号 —— `SUBJ_PREFIX={python:'PY',ds:'DS',linux:'LX'}` + `buildSubjSeq()`（PROBLEMS 排序后按 科目→讲次→id 现算 `SUBJ_SEQ[id]`）。表格与题面角标显示 `DS-12` 这类编号，**全局 id 只活在链接与 `data-pid` 属性**——脚本里别再拿角标文本当 id 用（`ui_e2e_editor.mjs` 已改成比 `dataset.pid`）。
 - 题目页按 `is_choice` 分支：选择题渲染可点选项圆标（**提交选项字母**）、判断题提交「对/错」正文、填空题 textarea、编程题按 `langs` 给 C/C++ 下拉。
 - **`GET /api/catalog`** 一次请求给出「科目 → 分组 → 题数 + 我的进度 + 总分」，前端不用拉全库自己聚合。
 - **离线降级**：连不上后端就读 `problems.json` + `localStorage`，拼成和在线一样的 CATALOG。
