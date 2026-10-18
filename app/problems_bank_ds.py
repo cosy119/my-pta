@@ -2942,6 +2942,818 @@ DS_PROBLEMS: list[dict] = [
         ]
     },
     {
+        "title": "顺序表的建立及遍历",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "顺序表",
+            "建表",
+            "遍历"
+        ],
+        "statement_md": "把 `n` 个整数依次存入顺序表（**尾插法**：读一个存一个，表尾追加），然后按存放顺序遍历输出。\n\n★ 这是所有顺序表题的「地基动作」：`SqList` 建表 → 遍历。后面对照着看：**头插法**建出来正好是反序（见「头插法创建单链表」一题）。",
+        "input_format": "第一行 `n`（1 ≤ n）。第二行 `n` 个整数。",
+        "output_format": "一行，`n` 个整数（空格分隔）。",
+        "constraints_md": "- 1 ≤ n ≤ 1000\n- |元素| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint a[MAXN];\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &a[k]);   /* 尾插 */\n    for (int k = 0; k < n; k++) printf(k ? \" %d\" : \"%d\", a[k]);\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\nint main() {\n    int n; cin >> n;\n    vector<int> a;\n    for (int k = 0; k < n; k++) { int v; cin >> v; a.push_back(v); }\n    for (size_t k = 0; k < a.size(); k++) cout << (k ? \" \" : \"\") << a[k];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "3\n1 2 3\n",
+                "expected_stdout": "1 2 3\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1\n-5\n",
+                "expected_stdout": "-5\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "4\n2 2 2 2\n",
+                "expected_stdout": "2 2 2 2\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n5 4 3 2 1\n",
+                "expected_stdout": "5 4 3 2 1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "递增有序顺序表的插入（保持有序）",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "顺序表",
+            "有序插入",
+            "搬移"
+        ],
+        "statement_md": "在**严格递增**的顺序表里插入 `x`，插完后**仍然递增**。\n\n★ 和「按位插入」的区别：位置不告诉你，得自己找——从前往后扫，找到第一个**大于 x** 的位置就是插入点（等值元素插在它们**后面**）。找位置 O(n)、搬移 O(n)，先找后搬一步都不能少。",
+        "input_format": "第一行 `n`。\n\n第二行 `n` 个严格递增的整数。\n\n第三行 `x`。",
+        "output_format": "一行，插入后仍递增的表（空格分隔）。",
+        "constraints_md": "- 1 ≤ n ≤ 1000\n- |元素|、|x| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint a[MAXN];\nint main(void) {\n    int n, x;\n    scanf(\"%d\", &n);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &a[k]);\n    scanf(\"%d\", &x);\n    int i = 0;\n    while (i < n && a[i] <= x) i++;      /* 第一个 > x 的位置 */\n    for (int j = n - 1; j >= i; j--) a[j + 1] = a[j];   /* 从后往前搬 */\n    a[i] = x;\n    for (int k = 0; k <= n; k++) printf(k ? \" %d\" : \"%d\", a[k]);\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：新开结果表，边扫边落，x 落一次 */\nint main() {\n    int n, x; cin >> n;\n    vector<int> a(n), b;\n    for (int &v : a) cin >> v;\n    cin >> x;\n    bool placed = false;\n    for (int v : a) {\n        if (!placed && x < v) { b.push_back(x); placed = true; }\n        b.push_back(v);\n    }\n    if (!placed) b.push_back(x);         // 比谁都大 / 表里全相等\n    for (size_t k = 0; k < b.size(); k++) cout << (k ? \" \" : \"\") << b[k];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "5\n1 3 5 7 9\n6\n",
+                "expected_stdout": "1 3 5 6 7 9\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n1 3 5 7 9\n0\n",
+                "expected_stdout": "0 1 3 5 7 9\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n1 3 5 7 9\n10\n",
+                "expected_stdout": "1 3 5 7 9 10\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "3\n2 2 2\n2\n",
+                "expected_stdout": "2 2 2 2\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "1\n7\n7\n",
+                "expected_stdout": "7 7\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "合并有序数组",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "归并",
+            "双指针",
+            "有序表"
+        ],
+        "statement_md": "两个**非递减**数组 `a`（长 `n`）和 `b`（长 `m`），合并成一个**非递减**数组，不许先拼起来再排序——用**双指针**一次扫完。\n\n★ 相等时取 `a` 的（`<=` 归左边）——这就是归并排序「稳定」的同一套写法，第 08 讲的归并题里还会见到它。",
+        "input_format": "第一行 `n m`（n、m 允许为 0）。\n\n第二行 `a` 的 `n` 个非递减整数（可为空行）。\n\n第三行 `b` 的 `m` 个非递减整数（可为空行）。",
+        "output_format": "一行，合并后的非递减数组（空表合并结果为空行）。",
+        "constraints_md": "- 0 ≤ n, m ≤ 1000\n- |元素| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 2005\nint a[MAXN], b[MAXN];\nint main(void) {\n    int n, m;\n    scanf(\"%d %d\", &n, &m);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &a[k]);\n    for (int k = 0; k < m; k++) scanf(\"%d\", &b[k]);\n    int i = 0, j = 0, first = 1;\n    while (i < n && j < m) {\n        if (a[i] <= b[j]) printf(first ? \"%d\" : \" %d\", a[i++]);\n        else              printf(first ? \"%d\" : \" %d\", b[j++]);\n        first = 0;\n    }\n    while (i < n) { printf(first ? \"%d\" : \" %d\", a[i++]); first = 0; }\n    while (j < m) { printf(first ? \"%d\" : \" %d\", b[j++]); first = 0; }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：哨兵法——两表各补一个 +∞，循环 n+m 次，每轮挑小的（归并排序原味） */\nint main() {\n    int n, m; cin >> n >> m;\n    vector<int> a(n), b(m);\n    for (int &v : a) cin >> v;\n    for (int &v : b) cin >> v;\n    a.push_back(2000000000); b.push_back(2000000000);\n    vector<int> out;\n    int i = 0, j = 0;\n    for (int k = 0; k < n + m; k++) {\n        if (a[i] <= b[j]) { out.push_back(a[i]); i++; }\n        else { out.push_back(b[j]); j++; }\n    }\n    for (size_t k = 0; k < out.size(); k++) cout << (k ? \" \" : \"\") << out[k];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "3 3\n1 3 5\n2 4 6\n",
+                "expected_stdout": "1 2 3 4 5 6\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "2 2\n1 1\n1 1\n",
+                "expected_stdout": "1 1 1 1\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1 1\n9\n1\n",
+                "expected_stdout": "1 9\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "4 0\n1 2 3 4\n\n",
+                "expected_stdout": "1 2 3 4\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "0 3\n\n5 6 7\n",
+                "expected_stdout": "5 6 7\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "数组元素循环右移 n 位",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "循环移位",
+            "数组",
+            "下标变换"
+        ],
+        "statement_md": "把长度为 `n` 的数组**循环右移 `k` 位**：每个元素后移 `k` 格，移出右端的绕回左端。\n\n★ 两个坑：① `k` 可能比 `n` 大，先 `k %= n`；② `k % n == 0` 时数组**原样不动**——直接按 `a[-k:] + a[:-k]` 切片写，k=0 时会算出整个数组的两倍拼接，记得特判。\n\n三次逆置法（教材延伸）：逆置前 n-k 位 → 逆置后 k 位 → 整体逆置，原地 O(1) 空间完成，值得手玩一遍。",
+        "input_format": "第一行 `n k`。第二行 `n` 个整数。",
+        "output_format": "一行，右移后的数组（空格分隔）。",
+        "constraints_md": "- 1 ≤ n ≤ 1000\n- 0 ≤ k ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint a[MAXN];\nvoid rev(int l, int r) {                 /* 逆置 a[l..r]（闭区间） */\n    while (l < r) { int t = a[l]; a[l] = a[r]; a[r] = t; l++; r--; }\n}\nint main(void) {\n    int n, k;\n    scanf(\"%d %d\", &n, &k);\n    for (int i = 0; i < n; i++) scanf(\"%d\", &a[i]);\n    k %= n;\n    if (k) {                             /* 三次逆置法：原地完成 */\n        rev(0, n - k - 1);\n        rev(n - k, n - 1);\n        rev(0, n - 1);\n    }\n    for (int i = 0; i < n; i++) printf(i ? \" %d\" : \"%d\", a[i]);\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：直接按下标映射——新位置 (i + k) % n，O(n) 空间换直白 */\nint main() {\n    int n, k; cin >> n >> k;\n    vector<int> a(n), b(n);\n    for (int i = 0; i < n; i++) cin >> a[i];\n    k %= n;\n    for (int i = 0; i < n; i++) b[(i + k) % n] = a[i];\n    for (int i = 0; i < n; i++) cout << (i ? \" \" : \"\") << b[i];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "5 2\n1 2 3 4 5\n",
+                "expected_stdout": "4 5 1 2 3\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 7\n1 2 3 4 5\n",
+                "expected_stdout": "4 5 1 2 3\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 5\n1 2 3 4 5\n",
+                "expected_stdout": "1 2 3 4 5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "1 100\n9\n",
+                "expected_stdout": "9\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "3 1\n7 8 9\n",
+                "expected_stdout": "9 7 8\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "最大子列和问题",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "最大子列和",
+            "Kadane",
+            "动态规划"
+        ],
+        "statement_md": "在 `n` 个整数（可正可负）里找**连续**子列，使和最大，输出这个最大和。\n\n★ 口径：**允许空子列**——全负数时输出 `0`（一个元素都不选也是合法子列）。\n\nKadane 思想：从头扫，`cur` 记「以当前元素结尾的最大子列和」——前缀和是负数就**果断丢弃重开**（`cur = max(v, cur + v)` 的手写版），`best` 只记历史最高。O(n) 一趟完事，枚举所有起止点的 O(n³)/O(n²) 都能被它秒。",
+        "input_format": "第一行 `n`。第二行 `n` 个整数。",
+        "output_format": "一行，最大子列和（全负输出 `0`）。",
+        "constraints_md": "- 1 ≤ n ≤ 100000\n- |元素| ≤ 1000",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 100005\nint a[MAXN];\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &a[k]);\n    long long best = 0, cur = 0;\n    for (int k = 0; k < n; k++) {\n        cur = (cur > 0) ? cur + a[k] : a[k];   /* 负前缀果断丢 */\n        if (cur > best) best = cur;\n    }\n    printf(\"%lld\\n\", best);\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：前缀和视角——最大子列和 = max(前缀和) - min(此前前缀和)，前缀里自带空子列(0) */\nint main() {\n    int n; cin >> n;\n    long long run = 0, mn = 0, best = 0;\n    for (int k = 0; k < n; k++) {\n        long long v; cin >> v;\n        run += v;\n        if (run - mn > best) best = run - mn;\n        if (run < mn) mn = run;\n    }\n    cout << best << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "6\n-2 11 -4 13 -5 -2\n",
+                "expected_stdout": "20\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "4\n-1 -2 -3 -4\n",
+                "expected_stdout": "0\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1\n5\n",
+                "expected_stdout": "5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n1 2 3 4 5\n",
+                "expected_stdout": "15\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "8\n4 -3 5 -2 -1 2 6 -2\n",
+                "expected_stdout": "11\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "单词逆置",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "字符串",
+            "逆置",
+            "分词"
+        ],
+        "statement_md": "把一行英文里的**单词顺序颠倒**：输入 `hello world`，输出 `world hello`。\n\n★ 口径：单词间可能**有多个空格**、首尾也可能有空格——输出一律以**单个空格**分隔，没有多余空白；整行没有单词就输出空行。\n\n用栈想最自然：单词一个个**进栈**，再逐个**出栈**拼接——后进先出天然就是逆序。",
+        "input_format": "一行英文（长度 ≤ 10000，只含空格和大小写字母）。",
+        "output_format": "一行，单词顺序颠倒、单空格分隔；无单词则为空行。",
+        "constraints_md": "- 1 ≤ 单词数 ≤ 2000",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#include <string.h>\n#include <ctype.h>\nint main(void) {\n    char line[10005];\n    if (!fgets(line, sizeof line, stdin)) { printf(\"\\n\"); return 0; }\n    /* 扫一遍：一个单词 = 一段连续字母，找到就从末尾倒着写 */\n    char *w[2005];\n    int cnt = 0;\n    for (char *p = line; *p; ) {\n        while (*p && isspace((unsigned char)*p)) p++;\n        if (!*p) break;\n        w[cnt++] = p;\n        while (*p && !isspace((unsigned char)*p)) p++;\n        if (*p) *p++ = '\\0';\n    }\n    for (int k = cnt - 1; k >= 0; k--)\n        printf(k == cnt - 1 ? \"%s\" : \" %s\", w[k]);\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <sstream>\n#include <stack>\n#include <string>\nusing namespace std;\n/* 另一套：正经用栈——单词进栈，出栈拼接（后进先出 = 逆序） */\nint main() {\n    string line;\n    if (!getline(cin, line)) { cout << \"\\n\"; return 0; }\n    istringstream in(line);\n    stack<string> st;\n    string w;\n    while (in >> w) st.push(w);\n    bool first = true;\n    while (!st.empty()) {\n        if (!first) cout << \" \";\n        cout << st.top();\n        st.pop();\n        first = false;\n    }\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "hello world\n",
+                "expected_stdout": "world hello\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "  the   quick  fox \n",
+                "expected_stdout": "fox quick the\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "one\n",
+                "expected_stdout": "one\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "  \n",
+                "expected_stdout": "\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "a b a\n",
+                "expected_stdout": "a b a\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "头插法创建单链表、遍历链表",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "单链表",
+            "头插法",
+            "遍历"
+        ],
+        "statement_md": "读 `n` 个整数，按输入顺序用**头插法**建一条带头结点的单链表，再从头到尾遍历输出。\n\n★ 头插法 = 新结点总插在**表头**，建好后结点次序与输入**正好相反**（理论题考过的同款结论）。想输出与输入同序，得用尾插法——或者干脆建完再**就地逆置**（下一题）。",
+        "input_format": "第一行 `n`。第二行 `n` 个整数（按插入顺序给出）。",
+        "output_format": "一行，遍历链表得到的 `n` 个整数（与输入顺序相反）。",
+        "constraints_md": "- 1 ≤ n ≤ 1000",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#include <stdlib.h>\ntypedef struct Lnode {\n    int v;\n    struct Lnode *next;\n} Lnode;\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    Lnode head; head.next = NULL;          /* 带头结点 */\n    for (int k = 0; k < n; k++) {\n        int v; scanf(\"%d\", &v);\n        Lnode *p = (Lnode*)malloc(sizeof(Lnode));\n        p->v = v;\n        p->next = head.next;               /* 头插：插在首元结点前 */\n        head.next = p;\n    }\n    int first = 1;\n    for (Lnode *p = head.next; p; p = p->next) {\n        printf(first ? \"%d\" : \" %d\", p->v);\n        first = 0;\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n/* 另一套：不用指针，vector 顺序收 + reverse（头插法的效果） */\nint main() {\n    int n; cin >> n;\n    vector<int> a;\n    for (int k = 0; k < n; k++) { int v; cin >> v; a.push_back(v); }\n    reverse(a.begin(), a.end());\n    for (size_t k = 0; k < a.size(); k++) cout << (k ? \" \" : \"\") << a[k];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "4\n1 2 3 4\n",
+                "expected_stdout": "4 3 2 1\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1\n9\n",
+                "expected_stdout": "9\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "3\n5 5 5\n",
+                "expected_stdout": "5 5 5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "6\n1 2 3 4 5 6\n",
+                "expected_stdout": "6 5 4 3 2 1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "两个有序链表序列的合并",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "单链表",
+            "合并",
+            "哨兵结点"
+        ],
+        "statement_md": "两条**非递减**的单链表 `L1`、`L2`（各以 `-1` 结尾，链表可以有空表），合并成一条**非递减**链表并输出。\n\n★ 教材做法：设一个**哨兵/哑结点**当结果链表的头，两路指针比大小，小的摘下来接到结果尾部——**不许新建结点**，重组现有指针。相等时取 `L1` 的。这题就是 PTA 经典「数据结构」开篇题的口吻。",
+        "input_format": "两行：第一行 `L1` 的元素（`-1` 结尾），第二行 `L2` 的元素（`-1` 结尾）。元素非递减；`-1` 只作结束标志。",
+        "output_format": "一行，合并后的非递减序列（空格分隔；两表全空则为空行）。",
+        "constraints_md": "- 链表长度 0 ≤ len ≤ 1000\n- |元素| ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#include <stdlib.h>\ntypedef struct Lnode { int v; struct Lnode *next; } Lnode;\nLnode* build(void) {                     /* 尾插建表，返回首元指针（NULL = 空表） */\n    Lnode *h = NULL, *t = NULL;\n    int v;\n    while (scanf(\"%d\", &v) == 1 && v != -1) {\n        Lnode *p = (Lnode*)malloc(sizeof(Lnode));\n        p->v = v; p->next = NULL;\n        if (t) t->next = p; else h = p;\n        t = p;\n    }\n    return h;\n}\nint main(void) {\n    Lnode *a = build(), *b = build();\n    Lnode dummy; Lnode *tail = &dummy;   /* 哑结点收结果 */\n    dummy.next = NULL;\n    while (a && b) {\n        if (a->v <= b->v) { tail->next = a; a = a->next; }\n        else              { tail->next = b; b = b->next; }\n        tail = tail->next;\n    }\n    tail->next = a ? a : b;\n    int first = 1;\n    for (Lnode *p = dummy.next; p; p = p->next) {\n        printf(first ? \"%d\" : \" %d\", p->v);\n        first = 0;\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\nusing namespace std;\n/* 另一套：读入同款，合并改用「先接 a 剩余再穿插」的朴素双数组写法 */\nint main() {\n    vector<int> a, b;\n    int v;\n    auto read = [&](vector<int>& s) {\n        while (cin >> v && v != -1) s.push_back(v);\n    };\n    read(a); read(b);\n    vector<int> out;\n    size_t i = 0, j = 0;\n    while (i < a.size() && j < b.size())\n        out.push_back(a[i] <= b[j] ? a[i++] : b[j++]);\n    while (i < a.size()) out.push_back(a[i++]);\n    while (j < b.size()) out.push_back(b[j++]);\n    for (size_t k = 0; k < out.size(); k++) cout << (k ? \" \" : \"\") << out[k];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "1 3 5 -1\n2 4 6 -1\n",
+                "expected_stdout": "1 2 3 4 5 6\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "-1\n1 2 -1\n",
+                "expected_stdout": "1 2\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1 1 -1\n1 -1\n",
+                "expected_stdout": "1 1 1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "3 1 2 -1\n-1\n",
+                "expected_stdout": "3 1 2\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "-1\n-1\n",
+                "expected_stdout": "\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "约瑟夫环",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "约瑟夫",
+            "环形",
+            "模拟"
+        ],
+        "statement_md": "`n` 个人围成一圈，编号 `1..n`。从编号 1 的开始**报数**，报到 `m` 的人出圈，下一个人从 1 重新报数——输出全部出圈顺序。\n\n★ 数据结构味最浓的写法是**循环链表**：删结点 = 前驱 `next` 跨过去。用数组模拟等价：出圈下标 `idx = (idx + m - 1) % 剩余人数`，删掉后**原地接着**从「刚出圈那位的位置」继续数。\n\n几个边界心里过一遍：`m=1` 就是按编号顺序全出；`n=1` 直接出自己；`m` 比人数大会绕圈（取模兜底）。",
+        "input_format": "一行 `n m`（1 ≤ n ≤ 1000，1 ≤ m ≤ 10⁹）。",
+        "output_format": "一行，`n` 个出圈编号（空格分隔）。",
+        "constraints_md": "- 1 ≤ n ≤ 1000\n- 1 ≤ m ≤ 10⁹",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint a[MAXN];                             /* a[i]：0 基，1 = 还在圈内 */\nint main(void) {\n    int n, m;\n    scanf(\"%d %d\", &n, &m);\n    for (int i = 0; i < n; i++) a[i] = 1;\n    int left = n, idx = 0, first = 1;    /* idx：当前报数人的下标（0 基） */\n    while (left) {\n        /* m 可达 1e9，先按剩余人数折算步长：报 m = 绕 alive 圈后的 step */\n        int step = (int)((long long)m % left);\n        if (!step) step = left;\n        int cnt = 0;\n        while (1) {\n            if (a[idx]) cnt++;           /* 在圈内的才计数 */\n            if (cnt == step) break;\n            idx = (idx + 1) % n;\n        }\n        a[idx] = 0;\n        printf(first ? \"%d\" : \" %d\", idx + 1);\n        first = 0;\n        left--;\n        if (!left) break;\n        do { idx = (idx + 1) % n; } while (!a[idx]);   /* 从下一位重新报 1 */\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\n#include <list>\nusing namespace std;\n/* 另一套：list 模拟循环链表——迭代器绕圈，erase 返回下一个位置 */\nint main() {\n    int n, m; cin >> n >> m;\n    list<int> ring;\n    for (int i = 1; i <= n; i++) ring.push_back(i);\n    auto it = ring.begin();\n    bool first = true;\n    while (!ring.empty()) {\n        long long k = (long long)(m - 1) % (long long)ring.size();  /* m 可达 1e9，先折算 */\n        for (long long c = 0; c < k; c++) {\n            if (++it == ring.end()) it = ring.begin();\n        }\n        if (!first) cout << \" \";\n        cout << *it;\n        first = false;\n        it = ring.erase(it);             /* 出圈；erase 给的下一个位置接着报 1 */\n        if (it == ring.end()) it = ring.begin();\n    }\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "5 3\n",
+                "expected_stdout": "3 1 5 2 4\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "7 2\n",
+                "expected_stdout": "2 4 6 1 5 3 7\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "5 1\n",
+                "expected_stdout": "1 2 3 4 5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "1 7\n",
+                "expected_stdout": "1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "6 5\n",
+                "expected_stdout": "5 4 6 2 3 1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "单链表建表与就地逆置",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "单链表",
+            "就地逆置",
+            "指针"
+        ],
+        "statement_md": "用**尾插法**建一条带头结点的单链表，先遍历输出一次；然后**就地逆置**（一个新结点都不许开，纯指针重排），再遍历输出一次。\n\n★ 就地逆置三指针套路（教材 2.5 的标准动作）：\n\n```c\np = 首元结点; 原表拆空;\nwhile (p) { q = p->next; p->next = 新表头后; 头插 p; p = q; }\n```\n\n本质 = 把结点按原序逐个**头插**进新链——练的就是「头插法反序」的指针手感。",
+        "input_format": "第一行 `n`。第二行 `n` 个整数。",
+        "output_format": "两行：第一行建表后的正序遍历；第二行就地逆置后的遍历。",
+        "constraints_md": "- 1 ≤ n ≤ 1000",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 02 讲 · 线性表",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#include <stdlib.h>\ntypedef struct Lnode { int v; struct Lnode *next; } Lnode;\nint main(void) {\n    int n;\n    scanf(\"%d\", &n);\n    Lnode head; head.next = NULL;\n    Lnode *tail = &head;                 /* 尾插建表 */\n    for (int k = 0; k < n; k++) {\n        int v; scanf(\"%d\", &v);\n        Lnode *p = (Lnode*)malloc(sizeof(Lnode));\n        p->v = v; p->next = NULL;\n        tail->next = p; tail = p;\n    }\n    int first = 1;\n    for (Lnode *p = head.next; p; p = p->next) {\n        printf(first ? \"%d\" : \" %d\", p->v); first = 0;\n    }\n    printf(\"\\n\");\n    /* 就地逆置：摘下首元结点起的一串，逐个头插回 head */\n    Lnode *p = head.next, *newhead = NULL;\n    while (p) {\n        Lnode *q = p->next;\n        p->next = newhead;\n        newhead = p;\n        p = q;\n    }\n    head.next = newhead;\n    first = 1;\n    for (Lnode *p2 = head.next; p2; p2 = p2->next) {\n        printf(first ? \"%d\" : \" %d\", p2->v); first = 0;\n    }\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <vector>\n#include <algorithm>\nusing namespace std;\n/* 另一套：数组建表，双端翻转对照（行为等价；指针版的正确性由对拍保证） */\nint main() {\n    int n; cin >> n;\n    vector<int> a(n);\n    for (int &v : a) cin >> v;\n    for (int k = 0; k < n; k++) cout << (k ? \" \" : \"\") << a[k];\n    cout << \"\\n\";\n    reverse(a.begin(), a.end());\n    for (int k = 0; k < n; k++) cout << (k ? \" \" : \"\") << a[k];\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "5\n1 2 3 4 5\n",
+                "expected_stdout": "1 2 3 4 5\n5 4 3 2 1\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "1\n8\n",
+                "expected_stdout": "8\n8\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "3\n1 1 2\n",
+                "expected_stdout": "1 1 2\n2 1 1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "4\n-1 0 -1 3\n",
+                "expected_stdout": "-1 0 -1 3\n3 -1 0 -1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "括号匹配检验",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "栈",
+            "括号匹配",
+            "顺序栈应用"
+        ],
+        "statement_md": "判断一行括号串（只含 `()[]{}` 六种字符）是否**匹配**：每种左括号都有同类的右括号按正确顺序闭合。匹配输出 `yes`，否则 `no`。\n\n★ 栈的招牌应用（3.3.2 的第一个例子）：左括号**进栈**，碰到右括号就**弹栈对暗号**——弹出来的必须同类；最后栈必须是**空的**（不空 = 左括号多了）。三种失配全在这题里：类型对不上、右括号多了、左括号多了。",
+        "input_format": "一行，仅由 `()[]{}` 组成的非空串（长度 ≤ 10000）。",
+        "output_format": "一行，`yes` 或 `no`。",
+        "constraints_md": "- 1 ≤ 串长 ≤ 10000",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 03 讲 · 栈和队列",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 10005\nchar st[MAXN];\nint main(void) {\n    char line[MAXN];\n    if (!fgets(line, sizeof line, stdin)) { printf(\"no\\n\"); return 0; }\n    int top = -1, ok = 1;\n    for (char *p = line; *p && ok; p++) {\n        char c = *p;\n        if (c == '(' || c == '[' || c == '{') st[++top] = c;\n        else if (c == ')' || c == ']' || c == '}') {\n            char want = (c == ')') ? '(' : (c == ']') ? '[' : '{';\n            if (top < 0 || st[top] != want) ok = 0;\n            else top--;\n        }\n        /* 其他字符忽略，防御性 */\n    }\n    printf(ok && top < 0 ? \"yes\\n\" : \"no\\n\");   /* 栈空才叫匹配完 */\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <stack>\n#include <string>\nusing namespace std;\n/* 另一套：map 存配对关系，STL 栈直译 */\nint main() {\n    string line;\n    if (!getline(cin, line)) { cout << \"no\\n\"; return 0; }\n    string open = \"([{\", close = \")]}\";\n    stack<char> st;\n    bool ok = true;\n    for (char c : line) {\n        size_t o = open.find(c), cl = close.find(c);\n        if (o != string::npos) st.push(c);\n        else if (cl != string::npos) {\n            if (st.empty() || st.top() != open[cl]) { ok = false; break; }\n            st.pop();\n        }\n    }\n    cout << (ok && st.empty() ? \"yes\" : \"no\") << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "()[]{}\n",
+                "expected_stdout": "yes\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "([)]\n",
+                "expected_stdout": "no\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "((\n",
+                "expected_stdout": "no\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": ")]\n",
+                "expected_stdout": "no\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "{[()]}\n",
+                "expected_stdout": "yes\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "进制转换",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": [
+            "栈",
+            "进制转换",
+            "数制"
+        ],
+        "statement_md": "把十进制非负整数 `n` 转成 `b` 进制（`2 ≤ b ≤ 16`），超过 9 的数字用**大写** `A`~`F`。\n\n★ 教材算法 3.1 的直译：反复 `n % b` **进栈**、`n /= b`，最后**出栈**拼串——除基取余倒序读，栈天生干这个。\n\n坑只有两个：`n = 0` 要特判输出 `0`（循环一次都不走）；字母是大写，`A` 不是 `a`。",
+        "input_format": "一行 `n b`（0 ≤ n ≤ 10⁹，2 ≤ b ≤ 16）。",
+        "output_format": "一行，`n` 的 `b` 进制表示（`n=0` 输出 `0`）。",
+        "constraints_md": "- 0 ≤ n ≤ 10⁹\n- 2 ≤ b ≤ 16",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 03 讲 · 栈和队列",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\nint main(void) {\n    long long n; int b;\n    scanf(\"%lld %d\", &n, &b);\n    char st[40];\n    int top = -1;\n    if (n == 0) st[++top] = '0';         /* 特判：0 转几进制都是 0 */\n    while (n) {\n        int r = (int)(n % b);\n        st[++top] = (char)(r < 10 ? '0' + r : 'A' + r - 10);\n        n /= b;\n    }\n    while (top >= 0) putchar(st[top--]); /* 出栈 = 倒序读余数 */\n    printf(\"\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <stack>\n#include <string>\nusing namespace std;\n/* 另一套：递归版——先递归处理高位，再印当前位（系统栈替你倒序） */\nvoid conv(long long n, int b) {\n    if (!n) return;\n    conv(n / b, b);\n    int r = n % b;\n    putchar(r < 10 ? '0' + r : 'A' + r - 10);\n}\nint main() {\n    long long n; int b;\n    cin >> n >> b;\n    if (n == 0) cout << \"0\";\n    else conv(n, b);\n    cout << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "0 2\n",
+                "expected_stdout": "0\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "255 16\n",
+                "expected_stdout": "FF\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "100 2\n",
+                "expected_stdout": "1100100\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "31 8\n",
+                "expected_stdout": "37\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "1023 16\n",
+                "expected_stdout": "3FF\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "16 16\n",
+                "expected_stdout": "10\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
+        "title": "出栈序列的合法性",
+        "subject": "ds",
+        "line": "cpp",
+        "difficulty": 2,
+        "total_score": 15,
+        "tags": [
+            "栈",
+            "出栈序列",
+            "模拟"
+        ],
+        "statement_md": "`1..n` 依次**进栈**（进栈和出栈可以任意交错），给定一个出栈序列，判断它是否合法。合法输出 `yes`，否则 `no`。\n\n★ 判定法：拿目标序列当清单，`1` 到 `n` 顺序进栈，**栈顶一等于目标就弹出**；某一步弹不出还进不进去，就是假序列。理论题里 「`3 1 2` 不可能」的通用版判法就是它。",
+        "input_format": "第一行 `n`。\n\n第二行 `n` 个互不相同的整数（是 `1..n` 的一个排列）。",
+        "output_format": "一行，`yes` 或 `no`。",
+        "constraints_md": "- 1 ≤ n ≤ 1000",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "float_eps": 1e-06,
+        "origin": "manual",
+        "status": "published",
+        "source_section": "第 03 讲 · 栈和队列",
+        "ref_interpreter": "gpp",
+        "reference_solution": "#include <stdio.h>\n#define MAXN 1005\nint st[MAXN], target[MAXN];\nint main(void) {\n    int n, top = -1, nxt = 1;\n    scanf(\"%d\", &n);\n    for (int k = 0; k < n; k++) scanf(\"%d\", &target[k]);\n    int ok = 1;\n    for (int k = 0; k < n && ok; k++) {\n        int want = target[k];\n        while (top < 0 || st[top] != want) {\n            if (nxt > n) { ok = 0; break; }   /* 进完还没有 = 假 */\n            st[++top] = nxt++;\n        }\n        if (ok) top--;                        /* 弹出目标元素 */\n    }\n    printf(ok ? \"yes\\n\" : \"no\\n\");\n    return 0;\n}\n",
+        "alt_solution": "#include <iostream>\n#include <stack>\n#include <vector>\nusing namespace std;\n/* 另一套：反着走——枚举每次「先弹到弹不动为止」，弹的顺序必须恰好等于目标 */\nint main() {\n    int n; cin >> n;\n    vector<int> t(n);\n    for (int &v : t) cin >> v;\n    stack<int> st;\n    int nxt = 1, j = 0;\n    while (j < n) {\n        if (!st.empty() && st.top() == t[j]) { st.pop(); j++; continue; }\n        if (nxt > n) break;\n        st.push(nxt++);\n    }\n    cout << (j == n ? \"yes\" : \"no\") << \"\\n\";\n    return 0;\n}\n",
+        "cases": [
+            {
+                "stdin": "5\n1 2 3 4 5\n",
+                "expected_stdout": "yes\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "3\n3 1 2\n",
+                "expected_stdout": "no\n",
+                "is_sample": 1,
+                "kind": "sample",
+                "explanation": ""
+            },
+            {
+                "stdin": "3\n3 2 1\n",
+                "expected_stdout": "yes\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "4\n2 1 4 3\n",
+                "expected_stdout": "yes\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "5\n5 4 3 2 1\n",
+                "expected_stdout": "yes\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            },
+            {
+                "stdin": "4\n4 1 2 3\n",
+                "expected_stdout": "no\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": ""
+            }
+        ]
+    },
+    {
         "title": "「逻辑结构」到底指什么",
         "subject": "ds",
         "line": "text",

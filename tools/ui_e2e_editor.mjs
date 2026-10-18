@@ -91,7 +91,8 @@ async function waitEditor(page) {
 async function waitProblem(page, id) {
   await page.waitForFunction(expected => {
     const badge = document.querySelector('.pill.p-pri');
-    if (!badge || badge.textContent.trim() !== '#' + expected) return false;
+    // 2026-10-18 起角标显示科内独立编号（DS-07），全局 id 挪到 data-pid
+    if (!badge || String(badge.dataset.pid) !== String(expected)) return false;
     const h = document.getElementById('codeEditor');
     return !!(h && !h.hidden && h.querySelector('.cm-content'));
   }, { timeout: 25000 }, id);
@@ -109,7 +110,7 @@ async function waitTheory(page, id) {
   if (cur !== '#/p/' + id) await page.evaluate(id => { location.hash = '#/p/' + id; }, id);
   await page.waitForFunction(expected => {
     const b = document.querySelector('.pill.p-pri');
-    return !!(b && b.textContent.trim() === '#' + expected);
+    return !!(b && String(b.dataset.pid) === String(expected));
   }, { timeout: 20000 }, id);
   await sleep(500);
 }

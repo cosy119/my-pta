@@ -1368,6 +1368,20 @@ function buildLocalCatalog(){
            user_max_score: list.reduce((x,s) => x + s.max_score, 0) };
 }
 const SUBJECT_LABELS = { python:'Python 快乐编程基础入门', ds:'数据结构（C 语言版）', linux:'Linux 系统应用与开发' };
+
+/* 各科目题号相互独立（2026-10-18）：按展示顺序（科目 → 讲次 → id）在科内从 1 编号，
+   显示成 DS-01 / PY-01 / LX-01；全局 id 只作链接与进度键，不再当题号展示。 */
+const SUBJ_PREFIX = { python: 'PY', ds: 'DS', linux: 'LX' };
+let SUBJ_SEQ = {};
+function buildSubjSeq() {
+  SUBJ_SEQ = {};
+  const cnt = {};
+  PROBLEMS.forEach(p => {
+    const s = p.subject || 'python';
+    cnt[s] = (cnt[s] || 0) + 1;
+    SUBJ_SEQ[p.id] = (SUBJ_PREFIX[s] || s.toUpperCase()) + '-' + String(cnt[s]).padStart(2, '0');
+  });
+}
 const SUBJECT_ORDER = { python:0, ds:1, linux:2 };
 const orderOf = k => (k in SUBJECT_ORDER ? SUBJECT_ORDER[k] : 9);
 function lecOf(name){ const m = /第\s*(\d+)\s*讲/.exec(String(name||'')); return m ? parseInt(m[1],10) : 0; }
@@ -1423,6 +1437,7 @@ async function loadProblems(){
   }
   PROBLEMS.sort((a,b) => orderOf(a.subject||'python') - orderOf(b.subject||'python')
     || lecOf(a.source_section) - lecOf(b.source_section) || a.id - b.id);
+  buildSubjSeq();
 }
 
 /* 让页面上的进度数字始终是本地的「最新真相」 */
@@ -1748,7 +1763,7 @@ function rowHtml(p){
   return '<tr>'
     + '<td class="c-st"><span class="st ' + stCls + '" title="'
       + ({solved:'已解决', partial:'部分正确', att:'尝试过', none:'未做'}[st]) + '">' + stTxt + '</span></td>'
-    + '<td class="c-no">' + p.id + '</td>'
+    + '<td class="c-no">' + esc(SUBJ_SEQ[p.id] || p.id) + '</td>'
     + '<td class="c-tt">'
       + '<button type="button" class="wbStarSm' + (isStarred(p) ? ' on' : '') + '"'
       +   ' data-star="' + p.id + '" aria-pressed="' + (isStarred(p) ? 'true' : 'false') + '"'
@@ -1955,7 +1970,7 @@ function renderProblem(){
   let left = '<div class="pcard pstmt">'
     + '<h1 class="ptitle">' + esc(p.title) + '</h1>'
     + '<div class="chips">'
-    +   '<span class="pill p-pri">#' + p.id + '</span>'
+    +   '<span class="pill p-pri" data-pid="' + p.id + '">' + esc(SUBJ_SEQ[p.id] || ('#' + p.id)) + '</span>'
     +   '<span class="tyTag ' + typeClass(p) + '">' + esc(problemType(p)) + '</span>'
     +   '<span class="pill">' + esc(p.source_section || '') + '</span>'
     +   noteChipFor(p)
