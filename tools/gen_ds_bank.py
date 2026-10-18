@@ -5329,6 +5329,4860 @@ int main() {
 #  - 用 app/bank_kit.py 的 mc / tf 造，line = "text"，浏览器本地判题同样支持
 #  - verify_bank 对 line=text 的题不要求 alt_solution（答案本身跑得通即可）
 # --------------------------------------------------------------------- #
+#  第 04 讲扩充：串、数组和广义表经典题型（循序渐进 + 举一反三）
+# --------------------------------------------------------------------- #
+
+def _oracle_57(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    a = [int(v) for v in d[1:1 + n * n]]
+    ok = True
+    for i in range(n):
+        for j in range(i + 1, n):
+            if a[i * n + j] != a[j * n + i]:
+                ok = False
+                break
+    return ("yes\n" if ok else "no\n")
+
+add(
+    title="判断对称矩阵",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=1, score=10, tags=["数组", "对称矩阵", "二维数组"],
+    statement_md=(
+        "给定一个 `n` 阶方阵 `A`，判断它是否为**对称矩阵**（即对任意 "
+        "`1 ≤ i, j ≤ n` 都满足 `A[i][j] == A[j][i]`）。\n\n"
+        "★ 只需要检查**上三角**（`j > i`）的元素是否等于对应的下三角元素；"
+        "主对角线元素 `A[i][i]` 天然等于自己，不用比。这是后面学习"
+        "「对称矩阵压缩存储」的前置直觉。"
+    ),
+    input_format="第一行一个整数 `n`。\n\n随后 `n` 行，每行 `n` 个整数，表示矩阵 `A`。",
+    output_format="一行，若是对称矩阵输出 `yes`，否则输出 `no`。",
+    constraints_md="- 1 ≤ n ≤ 100\n- |A[i][j]| ≤ 10^9",
+    inputs=[
+        "3\n1 2 3\n2 4 5\n3 5 6\n",
+        "3\n1 2 3\n2 4 5\n9 5 6\n",
+        "1\n42\n",
+        "4\n0 -1 2 3\n-1 5 0 4\n2 0 7 -2\n3 4 -2 9\n",
+        "2\n1 2\n1 2\n",
+    ],
+    samples=2,
+    oracle=_oracle_57,
+    solution=r"""#include <stdio.h>
+int a[105][105];
+int main(void) {
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            scanf("%d", &a[i][j]);
+    for (int i = 0; i < n; i++)
+        for (int j = i + 1; j < n; j++)
+            if (a[i][j] != a[j][i]) { printf("no\n"); return 0; }
+    printf("yes\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    vector<long long> a(n * n);
+    for (int i = 0; i < n * n; i++) cin >> a[i];
+    bool ok = true;
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            if (a[i * n + j] != a[j * n + i]) ok = false;
+    cout << (ok ? "yes\n" : "no\n");
+    return 0;
+}
+""",
+)
+
+def _oracle_58(text: str) -> str:
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    s, t = lines[0], lines[1]
+    cnt = 0
+    first = 0
+    for i in range(len(s) - len(t) + 1):
+        if s[i:i + len(t)] == t:
+            cnt += 1
+            if first == 0:
+                first = i + 1
+    return "%d %d\n" % (cnt, first)
+
+add(
+    title="统计子串",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=1, score=10, tags=["串", "子串统计", "模式匹配"],
+    statement_md=(
+        "给定主串 `S` 和模式串 `T`，统计 `T` 在 `S` 中出现的**总次数**（**允许重叠**），"
+        "以及首次出现的位置（从 1 开始计，未出现则为 `0`）。\n\n"
+        "★ 对比「KMP 统计不重叠出现次数」：在 `S = aaaaa` 中找 `T = aa`，"
+        "不重叠算 `2` 次，而**允许重叠**时起始位置 `1, 2, 3, 4` 全算，共 `4` 次。"
+        "用 KMP 写允许重叠时，每次匹配成功后模式串指针不是清零，而是跳到 `next[m]`！"
+    ),
+    input_format="第一行主串 `S`（不含空格）。\n\n第二行模式串 `T`（不含空格，非空）。",
+    output_format="一行两个整数，空格分隔：`出现总次数 首次位置`（未出现输出 `0 0`）。",
+    constraints_md="- 1 ≤ |S|, |T| ≤ 10000",
+    inputs=[
+        "aaaaa\naa\n",
+        "abababa\naba\n",
+        "abcde\nxyz\n",
+        "hello\nll\n",
+        "abc\nabcde\n",
+        "aaaa\na\n",
+    ],
+    samples=2,
+    oracle=_oracle_58,
+    solution=r"""#include <stdio.h>
+#include <string.h>
+char s[10005], t[10005];
+int main(void) {
+    scanf("%s %s", s, t);
+    int n = (int)strlen(s), m = (int)strlen(t);
+    int cnt = 0, first = 0;
+    for (int i = 0; i + m <= n; i++) {
+        if (strncmp(s + i, t, m) == 0) {
+            cnt++;
+            if (!first) first = i + 1;
+        }
+    }
+    printf("%d %d\n", cnt, first);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+using namespace std;
+int main() {
+    string s, t; cin >> s >> t;
+    int cnt = 0, first = 0;
+    size_t pos = 0;
+    while (true) {
+        size_t k = s.find(t, pos);
+        if (k == string::npos) break;
+        cnt++;
+        if (!first) first = (int)k + 1;
+        pos = k + 1;    /* ★ 允许重叠：每次只前进 1 格 */
+    }
+    cout << cnt << " " << first << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_59(text: str) -> str:
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    s = lines[0]
+    q = int(lines[1])
+    out = []
+    for k in range(q):
+        t = lines[2 + k]
+        pos = s.find(t)
+        out.append(s[pos:] if pos >= 0 else "Not Found")
+    return "\n".join(out) + "\n"
+
+add(
+    title="字符串模式匹配（KMP）",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=2, score=15, tags=["串", "KMP", "strstr"],
+    statement_md=(
+        "给定主串 `S` 和 `q` 个待查模式串 `T`，对每个模式串，在 `S` 中查找它首次出现的位置：\n\n"
+        "- 若找到，输出从该位置一直到 `S` 末尾的子串（行为与 C 标准库的 `strstr(S, T)` 完全一致）；\n"
+        "- 若找不到，输出 `Not Found`。\n\n"
+        "★ 这是 PTA 数据结构题集里的经典原题：主串很长、查询有多次，"
+        "对每个模式串先预处理 `next` 数组再做 KMP 扫描，每次查询都是线性的 `O(|S| + |T|)`。"
+    ),
+    input_format=(
+        "第一行主串 `S`（不含空格）。\n\n"
+        "第二行正整数 `q`（查询个数）。\n\n"
+        "随后 `q` 行，每行一个非空模式串 `T`。"
+    ),
+    output_format="`q` 行，每行输出匹配位置起的后缀子串，或 `Not Found`。",
+    constraints_md="- 1 ≤ |S| ≤ 100000\n- 1 ≤ q ≤ 20\n- 1 ≤ |T| ≤ 10000",
+    inputs=[
+        "abcabcabcd\n3\nabcabcd\nabcx\ncd\n",
+        "ababababca\n2\nababca\nxyz\n",
+        "aaaaaa\n2\naaa\naaaaaaa\n",
+        "datastructure\n3\nstruct\ndata\nalgo\n",
+    ],
+    samples=2,
+    oracle=_oracle_59,
+    solution=r"""#include <stdio.h>
+#include <string.h>
+char s[100005], t[10005];
+int nxt[10005];
+int kmp_find(const char *s, int n, const char *t, int m) {
+    nxt[0] = -1;
+    int i = 0, j = -1;
+    while (i < m) {
+        if (j == -1 || t[i] == t[j]) { i++; j++; nxt[i] = j; }
+        else j = nxt[j];
+    }
+    i = 0; j = 0;
+    while (i < n && j < m) {
+        if (j == -1 || s[i] == t[j]) { i++; j++; }
+        else j = nxt[j];
+    }
+    return j == m ? i - m : -1;
+}
+int main(void) {
+    int q;
+    scanf("%s %d", s, &q);
+    int n = (int)strlen(s);
+    while (q--) {
+        scanf("%s", t);
+        int m = (int)strlen(t);
+        int pos = kmp_find(s, n, t, m);
+        if (pos >= 0) printf("%s\n", s + pos);
+        else printf("Not Found\n");
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+using namespace std;
+int main() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    string s; int q;
+    cin >> s >> q;
+    while (q--) {
+        string t; cin >> t;
+        size_t p = s.find(t);
+        if (p == string::npos) cout << "Not Found\n";
+        else cout << s.substr(p) << "\n";
+    }
+    return 0;
+}
+""",
+)
+
+def _oracle_60(text: str) -> str:
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    s, t = lines[0], lines[1]
+    pos = []
+    for i in range(len(s) - len(t) + 1):
+        if s[i:i + len(t)] == t:
+            pos.append(str(i + 1))
+    m = len(t)
+    pi = [0] * m
+    for i in range(1, m):
+        sub = t[:i + 1]
+        best = 0
+        for L in range(1, len(sub)):
+            if sub[:L] == sub[-L:]:
+                best = L
+        pi[i] = best
+    line1 = " ".join(pos) if pos else "none"
+    line2 = " ".join(map(str, pi))
+    return line1 + "\n" + line2 + "\n"
+
+add(
+    title="【模板】KMP字符串匹配",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=3, score=20, tags=["串", "KMP模板", "前缀函数"],
+    statement_md=(
+        "KMP 算法的完整模板题：\n\n"
+        "1. 输出模式串 `T` 在主串 `S` 中**所有出现的位置**（起始下标从 1 开始，允许重叠；若未出现输出 `none`）；\n"
+        "2. 输出模式串 `T` 每个前缀 `T[1..i]` 的**最长真公共前后缀长度 `pi[i]`**（即现代算法竞赛常用的 Border 数组，满足 `nxt[i] = pi[i-1] + 1`）。\n\n"
+        "★ 把 `pi[i]` 和严蔚敏教材的 `next[j]` 对照着看：\n"
+        "`ABABC` 的 `pi` 是 `0 0 1 2 0`，而教材 `next` 是 `0 1 1 2 3` —— "
+        "教材的 `next[j]` 正好等于 `pi[j-2] + 1`（`j ≥ 2`）。掌握这层换算，两套口径永远不会混。"
+    ),
+    input_format="第一行主串 `S`。\n\n第二行模式串 `T`。",
+    output_format=(
+        "第一行：`T` 在 `S` 中所有匹配的起始位置（1 起，空格分隔；无匹配输出 `none`）。\n\n"
+        "第二行：`|T|` 个整数（空格分隔），依次表示 `T[1..i]` 的最长真公共前后缀长度。"
+    ),
+    constraints_md="- 1 ≤ |S|, |T| ≤ 10000",
+    inputs=[
+        "ABABABC\nABA\n",
+        "AAAAA\nAA\n",
+        "ABCDEFG\nXYZ\n",
+        "AABAACAADAABAABA\nAABA\n",
+        "ABCABC\nABCABC\n",
+    ],
+    samples=2,
+    oracle=_oracle_60,
+    solution=r"""#include <stdio.h>
+#include <string.h>
+char s[10005], t[10005];
+int pi[10005];
+int main(void) {
+    scanf("%s %s", s, t);
+    int n = (int)strlen(s), m = (int)strlen(t);
+    pi[0] = 0;
+    for (int i = 1; i < m; i++) {
+        int j = pi[i - 1];
+        while (j > 0 && t[i] != t[j]) j = pi[j - 1];
+        if (t[i] == t[j]) j++;
+        pi[i] = j;
+    }
+    int first = 1, j = 0;
+    for (int i = 0; i < n; i++) {
+        while (j > 0 && s[i] != t[j]) j = pi[j - 1];
+        if (s[i] == t[j]) j++;
+        if (j == m) {
+            printf(first ? "%d" : " %d", i - m + 2);
+            first = 0;
+            j = pi[j - 1];               /* ★ 继续找重叠匹配 */
+        }
+    }
+    if (first) printf("none");
+    printf("\n");
+    for (int i = 0; i < m; i++) printf(i ? " %d" : "%d", pi[i]);
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+int main() {
+    string s, t; cin >> s >> t;
+    int n = (int)s.size(), m = (int)t.size();
+    vector<int> pos;
+    for (int i = 0; i + m <= n; i++)
+        if (s.compare(i, m, t) == 0) pos.push_back(i + 1);
+    if (pos.empty()) cout << "none\n";
+    else {
+        for (size_t i = 0; i < pos.size(); i++) cout << (i ? " " : "") << pos[i];
+        cout << "\n";
+    }
+    for (int i = 1; i <= m; i++) {
+        int best = 0;
+        for (int L = 1; L < i; L++)
+            if (t.compare(0, L, t, i - L, L) == 0) best = L;
+        cout << (i > 1 ? " " : "") << best;
+    }
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_61(text: str) -> str:
+    s = text.strip()
+    n = len(s)
+    for L in range(n - 2, 0, -1):
+        cand = s[:L]
+        if s.endswith(cand) and s.find(cand, 1, n - 1) != -1:
+            return cand + "\n"
+    return "none\n"
+
+add(
+    title="好中缀",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=2, score=15, tags=["串", "KMP", "前后缀", "Border"],
+    statement_md=(
+        "如果一个非空字符串 `T` 既是主串 `S` 的**前缀**、又是 `S` 的**后缀**，"
+        "同时还在 `S` 的**内部**（即不作为整串首尾的位置 `2 ≤ i ≤ |S|-|T|`）出现过至少一次，"
+        "就称 `T` 是 `S` 的一个**好中缀**。\n\n"
+        "请找出 `S` **最长**的好中缀；若不存在，输出 `none`。\n\n"
+        "★ KMP 思路：整个串的公共前后缀长度只能沿着 `pi[n-1] → pi[pi[n-1]-1] → …` 这条链取；"
+        "而「在内部出现过」等价于该长度不超过内部位置的最大前缀函数值 `max(pi[1..n-2])`。"
+    ),
+    input_format="一行，一个非空字符串 `S`（不含空格）。",
+    output_format="一行，最长的好中缀字符串；若不存在则输出 `none`。",
+    constraints_md="- 1 ≤ |S| ≤ 5000",
+    inputs=[
+        "fixprefixsuffix\n",
+        "abcdabc\n",
+        "aaaaa\n",
+        "ababab\n",
+        "abcde\n",
+        "ababa\n",
+    ],
+    samples=3,
+    oracle=_oracle_61,
+    solution=r"""#include <stdio.h>
+#include <string.h>
+char s[5005];
+int pi[5005];
+int main(void) {
+    scanf("%s", s);
+    int n = (int)strlen(s);
+    pi[0] = 0;
+    int max_mid = 0;
+    for (int i = 1; i < n; i++) {
+        int j = pi[i - 1];
+        while (j > 0 && s[i] != s[j]) j = pi[j - 1];
+        if (s[i] == s[j]) j++;
+        pi[i] = j;
+        if (i < n - 1 && pi[i] > max_mid) max_mid = pi[i];
+    }
+    int L = pi[n - 1];
+    while (L > max_mid) L = pi[L - 1];
+    if (L == 0) printf("none\n");
+    else { s[L] = '\0'; printf("%s\n", s); }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+using namespace std;
+int main() {
+    string s; cin >> s;
+    int n = (int)s.size();
+    for (int L = n - 2; L >= 1; L--) {
+        if (s.compare(0, L, s, n - L, L) != 0) continue;
+        string cand = s.substr(0, L);
+        size_t p = s.find(cand, 1);
+        if (p != string::npos && (int)p + L < n) {
+            cout << cand << "\n";
+            return 0;
+        }
+    }
+    cout << "none\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_62(text: str) -> str:
+    d = text.split()
+    q = int(d[0])
+    out = []
+    idx = 1
+    for _ in range(q):
+        v, h = d[idx], d[idx + 1]; idx += 2
+        m = len(v)
+        vv = v + v
+        hit = any(vv[i:i + m] in h for i in range(m))
+        out.append("YES" if hit else "NO")
+    return "\n".join(out) + "\n"
+
+add(
+    title="病毒变种",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=2, score=15, tags=["串", "环状串", "模式匹配"],
+    statement_md=(
+        "教材案例 4.1「病毒感染检测」：由于病毒的 DNA 序列是**环状**的，"
+        "长度为 `m` 的病毒序列可以从任意位置断开，形成 `m` 种线性变种（例如 `baa` 的变种有 `baa`、`aab`、`aba`）。\n\n"
+        "给定若干对 `(病毒序列, 待测人类序列)`，判断每条待测人类序列中是否包含该病毒的**任意一种变种**。\n\n"
+        "★ 环状串的经典破环成链技巧：把病毒串复制拼接成长度为 `2m` 的 `V + V`，"
+        "里面所有长度为 `m` 的连续子串就恰好枚举了全部 `m` 种变种！"
+    ),
+    input_format="第一行正整数 `q`（检测组数）。\n\n随后 `q` 行，每行两个不含空格的字符串：`病毒DNA 人类DNA`。",
+    output_format="`q` 行，若感染（含任意变种）输出 `YES`，否则输出 `NO`。",
+    constraints_md="- 1 ≤ q ≤ 20\n- 1 ≤ |病毒DNA|, |人类DNA| ≤ 1000",
+    inputs=[
+        "4\naab bbaabbba\naab aabbaa\nabc acbxyz\nxyz xy\n",
+        "2\nabba bababbaa\nabc cab\n",
+        "3\na b\na a\nabcd cdab\n",
+    ],
+    samples=2,
+    oracle=_oracle_62,
+    solution=r"""#include <stdio.h>
+#include <string.h>
+char v[1005], h[1005], vv[2010], pat[1005];
+int main(void) {
+    int q;
+    scanf("%d", &q);
+    while (q--) {
+        scanf("%s %s", v, h);
+        int m = (int)strlen(v);
+        strcpy(vv, v);
+        strcat(vv, v);
+        int hit = 0;
+        for (int i = 0; i < m; i++) {
+            strncpy(pat, vv + i, m);
+            pat[m] = '\0';
+            if (strstr(h, pat) != NULL) { hit = 1; break; }
+        }
+        printf(hit ? "YES\n" : "NO\n");
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+using namespace std;
+int main() {
+    int q; cin >> q;
+    while (q--) {
+        string v, h; cin >> v >> h;
+        int m = (int)v.size();
+        bool hit = false;
+        for (int i = 0; i < m; i++) {
+            string rot = v.substr(i) + v.substr(0, i);
+            if (h.find(rot) != string::npos) { hit = true; break; }
+        }
+        cout << (hit ? "YES\n" : "NO\n");
+    }
+    return 0;
+}
+""",
+)
+
+def _oracle_63(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    a = [[int(d[2 + i * m + j]) for j in range(m)] for i in range(n)]
+    rmax = [max(row) for row in a]
+    cmin = [min(a[i][j] for i in range(n)) for j in range(m)]
+    for i in range(n):
+        for j in range(m):
+            if a[i][j] == rmax[i] and a[i][j] == cmin[j]:
+                return "%d %d %d\n" % (i + 1, j + 1, a[i][j])
+    return "NONE\n"
+
+add(
+    title="矩阵鞍点查找",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=2, score=15, tags=["数组", "鞍点", "二维数组"],
+    statement_md=(
+        "在一个 `n × m` 的矩阵中，若某个元素 `A[i][j]` 既是第 `i` 行的**最大值**"
+        "（`≥` 同行所有元素），又是第 `j` 列的**最小值**（`≤` 同列所有元素），"
+        "则称它为该矩阵的一个**鞍点**。\n\n"
+        "请按行优先顺序找出第一个鞍点，输出它的行号、列号（均从 1 开始）与元素值；"
+        "若不存在鞍点，输出 `NONE`。"
+    ),
+    input_format="第一行两个正整数 `n m`。\n\n随后 `n` 行，每行 `m` 个整数。",
+    output_format="一行，输出 `row col value`；若无鞍点则输出 `NONE`。",
+    constraints_md="- 1 ≤ n, m ≤ 100\n- |A[i][j]| ≤ 10^9",
+    inputs=[
+        "3 3\n1 7 3\n4 5 6\n7 8 9\n",
+        "2 2\n1 2\n2 1\n",
+        "3 4\n9 80 205 40\n90 -60 96 1\n210 -3 101 89\n",
+        "1 1\n5\n",
+    ],
+    samples=2,
+    oracle=_oracle_63,
+    solution=r"""#include <stdio.h>
+int a[105][105], rmax[105], cmin[105];
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
+            scanf("%d", &a[i][j]);
+    for (int i = 0; i < n; i++) {
+        rmax[i] = a[i][0];
+        for (int j = 1; j < m; j++) if (a[i][j] > rmax[i]) rmax[i] = a[i][j];
+    }
+    for (int j = 0; j < m; j++) {
+        cmin[j] = a[0][j];
+        for (int i = 1; i < n; i++) if (a[i][j] < cmin[j]) cmin[j] = a[i][j];
+    }
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
+            if (a[i][j] == rmax[i] && a[i][j] == cmin[j]) {
+                printf("%d %d %d\n", i + 1, j + 1, a[i][j]);
+                return 0;
+            }
+    printf("NONE\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<int>> a(n, vector<int>(m));
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++) cin >> a[i][j];
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < m; j++) {
+            bool ok = true;
+            for (int k = 0; k < m; k++) if (a[i][k] > a[i][j]) ok = false;
+            for (int k = 0; k < n; k++) if (a[k][j] < a[i][j]) ok = false;
+            if (ok) { cout << i + 1 << " " << j + 1 << " " << a[i][j] << "\n"; return 0; }
+        }
+    }
+    cout << "NONE\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_64(text: str) -> str:
+    d = text.split()
+    r, c, t = int(d[0]), int(d[1]), int(d[2])
+    trip = []
+    p = 3
+    for _ in range(t):
+        rr, cc, vv = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        trip.append((rr, cc, vv))
+    out = []
+    for col in range(1, c + 1):
+        for rr, cc, vv in trip:
+            if cc == col:
+                out.append((cc, rr, vv))
+    lines = ["%d %d %d" % (c, r, t)]
+    lines += ["%d %d %d" % e for e in out]
+    return "\n".join(lines) + "\n"
+
+add(
+    title="三元组顺序表表示的稀疏矩阵转置运算I",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=2, score=15, tags=["数组", "稀疏矩阵", "按列序转置"],
+    statement_md=(
+        "教材算法 5.1（按列序朴素转置）：给定稀疏矩阵 `M` 的三元组顺序表（行优先），"
+        "按列号 `col = 1..c` 外层循环、内层从头到尾扫描全部 `t` 个三元组，"
+        "挑出列号等于 `col` 的元素并交换行列下标，依次填入转置矩阵 `T`。\n\n"
+        "★ 为什么不能直接「把每个三元组的 row 和 col 对调完事」？因为原表按**行优先**排，"
+        "直接对调后变成按**列优先**，不再是合法的行优先三元组顺序表！"
+    ),
+    input_format=(
+        "第一行三个整数 `r c t`（行数、列数、非零元个数）。\n\n"
+        "随后 `t` 行，每行 `row col value`（1 起，按行优先排列）。"
+    ),
+    output_format="第一行 `c r t`；随后 `t` 行输出转置后的行优先三元组 `row col value`。",
+    constraints_md="- 1 ≤ r, c ≤ 500\n- 0 ≤ t ≤ 1000",
+    inputs=[
+        "3 4 4\n1 2 12\n1 3 9\n3 1 -3\n3 4 14\n",
+        "2 3 2\n1 3 5\n2 1 8\n",
+        "3 3 0\n",
+        "4 2 3\n1 2 7\n2 1 6\n4 2 9\n",
+    ],
+    samples=2,
+    oracle=_oracle_64,
+    solution=r"""#include <stdio.h>
+int ar[1005], ac[1005], av[1005];
+int main(void) {
+    int r, c, t;
+    scanf("%d %d %d", &r, &c, &t);
+    for (int k = 0; k < t; k++) scanf("%d %d %d", &ar[k], &ac[k], &av[k]);
+    printf("%d %d %d\n", c, r, t);
+    for (int col = 1; col <= c; col++) {
+        for (int k = 0; k < t; k++) {
+            if (ac[k] == col) printf("%d %d %d\n", ac[k], ar[k], av[k]);
+        }
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct E { int r, c, v; };
+int main() {
+    int r, c, t; cin >> r >> c >> t;
+    vector<E> a(t);
+    for (auto &x : a) { cin >> x.r >> x.c >> x.v; swap(x.r, x.c); }
+    sort(a.begin(), a.end(), [](const E &x, const E &y) {
+        return x.r != y.r ? x.r < y.r : x.c < y.c;
+    });
+    cout << c << " " << r << " " << t << "\n";
+    for (auto &x : a) cout << x.r << " " << x.c << " " << x.v << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_65(text: str) -> str:
+    d = text.split()
+    r, c, t = int(d[0]), int(d[1]), int(d[2])
+    trip = []
+    p = 3
+    num = [0] * (c + 1)
+    for _ in range(t):
+        rr, cc, vv = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        trip.append((rr, cc, vv))
+        num[cc] += 1
+    cpot = [0] * (c + 1)
+    cpot[1] = 1
+    for col in range(2, c + 1):
+        cpot[col] = cpot[col - 1] + num[col - 1]
+    lines = [
+        "num: " + " ".join(str(num[col]) for col in range(1, c + 1)),
+        "cpot: " + " ".join(str(cpot[col]) for col in range(1, c + 1)),
+    ]
+    out = sorted(((cc, rr, vv) for rr, cc, vv in trip), key=lambda x: (x[0], x[1]))
+    lines += ["%d %d %d" % e for e in out]
+    return "\n".join(lines) + "\n"
+
+add(
+    title="三元组顺序表表示的稀疏矩阵转置II",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=3, score=20, tags=["数组", "稀疏矩阵", "快速转置", "cpot"],
+    statement_md=(
+        "教材算法 5.2（快速转置）的核心是先算出两张辅助向量：\n\n"
+        "- `num[col]`：原矩阵第 `col` 列中非零元的个数；\n"
+        "- `cpot[col]`：原矩阵第 `col` 列的第一个非零元在转置三元组表中的**位序**（从 **1** 开始）：\n"
+        "  `cpot[1] = 1`，`cpot[col] = cpot[col-1] + num[col-1]`。\n\n"
+        "本题要求**先把初始的 `num[1..c]` 和 `cpot[1..c]` 打出来**，再输出快速转置后的三元组表——"
+        "专门检验你是不是真的算对了辅助数组，而不是拿排序糊弄过去。"
+    ),
+    input_format=(
+        "第一行三个整数 `r c t`（1 ≤ r, c ≤ 500，0 ≤ t ≤ 1000）。\n\n"
+        "随后 `t` 行，每行 `row col value`（1 起，按行优先排列）。"
+    ),
+    output_format=(
+        "第一行：`num: num[1] num[2] ... num[c]`\n\n"
+        "第二行：`cpot: cpot[1] cpot[2] ... cpot[c]`\n\n"
+        "随后 `t` 行：转置后的三元组 `row col value`。"
+    ),
+    constraints_md="- 1 ≤ r, c ≤ 500\n- 0 ≤ t ≤ 1000",
+    inputs=[
+        "6 7 8\n1 2 12\n1 3 9\n3 1 -3\n3 6 14\n4 3 24\n5 2 18\n6 1 15\n6 4 -7\n",
+        "3 4 3\n1 1 5\n2 3 7\n3 2 9\n",
+        "2 3 0\n",
+        "3 3 4\n1 3 2\n2 1 4\n2 3 6\n3 2 8\n",
+    ],
+    samples=2,
+    oracle=_oracle_65,
+    solution=r"""#include <stdio.h>
+int ar[1005], ac[1005], av[1005];
+int br[1005], bc[1005], bv[1005];
+int num[505], cpot[505];
+int main(void) {
+    int r, c, t;
+    scanf("%d %d %d", &r, &c, &t);
+    for (int col = 1; col <= c; col++) num[col] = 0;
+    for (int k = 0; k < t; k++) {
+        scanf("%d %d %d", &ar[k], &ac[k], &av[k]);
+        num[ac[k]]++;
+    }
+    cpot[1] = 1;
+    for (int col = 2; col <= c; col++) cpot[col] = cpot[col - 1] + num[col - 1];
+    printf("num:");
+    for (int col = 1; col <= c; col++) printf(" %d", num[col]);
+    printf("\ncpot:");
+    for (int col = 1; col <= c; col++) printf(" %d", cpot[col]);
+    printf("\n");
+    for (int k = 0; k < t; k++) {
+        int pos = cpot[ac[k]]++;
+        br[pos] = ac[k]; bc[pos] = ar[k]; bv[pos] = av[k];
+    }
+    for (int k = 1; k <= t; k++) printf("%d %d %d\n", br[k], bc[k], bv[k]);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct E { int r, c, v; };
+int main() {
+    int r, c, t; cin >> r >> c >> t;
+    vector<E> a(t);
+    vector<int> num(c + 1, 0), cpot(c + 1, 0);
+    for (auto &x : a) { cin >> x.r >> x.c >> x.v; num[x.c]++; }
+    cpot[1] = 1;
+    for (int j = 2; j <= c; j++) cpot[j] = cpot[j - 1] + num[j - 1];
+    cout << "num:";
+    for (int j = 1; j <= c; j++) cout << " " << num[j];
+    cout << "\ncpot:";
+    for (int j = 1; j <= c; j++) cout << " " << cpot[j];
+    cout << "\n";
+    for (auto &x : a) swap(x.r, x.c);
+    stable_sort(a.begin(), a.end(), [](const E &x, const E &y) {
+        return x.r != y.r ? x.r < y.r : x.c < y.c;
+    });
+    for (auto &x : a) cout << x.r << " " << x.c << " " << x.v << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_66(text: str) -> str:
+    d = text.split()
+    r, c, t1, t2 = int(d[0]), int(d[1]), int(d[2]), int(d[3])
+    p = 4
+    mp: dict[tuple[int, int], int] = {}
+    for _ in range(t1 + t2):
+        rr, cc, vv = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        mp[(rr, cc)] = mp.get((rr, cc), 0) + vv
+    out = [(rr, cc, vv) for (rr, cc), vv in sorted(mp.items()) if vv != 0]
+    lines = ["%d %d %d" % (r, c, len(out))]
+    lines += ["%d %d %d" % e for e in out]
+    return "\n".join(lines) + "\n"
+
+add(
+    title="稀疏矩阵加法",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=3, score=20, tags=["数组", "稀疏矩阵", "矩阵加法", "双指针"],
+    statement_md=(
+        "给定两个同型（`r × c`）稀疏矩阵 `A` 和 `B` 的行优先三元组顺序表，"
+        "求 `C = A + B` 的行优先三元组顺序表。\n\n"
+        "★ 两个关键点：\n"
+        "1. 两个三元组表都已经按 `(row, col)` 字典序排好，用**二路归并双指针**扫一遍就能合并，复杂度 `O(t1 + t2)`；\n"
+        "2. **正负抵消得 0 的项绝不能写进结果表**（三元组表只存非零元），否则非零元计数 `t3` 和表内容都会错！"
+    ),
+    input_format=(
+        "第一行四个整数 `r c t1 t2`（行数、列数、A 的非零元数、B 的非零元数）。\n\n"
+        "随后 `t1` 行给出 `A` 的三元组 `row col val`（行优先）。\n\n"
+        "随后 `t2` 行给出 `B` 的三元组 `row col val`（行优先）。"
+    ),
+    output_format="第一行 `r c t3`；随后 `t3` 行按行优先输出 `C` 的非零三元组。",
+    constraints_md="- 1 ≤ r, c ≤ 1000\n- 0 ≤ t1, t2 ≤ 1000",
+    inputs=[
+        "3 3 3 3\n1 1 2\n1 3 5\n2 2 -4\n1 2 7\n1 3 -5\n2 2 9\n",
+        "2 2 2 2\n1 1 3\n2 2 -3\n1 1 -3\n2 2 3\n",
+        "3 4 2 0\n1 2 6\n3 4 8\n",
+        "2 3 1 2\n2 1 4\n1 3 9\n2 1 6\n",
+    ],
+    samples=2,
+    oracle=_oracle_66,
+    solution=r"""#include <stdio.h>
+struct E { int r, c, v; } a[1005], b[1005], res[2005];
+int cmp_pos(struct E x, struct E y) {
+    if (x.r != y.r) return x.r < y.r ? -1 : 1;
+    if (x.c != y.c) return x.c < y.c ? -1 : 1;
+    return 0;
+}
+int main(void) {
+    int r, c, t1, t2;
+    scanf("%d %d %d %d", &r, &c, &t1, &t2);
+    for (int i = 0; i < t1; i++) scanf("%d %d %d", &a[i].r, &a[i].c, &a[i].v);
+    for (int i = 0; i < t2; i++) scanf("%d %d %d", &b[i].r, &b[i].c, &b[i].v);
+    int i = 0, j = 0, k = 0;
+    while (i < t1 && j < t2) {
+        int s = cmp_pos(a[i], b[j]);
+        if (s < 0) res[k++] = a[i++];
+        else if (s > 0) res[k++] = b[j++];
+        else {
+            int sum = a[i].v + b[j].v;
+            if (sum != 0) res[k++] = (struct E){a[i].r, a[i].c, sum};
+            i++; j++;
+        }
+    }
+    while (i < t1) res[k++] = a[i++];
+    while (j < t2) res[k++] = b[j++];
+    printf("%d %d %d\n", r, c, k);
+    for (int idx = 0; idx < k; idx++)
+        printf("%d %d %d\n", res[idx].r, res[idx].c, res[idx].v);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <map>
+using namespace std;
+int main() {
+    int r, c, t1, t2;
+    cin >> r >> c >> t1 >> t2;
+    map<pair<int, int>, int> mp;
+    for (int i = 0; i < t1 + t2; i++) {
+        int rr, cc, vv; cin >> rr >> cc >> vv;
+        mp[{rr, cc}] += vv;
+    }
+    int cnt = 0;
+    for (auto &kv : mp) if (kv.second != 0) cnt++;
+    cout << r << " " << c << " " << cnt << "\n";
+    for (auto &kv : mp)
+        if (kv.second != 0)
+            cout << kv.first.first << " " << kv.first.second << " " << kv.second << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_67(text: str) -> str:
+    d = text.split()
+    r, k, c, t1, t2 = int(d[0]), int(d[1]), int(d[2]), int(d[3]), int(d[4])
+    p = 5
+    A = []
+    for _ in range(t1):
+        A.append((int(d[p]), int(d[p + 1]), int(d[p + 2]))); p += 3
+    B = []
+    for _ in range(t2):
+        B.append((int(d[p]), int(d[p + 1]), int(d[p + 2]))); p += 3
+    mp: dict[tuple[int, int], int] = {}
+    for ar, ac, av in A:
+        for br, bc, bv in B:
+            if ac == br:
+                mp[(ar, bc)] = mp.get((ar, bc), 0) + av * bv
+    out = [(rr, cc, vv) for (rr, cc), vv in sorted(mp.items()) if vv != 0]
+    lines = ["%d %d %d" % (r, c, len(out))]
+    lines += ["%d %d %d" % e for e in out]
+    return "\n".join(lines) + "\n"
+
+add(
+    title="稀疏矩阵乘法",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=3, score=20, tags=["数组", "稀疏矩阵", "矩阵乘法", "行逻辑链接"],
+    statement_md=(
+        "给定稀疏矩阵 `A`（`r × k`）和 `B`（`k × c`）的三元组顺序表，"
+        "求乘积矩阵 `C = A × B`（`r × c`）的行优先三元组顺序表。\n\n"
+        "★ 教材「行逻辑链接顺序表」乘法思路：逐行处理 `A` 的第 `i` 行，"
+        "开一个长度为 `c` 的累加器 `ctemp[1..c]`；对 `A` 第 `i` 行的每个非零元 `(i, m, av)`，"
+        "去 `B` 的第 `m` 行把所有 `(m, j, bv)` 乘积累加进 `ctemp[j]`。"
+        "第 `i` 行扫完后，`ctemp[1..c]` 中非零的项天然按列递增，直接输出即可！"
+    ),
+    input_format=(
+        "第一行五个整数 `r k c t1 t2`。\n\n"
+        "随后 `t1` 行给出 `A` 的三元组 `row col val`。\n\n"
+        "随后 `t2` 行给出 `B` 的三元组 `row col val`。"
+    ),
+    output_format="第一行 `r c t3`；随后 `t3` 行按行优先输出 `C` 的非零三元组。",
+    constraints_md="- 1 ≤ r, k, c ≤ 200\n- 0 ≤ t1, t2 ≤ 1000",
+    inputs=[
+        "2 3 2 3 3\n1 1 2\n1 3 1\n2 2 3\n1 1 4\n2 2 5\n3 1 -8\n",
+        "2 2 2 2 2\n1 1 1\n1 2 2\n1 1 2\n2 1 -1\n",
+        "3 3 3 2 2\n1 2 3\n3 1 4\n1 3 5\n2 1 6\n",
+        "2 3 2 0 2\n1 1 5\n2 2 7\n",
+    ],
+    samples=2,
+    oracle=_oracle_67,
+    solution=r"""#include <stdio.h>
+struct E { int r, c; long long v; } A[1005], B[1005], C[40005];
+long long ctemp[205];
+int main(void) {
+    int r, k, c, t1, t2;
+    scanf("%d %d %d %d %d", &r, &k, &c, &t1, &t2);
+    for (int i = 0; i < t1; i++) scanf("%d %d %lld", &A[i].r, &A[i].c, &A[i].v);
+    for (int i = 0; i < t2; i++) scanf("%d %d %lld", &B[i].r, &B[i].c, &B[i].v);
+    int t3 = 0, p = 0;
+    for (int row = 1; row <= r; row++) {
+        for (int col = 1; col <= c; col++) ctemp[col] = 0;
+        while (p < t1 && A[p].r == row) {
+            int mid = A[p].c;
+            for (int q = 0; q < t2; q++)
+                if (B[q].r == mid) ctemp[B[q].c] += A[p].v * B[q].v;
+            p++;
+        }
+        for (int col = 1; col <= c; col++)
+            if (ctemp[col] != 0) C[t3++] = (struct E){row, col, ctemp[col]};
+    }
+    printf("%d %d %d\n", r, c, t3);
+    for (int i = 0; i < t3; i++)
+        printf("%d %d %lld\n", C[i].r, C[i].c, C[i].v);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <map>
+using namespace std;
+struct E { int r, c; long long v; };
+int main() {
+    int r, k, c, t1, t2;
+    cin >> r >> k >> c >> t1 >> t2;
+    vector<E> A(t1), B(t2);
+    for (auto &x : A) cin >> x.r >> x.c >> x.v;
+    for (auto &x : B) cin >> x.r >> x.c >> x.v;
+    map<pair<int, int>, long long> mp;
+    for (auto &a : A)
+        for (auto &b : B)
+            if (a.c == b.r) mp[{a.r, b.c}] += a.v * b.v;
+    int cnt = 0;
+    for (auto &kv : mp) if (kv.second != 0) cnt++;
+    cout << r << " " << c << " " << cnt << "\n";
+    for (auto &kv : mp)
+        if (kv.second != 0)
+            cout << kv.first.first << " " << kv.first.second << " " << kv.second << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_68(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    a = [[int(d[2 + i * m + j]) for j in range(m)] for i in range(n)]
+    best = a[0][0]
+    for r1 in range(n):
+        col = [0] * m
+        for r2 in range(r1, n):
+            cur = 0
+            for j in range(m):
+                col[j] += a[r2][j]
+                cur = col[j] if cur <= 0 else cur + col[j]
+                if cur > best:
+                    best = cur
+    return "%d\n" % best
+
+add(
+    title="最大子矩阵和问题",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=3, score=20, tags=["数组", "最大子矩阵和", "降维", "动态规划"],
+    statement_md=(
+        "给定一个 `n × m` 的整数矩阵，求其中元素之和最大的**非空连续子矩阵**（至少包含 1 个元素），"
+        "输出该最大和。\n\n"
+        "★ 经典「二维压一维」技巧：\n"
+        "固定子矩阵的上下边界 `r1` 和 `r2`，把 `[r1..r2]` 这一带每一列的元素加起来，"
+        "就变成了一个长度为 `m` 的一维数组 `col[0..m-1]` —— 随后直接套第 02 讲的"
+        "**一维最大子段和（Kadane 算法）**！复杂度从 `O(n²m²)` 降到 `O(n²m)`。"
+    ),
+    input_format="第一行两个正整数 `n m`。\n\n随后 `n` 行，每行 `m` 个整数。",
+    output_format="一行一个整数，表示非空连续子矩阵的最大元素和。",
+    constraints_md="- 1 ≤ n, m ≤ 80\n- -10^5 ≤ A[i][j] ≤ 10^5",
+    inputs=[
+        "3 3\n0 -2 -7\n9 2 -6\n-4 1 -4\n",
+        "2 2\n-5 -2\n-9 -3\n",
+        "3 4\n1 2 -1 -4\n-8 -3 4 2\n3 8 10 -8\n",
+        "1 5\n-2 3 -1 4 -5\n",
+    ],
+    samples=2,
+    oracle=_oracle_68,
+    solution=r"""#include <stdio.h>
+int a[85][85];
+long long col[85];
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
+            scanf("%d", &a[i][j]);
+    long long best = a[0][0];
+    for (int r1 = 0; r1 < n; r1++) {
+        for (int j = 0; j < m; j++) col[j] = 0;
+        for (int r2 = r1; r2 < n; r2++) {
+            long long cur = 0;
+            for (int j = 0; j < m; j++) {
+                col[j] += a[r2][j];
+                cur = (cur > 0) ? (cur + col[j]) : col[j];
+                if (cur > best) best = cur;
+            }
+        }
+    }
+    printf("%lld\n", best);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<long long>> ps(n + 1, vector<long long>(m + 1, 0));
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= m; j++) {
+            long long v; cin >> v;
+            ps[i][j] = ps[i - 1][j] + ps[i][j - 1] - ps[i - 1][j - 1] + v;
+        }
+    long long best = ps[1][1];
+    for (int r1 = 1; r1 <= n; r1++) {
+        for (int r2 = r1; r2 <= n; r2++) {
+            long long min_pre = 0;
+            for (int c = 1; c <= m; c++) {
+                long long cur = ps[r2][c] - ps[r1 - 1][c];
+                best = max(best, cur - min_pre);
+                min_pre = min(min_pre, cur);
+            }
+        }
+    }
+    cout << best << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_69(text: str) -> str:
+    s = text.strip()
+    inner = s[1:-1]
+    depth = 0
+    split_pos = -1
+    for i, ch in enumerate(inner):
+        if ch == "(":
+            depth += 1
+        elif ch == ")":
+            depth -= 1
+        elif ch == "," and depth == 0:
+            split_pos = i
+            break
+    if split_pos == -1:
+        head = inner
+        tail = "()"
+    else:
+        head = inner[:split_pos]
+        tail = "(" + inner[split_pos + 1:] + ")"
+    return head + "\n" + tail + "\n"
+
+add(
+    title="广义表的表头与表尾",
+    section="第 04 讲 · 串、数组和广义表",
+    difficulty=3, score=20, tags=["广义表", "表头表尾", "括号匹配"],
+    statement_md=(
+        "给定一个**非空**广义表 `L`（如 `(a,(b,c),d)`），求它的**表头 `GetHead(L)`** "
+        "和**表尾 `GetTail(L)`**。\n\n"
+        "★ 教材铁律（几乎每次考试必考）：\n"
+        "- **表头**是广义表的第一个顶层元素，它**既可以是原子，也可以是子表**；\n"
+        "- **表尾**是除去第一个顶层元素后**其余元素组成的广义表**，因此**表尾永远是一个表（外层必带括号 `(...)`）**！\n\n"
+        "例如 `L = (a)` 的表头是 `a`，表尾是空表 `()`；`L = ((a,b),c)` 的表头是 `(a,b)`，表尾是 `(c)`。"
+    ),
+    input_format="一行，一个非空广义表字符串（外层以 `(` 开头、` )` 结尾，且不是 `()`）。",
+    output_format="第一行输出表头 `GetHead(L)`；第二行输出表尾 `GetTail(L)`。",
+    constraints_md="- 3 ≤ |L| ≤ 1000",
+    inputs=[
+        "(a,(b,c),d)\n",
+        "(a)\n",
+        "((a,b),c)\n",
+        "((),a)\n",
+        "(((a)))\n",
+    ],
+    samples=3,
+    oracle=_oracle_69,
+    solution=r"""#include <stdio.h>
+#include <string.h>
+char s[1005];
+int main(void) {
+    scanf("%s", s);
+    int n = (int)strlen(s);
+    int depth = 0, comma = -1;
+    for (int i = 1; i < n - 1; i++) {
+        if (s[i] == '(') depth++;
+        else if (s[i] == ')') depth--;
+        else if (s[i] == ',' && depth == 0) { comma = i; break; }
+    }
+    if (comma == -1) {
+        for (int i = 1; i < n - 1; i++) putchar(s[i]);
+        printf("\n()\n");
+    } else {
+        for (int i = 1; i < comma; i++) putchar(s[i]);
+        printf("\n(");
+        for (int i = comma + 1; i < n - 1; i++) putchar(s[i]);
+        printf(")\n");
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+int main() {
+    string s; cin >> s;
+    string in = s.substr(1, s.size() - 2);
+    vector<string> items;
+    int d = 0, last = 0;
+    for (int i = 0; i < (int)in.size(); i++) {
+        if (in[i] == '(') d++;
+        else if (in[i] == ')') d--;
+        else if (in[i] == ',' && d == 0) {
+            items.push_back(in.substr(last, i - last));
+            last = i + 1;
+        }
+    }
+    items.push_back(in.substr(last));
+    cout << items[0] << "\n(";
+    for (size_t i = 1; i < items.size(); i++)
+        cout << (i > 1 ? "," : "") << items[i];
+    cout << ")\n";
+    return 0;
+}
+""",
+)
+
+# --------------------------------------------------------------------- #
+#  第 05 讲扩充：树和二叉树、哈夫曼树、并查集经典题型（循序渐进 + 举一反三）
+# --------------------------------------------------------------------- #
+
+def _oracle_70(text: str) -> str:
+    s = text.strip()
+
+    def rec(i: int):
+        if i >= len(s) or s[i] == "#":
+            return None, i + 1
+        v = s[i]
+        left, i = rec(i + 1)
+        right, i = rec(i)
+        return (v, left, right), i
+
+    root, _ = rec(0)
+    if root is None:
+        return "empty\nempty\nempty\n"
+    pre, ino, post = [], [], []
+
+    def walk(n) -> None:
+        if n is None:
+            return
+        pre.append(n[0])
+        walk(n[1])
+        ino.append(n[0])
+        walk(n[2])
+        post.append(n[0])
+
+    walk(root)
+    return "".join(pre) + "\n" + "".join(ino) + "\n" + "".join(post) + "\n"
+
+add(
+    title="建立与遍历二叉树",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=1, score=10, tags=["二叉树", "前序建树", "三种遍历"],
+    statement_md=(
+        "根据带空指针标记 `#` 的扩展先序序列建立二叉树，依次输出它的"
+        "**先序遍历**、**中序遍历**和**后序遍历**序列。\n\n"
+        "★ 三种递归遍历在代码上**走的是完全同一条路线**（每个结点都被经过三次）：\n"
+        "- 第 1 次经过时打印 → **先序**（根-左-右）\n"
+        "- 第 2 次（从左子树回来）打印 → **中序**（左-根-右）\n"
+        "- 第 3 次（从右子树回来）打印 → **后序**（左-右-根）"
+    ),
+    input_format="一行，带 `#` 空标记的先序序列（结点为大写字母）。",
+    output_format="三行，依次为先序、中序、后序序列；若为空树则三行均输出 `empty`。",
+    constraints_md="- 序列长度 ≤ 2000",
+    inputs=[
+        "AB#D##C##\n",
+        "AB##C##\n",
+        "#\n",
+        "A##\n",
+        "ABD##E##CF##G##\n",
+    ],
+    samples=2,
+    oracle=_oracle_70,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+typedef struct Node { char c; struct Node *l, *r; } Node;
+char s[2005];
+int pos;
+Node *build(void) {
+    char c = s[pos++];
+    if (c == '#' || c == '\0') return NULL;
+    Node *t = (Node *)malloc(sizeof(Node));
+    t->c = c; t->l = build(); t->r = build();
+    return t;
+}
+void pre(Node *t)  { if (!t) return; putchar(t->c); pre(t->l); pre(t->r); }
+void ino(Node *t)  { if (!t) return; ino(t->l); putchar(t->c); ino(t->r); }
+void post(Node *t) { if (!t) return; post(t->l); post(t->r); putchar(t->c); }
+int main(void) {
+    scanf("%s", s);
+    pos = 0;
+    Node *root = build();
+    if (!root) { printf("empty\nempty\nempty\n"); return 0; }
+    pre(root);  putchar('\n');
+    ino(root);  putchar('\n');
+    post(root); putchar('\n');
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+#include <vector>
+#include <functional>
+using namespace std;
+struct N { char c; int l, r; };
+int main() {
+    string s; cin >> s;
+    vector<N> pool;
+    int pos = 0;
+    function<int()> build = [&]() -> int {
+        char c = s[pos++];
+        if (c == '#') return -1;
+        int id = (int)pool.size();
+        pool.push_back({c, -1, -1});
+        int l = build(), r = build();
+        pool[id].l = l; pool[id].r = r;
+        return id;
+    };
+    int root = build();
+    if (root < 0) { cout << "empty\nempty\nempty\n"; return 0; }
+    string a, b, c;
+    function<void(int)> go = [&](int u) {
+        if (u < 0) return;
+        a += pool[u].c;
+        go(pool[u].l);
+        b += pool[u].c;
+        go(pool[u].r);
+        c += pool[u].c;
+    };
+    go(root);
+    cout << a << "\n" << b << "\n" << c << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_71(text: str) -> str:
+    s = text.strip()
+
+    def rec(i: int):
+        if i >= len(s) or s[i] == "#":
+            return None, i + 1
+        v = s[i]
+        left, i = rec(i + 1)
+        right, i = rec(i)
+        return (v, right, left), i   # 交换左右孩子
+
+    root, _ = rec(0)
+    if root is None:
+        return "empty\nempty\n"
+    ino, pre = [], []
+
+    def walk(n) -> None:
+        if n is None:
+            return
+        pre.append(n[0])
+        walk(n[1])
+        ino.append(n[0])
+        walk(n[2])
+
+    walk(root)
+    return "".join(ino) + "\n" + "".join(pre) + "\n"
+
+add(
+    title="交换二叉树中每个结点的左孩子和右孩子",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=1, score=10, tags=["二叉树", "镜像反转", "递归"],
+    statement_md=(
+        "读入带 `#` 空标记的先序序列建立二叉树，把树中**每一个结点的左孩子和右孩子互换**"
+        "（即二叉树的镜像翻转），然后输出翻转后的**中序遍历**和**先序遍历**。\n\n"
+        "★ 值得想清楚的一个性质：镜像翻转后，新的**中序遍历**（左-根-右）"
+        "恰好等于原树中序遍历的**整体逆序**（右-根-左）！"
+    ),
+    input_format="一行，带 `#` 空标记的先序序列。",
+    output_format="第一行翻转后的中序序列，第二行翻转后的先序序列；空树输出两行 `empty`。",
+    constraints_md="- 序列长度 ≤ 2000",
+    inputs=[
+        "AB#D##C##\n",
+        "AB##C##\n",
+        "A##\n",
+        "#\n",
+        "ABD##E##C#F##\n",
+    ],
+    samples=2,
+    oracle=_oracle_71,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+typedef struct Node { char c; struct Node *l, *r; } Node;
+char s[2005];
+int pos;
+Node *build(void) {
+    char c = s[pos++];
+    if (c == '#' || c == '\0') return NULL;
+    Node *t = (Node *)malloc(sizeof(Node));
+    t->c = c; t->l = build(); t->r = build();
+    return t;
+}
+void mirror(Node *t) {
+    if (!t) return;
+    Node *tmp = t->l; t->l = t->r; t->r = tmp;
+    mirror(t->l); mirror(t->r);
+}
+void ino(Node *t) { if (!t) return; ino(t->l); putchar(t->c); ino(t->r); }
+void pre(Node *t) { if (!t) return; putchar(t->c); pre(t->l); pre(t->r); }
+int main(void) {
+    scanf("%s", s);
+    pos = 0;
+    Node *root = build();
+    if (!root) { printf("empty\nempty\n"); return 0; }
+    mirror(root);
+    ino(root); putchar('\n');
+    pre(root); putchar('\n');
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+#include <vector>
+#include <functional>
+using namespace std;
+struct N { char c; int l, r; };
+int main() {
+    string s; cin >> s;
+    vector<N> pool;
+    int pos = 0;
+    function<int()> build = [&]() -> int {
+        char c = s[pos++];
+        if (c == '#') return -1;
+        int id = (int)pool.size();
+        pool.push_back({c, -1, -1});
+        int l = build(), r = build();
+        pool[id].l = l; pool[id].r = r;
+        return id;
+    };
+    int root = build();
+    if (root < 0) { cout << "empty\nempty\n"; return 0; }
+    /* 另一套：不改指针，遍历时直接先走右子树再走左子树 */
+    string ino, pre;
+    function<void(int)> go = [&](int u) {
+        if (u < 0) return;
+        pre += pool[u].c;
+        go(pool[u].r);
+        ino += pool[u].c;
+        go(pool[u].l);
+    };
+    go(root);
+    cout << ino << "\n" << pre << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_72(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    L = [-1] * n
+    R = [-1] * n
+    indeg = [0] * n
+    p = 1
+    for i in range(n):
+        ls, rs = d[p], d[p + 1]; p += 2
+        if ls != "-":
+            L[i] = int(ls); indeg[L[i]] += 1
+        if rs != "-":
+            R[i] = int(rs); indeg[R[i]] += 1
+    root = next(i for i in range(n) if indeg[i] == 0)
+    q = [root]
+    leaves = []
+    while q:
+        u = q.pop(0)
+        if L[u] == -1 and R[u] == -1:
+            leaves.append(str(u))
+        if L[u] != -1:
+            q.append(L[u])
+        if R[u] != -1:
+            q.append(R[u])
+    return " ".join(leaves) + "\n"
+
+add(
+    title="列出叶结点",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=2, score=15, tags=["二叉树", "静态链表", "找根", "层序遍历"],
+    statement_md=(
+        "PTA 经典题 `List Leaves`：给定一棵二叉树的静态数组表示（结点编号 `0` ~ `N-1`），"
+        "按**从上到下、从左到右**的顺序输出所有叶结点。\n\n"
+        "★ 这道题最关键的第一步是**自己找根**：题目不会告诉你谁是根，"
+        "但**根是唯一没有父结点的结点**（即没有出现在任何一行的左右孩子里，入度为 0）！"
+        "找到根之后跑一遍队列 BFS，遇到左右孩子都为 `-` 的结点就输出。"
+    ),
+    input_format=(
+        "第一行正整数 `N`（1 ≤ N ≤ 20）。\n\n"
+        "随后 `N` 行，第 `i` 行（对应结点 `i`，从 0 开始）给出左孩子和右孩子编号；"
+        "无该孩子则用 `-` 表示。"
+    ),
+    output_format="一行，按从上到下、从左到右顺序输出所有叶结点编号（空格分隔）。",
+    constraints_md="- 1 ≤ N ≤ 20",
+    inputs=[
+        "8\n1 -\n- -\n0 -\n2 7\n- -\n- -\n5 -\n4 6\n",
+        "1\n- -\n",
+        "3\n1 2\n- -\n- -\n",
+        "5\n- 1\n- 2\n- 3\n- 4\n- -\n",
+    ],
+    samples=2,
+    oracle=_oracle_72,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+int L[25], R[25], indeg[25], q[25];
+int main(void) {
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        char ls[8], rs[8];
+        scanf("%s %s", ls, rs);
+        L[i] = (ls[0] == '-') ? -1 : atoi(ls);
+        R[i] = (rs[0] == '-') ? -1 : atoi(rs);
+        if (L[i] != -1) indeg[L[i]]++;
+        if (R[i] != -1) indeg[R[i]]++;
+    }
+    int root = 0;
+    for (int i = 0; i < n; i++) if (indeg[i] == 0) { root = i; break; }
+    int f = 0, r = 0, first = 1;
+    q[r++] = root;
+    while (f < r) {
+        int u = q[f++];
+        if (L[u] == -1 && R[u] == -1) {
+            printf(first ? "%d" : " %d", u);
+            first = 0;
+        }
+        if (L[u] != -1) q[r++] = L[u];
+        if (R[u] != -1) q[r++] = R[u];
+    }
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <functional>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    vector<int> L(n, -1), R(n, -1), indeg(n, 0);
+    for (int i = 0; i < n; i++) {
+        string a, b; cin >> a >> b;
+        if (a != "-") { L[i] = stoi(a); indeg[L[i]]++; }
+        if (b != "-") { R[i] = stoi(b); indeg[R[i]]++; }
+    }
+    int root = 0;
+    for (int i = 0; i < n; i++) if (!indeg[i]) root = i;
+    vector<tuple<int, int, int>> leaves;
+    function<void(int, int, int)> dfs = [&](int u, int dep, int mask) {
+        if (u < 0) return;
+        if (L[u] < 0 && R[u] < 0) leaves.emplace_back(dep, mask, u);
+        dfs(L[u], dep + 1, mask * 2);
+        dfs(R[u], dep + 1, mask * 2 + 1);
+    };
+    dfs(root, 0, 0);
+    sort(leaves.begin(), leaves.end());
+    for (size_t i = 0; i < leaves.size(); i++)
+        cout << (i ? " " : "") << get<2>(leaves[i]);
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_73(text: str) -> str:
+    lines = [ln.strip() for ln in text.splitlines() if ln.strip()]
+    n = int(lines[0])
+    pre, ino = lines[1][:n], lines[2][:n]
+
+    def height(p: str, i: str) -> int:
+        if not p:
+            return 0
+        k = i.index(p[0])
+        return 1 + max(height(p[1:1 + k], i[:k]), height(p[1 + k:], i[k + 1:]))
+
+    return "%d\n" % height(pre, ino)
+
+add(
+    title="还原二叉树",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=2, score=15, tags=["二叉树", "先序中序", "树高", "分治"],
+    statement_md=(
+        "PTA 经典题 `还原二叉树`：给定一棵二叉树的**先序遍历序列**和**中序遍历序列**"
+        "（结点为互不相同的字符），要求还原该二叉树并输出它的**高度（深度）**。\n\n"
+        "★ 其实求高度根本不需要把指针树真正 `malloc` 出来：在分治切分 `[pl..pr]` 与 `[il..ir]` 的同时，"
+        "直接返回 `1 + max(左子树高度, 右子树高度)`，10 行代码就能搞定！"
+    ),
+    input_format=(
+        "第一行正整数 `N`（结点个数）。\n\n"
+        "第二行长度为 `N` 的先序序列字符串。\n\n"
+        "第三行长度为 `N` 的中序序列字符串。"
+    ),
+    output_format="一行一个整数，表示二叉树的高度。",
+    constraints_md="- 1 ≤ N ≤ 60\n- 结点字符互不相同",
+    inputs=[
+        "9\nABDFGHIEC\nFDHGIBEAC\n",
+        "1\nA\nA\n",
+        "4\nABCD\nDCBA\n",
+        "7\nABDECFG\nDBEAFCG\n",
+    ],
+    samples=2,
+    oracle=_oracle_73,
+    solution=r"""#include <stdio.h>
+char pre[105], ino[105];
+int solve(int pl, int pr, int il, int ir) {
+    if (pl > pr) return 0;
+    int k = il;
+    while (ino[k] != pre[pl]) k++;
+    int ln = k - il;
+    int hl = solve(pl + 1, pl + ln, il, k - 1);
+    int hr = solve(pl + ln + 1, pr, k + 1, ir);
+    return 1 + (hl > hr ? hl : hr);
+}
+int main(void) {
+    int n;
+    scanf("%d %s %s", &n, pre, ino);
+    printf("%d\n", solve(0, n - 1, 0, n - 1));
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+#include <algorithm>
+#include <functional>
+using namespace std;
+int main() {
+    int n; string pre, ino;
+    cin >> n >> pre >> ino;
+    function<int(string, string)> h = [&](string p, string i) -> int {
+        if (p.empty()) return 0;
+        size_t k = i.find(p[0]);
+        return 1 + max(h(p.substr(1, k), i.substr(0, k)),
+                       h(p.substr(1 + k), i.substr(k + 1)));
+    };
+    cout << h(pre, ino) << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_74(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    post = [int(v) for v in d[1:1 + n]]
+    ino = [int(v) for v in d[1 + n:1 + 2 * n]]
+    pre = []
+
+    def go(pl: int, pr: int, il: int, ir: int) -> None:
+        if pl > pr:
+            return
+        root = post[pr]
+        pre.append(str(root))
+        k = ino.index(root, il, ir + 1)
+        ln = k - il
+        go(pl, pl + ln - 1, il, k - 1)
+        go(pl + ln, pr - 1, k + 1, ir)
+
+    go(0, n - 1, 0, n - 1)
+    return "Preorder: " + " ".join(pre) + "\n"
+
+add(
+    title="根据后序和中序遍历输出前序遍历",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=2, score=15, tags=["二叉树", "后序中序", "前序遍历"],
+    statement_md=(
+        "给定一棵二叉树的**后序遍历**和**中序遍历**整数序列（结点值互不相同），"
+        "输出它的先序遍历序列。\n\n"
+        "★ 和「先序 + 中序求后序」正好镜像：\n"
+        "- **后序的最后一个元素** `post[pr]` 就是当前子树的**根**；\n"
+        "- 拿着根去中序里找到位置 `k`，算出左子树长度 `ln = k - il`；\n"
+        "- 后序里左子树是 `[pl .. pl+ln-1]`，右子树是 `[pl+ln .. pr-1]`！"
+    ),
+    input_format=(
+        "第一行正整数 `N`。\n\n"
+        "第二行 `N` 个整数，表示后序遍历序列。\n\n"
+        "第三行 `N` 个整数，表示中序遍历序列。"
+    ),
+    output_format="一行，格式为 `Preorder: v1 v2 ...`（冒号后与数字间均以单个空格分隔）。",
+    constraints_md="- 1 ≤ N ≤ 30\n- 结点值互不相同",
+    inputs=[
+        "7\n2 3 1 5 7 6 4\n1 2 3 4 5 6 7\n",
+        "1\n10\n10\n",
+        "5\n4 5 2 3 1\n4 2 5 1 3\n",
+        "4\n4 3 2 1\n1 2 3 4\n",
+    ],
+    samples=2,
+    oracle=_oracle_74,
+    solution=r"""#include <stdio.h>
+int post[35], ino[35];
+void solve(int pl, int pr, int il, int ir) {
+    if (pl > pr) return;
+    int root = post[pr];
+    printf(" %d", root);
+    int k = il;
+    while (ino[k] != root) k++;
+    int ln = k - il;
+    solve(pl, pl + ln - 1, il, k - 1);
+    solve(pl + ln, pr - 1, k + 1, ir);
+}
+int main(void) {
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &post[i]);
+    for (int i = 0; i < n; i++) scanf("%d", &ino[i]);
+    printf("Preorder:");
+    solve(0, n - 1, 0, n - 1);
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <functional>
+using namespace std;
+struct N { int v, l, r; };
+int main() {
+    int n; cin >> n;
+    vector<int> post(n), ino(n);
+    for (int &x : post) cin >> x;
+    for (int &x : ino) cin >> x;
+    vector<N> pool;
+    function<int(int, int, int, int)> build = [&](int pl, int pr, int il, int ir) -> int {
+        if (pl > pr) return -1;
+        int root = post[pr], k = il;
+        while (ino[k] != root) k++;
+        int ln = k - il;
+        int id = (int)pool.size();
+        pool.push_back({root, -1, -1});
+        int l = build(pl, pl + ln - 1, il, k - 1);
+        int r = build(pl + ln, pr - 1, k + 1, ir);
+        pool[id].l = l; pool[id].r = r;
+        return id;
+    };
+    int rt = build(0, n - 1, 0, n - 1);
+    cout << "Preorder:";
+    vector<int> st{rt};
+    while (!st.empty()) {
+        int u = st.back(); st.pop_back();
+        if (u < 0) continue;
+        cout << " " << pool[u].v;
+        st.push_back(pool[u].r);
+        st.push_back(pool[u].l);
+    }
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_75(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    post = [int(v) for v in d[1:1 + n]]
+    ino = [int(v) for v in d[1 + n:1 + 2 * n]]
+
+    def build(pl: int, pr: int, il: int, ir: int):
+        if pl > pr:
+            return None
+        root = post[pr]
+        k = ino.index(root, il, ir + 1)
+        ln = k - il
+        return (root,
+                build(pl, pl + ln - 1, il, k - 1),
+                build(pl + ln, pr - 1, k + 1, ir))
+
+    q = [build(0, n - 1, 0, n - 1)]
+    out = []
+    while q:
+        u = q.pop(0)
+        if u is None:
+            continue
+        out.append(str(u[0]))
+        q.append(u[1])
+        q.append(u[2])
+    return " ".join(out) + "\n"
+
+add(
+    title="树的遍历",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=3, score=20, tags=["二叉树", "后序中序", "层序遍历", "L2-006"],
+    statement_md=(
+        "PTA 天梯赛经典题 `L2-006 树的遍历`：给定一棵二叉树的**后序遍历**和**中序遍历**，"
+        "请你输出它的**层序遍历**序列。\n\n"
+        "★ 两种写法都值得掌握：\n"
+        "1. 标准写法：先由后序+中序递归建出二叉树，再用队列做一次 BFS；\n"
+        "2. 巧算写法：递归切分时多传一个 `depth` 参数，由于左子树总是比右子树先递归，"
+        "直接 `levels[depth].push_back(root)`，最后按层拼起来就是层序遍历！"
+    ),
+    input_format=(
+        "第一行正整数 `N`。\n\n"
+        "第二行 `N` 个整数，表示后序序列。\n\n"
+        "第三行 `N` 个整数，表示中序序列。"
+    ),
+    output_format="一行，输出层序遍历序列（`N` 个整数，空格分隔）。",
+    constraints_md="- 1 ≤ N ≤ 30\n- 结点值互不相同",
+    inputs=[
+        "7\n2 3 1 5 7 6 4\n1 2 3 4 5 6 7\n",
+        "1\n8\n8\n",
+        "5\n4 5 2 3 1\n4 2 5 1 3\n",
+        "6\n3 2 1 6 5 4\n1 2 3 4 5 6\n",
+    ],
+    samples=2,
+    oracle=_oracle_75,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+typedef struct Node { int v; struct Node *l, *r; } Node;
+int post[35], ino[35];
+Node *build(int pl, int pr, int il, int ir) {
+    if (pl > pr) return NULL;
+    int root = post[pr], k = il;
+    while (ino[k] != root) k++;
+    int ln = k - il;
+    Node *t = (Node *)malloc(sizeof(Node));
+    t->v = root;
+    t->l = build(pl, pl + ln - 1, il, k - 1);
+    t->r = build(pl + ln, pr - 1, k + 1, ir);
+    return t;
+}
+int main(void) {
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &post[i]);
+    for (int i = 0; i < n; i++) scanf("%d", &ino[i]);
+    Node *q[40];
+    int f = 0, r = 0, first = 1;
+    q[r++] = build(0, n - 1, 0, n - 1);
+    while (f < r) {
+        Node *u = q[f++];
+        printf(first ? "%d" : " %d", u->v);
+        first = 0;
+        if (u->l) q[r++] = u->l;
+        if (u->r) q[r++] = u->r;
+    }
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <functional>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    vector<int> post(n), ino(n);
+    for (int &x : post) cin >> x;
+    for (int &x : ino) cin >> x;
+    vector<vector<int>> lv(n);
+    function<void(int, int, int, int, int)> go = [&](int pl, int pr, int il, int ir, int d) {
+        if (pl > pr) return;
+        int root = post[pr], k = il;
+        while (ino[k] != root) k++;
+        int ln = k - il;
+        lv[d].push_back(root);
+        go(pl, pl + ln - 1, il, k - 1, d + 1);
+        go(pl + ln, pr - 1, k + 1, ir, d + 1);
+    };
+    go(0, n - 1, 0, n - 1, 0);
+    bool first = true;
+    for (auto &row : lv)
+        for (int v : row) { cout << (first ? "" : " ") << v; first = false; }
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_76(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    ino = [int(v) for v in d[1:1 + n]]
+    pre = [int(v) for v in d[1 + n:1 + 2 * n]]
+
+    def build(pl: int, pr: int, il: int, ir: int):
+        if pl > pr:
+            return None
+        root = pre[pl]
+        k = ino.index(root, il, ir + 1)
+        ln = k - il
+        return (root,
+                build(pl + 1, pl + ln, il, k - 1),
+                build(pl + ln + 1, pr, k + 1, ir))
+
+    q = [build(0, n - 1, 0, n - 1)]
+    out = []
+    while q:
+        u = q.pop(0)
+        if u is None:
+            continue
+        out.append(str(u[0]))
+        q.append(u[2])   # ★ 镜面反转：先入队右孩子，再入队左孩子
+        q.append(u[1])
+    return " ".join(out) + "\n"
+
+add(
+    title="玩转二叉树",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=3, score=20, tags=["二叉树", "前序中序", "镜面反转", "L2-011"],
+    statement_md=(
+        "PTA 天梯赛经典题 `L2-011 玩转二叉树`：给定一棵二叉树的**中序遍历**和**前序遍历**，"
+        "请你先将树做个**镜面反转**（交换每个结点的左、右孩子），再输出反转后的**层序遍历**序列。\n\n"
+        "★ 注意输入顺序是**第一行中序、第二行前序**（别惯性当成先给前序）！"
+        "而镜面反转后的层序遍历，只需在 BFS 入队时**先把右孩子入队、再把左孩子入队**即可。"
+    ),
+    input_format=(
+        "第一行正整数 `N`。\n\n"
+        "第二行 `N` 个整数，表示**中序**序列。\n\n"
+        "第三行 `N` 个整数，表示**前序**序列。"
+    ),
+    output_format="一行，镜面反转后的层序遍历序列（空格分隔）。",
+    constraints_md="- 1 ≤ N ≤ 30\n- 结点值互不相同",
+    inputs=[
+        "7\n1 2 3 4 5 6 7\n4 1 3 2 6 5 7\n",
+        "1\n5\n5\n",
+        "5\n4 2 5 1 3\n1 2 4 5 3\n",
+        "4\n1 2 3 4\n1 2 3 4\n",
+    ],
+    samples=2,
+    oracle=_oracle_76,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+typedef struct Node { int v; struct Node *l, *r; } Node;
+int ino[35], pre[35];
+Node *build(int pl, int pr, int il, int ir) {
+    if (pl > pr) return NULL;
+    int root = pre[pl], k = il;
+    while (ino[k] != root) k++;
+    int ln = k - il;
+    Node *t = (Node *)malloc(sizeof(Node));
+    t->v = root;
+    t->l = build(pl + 1, pl + ln, il, k - 1);
+    t->r = build(pl + ln + 1, pr, k + 1, ir);
+    return t;
+}
+int main(void) {
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &ino[i]);
+    for (int i = 0; i < n; i++) scanf("%d", &pre[i]);
+    Node *q[40];
+    int f = 0, r = 0, first = 1;
+    q[r++] = build(0, n - 1, 0, n - 1);
+    while (f < r) {
+        Node *u = q[f++];
+        printf(first ? "%d" : " %d", u->v);
+        first = 0;
+        if (u->r) q[r++] = u->r;     /* ★ 先右后左 = 镜面层序 */
+        if (u->l) q[r++] = u->l;
+    }
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <functional>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    vector<int> ino(n), pre(n);
+    for (int &x : ino) cin >> x;
+    for (int &x : pre) cin >> x;
+    vector<vector<int>> lv(n);
+    function<void(int, int, int, int, int)> go = [&](int pl, int pr, int il, int ir, int d) {
+        if (pl > pr) return;
+        int root = pre[pl], k = il;
+        while (ino[k] != root) k++;
+        int ln = k - il;
+        lv[d].push_back(root);
+        go(pl + ln + 1, pr, k + 1, ir, d + 1);   // ★ 先递归右子树，再递归左子树
+        go(pl + 1, pl + ln, il, k - 1, d + 1);
+    };
+    go(0, n - 1, 0, n - 1, 0);
+    bool first = true;
+    for (auto &row : lv)
+        for (int v : row) { cout << (first ? "" : " ") << v; first = false; }
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_77(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    post = [int(v) for v in d[1:1 + n]]
+    tree = [0] * (n + 1)
+    idx = 0
+
+    def walk(u: int) -> None:
+        nonlocal idx
+        if u > n:
+            return
+        walk(2 * u)
+        walk(2 * u + 1)
+        tree[u] = post[idx]
+        idx += 1
+
+    walk(1)
+    return " ".join(str(tree[i]) for i in range(1, n + 1)) + "\n"
+
+add(
+    title="完全二叉树的层序遍历",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=3, score=20, tags=["完全二叉树", "顺序存储", "后序还原", "L2-035"],
+    statement_md=(
+        "PTA 天梯赛经典题 `L2-035 完全二叉树的层序遍历`：给定一棵 `N` 个结点的**完全二叉树**的**后序遍历**序列，"
+        "请输出它的**层序遍历**序列。\n\n"
+        "★ 看似只给了后序（没给中序）怎么可能还原唯一二叉树？"
+        "因为「**完全二叉树**」四个字已经把树的形状彻底锁死了！\n"
+        "用一维数组 `tree[1..N]` 按层序编号存完全二叉树（结点 `u` 的左孩子是 `2u`、右孩子是 `2u+1`），"
+        "对下标 `1..N` 跑一遍后序递归，边走边从输入里读一个数填进 `tree[u]`，"
+        "最后把 `tree[1..N]` 从头到尾打印出来就是层序遍历！"
+    ),
+    input_format="第一行正整数 `N`。\n\n第二行 `N` 个整数，表示完全二叉树的后序遍历序列。",
+    output_format="一行 `N` 个整数（空格分隔），表示该完全二叉树的层序遍历序列。",
+    constraints_md="- 1 ≤ N ≤ 30",
+    inputs=[
+        "8\n91 71 2 34 10 15 55 18\n",
+        "1\n42\n",
+        "5\n4 5 2 3 1\n",
+        "7\n1 2 3 4 5 6 7\n",
+    ],
+    samples=2,
+    oracle=_oracle_77,
+    solution=r"""#include <stdio.h>
+int n, post[35], tree[35], idx = 0;
+void fill_post(int u) {
+    if (u > n) return;
+    fill_post(2 * u);
+    fill_post(2 * u + 1);
+    tree[u] = post[idx++];
+}
+int main(void) {
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &post[i]);
+    fill_post(1);
+    for (int i = 1; i <= n; i++) printf(i > 1 ? " %d" : "%d", tree[i]);
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <functional>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    vector<int> post(n);
+    for (int &x : post) cin >> x;
+    vector<int> order;
+    function<void(int)> dfs = [&](int u) {
+        if (u > n) return;
+        dfs(u * 2);
+        dfs(u * 2 + 1);
+        order.push_back(u);
+    };
+    dfs(1);
+    vector<int> ans(n + 1);
+    for (int i = 0; i < n; i++) ans[order[i]] = post[i];
+    for (int i = 1; i <= n; i++) cout << (i > 1 ? " " : "") << ans[i];
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_78(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    par = [int(v) for v in d[1:1 + n]]
+    ch = [[] for _ in range(n + 1)]
+    root = 1
+    for i in range(1, n + 1):
+        if par[i - 1] == 0:
+            root = i
+        else:
+            ch[par[i - 1]].append(i)
+    q = [root]
+    out = []
+    while q:
+        u = q.pop(0)
+        out.append(str(u))
+        for v in ch[u]:
+            q.append(v)
+    return " ".join(out) + "\n"
+
+add(
+    title="树层次遍历",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=2, score=15, tags=["树", "双亲表示法", "孩子链表", "层次遍历"],
+    statement_md=(
+        "给定一棵含 `N` 个结点（编号 `1` ~ `N`）的**普通多叉树**（双亲表示法给出每个结点的父结点编号，"
+        "根结点的父结点为 `0`），请按从上到下、同父结点的孩子按编号从小到大的顺序输出树的**层次遍历**。\n\n"
+        "★ 普通树的存储转换：输入是**双亲表示法** `parent[i]`（找父亲 O(1)，找孩子慢），"
+        "先扫一遍把每个 `i` 挂到 `children[parent[i]]` 里转成**孩子表示法**，就能直接跑 BFS 队列了！"
+    ),
+    input_format="第一行正整数 `N`。\n\n第二行 `N` 个整数 `p[1] p[2] ... p[N]`，表示结点 `1..N` 的父结点（根为 `0`）。",
+    output_format="一行 `N` 个整数（空格分隔），表示树的层次遍历序列。",
+    constraints_md="- 1 ≤ N ≤ 200",
+    inputs=[
+        "7\n0 1 1 2 2 2 3\n",
+        "1\n0\n",
+        "6\n2 0 2 1 1 3\n",
+        "5\n0 1 2 3 4\n",
+    ],
+    samples=2,
+    oracle=_oracle_78,
+    solution=r"""#include <stdio.h>
+int head[205], nxt[205], to[205], ecnt = 0;
+int q[205];
+/* 按编号从大到小头插，遍历时正好从小到大 */
+int par[205];
+int main(void) {
+    int n, root = 1;
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i++) {
+        scanf("%d", &par[i]);
+        if (par[i] == 0) root = i;
+    }
+    for (int i = n; i >= 1; i--) {
+        if (par[i] != 0) {
+            ++ecnt; to[ecnt] = i; nxt[ecnt] = head[par[i]]; head[par[i]] = ecnt;
+        }
+    }
+    int f = 0, r = 0;
+    q[r++] = root;
+    while (f < r) {
+        int u = q[f++];
+        printf(f == 1 ? "%d" : " %d", u);
+        for (int e = head[u]; e; e = nxt[e]) q[r++] = to[e];
+    }
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n, root = 1; cin >> n;
+    vector<vector<int>> ch(n + 1);
+    for (int i = 1; i <= n; i++) {
+        int p; cin >> p;
+        if (p == 0) root = i;
+        else ch[p].push_back(i);
+    }
+    vector<int> cur{root}, out;
+    while (!cur.empty()) {
+        vector<int> nxt;
+        for (int u : cur) {
+            out.push_back(u);
+            for (int v : ch[u]) nxt.push_back(v);
+        }
+        cur = nxt;
+    }
+    for (size_t i = 0; i < out.size(); i++) cout << (i ? " " : "") << out[i];
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_79(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    ino = [int(v) for v in d[1:1 + n]]
+    post = [int(v) for v in d[1 + n:1 + 2 * n]]
+    lv: list[list[int]] = []
+
+    def go(pl: int, pr: int, il: int, ir: int, dep: int) -> None:
+        if pl > pr:
+            return
+        while len(lv) <= dep:
+            lv.append([])
+        root = post[pr]
+        lv[dep].append(root)
+        k = ino.index(root, il, ir + 1)
+        ln = k - il
+        go(pl, pl + ln - 1, il, k - 1, dep + 1)
+        go(pl + ln, pr - 1, k + 1, ir, dep + 1)
+
+    go(0, n - 1, 0, n - 1, 0)
+    r_view = " ".join(str(row[-1]) for row in lv)
+    l_view = " ".join(str(row[0]) for row in lv)
+    return "R: " + r_view + "\nL: " + l_view + "\n"
+
+add(
+    title="浪漫侧影",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=3, score=20, tags=["二叉树", "右视图", "左视图", "层序分层"],
+    statement_md=(
+        "PTA 经典题 `浪漫侧影`：给定一棵二叉树的**中序遍历**和**后序遍历**序列，"
+        "请你分别输出从树的右侧和左侧观察到的「侧影」：\n\n"
+        "- **右视图（`R:`）**：从上到下每一层的**最右边**那个结点；\n"
+        "- **左视图（`L:`）**：从上到下每一层的**最左边**那个结点。\n\n"
+        "★ 按层 BFS（或带深度 `dep` 的先序 DFS）收集每一层的结点列表 `level[dep]`，"
+        "每层的第一个元素就是左视图、最后一个元素就是右视图！"
+    ),
+    input_format=(
+        "第一行正整数 `N`。\n\n"
+        "第二行 `N` 个整数，表示**中序**序列。\n\n"
+        "第三行 `N` 个整数，表示**后序**序列。"
+    ),
+    output_format=(
+        "第一行：`R: r1 r2 ...`（从根层向下的右视图结点，空格分隔）\n\n"
+        "第二行：`L: l1 l2 ...`（从根层向下的左视图结点，空格分隔）"
+    ),
+    constraints_md="- 1 ≤ N ≤ 30\n- 结点值互不相同",
+    inputs=[
+        "8\n6 8 7 4 5 1 3 2\n8 5 4 7 6 3 2 1\n",
+        "1\n9\n9\n",
+        "5\n4 2 5 1 3\n4 5 2 3 1\n",
+        "7\n1 2 3 4 5 6 7\n2 3 1 5 7 6 4\n",
+    ],
+    samples=2,
+    oracle=_oracle_79,
+    solution=r"""#include <stdio.h>
+int ino[35], post[35], first_v[35], last_v[35], max_d = -1;
+void dfs(int pl, int pr, int il, int ir, int d) {
+    if (pl > pr) return;
+    if (d > max_d) { max_d = d; first_v[d] = post[pr]; }
+    last_v[d] = post[pr];
+    int k = il;
+    while (ino[k] != post[pr]) k++;
+    int ln = k - il;
+    dfs(pl, pl + ln - 1, il, k - 1, d + 1);
+    dfs(pl + ln, pr - 1, k + 1, ir, d + 1);
+}
+int main(void) {
+    int n;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &ino[i]);
+    for (int i = 0; i < n; i++) scanf("%d", &post[i]);
+    dfs(0, n - 1, 0, n - 1, 0);
+    printf("R:");
+    for (int d = 0; d <= max_d; d++) printf(" %d", last_v[d]);
+    printf("\nL:");
+    for (int d = 0; d <= max_d; d++) printf(" %d", first_v[d]);
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <functional>
+using namespace std;
+struct N { int v, l, r; };
+int main() {
+    int n; cin >> n;
+    vector<int> ino(n), post(n);
+    for (int &x : ino) cin >> x;
+    for (int &x : post) cin >> x;
+    vector<N> pool;
+    function<int(int, int, int, int)> build = [&](int pl, int pr, int il, int ir) -> int {
+        if (pl > pr) return -1;
+        int root = post[pr], k = il;
+        while (ino[k] != root) k++;
+        int ln = k - il;
+        int id = (int)pool.size();
+        pool.push_back({root, -1, -1});
+        int l = build(pl, pl + ln - 1, il, k - 1);
+        int r = build(pl + ln, pr - 1, k + 1, ir);
+        pool[id].l = l; pool[id].r = r;
+        return id;
+    };
+    vector<int> cur{build(0, n - 1, 0, n - 1)}, R, L;
+    while (!cur.empty()) {
+        L.push_back(pool[cur.front()].v);
+        R.push_back(pool[cur.back()].v);
+        vector<int> nxt;
+        for (int u : cur) {
+            if (pool[u].l >= 0) nxt.push_back(pool[u].l);
+            if (pool[u].r >= 0) nxt.push_back(pool[u].r);
+        }
+        cur = nxt;
+    }
+    cout << "R:";
+    for (int v : R) cout << " " << v;
+    cout << "\nL:";
+    for (int v : L) cout << " " << v;
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_80(text: str) -> str:
+    s = text.strip()
+    cnt: dict[int, int] = {}
+
+    def rec(i: int, d: int) -> int:
+        if i >= len(s) or s[i] == "#":
+            return i + 1
+        cnt[d] = cnt.get(d, 0) + 1
+        i = rec(i + 1, d + 1)
+        return rec(i, d + 1)
+
+    rec(0, 1)
+    best_w, best_lv = 0, 1
+    for lv in sorted(cnt):
+        if cnt[lv] > best_w:
+            best_w = cnt[lv]
+            best_lv = lv
+    return "%d %d\n" % (best_w, best_lv)
+
+add(
+    title="二叉树的最大宽度与层号",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=2, score=15, tags=["二叉树", "宽度", "层序统计"],
+    statement_md=(
+        "二叉树的**宽度**定义为各层结点数的最大值（根在第 1 层）。"
+        "给定带 `#` 空标记的先序序列（保证非空树），求该二叉树的**最大宽度**以及达到最大宽度的**最小层号**。"
+    ),
+    input_format="一行，带 `#` 空标记的先序序列（非空树）。",
+    output_format="一行两个整数，空格分隔：`最大宽度 对应层号`。",
+    constraints_md="- 序列长度 ≤ 2000",
+    inputs=[
+        "ABD##E##CF##G##\n",
+        "AB#D##C##\n",
+        "A##\n",
+        "ABC####\n",
+    ],
+    samples=2,
+    oracle=_oracle_80,
+    solution=r"""#include <stdio.h>
+char s[2005];
+int pos = 0, cnt[2005], max_d = 0;
+void dfs(int d) {
+    char c = s[pos++];
+    if (c == '#' || c == '\0') return;
+    cnt[d]++;
+    if (d > max_d) max_d = d;
+    dfs(d + 1);
+    dfs(d + 1);
+}
+int main(void) {
+    scanf("%s", s);
+    dfs(1);
+    int bw = 0, bl = 1;
+    for (int d = 1; d <= max_d; d++)
+        if (cnt[d] > bw) { bw = cnt[d]; bl = d; }
+    printf("%d %d\n", bw, bl);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <string>
+#include <vector>
+#include <functional>
+using namespace std;
+struct N { int l, r; };
+int main() {
+    string s; cin >> s;
+    vector<N> pool;
+    int pos = 0;
+    function<int()> build = [&]() -> int {
+        if (s[pos++] == '#') return -1;
+        int id = (int)pool.size();
+        pool.push_back({-1, -1});
+        int l = build(), r = build();
+        pool[id].l = l; pool[id].r = r;
+        return id;
+    };
+    vector<int> cur{build()};
+    int bw = 0, bl = 1, lv = 1;
+    while (!cur.empty()) {
+        if ((int)cur.size() > bw) { bw = (int)cur.size(); bl = lv; }
+        vector<int> nxt;
+        for (int u : cur) {
+            if (pool[u].l >= 0) nxt.push_back(pool[u].l);
+            if (pool[u].r >= 0) nxt.push_back(pool[u].r);
+        }
+        cur = nxt; lv++;
+    }
+    cout << bw << " " << bl << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_81(text: str) -> str:
+    d = text.split()
+    n, q = int(d[0]), int(d[1])
+    pre = [int(v) for v in d[2:2 + n]]
+    ino = [int(v) for v in d[2 + n:2 + 2 * n]]
+    par: dict[int, int] = {}
+    dep: dict[int, int] = {}
+
+    def build(pl: int, pr: int, il: int, ir: int, p: int, depth: int) -> None:
+        if pl > pr:
+            return
+        root = pre[pl]
+        par[root] = p
+        dep[root] = depth
+        k = ino.index(root, il, ir + 1)
+        ln = k - il
+        build(pl + 1, pl + ln, il, k - 1, root, depth + 1)
+        build(pl + ln + 1, pr, k + 1, ir, root, depth + 1)
+
+    build(0, n - 1, 0, n - 1, 0, 0)
+    idx = 2 + 2 * n
+    out = []
+    for _ in range(q):
+        u, v = int(d[idx]), int(d[idx + 1]); idx += 2
+        while dep[u] > dep[v]:
+            u = par[u]
+        while dep[v] > dep[u]:
+            v = par[v]
+        while u != v:
+            u = par[u]
+            v = par[v]
+        out.append(str(u))
+    return "\n".join(out) + "\n"
+
+add(
+    title="二叉树的最近公共祖先（LCA）",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=3, score=20, tags=["二叉树", "LCA", "最近公共祖先", "递归"],
+    statement_md=(
+        "给定一棵 `N` 个结点的二叉树的**先序遍历**和**中序遍历**（结点值互不相同），"
+        "以及 `Q` 次询问 `(u, v)`，每次输出结点 `u` 和 `v` 的**最近公共祖先（LCA）**。\n\n"
+        "★ 递归求 LCA 的经典三分支：\n"
+        "- 若当前根为空，或等于 `u` 或 `v`，直接返回当前根；\n"
+        "- 递归查左子树和右子树：若两边都返回非空，说明 `u`、`v` 分居左右两侧，当前根就是 LCA；\n"
+        "- 否则哪边非空就返回哪边！"
+    ),
+    input_format=(
+        "第一行两个正整数 `N Q`。\n\n"
+        "第二行 `N` 个整数（先序遍历）。\n\n"
+        "第三行 `N` 个整数（中序遍历）。\n\n"
+        "随后 `Q` 行，每行两个整数 `u v`（保证在树中）。"
+    ),
+    output_format="`Q` 行，每行输出对应询问的最近公共祖先结点值。",
+    constraints_md="- 1 ≤ N ≤ 200\n- 1 ≤ Q ≤ 200",
+    inputs=[
+        "8 4\n5 3 2 1 4 8 6 7\n1 2 3 4 5 6 7 8\n1 4\n2 4\n6 7\n1 7\n",
+        "3 2\n1 2 3\n2 1 3\n2 3\n2 1\n",
+        "5 3\n1 2 3 4 5\n5 4 3 2 1\n5 3\n4 2\n1 5\n",
+    ],
+    samples=2,
+    oracle=_oracle_81,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+typedef struct Node { int v; struct Node *l, *r; } Node;
+int pre[205], ino[205];
+Node *build(int pl, int pr, int il, int ir) {
+    if (pl > pr) return NULL;
+    int root = pre[pl], k = il;
+    while (ino[k] != root) k++;
+    int ln = k - il;
+    Node *t = (Node *)malloc(sizeof(Node));
+    t->v = root;
+    t->l = build(pl + 1, pl + ln, il, k - 1);
+    t->r = build(pl + ln + 1, pr, k + 1, ir);
+    return t;
+}
+Node *lca(Node *t, int u, int v) {
+    if (!t || t->v == u || t->v == v) return t;
+    Node *L = lca(t->l, u, v);
+    Node *R = lca(t->r, u, v);
+    if (L && R) return t;
+    return L ? L : R;
+}
+int main(void) {
+    int n, q;
+    scanf("%d %d", &n, &q);
+    for (int i = 0; i < n; i++) scanf("%d", &pre[i]);
+    for (int i = 0; i < n; i++) scanf("%d", &ino[i]);
+    Node *root = build(0, n - 1, 0, n - 1);
+    while (q--) {
+        int u, v; scanf("%d %d", &u, &v);
+        printf("%d\n", lca(root, u, v)->v);
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <map>
+#include <functional>
+using namespace std;
+int main() {
+    int n, q; cin >> n >> q;
+    vector<int> pre(n), ino(n);
+    for (int &x : pre) cin >> x;
+    for (int &x : ino) cin >> x;
+    map<int, int> par, dep;
+    function<void(int, int, int, int, int, int)> go = [&](int pl, int pr, int il, int ir, int p, int d) {
+        if (pl > pr) return;
+        int root = pre[pl], k = il;
+        while (ino[k] != root) k++;
+        int ln = k - il;
+        par[root] = p; dep[root] = d;
+        go(pl + 1, pl + ln, il, k - 1, root, d + 1);
+        go(pl + ln + 1, pr, k + 1, ir, root, d + 1);
+    };
+    go(0, n - 1, 0, n - 1, 0, 0);
+    while (q--) {
+        int u, v; cin >> u >> v;
+        while (dep[u] > dep[v]) u = par[u];
+        while (dep[v] > dep[u]) v = par[v];
+        while (u != v) { u = par[u]; v = par[v]; }
+        cout << u << "\n";
+    }
+    return 0;
+}
+""",
+)
+
+def _oracle_82(text: str) -> str:
+    import heapq
+    d = text.split()
+    n = int(d[0])
+    w = [int(v) for v in d[1:1 + n]]
+    if n <= 1:
+        return "0\n"
+    heapq.heapify(w)
+    cost = 0
+    while len(w) > 1:
+        a = heapq.heappop(w)
+        b = heapq.heappop(w)
+        cost += a + b
+        heapq.heappush(w, a + b)
+    return "%d\n" % cost
+
+add(
+    title="修理牧场",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=2, score=15, tags=["哈夫曼树", "优先队列", "贪心", "锯木头"],
+    statement_md=(
+        "PTA 经典题 `05-树8 修理牧场`：农夫要把一根长木头锯成给定的 `N` 段。\n"
+        "每次把一根长度为 `L` 的木头锯成两段，需要花费 `L` 个铜板。\n"
+        "求把木头锯成这 `N` 段的**最少总花费**。\n\n"
+        "★ 逆向思维：正向看是「一根长木头不断一分为二」，倒过来看就是"
+        "「每次挑两根最短的木头粘合起来」—— 花费恰好等于**哈夫曼树的带权路径长度 WPL**！\n"
+        "注意边界：若 `N = 1`，木头本来就是一整段，一刀都不用锯，花费为 `0`。"
+    ),
+    input_format="第一行正整数 `N`。\n\n第二行 `N` 个正整数，表示每段木头的长度。",
+    output_format="一行一个整数，表示最少总花费。",
+    constraints_md="- 1 ≤ N ≤ 10000\n- 每段长度 ≤ 10^5",
+    inputs=[
+        "8\n4 5 1 2 1 3 1 1\n",
+        "1\n25\n",
+        "3\n8 5 8\n",
+        "4\n10 20 30 40\n",
+    ],
+    samples=2,
+    oracle=_oracle_82,
+    solution=r"""#include <iostream>
+#include <queue>
+#include <vector>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    priority_queue<long long, vector<long long>, greater<long long>> pq;
+    for (int i = 0; i < n; i++) { long long v; cin >> v; pq.push(v); }
+    long long ans = 0;
+    while (pq.size() > 1) {
+        long long a = pq.top(); pq.pop();
+        long long b = pq.top(); pq.pop();
+        ans += a + b;
+        pq.push(a + b);
+    }
+    cout << ans << "\n";
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+/* 另一套：双队列线性哈夫曼算法（初始排序放 q1，合成结点放 q2，永远单调递增） */
+int main() {
+    int n; cin >> n;
+    vector<long long> a(n);
+    for (auto &v : a) cin >> v;
+    if (n <= 1) { cout << 0 << "\n"; return 0; }
+    sort(a.begin(), a.end());
+    queue<long long> q1, q2;
+    for (auto v : a) q1.push(v);
+    auto pop_min = [&]() -> long long {
+        if (q2.empty() || (!q1.empty() && q1.front() <= q2.front())) {
+            long long v = q1.front(); q1.pop(); return v;
+        }
+        long long v = q2.front(); q2.pop(); return v;
+    };
+    long long ans = 0;
+    for (int k = 1; k < n; k++) {
+        long long s = pop_min() + pop_min();
+        ans += s;
+        q2.push(s);
+    }
+    cout << ans << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_83(text: str) -> str:
+    import heapq
+    d = text.split()
+    n = int(d[0])
+    w = [int(v) for v in d[1:1 + n]]
+    hp = list(w)
+    heapq.heapify(hp)
+    wpl = 0
+    while len(hp) > 1:
+        a = heapq.heappop(hp)
+        b = heapq.heappop(hp)
+        wpl += a + b
+        heapq.heappush(hp, a + b)
+    m = int(d[1 + n])
+    p = 2 + n
+    out = [str(wpl)]
+    for _ in range(m):
+        codes = d[p:p + n]; p += n
+        tot = sum(w[i] * len(codes[i]) for i in range(n))
+        sc = sorted(codes)
+        prefix_free = all(not sc[i + 1].startswith(sc[i]) for i in range(n - 1))
+        out.append("YES" if (tot == wpl and prefix_free) else "NO")
+    return "\n".join(out) + "\n"
+
+add(
+    title="哈夫曼树",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=4, score=25, tags=["哈夫曼树", "前缀编码", "最优性判定", "Trie"],
+    statement_md=(
+        "PTA 经典题 `Huffman Codes`：哈夫曼编码的形态**不唯一**（同权结点谁左谁右、谁先合并都可能不同），"
+        "但任何一套合法的最优哈夫曼编码都必须同时满足两条铁律：\n\n"
+        "1. **带权路径长度最优**：`Σ(w[i] × |code[i]|)` 恰好等于哈夫曼树的最小 `WPL`；\n"
+        "2. **前缀码性质**：没有任何一个编码是另一个编码的前缀（即字符全部住在叶子上）。\n\n"
+        "给定 `N` 个字符的权值与 `M` 套候选编码方案，请先输出最优 `WPL`，再逐套判定是否合法（`YES` / `NO`）。"
+    ),
+    input_format=(
+        "第一行整数 `N`（2 ≤ N ≤ 60）。\n\n"
+        "第二行 `N` 个正整数 `w[1..N]`。\n\n"
+        "第三行正整数 `M`（候选方案数）。\n\n"
+        "随后 `M` 组，每组 `N` 行，第 `i` 行为第 `i` 个字符的 `0/1` 编码串。"
+    ),
+    output_format="第一行输出最优 `WPL`；随后 `M` 行每行输出 `YES` 或 `NO`。",
+    constraints_md="- 2 ≤ N ≤ 60\n- 1 ≤ M ≤ 20\n- 1 ≤ |编码串| ≤ 60",
+    inputs=[
+        "4\n1 1 3 3\n3\n000\n001\n01\n1\n01\n01\n0\n1\n00\n01\n10\n11\n",
+        "3\n2 3 6\n2\n00\n01\n1\n0\n10\n11\n",
+        "2\n5 5\n2\n0\n1\n0\n01\n",
+    ],
+    samples=2,
+    oracle=_oracle_83,
+    solution=r"""#include <iostream>
+#include <vector>
+#include <string>
+#include <queue>
+using namespace std;
+struct Trie { int ch[2] = {0, 0}; bool end = false; };
+int main() {
+    int n; cin >> n;
+    vector<long long> w(n);
+    priority_queue<long long, vector<long long>, greater<long long>> pq;
+    for (int i = 0; i < n; i++) { cin >> w[i]; pq.push(w[i]); }
+    long long wpl = 0;
+    while (pq.size() > 1) {
+        long long a = pq.top(); pq.pop();
+        long long b = pq.top(); pq.pop();
+        wpl += a + b; pq.push(a + b);
+    }
+    cout << wpl << "\n";
+    int m; cin >> m;
+    while (m--) {
+        vector<string> c(n);
+        long long tot = 0;
+        for (int i = 0; i < n; i++) { cin >> c[i]; tot += w[i] * (long long)c[i].size(); }
+        vector<Trie> tr(1);
+        bool ok = (tot == wpl);
+        for (int i = 0; i < n && ok; i++) {
+            int u = 0;
+            for (char b : c[i]) {
+                int d = b - '0';
+                if (!tr[u].ch[d]) { tr[u].ch[d] = (int)tr.size(); tr.push_back(Trie()); }
+                u = tr[u].ch[d];
+                if (tr[u].end) ok = false;
+            }
+            if (tr[u].ch[0] || tr[u].ch[1]) ok = false;
+            tr[u].end = true;
+        }
+        cout << (ok ? "YES\n" : "NO\n");
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    vector<long long> w(n), hp;
+    for (int i = 0; i < n; i++) { cin >> w[i]; hp.push_back(w[i]); }
+    long long wpl = 0;
+    while (hp.size() > 1) {
+        sort(hp.begin(), hp.end());
+        long long s = hp[0] + hp[1];
+        wpl += s;
+        hp.erase(hp.begin(), hp.begin() + 2);
+        hp.push_back(s);
+    }
+    cout << wpl << "\n";
+    int m; cin >> m;
+    while (m--) {
+        vector<string> c(n);
+        long long tot = 0;
+        for (int i = 0; i < n; i++) { cin >> c[i]; tot += w[i] * (long long)c[i].size(); }
+        sort(c.begin(), c.end());
+        bool ok = (tot == wpl);
+        for (int i = 0; i + 1 < n && ok; i++)
+            if (c[i + 1].compare(0, c[i].size(), c[i]) == 0) ok = false;
+        cout << (ok ? "YES\n" : "NO\n");
+    }
+    return 0;
+}
+""",
+)
+
+def _oracle_84(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    par = list(range(n + 1))
+    sz = [1] * (n + 1)
+
+    def find(x: int) -> int:
+        while par[x] != x:
+            par[x] = par[par[x]]
+            x = par[x]
+        return x
+
+    def union(a: int, b: int) -> None:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            par[rb] = ra
+            sz[ra] += sz[rb]
+
+    p = 2
+    for _ in range(m):
+        k = int(d[p]); p += 1
+        first = int(d[p]); p += 1
+        for _ in range(k - 1):
+            union(first, int(d[p])); p += 1
+    return "%d\n" % max(sz[1:n + 1])
+
+add(
+    title="朋友圈",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=2, score=15, tags=["并查集", "连通块大小", "等价类"],
+    statement_md=(
+        "PTA 经典题 `朋友圈`：学校里有 `N` 个学生（编号 `1` ~ `N`）和 `M` 个俱乐部。\n"
+        "每个俱乐部里的学生都是朋友，而且「朋友的朋友也是朋友」（传递性）。"
+        "请计算**最大的朋友圈**里有多少个学生。\n\n"
+        "★ 并查集的经典「按大小合并」：维护 `sz[root]` 表示以 `root` 为代表元的集合大小，"
+        "每次合并两个不同集合 `ru` 和 `rv` 时令 `sz[ru] += sz[rv]`；最后取 `max(sz)` 即可！"
+    ),
+    input_format=(
+        "第一行两个整数 `N M`（学生总数、俱乐部个数）。\n\n"
+        "随后 `M` 行，每行先给一个正整数 `k`，后跟 `k` 个学生编号。"
+    ),
+    output_format="一行一个整数，表示最大朋友圈的人数。",
+    constraints_md="- 1 ≤ N ≤ 30000\n- 0 ≤ M ≤ 1000",
+    inputs=[
+        "7 4\n3 1 2 3\n2 1 4\n3 5 6 7\n1 6\n",
+        "5 0\n",
+        "6 3\n2 1 2\n2 3 4\n3 2 3 6\n",
+        "4 2\n2 1 2\n2 1 2\n",
+    ],
+    samples=2,
+    oracle=_oracle_84,
+    solution=r"""#include <stdio.h>
+int par[30005], sz[30005];
+int find(int x) {
+    while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
+    return x;
+}
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 1; i <= n; i++) { par[i] = i; sz[i] = 1; }
+    for (int i = 0; i < m; i++) {
+        int k, first, x;
+        scanf("%d %d", &k, &first);
+        for (int j = 1; j < k; j++) {
+            scanf("%d", &x);
+            int a = find(first), b = find(x);
+            if (a != b) { par[b] = a; sz[a] += sz[b]; }
+        }
+    }
+    int best = 1;
+    for (int i = 1; i <= n; i++) if (find(i) == i && sz[i] > best) best = sz[i];
+    printf("%d\n", best);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+/* 另一套：学生 (1..n) 与俱乐部 (n+1..n+m) 建二分图，跑 BFS 统计连通块里的学生数 */
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<int>> g(n + m + 1);
+    for (int i = 1; i <= m; i++) {
+        int k; cin >> k;
+        while (k--) {
+            int u; cin >> u;
+            g[u].push_back(n + i);
+            g[n + i].push_back(u);
+        }
+    }
+    vector<char> vis(n + m + 1, 0);
+    int best = 1;
+    for (int s = 1; s <= n; s++) {
+        if (vis[s]) continue;
+        int cnt = 0;
+        queue<int> q; q.push(s); vis[s] = 1;
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            if (u <= n) cnt++;
+            for (int v : g[u]) if (!vis[v]) { vis[v] = 1; q.push(v); }
+        }
+        if (cnt > best) best = cnt;
+    }
+    cout << best << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_85(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    par = list(range(10005))
+    seen = set()
+
+    def find(x: int) -> int:
+        while par[x] != x:
+            par[x] = par[par[x]]
+            x = par[x]
+        return x
+
+    p = 1
+    for _ in range(n):
+        k = int(d[p]); p += 1
+        first = int(d[p]); p += 1
+        seen.add(first)
+        for _ in range(k - 1):
+            x = int(d[p]); p += 1
+            seen.add(x)
+            ra, rb = find(first), find(x)
+            if ra != rb:
+                par[rb] = ra
+    tribes = sum(1 for u in seen if find(u) == u)
+    q = int(d[p]); p += 1
+    out = ["%d %d" % (len(seen), tribes)]
+    for _ in range(q):
+        u, v = int(d[p]), int(d[p + 1]); p += 2
+        out.append("Y" if find(u) == find(v) else "N")
+    return "\n".join(out) + "\n"
+
+add(
+    title="部落",
+    section="第 05 讲 · 树和二叉树",
+    difficulty=3, score=20, tags=["并查集", "连通分量", "L2-024"],
+    statement_md=(
+        "PTA 天梯赛经典题 `L2-024 部落`：社区里有若干个小圈子，只要两个人出现在同一个小圈子里，"
+        "他们就属于同一个**部落**（部落关系具有传递性）。\n\n"
+        "给定 `N` 个小圈子的成员名单，请你：\n"
+        "1. 统计社区里的**总人数**（出现过的不同人员编号个数）与互不相交的**部落总数**；\n"
+        "2. 对随后的 `Q` 次询问 `(u, v)`，判断两人是否属于同一个部落（输出 `Y` 或 `N`）。"
+    ),
+    input_format=(
+        "第一行正整数 `N`（小圈子个数）。\n\n"
+        "随后 `N` 行，每行格式为 `k p1 p2 ... pk`（圈子人数与成员编号，编号为 1~10000 内的正整数）。\n\n"
+        "接着一行正整数 `Q`，随后 `Q` 行每行两个编号 `u v`。"
+    ),
+    output_format=(
+        "第一行两个整数：`社区总人数 部落数`。\n\n"
+        "随后 `Q` 行，每行输出 `Y` 或 `N`。"
+    ),
+    constraints_md="- 1 ≤ N, Q ≤ 1000\n- 1 ≤ 编号 ≤ 10000",
+    inputs=[
+        "4\n3 10 1 2\n2 3 4\n4 1 5 7 8\n3 9 6 4\n2\n10 5\n3 7\n",
+        "2\n2 1 2\n2 3 4\n2\n1 2\n2 3\n",
+        "3\n1 1\n1 2\n1 3\n2\n1 2\n1 1\n",
+    ],
+    samples=2,
+    oracle=_oracle_85,
+    solution=r"""#include <stdio.h>
+int par[10005], seen[10005];
+int find(int x) {
+    while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
+    return x;
+}
+int main(void) {
+    for (int i = 1; i <= 10000; i++) par[i] = i;
+    int n;
+    scanf("%d", &n);
+    while (n--) {
+        int k, first, x;
+        scanf("%d %d", &k, &first);
+        seen[first] = 1;
+        for (int i = 1; i < k; i++) {
+            scanf("%d", &x);
+            seen[x] = 1;
+            int a = find(first), b = find(x);
+            if (a != b) par[b] = a;
+        }
+    }
+    int tot = 0, tribes = 0;
+    for (int i = 1; i <= 10000; i++) {
+        if (seen[i]) {
+            tot++;
+            if (find(i) == i) tribes++;
+        }
+    }
+    printf("%d %d\n", tot, tribes);
+    int q;
+    scanf("%d", &q);
+    while (q--) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        printf(find(u) == find(v) ? "Y\n" : "N\n");
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+int main() {
+    int n; cin >> n;
+    vector<vector<int>> g(10005);
+    vector<char> seen(10005, 0);
+    while (n--) {
+        int k, first; cin >> k >> first;
+        seen[first] = 1;
+        for (int i = 1; i < k; i++) {
+            int x; cin >> x; seen[x] = 1;
+            g[first].push_back(x);
+            g[x].push_back(first);
+        }
+    }
+    vector<int> comp(10005, 0);
+    int tot = 0, cid = 0;
+    for (int i = 1; i <= 10000; i++) {
+        if (!seen[i]) continue;
+        tot++;
+        if (comp[i]) continue;
+        cid++;
+        queue<int> q; q.push(i); comp[i] = cid;
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            for (int v : g[u]) if (!comp[v]) { comp[v] = cid; q.push(v); }
+        }
+    }
+    cout << tot << " " << cid << "\n";
+    int qq; cin >> qq;
+    while (qq--) {
+        int u, v; cin >> u >> v;
+        cout << (comp[u] == comp[v] ? "Y\n" : "N\n");
+    }
+    return 0;
+}
+""",
+)
+
+# --------------------------------------------------------------------- #
+#  第 06 讲扩充：图的存储、遍历、最小生成树、最短路、拓扑与关键路径（循序渐进 + 举一反三）
+# --------------------------------------------------------------------- #
+
+def _oracle_86(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    g = [[0] * n for _ in range(n)]
+    p = 2
+    for _ in range(m):
+        u, v = int(d[p]) - 1, int(d[p + 1]) - 1; p += 2
+        g[u][v] = g[v][u] = 1
+    lines = [" ".join(map(str, row)) for row in g]
+    lines.append(" ".join(str(sum(row)) for row in g))
+    return "\n".join(lines) + "\n"
+
+add(
+    title="邻接矩阵表示法创建无向图",
+    section="第 06 讲 · 图",
+    difficulty=1, score=10, tags=["图", "邻接矩阵", "顶点度"],
+    statement_md=(
+        "用**邻接矩阵**表示一个含 `n` 个顶点（编号 `1` ~ `n`）、`m` 条边的无向图，"
+        "输出该 `n × n` 的 `0/1` 邻接矩阵，并在最后一行输出每个顶点的**度（degree）**。\n\n"
+        "★ 无向图邻接矩阵的两条基本性质：\n"
+        "1. 矩阵一定关于主对角线**对称**（读入边 `(u, v)` 时必须同时置 `G[u][v] = G[v][u] = 1`）；\n"
+        "2. 第 `i` 行（或第 `i` 列）元素之和就是顶点 `i` 的**度**！"
+    ),
+    input_format="第一行两个整数 `n m`。\n\n随后 `m` 行，每行两个整数 `u v` 表示一条无向边（无重边、无自环）。",
+    output_format="前 `n` 行输出邻接矩阵（每行 `n` 个 `0/1` 整数，空格分隔）；第 `n+1` 行输出 `n` 个顶点的度（空格分隔）。",
+    constraints_md="- 1 ≤ n ≤ 100\n- 0 ≤ m ≤ n(n-1)/2",
+    inputs=[
+        "4 5\n1 2\n1 3\n1 4\n2 3\n3 4\n",
+        "3 1\n2 3\n",
+        "1 0\n",
+        "4 6\n1 2\n1 3\n1 4\n2 3\n2 4\n3 4\n",
+    ],
+    samples=2,
+    oracle=_oracle_86,
+    solution=r"""#include <stdio.h>
+int g[105][105], deg[105];
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int k = 0; k < m; k++) {
+        int u, v;
+        scanf("%d %d", &u, &v);
+        g[u][v] = g[v][u] = 1;
+    }
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            printf(j > 1 ? " %d" : "%d", g[i][j]);
+            deg[i] += g[i][j];
+        }
+        printf("\n");
+    }
+    for (int i = 1; i <= n; i++) printf(i > 1 ? " %d" : "%d", deg[i]);
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <numeric>
+using namespace std;
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<int>> g(n, vector<int>(n, 0));
+    while (m--) {
+        int u, v; cin >> u >> v;
+        --u; --v;
+        g[u][v] = g[v][u] = 1;
+    }
+    for (int i = 0; i < n; i++) {
+        for (int j = 0; j < n; j++) cout << (j ? " " : "") << g[i][j];
+        cout << "\n";
+    }
+    for (int i = 0; i < n; i++)
+        cout << (i ? " " : "") << accumulate(g[i].begin(), g[i].end(), 0);
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_87(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    adj = [[] for _ in range(n + 1)]
+    p = 2
+    for _ in range(m):
+        u, v = int(d[p]), int(d[p + 1]); p += 2
+        adj[u].append(v)
+        adj[v].append(u)
+    return "\n".join(" ".join([str(i) + ":"] + [str(v) for v in adj[i]])
+                     for i in range(1, n + 1)) + "\n"
+
+add(
+    title="邻接表创建无向图",
+    section="第 06 讲 · 图",
+    difficulty=1, score=10, tags=["图", "邻接表", "尾插法"],
+    statement_md=(
+        "读入一个无向图，用**尾插法（保持输入顺序）**建立邻接表，"
+        "然后按顶点编号 `1` ~ `n` 依次输出每个顶点的邻接点链表。\n\n"
+        "★ 与「无向图的邻接表（头插法）」对照：\n"
+        "- **头插法**把新边插在链头，邻接点顺序与输入顺序**相反**；\n"
+        "- **尾插法**（或 C++ `vector::push_back`）把新边挂在链尾，邻接点顺序与输入顺序**一致**。"
+    ),
+    input_format="第一行 `n m`（顶点数、边数）。\n\n接下来 `m` 行，每行 `u v` 表示一条无向边。",
+    output_format="`n` 行，第 `i` 行为 `i: v1 v2 ...`（按输入先后顺序排列；孤立顶点输出 `i:`）。",
+    constraints_md="- 1 ≤ n ≤ 100\n- 0 ≤ m ≤ n(n-1)/2",
+    inputs=[
+        "4 5\n1 2\n1 3\n1 4\n2 3\n3 4\n",
+        "3 1\n2 3\n",
+        "1 0\n",
+        "5 4\n1 5\n1 3\n2 4\n3 5\n",
+    ],
+    samples=2,
+    oracle=_oracle_87,
+    solution=r"""#include <stdio.h>
+int head[105], tail[105], nxt[4005], to[4005], ecnt = 0;
+void add_tail(int u, int v) {
+    ++ecnt; to[ecnt] = v; nxt[ecnt] = 0;
+    if (!head[u]) head[u] = tail[u] = ecnt;
+    else { nxt[tail[u]] = ecnt; tail[u] = ecnt; }
+}
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int k = 0; k < m; k++) {
+        int u, v; scanf("%d %d", &u, &v);
+        add_tail(u, v); add_tail(v, u);
+    }
+    for (int i = 1; i <= n; i++) {
+        printf("%d:", i);
+        for (int e = head[i]; e; e = nxt[e]) printf(" %d", to[e]);
+        printf("\n");
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<int>> adj(n + 1);
+    while (m--) {
+        int u, v; cin >> u >> v;
+        adj[u].push_back(v);
+        adj[v].push_back(u);
+    }
+    for (int i = 1; i <= n; i++) {
+        cout << i << ":";
+        for (int v : adj[i]) cout << " " << v;
+        cout << "\n";
+    }
+    return 0;
+}
+""",
+)
+
+def _oracle_88(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    adj = [[] for _ in range(n + 1)]
+    p = 2
+    for _ in range(m):
+        u, v = int(d[p]), int(d[p + 1]); p += 2
+        adj[u].append(v); adj[v].append(u)
+    for i in range(1, n + 1):
+        adj[i].sort()
+    vis = [False] * (n + 1)
+    order = []
+
+    def dfs(u: int) -> None:
+        vis[u] = True
+        order.append(str(u))
+        for v in adj[u]:
+            if not vis[v]:
+                dfs(v)
+
+    for i in range(1, n + 1):
+        if not vis[i]:
+            dfs(i)
+    return " ".join(order) + "\n"
+
+add(
+    title="图深度优先遍历",
+    section="第 06 讲 · 图",
+    difficulty=2, score=15, tags=["图", "DFS", "深度优先遍历"],
+    statement_md=(
+        "给定一个含 `n` 个顶点（编号 `1` ~ `n`）和 `m` 条边的无向图，"
+        "输出它的**深度优先遍历（DFS）**序列。\n\n"
+        "★ 为保证遍历序列唯一，约定：\n"
+        "1. 外层按顶点编号 `1 → n` 依次检查，若未访问则从该顶点发起一次 DFS（处理非连通图）；\n"
+        "2. 每个顶点扩展邻居时，一律按**邻接点编号从小到大**访问。"
+    ),
+    input_format="第一行 `n m`。\n\n随后 `m` 行，每行 `u v` 表示一条无向边。",
+    output_format="一行 `n` 个整数（空格分隔），表示全图的 DFS 访问序列。",
+    constraints_md="- 1 ≤ n ≤ 100\n- 0 ≤ m ≤ n(n-1)/2",
+    inputs=[
+        "5 5\n1 2\n1 4\n2 3\n2 5\n3 5\n",
+        "4 2\n1 3\n2 4\n",
+        "1 0\n",
+        "6 5\n1 6\n1 3\n3 2\n3 5\n2 4\n",
+    ],
+    samples=2,
+    oracle=_oracle_88,
+    solution=r"""#include <stdio.h>
+int g[105][105], vis[105], n, m, first = 1;
+void dfs(int u) {
+    vis[u] = 1;
+    printf(first ? "%d" : " %d", u);
+    first = 0;
+    for (int v = 1; v <= n; v++)
+        if (g[u][v] && !vis[v]) dfs(v);
+}
+int main(void) {
+    scanf("%d %d", &n, &m);
+    for (int k = 0; k < m; k++) {
+        int u, v; scanf("%d %d", &u, &v);
+        g[u][v] = g[v][u] = 1;
+    }
+    for (int i = 1; i <= n; i++)
+        if (!vis[i]) dfs(i);
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+/* 另一套：邻接表排序 + 显式栈模拟非递归 DFS */
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<int>> adj(n + 1);
+    while (m--) {
+        int u, v; cin >> u >> v;
+        adj[u].push_back(v); adj[v].push_back(u);
+    }
+    for (int i = 1; i <= n; i++)
+        sort(adj[i].rbegin(), adj[i].rend()); // 逆序压栈，栈顶就是最小编号
+    vector<char> vis(n + 1, 0);
+    vector<int> out;
+    for (int s = 1; s <= n; s++) {
+        if (vis[s]) continue;
+        vector<int> st{s};
+        while (!st.empty()) {
+            int u = st.back(); st.pop_back();
+            if (vis[u]) continue;
+            vis[u] = 1;
+            out.push_back(u);
+            for (int v : adj[u]) if (!vis[v]) st.push_back(v);
+        }
+    }
+    for (size_t i = 0; i < out.size(); i++) cout << (i ? " " : "") << out[i];
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_89(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    g = [[False] * n for _ in range(n)]
+    p = 2
+    for _ in range(m):
+        u, v = int(d[p]), int(d[p + 1]); p += 2
+        g[u][v] = g[v][u] = True
+    out = []
+    vis = [False] * n
+
+    def dfs(u: int, comp: list[int]) -> None:
+        vis[u] = True
+        comp.append(u)
+        for v in range(n):
+            if g[u][v] and not vis[v]:
+                dfs(v, comp)
+
+    for i in range(n):
+        if not vis[i]:
+            c: list[int] = []
+            dfs(i, c)
+            out.append("{ " + " ".join(map(str, c)) + " }")
+
+    vis = [False] * n
+    for i in range(n):
+        if not vis[i]:
+            c = []
+            q = [i]
+            vis[i] = True
+            while q:
+                u = q.pop(0)
+                c.append(u)
+                for v in range(n):
+                    if g[u][v] and not vis[v]:
+                        vis[v] = True
+                        q.append(v)
+            out.append("{ " + " ".join(map(str, c)) + " }")
+    return "\n".join(out) + "\n"
+
+add(
+    title="列出连通集",
+    section="第 06 讲 · 图",
+    difficulty=2, score=15, tags=["图", "DFS", "BFS", "连通分量", "06-图1"],
+    statement_md=(
+        "PTA 经典题 `06-图1 列出连通集`：给定一个有 `N` 个顶点（编号 `0` ~ `N-1`）和 `E` 条边的无向图，"
+        "请分别用 **DFS** 和 **BFS** 找出图中的所有连通集。\n\n"
+        "约定：遍历时总是从编号最小的未访问顶点出发，访问邻接点时也按编号**从小到大**的顺序访问。"
+        "每个连通集输出一行，格式为 `{ v1 v2 ... vk }`。"
+    ),
+    input_format="第一行两个整数 `N E`（1 ≤ N ≤ 15）。\n\n随后 `E` 行，每行两个整数 `u v` 表示一条无向边。",
+    output_format="先按 DFS 顺序输出所有连通集（每行一个 `{ ... }`），再按 BFS 顺序输出所有连通集。",
+    constraints_md="- 1 ≤ N ≤ 15\n- 0 ≤ E ≤ N(N-1)/2",
+    inputs=[
+        "8 6\n0 7\n0 1\n2 0\n4 1\n2 4\n3 5\n",
+        "4 0\n",
+        "5 4\n0 1\n1 2\n2 3\n3 4\n",
+        "6 5\n0 2\n0 4\n2 1\n1 4\n3 5\n",
+    ],
+    samples=2,
+    oracle=_oracle_89,
+    solution=r"""#include <stdio.h>
+int g[20][20], vis[20], q[20], n, e;
+void dfs(int u) {
+    vis[u] = 1;
+    printf(" %d", u);
+    for (int v = 0; v < n; v++)
+        if (g[u][v] && !vis[v]) dfs(v);
+}
+int main(void) {
+    scanf("%d %d", &n, &e);
+    for (int k = 0; k < e; k++) {
+        int u, v; scanf("%d %d", &u, &v);
+        g[u][v] = g[v][u] = 1;
+    }
+    for (int i = 0; i < n; i++) {
+        if (!vis[i]) {
+            printf("{");
+            dfs(i);
+            printf(" }\n");
+        }
+    }
+    for (int i = 0; i < n; i++) vis[i] = 0;
+    for (int i = 0; i < n; i++) {
+        if (!vis[i]) {
+            printf("{");
+            int f = 0, r = 0;
+            q[r++] = i; vis[i] = 1;
+            while (f < r) {
+                int u = q[f++];
+                printf(" %d", u);
+                for (int v = 0; v < n; v++)
+                    if (g[u][v] && !vis[v]) { vis[v] = 1; q[r++] = v; }
+            }
+            printf(" }\n");
+        }
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <functional>
+using namespace std;
+int main() {
+    int n, e; cin >> n >> e;
+    vector<vector<int>> adj(n);
+    while (e--) {
+        int u, v; cin >> u >> v;
+        adj[u].push_back(v); adj[v].push_back(u);
+    }
+    for (int i = 0; i < n; i++) sort(adj[i].begin(), adj[i].end());
+    vector<char> vis(n, 0);
+    function<void(int)> dfs = [&](int u) {
+        vis[u] = 1;
+        cout << " " << u;
+        for (int v : adj[u]) if (!vis[v]) dfs(v);
+    };
+    for (int i = 0; i < n; i++)
+        if (!vis[i]) { cout << "{"; dfs(i); cout << " }\n"; }
+    fill(vis.begin(), vis.end(), 0);
+    for (int i = 0; i < n; i++) {
+        if (vis[i]) continue;
+        cout << "{";
+        queue<int> q; q.push(i); vis[i] = 1;
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            cout << " " << u;
+            for (int v : adj[u]) if (!vis[v]) { vis[v] = 1; q.push(v); }
+        }
+        cout << " }\n";
+    }
+    return 0;
+}
+""",
+)
+
+def _oracle_90(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    deg = [0] * (n + 1)
+    par = list(range(n + 1))
+
+    def find(x: int) -> int:
+        while par[x] != x:
+            par[x] = par[par[x]]
+            x = par[x]
+        return x
+
+    p = 2
+    for _ in range(m):
+        u, v = int(d[p]), int(d[p + 1]); p += 2
+        deg[u] += 1; deg[v] += 1
+        ru, rv = find(u), find(v)
+        if ru != rv:
+            par[rv] = ru
+    comps = sum(1 for i in range(1, n + 1) if find(i) == i)
+    ok = (comps == 1) and all(deg[i] > 0 and deg[i] % 2 == 0 for i in range(1, n + 1))
+    return ("1\n" if ok else "0\n")
+
+add(
+    title="哥尼斯堡的“七桥问题”",
+    section="第 06 讲 · 图",
+    difficulty=2, score=15, tags=["图", "欧拉回路", "连通性", "顶点度"],
+    statement_md=(
+        "PTA 经典题 `08-图9 哥尼斯堡的“七桥问题”`：给定一个含 `N` 个顶点（编号 `1` ~ `N`）和 `M` 条边的无向图，"
+        "判断是否存在一条从某个顶点出发、**每条边恰好走一次**并回到起点的回路（即**欧拉回路**）。\n\n"
+        "★ 最容易漏掉的坑：**只判「所有顶点度数为偶数」不够，必须同时检查图是否连通！**\n"
+        "比如两个互不相连的三角形，每个顶点的度都是 2（全偶），但你不可能一笔画走完两个三角形！"
+    ),
+    input_format="第一行两个正整数 `N M`。\n\n随后 `M` 行，每行两个整数 `u v` 表示一条无向边。",
+    output_format="一行，若存在欧拉回路输出 `1`，否则输出 `0`。",
+    constraints_md="- 1 ≤ N ≤ 1000\n- 0 ≤ M ≤ 5000",
+    inputs=[
+        "6 10\n1 2\n2 3\n3 1\n4 5\n5 6\n6 4\n1 4\n1 6\n3 4\n3 6\n",
+        "7 12\n1 2\n1 3\n1 4\n2 3\n3 4\n4 7\n2 5\n2 6\n5 6\n5 7\n6 7\n3 6\n",
+        "6 6\n1 2\n2 3\n3 1\n4 5\n5 6\n6 4\n",
+        "4 4\n1 2\n2 3\n3 4\n4 1\n",
+    ],
+    samples=2,
+    oracle=_oracle_90,
+    solution=r"""#include <stdio.h>
+int par[1005], deg[1005];
+int find(int x) {
+    while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
+    return x;
+}
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 1; i <= n; i++) par[i] = i;
+    for (int k = 0; k < m; k++) {
+        int u, v; scanf("%d %d", &u, &v);
+        deg[u]++; deg[v]++;
+        int a = find(u), b = find(v);
+        if (a != b) par[b] = a;
+    }
+    int comps = 0, ok = 1;
+    for (int i = 1; i <= n; i++) {
+        if (find(i) == i) comps++;
+        if (deg[i] == 0 || deg[i] % 2 != 0) ok = 0;
+    }
+    if (comps != 1) ok = 0;
+    printf("%d\n", ok);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+    while (m--) {
+        int u, v; cin >> u >> v;
+        g[u].push_back(v); g[v].push_back(u);
+    }
+    vector<char> vis(n + 1, 0);
+    queue<int> q; q.push(1); vis[1] = 1;
+    int seen = 0;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        seen++;
+        for (int v : g[u]) if (!vis[v]) { vis[v] = 1; q.push(v); }
+    }
+    bool ok = (seen == n);
+    for (int i = 1; i <= n; i++)
+        if (g[i].empty() || g[i].size() % 2 != 0) ok = false;
+    cout << (ok ? 1 : 0) << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_91(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    deg = [0] * (n + 1)
+    par = list(range(n + 1))
+
+    def find(x: int) -> int:
+        while par[x] != x:
+            par[x] = par[par[x]]
+            x = par[x]
+        return x
+
+    p = 2
+    for _ in range(m):
+        u, v = int(d[p]), int(d[p + 1]); p += 2
+        deg[u] += 1; deg[v] += 1
+        ru, rv = find(u), find(v)
+        if ru != rv:
+            par[rv] = ru
+    comps = sum(1 for i in range(1, n + 1) if find(i) == i)
+    odd = sum(1 for i in range(1, n + 1) if deg[i] % 2 == 1)
+    if comps != 1:
+        return "Non-Eulerian\n"
+    if odd == 0:
+        return "Eulerian Circuit\n"
+    if odd == 2:
+        return "Eulerian Path\n"
+    return "Non-Eulerian\n"
+
+add(
+    title="欧拉通路与欧拉回路判定",
+    section="第 06 讲 · 图",
+    difficulty=2, score=15, tags=["图", "欧拉通路", "欧拉回路", "奇度顶点"],
+    statement_md=(
+        "由「哥尼斯堡七桥问题」举一反三：给定一个含 `N` 个顶点（编号 `1` ~ `N`）和 `M` 条边（`M ≥ 1`）的无向图，"
+        "判断它的欧拉性质（要求全部 `N` 个顶点连通）：\n\n"
+        "- 若连通且**奇度顶点个数为 0** → 存在欧拉回路，输出 `Eulerian Circuit`；\n"
+        "- 若连通且**奇度顶点个数恰为 2** → 存在欧拉通路（半欧拉图，可一笔画但起终点不同），输出 `Eulerian Path`；\n"
+        "- 若不连通或奇度顶点数为其它值 → 输出 `Non-Eulerian`。"
+    ),
+    input_format="第一行两个正整数 `N M`。\n\n随后 `M` 行，每行两个整数 `u v` 表示一条无向边。",
+    output_format="一行，输出 `Eulerian Circuit`、`Eulerian Path` 或 `Non-Eulerian`。",
+    constraints_md="- 2 ≤ N ≤ 1000\n- 1 ≤ M ≤ 5000",
+    inputs=[
+        "4 4\n1 2\n2 3\n3 4\n4 1\n",
+        "4 5\n1 2\n2 3\n3 4\n4 1\n1 3\n",
+        "4 6\n1 2\n1 3\n1 4\n2 3\n2 4\n3 4\n",
+        "4 2\n1 2\n3 4\n",
+    ],
+    samples=3,
+    oracle=_oracle_91,
+    solution=r"""#include <stdio.h>
+int par[1005], deg[1005];
+int find(int x) {
+    while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
+    return x;
+}
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 1; i <= n; i++) par[i] = i;
+    for (int k = 0; k < m; k++) {
+        int u, v; scanf("%d %d", &u, &v);
+        deg[u]++; deg[v]++;
+        int a = find(u), b = find(v);
+        if (a != b) par[b] = a;
+    }
+    int comps = 0, odd = 0;
+    for (int i = 1; i <= n; i++) {
+        if (find(i) == i) comps++;
+        if (deg[i] % 2 == 1) odd++;
+    }
+    if (comps != 1) printf("Non-Eulerian\n");
+    else if (odd == 0) printf("Eulerian Circuit\n");
+    else if (odd == 2) printf("Eulerian Path\n");
+    else printf("Non-Eulerian\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<int>> g(n + 1);
+    while (m--) {
+        int u, v; cin >> u >> v;
+        g[u].push_back(v); g[v].push_back(u);
+    }
+    vector<char> vis(n + 1, 0);
+    queue<int> q; q.push(1); vis[1] = 1;
+    int seen = 0, odd = 0;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        seen++;
+        for (int v : g[u]) if (!vis[v]) { vis[v] = 1; q.push(v); }
+    }
+    for (int i = 1; i <= n; i++) if (g[i].size() % 2 == 1) odd++;
+    if (seen != n) cout << "Non-Eulerian\n";
+    else if (odd == 0) cout << "Eulerian Circuit\n";
+    else if (odd == 2) cout << "Eulerian Path\n";
+    else cout << "Non-Eulerian\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_92(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    edges = []
+    p = 2
+    for _ in range(m):
+        u, v, w = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        edges.append((w, u, v))
+    edges.sort()
+    par = list(range(n + 1))
+
+    def find(x: int) -> int:
+        while par[x] != x:
+            par[x] = par[par[x]]
+            x = par[x]
+        return x
+
+    cost, cnt = 0, 0
+    for w, u, v in edges:
+        ru, rv = find(u), find(v)
+        if ru != rv:
+            par[rv] = ru
+            cost += w
+            cnt += 1
+    return "%d\n" % (cost if cnt == n - 1 else -1)
+
+add(
+    title="公路村村通",
+    section="第 06 讲 · 图",
+    difficulty=3, score=20, tags=["图", "最小生成树", "Kruskal", "Prim"],
+    statement_md=(
+        "PTA 经典题 `08-图7 公路村村通`：现有 `N` 个村庄（编号 `1` ~ `N`）和 `M` 条候选公路及各自的造价，"
+        "求让所有村庄都连通的**最低总造价**；若候选公路不足以连通所有村庄，输出 `-1`。\n\n"
+        "★ 最小生成树（MST）的两套经典算法：\n"
+        "- **Kruskal（加边法）**：边按权值升序排，用并查集判环，选够 `N-1` 条边即成；\n"
+        "- **Prim（加点法）**：维护生成树到未选顶点的最短距离 `lowcost[]`，每轮拉进距离最小的顶点。"
+    ),
+    input_format="第一行两个整数 `N M`。\n\n随后 `M` 行，每行三个整数 `u v cost` 表示连接村庄 `u` 和 `v` 的公路造价。",
+    output_format="一行一个整数：最小生成树的总造价；不连通输出 `-1`。",
+    constraints_md="- 1 ≤ N ≤ 1000\n- 0 ≤ M ≤ 3000\n- 1 ≤ cost ≤ 10000",
+    inputs=[
+        "6 15\n1 2 5\n1 3 3\n1 4 7\n1 5 4\n1 6 2\n2 3 4\n2 4 6\n2 5 2\n2 6 6\n3 4 6\n3 5 1\n3 6 1\n4 5 10\n4 6 8\n5 6 3\n",
+        "4 2\n1 2 3\n3 4 5\n",
+        "1 0\n",
+        "4 5\n1 2 1\n2 3 2\n3 4 3\n4 1 4\n1 3 5\n",
+    ],
+    samples=2,
+    oracle=_oracle_92,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+struct Edge { int u, v, w; } e[3005];
+int par[1005];
+int cmp(const void *a, const void *b) {
+    return ((struct Edge *)a)->w - ((struct Edge *)b)->w;
+}
+int find(int x) {
+    while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
+    return x;
+}
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 0; i < m; i++) scanf("%d %d %d", &e[i].u, &e[i].v, &e[i].w);
+    qsort(e, m, sizeof(struct Edge), cmp);
+    for (int i = 1; i <= n; i++) par[i] = i;
+    long long cost = 0;
+    int cnt = 0;
+    for (int i = 0; i < m; i++) {
+        int a = find(e[i].u), b = find(e[i].v);
+        if (a != b) { par[b] = a; cost += e[i].w; cnt++; }
+    }
+    printf("%lld\n", cnt == n - 1 ? cost : -1LL);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+using namespace std;
+/* 另一套：Prim 算法 O(N^2) */
+int main() {
+    int n, m; cin >> n >> m;
+    const long long INF = (long long)1e15;
+    vector<vector<long long>> g(n + 1, vector<long long>(n + 1, INF));
+    while (m--) {
+        int u, v; long long w; cin >> u >> v >> w;
+        if (w < g[u][v]) g[u][v] = g[v][u] = w;
+    }
+    vector<long long> low(n + 1, INF);
+    vector<char> in(n + 1, 0);
+    low[1] = 0;
+    long long cost = 0;
+    for (int r = 0; r < n; r++) {
+        int u = -1;
+        for (int i = 1; i <= n; i++)
+            if (!in[i] && low[i] < INF && (u < 0 || low[i] < low[u])) u = i;
+        if (u < 0) { cout << -1 << "\n"; return 0; }
+        in[u] = 1; cost += low[u];
+        for (int v = 1; v <= n; v++)
+            if (!in[v] && g[u][v] < low[v]) low[v] = g[u][v];
+    }
+    cout << cost << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_93(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    edges = []
+    p = 2
+    for _ in range(m):
+        u, v, bad, cost = int(d[p]), int(d[p + 1]), int(d[p + 2]), int(d[p + 3]); p += 4
+        edges.append((bad, cost, u, v))
+    edges.sort()
+    par = list(range(n + 1))
+
+    def find(x: int) -> int:
+        while par[x] != x:
+            par[x] = par[par[x]]
+            x = par[x]
+        return x
+
+    tot_bad, tot_cost, cnt = 0, 0, 0
+    for bad, cost, u, v in edges:
+        ru, rv = find(u), find(v)
+        if ru != rv:
+            par[rv] = ru
+            tot_bad += bad
+            tot_cost += cost
+            cnt += 1
+    if cnt < n - 1:
+        return "-1\n"
+    return "%d %d\n" % (tot_bad, tot_cost)
+
+add(
+    title="森森美图",
+    section="第 06 讲 · 图",
+    difficulty=4, score=25, tags=["图", "双权最小生成树", "Kruskal", "贪心"],
+    statement_md=(
+        "在风景区规划 `N` 个景点（编号 `1` ~ `N`）的步道网络，共有 `M` 条候选路线。\n"
+        "每条路线 `(u, v)` 有两个指标：**破坏度 `bad`**（越小越美观）和**施工造价 `cost`**。\n\n"
+        "请你选出 `N-1` 条路线使所有景点连通，要求：\n"
+        "1. 首先让选出路线的**总破坏度最小**；\n"
+        "2. 在破坏度相同的情况下，优先选择**造价更低**的边，使**总造价最小**。\n\n"
+        "输出最优方案的 `总破坏度 总造价`；若无法连通全部景点，输出 `-1`。"
+    ),
+    input_format="第一行两个正整数 `N M`。\n\n随后 `M` 行，每行四个整数 `u v bad cost`。",
+    output_format="一行两个整数：`总破坏度 总造价`；不连通输出 `-1`。",
+    constraints_md="- 1 ≤ N ≤ 1000\n- 0 ≤ M ≤ 5000",
+    inputs=[
+        "4 5\n1 2 1 10\n1 2 1 6\n2 3 2 5\n2 3 1 8\n3 4 2 4\n",
+        "5 6\n1 2 2 5\n2 3 2 3\n1 3 2 4\n3 4 1 10\n4 5 3 8\n3 5 3 2\n",
+        "3 1\n1 2 1 5\n",
+    ],
+    samples=2,
+    oracle=_oracle_93,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+struct E { int u, v, bad, cost; } e[5005];
+int par[1005];
+int cmp(const void *a, const void *b) {
+    const struct E *x = (const struct E *)a, *y = (const struct E *)b;
+    if (x->bad != y->bad) return x->bad - y->bad;
+    return x->cost - y->cost;
+}
+int find(int x) {
+    while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
+    return x;
+}
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 0; i < m; i++) scanf("%d %d %d %d", &e[i].u, &e[i].v, &e[i].bad, &e[i].cost);
+    qsort(e, m, sizeof(struct E), cmp);
+    for (int i = 1; i <= n; i++) par[i] = i;
+    long long tb = 0, tc = 0;
+    int cnt = 0;
+    for (int i = 0; i < m; i++) {
+        int a = find(e[i].u), b = find(e[i].v);
+        if (a != b) { par[b] = a; tb += e[i].bad; tc += e[i].cost; cnt++; }
+    }
+    if (cnt < n - 1) printf("-1\n");
+    else printf("%lld %lld\n", tb, tc);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <utility>
+using namespace std;
+/* 另一套：用二元组权值 (bad, cost) 跑 Prim 算法 */
+int main() {
+    int n, m; cin >> n >> m;
+    const long long INF = (long long)1e15;
+    pair<long long, long long> BIG = {INF, INF};
+    vector<vector<pair<long long, long long>>> g(n + 1, vector<pair<long long, long long>>(n + 1, BIG));
+    while (m--) {
+        int u, v; long long b, c; cin >> u >> v >> b >> c;
+        pair<long long, long long> w = {b, c};
+        if (w < g[u][v]) g[u][v] = g[v][u] = w;
+    }
+    vector<pair<long long, long long>> low(n + 1, BIG);
+    vector<char> in(n + 1, 0);
+    low[1] = {0, 0};
+    long long tb = 0, tc = 0;
+    for (int r = 0; r < n; r++) {
+        int u = -1;
+        for (int i = 1; i <= n; i++)
+            if (!in[i] && low[i] < BIG && (u < 0 || low[i] < low[u])) u = i;
+        if (u < 0) { cout << -1 << "\n"; return 0; }
+        in[u] = 1;
+        tb += low[u].first; tc += low[u].second;
+        for (int v = 1; v <= n; v++)
+            if (!in[v] && g[u][v] < low[v]) low[v] = g[u][v];
+    }
+    cout << tb << " " << tc << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_94(text: str) -> str:
+    d = text.split()
+    n, m, s, t = int(d[0]), int(d[1]), int(d[2]), int(d[3])
+    INF = 10**18
+    w = [[INF] * (n + 1) for _ in range(n + 1)]
+    p = 4
+    for _ in range(m):
+        u, v, c = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        if c < w[u][v]:
+            w[u][v] = c
+    dist = [INF] * (n + 1)
+    pre = [0] * (n + 1)
+    done = [False] * (n + 1)
+    dist[s] = 0
+    for _ in range(n):
+        x = -1
+        for i in range(1, n + 1):
+            if not done[i] and dist[i] < INF and (x < 0 or dist[i] < dist[x]):
+                x = i
+        if x < 0:
+            break
+        done[x] = True
+        for y in range(1, n + 1):
+            if w[x][y] < INF and dist[x] + w[x][y] < dist[y]:
+                dist[y] = dist[x] + w[x][y]
+                pre[y] = x
+    if dist[t] == INF:
+        return "-1\n"
+    path = []
+    cur = t
+    while cur != 0:
+        path.append(str(cur))
+        cur = pre[cur]
+    path.reverse()
+    return "%d\n%s\n" % (dist[t], " -> ".join(path))
+
+add(
+    title="单源最短路径",
+    section="第 06 讲 · 图",
+    difficulty=3, score=20, tags=["图", "Dijkstra", "最短路径还原", "pre数组"],
+    statement_md=(
+        "在「单源最短路径（Dijkstra）」的基础上更进一步：给定边权非负的有向图、起点 `s` 和终点 `t`，"
+        "不仅要求出 `s` 到 `t` 的最短距离，还要**完整还原并打印最短路径经过的顶点序列** `s -> ... -> t`。\n\n"
+        "★ 路径还原靠的是前驱数组 `pre[]`：每当边 `x → y` 松弛成功（`dist[x] + w < dist[y]`）时，"
+        "顺手记下 `pre[y] = x`；最后从终点 `t` 顺着 `pre` 一路倒推回 `s`，逆序输出即是完整路径！"
+    ),
+    input_format="第一行四个整数 `n m s t`。\n\n随后 `m` 行，每行三个整数 `u v w` 表示有向边 `u → v`（权值 `w > 0`）。",
+    output_format="若不可达只输出一行 `-1`；若可达，第一行输出最短距离，第二行输出 `v1 -> v2 -> ... -> vk`。",
+    constraints_md="- 1 ≤ n ≤ 100\n- 0 ≤ m ≤ 2000\n- 测试数据保证最短路径唯一",
+    inputs=[
+        "5 7 1 5\n1 2 10\n1 4 30\n1 5 100\n2 3 50\n3 5 10\n4 3 20\n4 5 60\n",
+        "4 4 1 4\n1 2 1\n2 3 2\n3 4 3\n1 4 10\n",
+        "3 1 1 3\n1 2 5\n",
+        "3 2 2 2\n1 2 3\n2 3 4\n",
+    ],
+    samples=2,
+    oracle=_oracle_94,
+    solution=r"""#include <stdio.h>
+#define INF 1000000000LL
+long long w[105][105], dist[105];
+int pre[105], done[105], stk[105];
+int main(void) {
+    int n, m, s, t;
+    scanf("%d %d %d %d", &n, &m, &s, &t);
+    for (int i = 1; i <= n; i++) {
+        dist[i] = INF;
+        for (int j = 1; j <= n; j++) w[i][j] = INF;
+    }
+    for (int k = 0; k < m; k++) {
+        int u, v; long long c;
+        scanf("%d %d %lld", &u, &v, &c);
+        if (c < w[u][v]) w[u][v] = c;
+    }
+    dist[s] = 0;
+    for (int r = 0; r < n; r++) {
+        int x = -1;
+        for (int i = 1; i <= n; i++)
+            if (!done[i] && dist[i] < INF && (x < 0 || dist[i] < dist[x])) x = i;
+        if (x < 0) break;
+        done[x] = 1;
+        for (int y = 1; y <= n; y++)
+            if (w[x][y] < INF && dist[x] + w[x][y] < dist[y]) {
+                dist[y] = dist[x] + w[x][y];
+                pre[y] = x;
+            }
+    }
+    if (dist[t] >= INF) { printf("-1\n"); return 0; }
+    printf("%lld\n", dist[t]);
+    int top = 0;
+    for (int cur = t; cur != 0; cur = pre[cur]) stk[top++] = cur;
+    for (int i = top - 1; i >= 0; i--)
+        printf(i == top - 1 ? "%d" : " -> %d", stk[i]);
+    printf("\n");
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n, m, s, t; cin >> n >> m >> s >> t;
+    const long long INF = (long long)1e15;
+    vector<vector<pair<int, long long>>> adj(n + 1);
+    while (m--) {
+        int u, v; long long c; cin >> u >> v >> c;
+        adj[u].push_back({v, c});
+    }
+    vector<long long> dist(n + 1, INF);
+    vector<int> pre(n + 1, 0);
+    priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+    dist[s] = 0; pq.push({0, s});
+    while (!pq.empty()) {
+        auto [d, u] = pq.top(); pq.pop();
+        if (d > dist[u]) continue;
+        for (auto [v, c] : adj[u]) {
+            if (dist[u] + c < dist[v]) {
+                dist[v] = dist[u] + c;
+                pre[v] = u;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    if (dist[t] >= INF) { cout << -1 << "\n"; return 0; }
+    cout << dist[t] << "\n";
+    vector<int> path;
+    for (int cur = t; cur != 0; cur = pre[cur]) path.push_back(cur);
+    reverse(path.begin(), path.end());
+    for (size_t i = 0; i < path.size(); i++)
+        cout << (i ? " -> " : "") << path[i];
+    cout << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_95(text: str) -> str:
+    d = text.split()
+    n, m, q = int(d[0]), int(d[1]), int(d[2])
+    INF = 10**18
+    dist = [[INF] * (n + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        dist[i][i] = 0
+    p = 3
+    for _ in range(m):
+        u, v, w = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        if w < dist[u][v]:
+            dist[u][v] = dist[v][u] = w
+    for k in range(1, n + 1):
+        for i in range(1, n + 1):
+            for j in range(1, n + 1):
+                if dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    out = []
+    for _ in range(q):
+        u, v = int(d[p]), int(d[p + 1]); p += 2
+        out.append(str(-1 if dist[u][v] >= INF else dist[u][v]))
+    return "\n".join(out) + "\n"
+
+add(
+    title="最短路径",
+    section="第 06 讲 · 图",
+    difficulty=2, score=15, tags=["图", "无向有权图", "两点最短路"],
+    statement_md=(
+        "给定一个含 `N` 个顶点（编号 `1` ~ `N`）和 `M` 条无向带权边的无向图，"
+        "回答 `Q` 次两点间的最短路径距离询问 `(s, t)`；若两点不连通，输出 `-1`。"
+    ),
+    input_format=(
+        "第一行三个整数 `N M Q`。\n\n"
+        "随后 `M` 行，每行三个整数 `u v w`（无向边，1 ≤ w ≤ 10000）。\n\n"
+        "随后 `Q` 行，每行两个整数 `s t`。"
+    ),
+    output_format="`Q` 行，每行输出 `s` 到 `t` 的最短距离（不可达输出 `-1`）。",
+    constraints_md="- 1 ≤ N ≤ 80\n- 0 ≤ M ≤ 2000\n- 1 ≤ Q ≤ 200",
+    inputs=[
+        "5 6 3\n1 2 2\n2 3 3\n1 3 10\n3 4 1\n1 4 8\n4 5 4\n1 3\n1 5\n2 4\n",
+        "4 2 2\n1 2 5\n3 4 7\n1 2\n1 4\n",
+        "3 3 2\n1 2 4\n1 2 2\n2 3 3\n1 3\n2 2\n",
+    ],
+    samples=2,
+    oracle=_oracle_95,
+    solution=r"""#include <stdio.h>
+#define INF 1000000000000000LL
+long long d[85][85];
+int main(void) {
+    int n, m, q;
+    scanf("%d %d %d", &n, &m, &q);
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
+            d[i][j] = (i == j) ? 0 : INF;
+    for (int k = 0; k < m; k++) {
+        int u, v; long long w;
+        scanf("%d %d %lld", &u, &v, &w);
+        if (w < d[u][v]) d[u][v] = d[v][u] = w;
+    }
+    for (int k = 1; k <= n; k++)
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                if (d[i][k] + d[k][j] < d[i][j]) d[i][j] = d[i][k] + d[k][j];
+    while (q--) {
+        int s, t; scanf("%d %d", &s, &t);
+        printf("%lld\n", d[s][t] >= INF ? -1LL : d[s][t]);
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+using namespace std;
+/* 另一套：每次询问独立跑一遍堆优化 Dijkstra */
+int main() {
+    int n, m, q; cin >> n >> m >> q;
+    const long long INF = (long long)1e15;
+    vector<vector<pair<int, long long>>> adj(n + 1);
+    while (m--) {
+        int u, v; long long w; cin >> u >> v >> w;
+        adj[u].push_back({v, w});
+        adj[v].push_back({u, w});
+    }
+    while (q--) {
+        int s, t; cin >> s >> t;
+        vector<long long> dist(n + 1, INF);
+        priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+        dist[s] = 0; pq.push({0, s});
+        while (!pq.empty()) {
+            auto [d, u] = pq.top(); pq.pop();
+            if (d > dist[u]) continue;
+            for (auto [v, w] : adj[u])
+                if (dist[u] + w < dist[v]) { dist[v] = dist[u] + w; pq.push({dist[v], v}); }
+        }
+        cout << (dist[t] >= INF ? -1LL : dist[t]) << "\n";
+    }
+    return 0;
+}
+""",
+)
+
+def _oracle_96(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    INF = 10**18
+    dist = [[INF] * (n + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        dist[i][i] = 0
+    p = 2
+    for _ in range(m):
+        u, v, w = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        if w < dist[u][v]:
+            dist[u][v] = w
+    for k in range(1, n + 1):
+        for i in range(1, n + 1):
+            for j in range(1, n + 1):
+                if dist[i][k] < INF and dist[k][j] < INF and dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    lines = []
+    for i in range(1, n + 1):
+        lines.append(" ".join("INF" if dist[i][j] >= INF else str(dist[i][j])
+                              for j in range(1, n + 1)))
+    return "\n".join(lines) + "\n"
+
+add(
+    title="最短路径算法(Floyd-Warshall)",
+    section="第 06 讲 · 图",
+    difficulty=3, score=20, tags=["图", "Floyd-Warshall", "多源最短路", "动态规划"],
+    statement_md=(
+        "给定一个含 `n` 个顶点（编号 `1` ~ `n`）和 `m` 条有向边的有向带权图（允许含负权边，保证无负权回路），"
+        "使用 **Floyd-Warshall 算法**求出所有顶点对 `(i, j)` 之间的最短路径长度，输出完整的 `n × n` 最短路矩阵。\n\n"
+        "★ Floyd 三重循环里最致命的错误是**把 `k` 写在内层**：\n"
+        "状态转移是「允许经过前 `k` 个顶点作为中间跳板」，所以**中转点 `k` 必须在最外层**（`k → i → j`）！"
+    ),
+    input_format="第一行两个整数 `n m`。\n\n随后 `m` 行，每行三个整数 `u v w` 表示有向边 `u → v` 的权值。",
+    output_format="`n` 行，每行 `n` 个项（空格分隔）：若 `i` 可达 `j` 输出最短距离，否则输出 `INF`（对角线 `d[i][i] = 0`）。",
+    constraints_md="- 1 ≤ n ≤ 60\n- 0 ≤ m ≤ 2000\n- -1000 ≤ w ≤ 1000（无负环）",
+    inputs=[
+        "4 8\n1 2 2\n1 3 6\n1 4 4\n2 3 3\n3 1 7\n3 4 1\n4 1 5\n4 3 12\n",
+        "3 3\n1 2 4\n2 3 -2\n1 3 5\n",
+        "3 1\n1 2 10\n",
+    ],
+    samples=2,
+    oracle=_oracle_96,
+    solution=r"""#include <stdio.h>
+#define INF 1000000000000000LL
+long long d[65][65];
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
+            d[i][j] = (i == j) ? 0 : INF;
+    for (int k = 0; k < m; k++) {
+        int u, v; long long w;
+        scanf("%d %d %lld", &u, &v, &w);
+        if (w < d[u][v]) d[u][v] = w;
+    }
+    for (int k = 1; k <= n; k++)
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                if (d[i][k] < INF && d[k][j] < INF && d[i][k] + d[k][j] < d[i][j])
+                    d[i][j] = d[i][k] + d[k][j];
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (j > 1) printf(" ");
+            if (d[i][j] >= INF) printf("INF");
+            else printf("%lld", d[i][j]);
+        }
+        printf("\n");
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+using namespace std;
+/* 另一套：从每个源点 i 分别跑一次 Bellman-Ford（支持负权边） */
+struct E { int u, v; long long w; };
+int main() {
+    int n, m; cin >> n >> m;
+    const long long INF = (long long)1e15;
+    vector<E> edges(m);
+    for (auto &e : edges) cin >> e.u >> e.v >> e.w;
+    for (int s = 1; s <= n; s++) {
+        vector<long long> dist(n + 1, INF);
+        dist[s] = 0;
+        for (int r = 1; r < n; r++)
+            for (auto &e : edges)
+                if (dist[e.u] < INF && dist[e.u] + e.w < dist[e.v])
+                    dist[e.v] = dist[e.u] + e.w;
+        for (int j = 1; j <= n; j++) {
+            if (j > 1) cout << " ";
+            if (dist[j] >= INF) cout << "INF";
+            else cout << dist[j];
+        }
+        cout << "\n";
+    }
+    return 0;
+}
+""",
+)
+
+def _oracle_97(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    INF = 10**18
+    dist = [[INF] * (n + 1) for _ in range(n + 1)]
+    for i in range(1, n + 1):
+        dist[i][i] = 0
+    p = 2
+    for _ in range(m):
+        u, v, w = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        if w < dist[u][v]:
+            dist[u][v] = dist[v][u] = w
+    for k in range(1, n + 1):
+        for i in range(1, n + 1):
+            for j in range(1, n + 1):
+                if dist[i][k] + dist[k][j] < dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+    best_id, best_max = 0, INF
+    for i in range(1, n + 1):
+        mx = max(dist[i][1:n + 1])
+        if mx < best_max:
+            best_max = mx
+            best_id = i
+    if best_id == 0:
+        return "0\n"
+    return "%d %d\n" % (best_id, best_max)
+
+add(
+    title="哈利·波特的考试",
+    section="第 06 讲 · 图",
+    difficulty=3, score=20, tags=["图", "Floyd", "图的中心点", "07-图4"],
+    statement_md=(
+        "PTA 经典题 `07-图4 哈利·波特的考试`：有 `N` 种动物（编号 `1` ~ `N`）和 `M` 条双向变形魔咒及各自的咒语长度。\n"
+        "哈利想带**一只动物**去考场，使得把它变成**最难变的另一种动物**所需的总魔咒长度**最小**（即求图的中心点：`min_i max_j dist(i, j)`）。\n\n"
+        "- 若有多只动物并列最优，输出**编号最小**的那只动物编号及其最大最短距离；\n"
+        "- 若带哪只动物都无法变成所有其它动物（图不连通），输出 `0`。"
+    ),
+    input_format="第一行两个正整数 `N M`。\n\n随后 `M` 行，每行三个整数 `u v w` 表示动物 `u` 与 `v` 之间魔咒长度为 `w`。",
+    output_format="一行，输出最优动物编号与对应的最大魔咒长度（空格分隔）；若图不连通输出 `0`。",
+    constraints_md="- 1 ≤ N ≤ 100\n- 0 ≤ M ≤ 2000",
+    inputs=[
+        "6 11\n3 4 70\n1 2 1\n5 4 50\n2 6 50\n5 6 60\n1 3 70\n4 6 60\n3 6 80\n5 1 100\n2 4 60\n5 2 80\n",
+        "4 2\n1 2 10\n3 4 20\n",
+        "3 3\n1 2 5\n2 3 5\n1 3 5\n",
+    ],
+    samples=2,
+    oracle=_oracle_97,
+    solution=r"""#include <stdio.h>
+#define INF 1000000000LL
+long long d[105][105];
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int i = 1; i <= n; i++)
+        for (int j = 1; j <= n; j++)
+            d[i][j] = (i == j) ? 0 : INF;
+    for (int k = 0; k < m; k++) {
+        int u, v; long long w;
+        scanf("%d %d %lld", &u, &v, &w);
+        if (w < d[u][v]) d[u][v] = d[v][u] = w;
+    }
+    for (int k = 1; k <= n; k++)
+        for (int i = 1; i <= n; i++)
+            for (int j = 1; j <= n; j++)
+                if (d[i][k] + d[k][j] < d[i][j]) d[i][j] = d[i][k] + d[k][j];
+    int best_i = 0;
+    long long best_mx = INF;
+    for (int i = 1; i <= n; i++) {
+        long long mx = 0;
+        for (int j = 1; j <= n; j++) if (d[i][j] > mx) mx = d[i][j];
+        if (mx < best_mx) { best_mx = mx; best_i = i; }
+    }
+    if (best_i == 0) printf("0\n");
+    else printf("%d %lld\n", best_i, best_mx);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+using namespace std;
+/* 另一套：对每个动物 i 跑一次 Dijkstra 求它的偏心率 */
+int main() {
+    int n, m; cin >> n >> m;
+    const long long INF = (long long)1e15;
+    vector<vector<pair<int, long long>>> adj(n + 1);
+    while (m--) {
+        int u, v; long long w; cin >> u >> v >> w;
+        adj[u].push_back({v, w}); adj[v].push_back({u, w});
+    }
+    int best_i = 0;
+    long long best_mx = INF;
+    for (int s = 1; s <= n; s++) {
+        vector<long long> dist(n + 1, INF);
+        priority_queue<pair<long long, int>, vector<pair<long long, int>>, greater<pair<long long, int>>> pq;
+        dist[s] = 0; pq.push({0, s});
+        while (!pq.empty()) {
+            auto [d, u] = pq.top(); pq.pop();
+            if (d > dist[u]) continue;
+            for (auto [v, w] : adj[u])
+                if (dist[u] + w < dist[v]) { dist[v] = dist[u] + w; pq.push({dist[v], v}); }
+        }
+        long long mx = *max_element(dist.begin() + 1, dist.end());
+        if (mx < best_mx) { best_mx = mx; best_i = s; }
+    }
+    if (best_i == 0) cout << 0 << "\n";
+    else cout << best_i << " " << best_mx << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_98(text: str) -> str:
+    d = text.split()
+    n, m, s, dst = int(d[0]), int(d[1]), int(d[2]), int(d[3])
+    INF = 10**18
+    adj = [[] for _ in range(n)]
+    p = 4
+    for _ in range(m):
+        u, v, L, C = int(d[p]), int(d[p + 1]), int(d[p + 2]), int(d[p + 3]); p += 4
+        adj[u].append((v, L, C))
+        adj[v].append((u, L, C))
+    dist = [(INF, INF)] * n
+    done = [False] * n
+    dist[s] = (0, 0)
+    for _ in range(n):
+        u = -1
+        for i in range(n):
+            if not done[i] and dist[i] < (INF, INF) and (u < 0 or dist[i] < dist[u]):
+                u = i
+        if u < 0:
+            break
+        done[u] = True
+        for v, L, C in adj[u]:
+            cand = (dist[u][0] + L, dist[u][1] + C)
+            if cand < dist[v]:
+                dist[v] = cand
+    return "%d %d\n" % (dist[dst][0], dist[dst][1])
+
+add(
+    title="旅游规划",
+    section="第 06 讲 · 图",
+    difficulty=3, score=20, tags=["图", "Dijkstra", "双权最短路", "07-图6"],
+    statement_md=(
+        "PTA 经典题 `07-图6 旅游规划`：城市编号 `0` ~ `N-1`，有 `M` 条双向高速公路，"
+        "每条公路既给出了**长度 `len`**，又给出了**过路费 `cost`**。\n\n"
+        "请找出从出发地 `S` 到目的地 `D` 的**最短路径**；若最短路径不唯一，"
+        "则选择其中**过路费总和最便宜**的一条，输出 `最短距离 最少过路费`。\n\n"
+        "★ 双权 Dijkstra 的松弛模板：\n"
+        "- 当 `dist[u] + len < dist[v]` 时：距离和费用一起更新；\n"
+        "- 当 `dist[u] + len == dist[v]` 且 `cost[u] + c < cost[v]` 时：只把费用更新得更便宜！"
+    ),
+    input_format=(
+        "第一行四个整数 `N M S D`（城市数、公路数、起点、终点，城市编号 0 ~ N-1）。\n\n"
+        "随后 `M` 行，每行四个整数 `u v len cost`。"
+    ),
+    output_format="一行两个整数，空格分隔：`最短距离 最少过路费`。",
+    constraints_md="- 2 ≤ N ≤ 500\n- 1 ≤ M ≤ 5000\n- 保证 S 可达 D",
+    inputs=[
+        "4 5 0 3\n0 1 1 20\n1 3 2 30\n0 3 4 10\n0 2 2 20\n2 3 1 20\n",
+        "3 3 0 2\n0 1 2 10\n1 2 2 10\n0 2 4 25\n",
+        "4 4 0 3\n0 1 5 5\n1 3 5 10\n0 2 3 8\n2 3 7 4\n",
+    ],
+    samples=2,
+    oracle=_oracle_98,
+    solution=r"""#include <stdio.h>
+#define INF 1000000000LL
+long long g_len[505][505], g_cost[505][505], d_len[505], d_cost[505];
+int done[505];
+int main(void) {
+    int n, m, s, dst;
+    scanf("%d %d %d %d", &n, &m, &s, &dst);
+    for (int i = 0; i < n; i++) {
+        d_len[i] = d_cost[i] = INF;
+        for (int j = 0; j < n; j++) g_len[i][j] = g_cost[i][j] = INF;
+    }
+    for (int k = 0; k < m; k++) {
+        int u, v; long long L, C;
+        scanf("%d %d %lld %lld", &u, &v, &L, &C);
+        if (L < g_len[u][v] || (L == g_len[u][v] && C < g_cost[u][v])) {
+            g_len[u][v] = g_len[v][u] = L;
+            g_cost[u][v] = g_cost[v][u] = C;
+        }
+    }
+    d_len[s] = 0; d_cost[s] = 0;
+    for (int r = 0; r < n; r++) {
+        int u = -1;
+        for (int i = 0; i < n; i++)
+            if (!done[i] && d_len[i] < INF && (u < 0 || d_len[i] < d_len[u])) u = i;
+        if (u < 0) break;
+        done[u] = 1;
+        for (int v = 0; v < n; v++) {
+            if (g_len[u][v] >= INF) continue;
+            if (d_len[u] + g_len[u][v] < d_len[v]) {
+                d_len[v] = d_len[u] + g_len[u][v];
+                d_cost[v] = d_cost[u] + g_cost[u][v];
+            } else if (d_len[u] + g_len[u][v] == d_len[v] && d_cost[u] + g_cost[u][v] < d_cost[v]) {
+                d_cost[v] = d_cost[u] + g_cost[u][v];
+            }
+        }
+    }
+    printf("%lld %lld\n", d_len[dst], d_cost[dst]);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+#include <tuple>
+using namespace std;
+int main() {
+    int n, m, s, dst; cin >> n >> m >> s >> dst;
+    const long long INF = (long long)1e15;
+    vector<vector<tuple<int, long long, long long>>> adj(n);
+    while (m--) {
+        int u, v; long long L, C; cin >> u >> v >> L >> C;
+        adj[u].emplace_back(v, L, C);
+        adj[v].emplace_back(u, L, C);
+    }
+    vector<pair<long long, long long>> dist(n, {INF, INF});
+    using T = tuple<long long, long long, int>;
+    priority_queue<T, vector<T>, greater<T>> pq;
+    dist[s] = {0, 0}; pq.push({0, 0, s});
+    while (!pq.empty()) {
+        auto [L, C, u] = pq.top(); pq.pop();
+        if (make_pair(L, C) > dist[u]) continue;
+        for (auto [v, wL, wC] : adj[u]) {
+            pair<long long, long long> cand = {L + wL, C + wC};
+            if (cand < dist[v]) {
+                dist[v] = cand;
+                pq.push({cand.first, cand.second, v});
+            }
+        }
+    }
+    cout << dist[dst].first << " " << dist[dst].second << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_99(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    adj = [[] for _ in range(n + 1)]
+    indeg = [0] * (n + 1)
+    p = 1
+    for i in range(1, n + 1):
+        k = int(d[p]); p += 1
+        for _ in range(k):
+            pre = int(d[p]); p += 1
+            adj[pre].append(i)
+            indeg[i] += 1
+    q = [i for i in range(1, n + 1) if indeg[i] == 0]
+    cnt = 0
+    while q:
+        u = q.pop(0)
+        cnt += 1
+        for v in adj[u]:
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    return ("1\n" if cnt == n else "0\n")
+
+add(
+    title="任务调度的合理性",
+    section="第 06 讲 · 图",
+    difficulty=2, score=15, tags=["图", "拓扑排序", "AOV网", "判环"],
+    statement_md=(
+        "PTA 经典题 `08-图8 任务调度的合理性`：假定一个工程项目由一组子任务构成（编号 `1` ~ `N`），"
+        "给出每个子任务必须先完成的直接前置子任务列表，判断整个任务调度方案是否合理（即**AOV 网中是否不存在有向环**）。\n\n"
+        "★ 判环既可以用 **Kahn 入度拓扑排序**（看最终出队的顶点数是否等于 `N`），"
+        "也可以用 **三色 DFS**（`0=未访问`、`1=当前递归栈中`、`2=已完成`，一旦摸到状态 `1` 的点即是有向环）！"
+    ),
+    input_format=(
+        "第一行正整数 `N`（子任务数）。\n\n"
+        "随后 `N` 行，第 `i` 行先给一个整数 `K`（前置任务数），随后跟 `K` 个前置任务编号。"
+    ),
+    output_format="一行，若调度方案合理（无环）输出 `1`，否则输出 `0`。",
+    constraints_md="- 1 ≤ N ≤ 100",
+    inputs=[
+        "9\n0\n2 1 5\n1 1\n1 1\n2 3 4\n1 4\n2 2 5\n2 5 6\n2 7 8\n",
+        "4\n1 2\n1 3\n1 1\n0\n",
+        "3\n0\n1 1\n2 1 2\n",
+        "2\n1 2\n1 1\n",
+    ],
+    samples=2,
+    oracle=_oracle_99,
+    solution=r"""#include <stdio.h>
+int g[105][105], indeg[105], q[105];
+int main(void) {
+    int n;
+    scanf("%d", &n);
+    for (int i = 1; i <= n; i++) {
+        int k; scanf("%d", &k);
+        while (k--) {
+            int pre; scanf("%d", &pre);
+            if (!g[pre][i]) { g[pre][i] = 1; indeg[i]++; }
+        }
+    }
+    int f = 0, r = 0;
+    for (int i = 1; i <= n; i++) if (indeg[i] == 0) q[r++] = i;
+    while (f < r) {
+        int u = q[f++];
+        for (int v = 1; v <= n; v++)
+            if (g[u][v] && --indeg[v] == 0) q[r++] = v;
+    }
+    printf("%d\n", r == n ? 1 : 0);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <functional>
+using namespace std;
+/* 另一套：三色 DFS 判有向环 */
+int main() {
+    int n; cin >> n;
+    vector<vector<int>> adj(n + 1);
+    for (int i = 1; i <= n; i++) {
+        int k; cin >> k;
+        while (k--) { int p; cin >> p; adj[p].push_back(i); }
+    }
+    vector<int> col(n + 1, 0);
+    bool cyc = false;
+    function<void(int)> dfs = [&](int u) {
+        col[u] = 1;
+        for (int v : adj[u]) {
+            if (col[v] == 1) cyc = true;
+            else if (col[v] == 0) dfs(v);
+        }
+        col[u] = 2;
+    };
+    for (int i = 1; i <= n; i++) if (!col[i]) dfs(i);
+    cout << (cyc ? 0 : 1) << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_100(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    adj = [[] for _ in range(n)]
+    indeg = [0] * n
+    p = 2
+    for _ in range(m):
+        u, v, w = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        adj[u].append((v, w))
+        indeg[v] += 1
+    q = [i for i in range(n) if indeg[i] == 0]
+    ve = [0] * n
+    cnt = 0
+    while q:
+        u = q.pop(0)
+        cnt += 1
+        for v, w in adj[u]:
+            if ve[u] + w > ve[v]:
+                ve[v] = ve[u] + w
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    if cnt < n:
+        return "Impossible\n"
+    return "%d\n" % max(ve)
+
+add(
+    title="最短工期",
+    section="第 06 讲 · 图",
+    difficulty=3, score=20, tags=["图", "AOE网", "拓扑排序", "最早发生时间"],
+    statement_md=(
+        "PTA 经典题 `08-图8 最短工期（How Long Does It Take）`：一个项目有 `N` 个里程碑事件（编号 `0` ~ `N-1`）"
+        "和 `M` 项有向活动 `(u, v, w)`，表示事件 `u` 达成后还需耗时 `w` 才能完成指向事件 `v` 的这项活动。\n\n"
+        "请计算完成全部里程碑所需的**最短总工期**（即 `max(ve[0..N-1])`）；"
+        "若计划中存在循环依赖（有向环），输出 `Impossible`。"
+    ),
+    input_format="第一行两个整数 `N M`。\n\n随后 `M` 行，每行三个非负整数 `u v w`。",
+    output_format="一行，输出最短总工期；若有环则输出 `Impossible`。",
+    constraints_md="- 1 ≤ N ≤ 100\n- 0 ≤ M ≤ 2000",
+    inputs=[
+        "9 12\n0 1 6\n0 2 4\n0 3 5\n1 4 1\n2 4 1\n3 5 2\n5 4 0\n4 6 9\n4 7 7\n5 7 4\n6 8 2\n7 8 4\n",
+        "4 4\n0 1 1\n0 2 2\n2 1 3\n1 3 4\n",
+        "3 3\n0 1 5\n1 2 5\n2 0 5\n",
+    ],
+    samples=2,
+    oracle=_oracle_100,
+    solution=r"""#include <stdio.h>
+int head[105], nxt[2005], to[2005], wt[2005], ecnt = 0;
+int indeg[105], q[105], ve[105];
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int k = 0; k < m; k++) {
+        int u, v, w; scanf("%d %d %d", &u, &v, &w);
+        ++ecnt; to[ecnt] = v; wt[ecnt] = w; nxt[ecnt] = head[u]; head[u] = ecnt;
+        indeg[v]++;
+    }
+    int f = 0, r = 0;
+    for (int i = 0; i < n; i++) if (indeg[i] == 0) q[r++] = i;
+    while (f < r) {
+        int u = q[f++];
+        for (int e = head[u]; e; e = nxt[e]) {
+            int v = to[e], w = wt[e];
+            if (ve[u] + w > ve[v]) ve[v] = ve[u] + w;
+            if (--indeg[v] == 0) q[r++] = v;
+        }
+    }
+    if (r < n) { printf("Impossible\n"); return 0; }
+    int ans = 0;
+    for (int i = 0; i < n; i++) if (ve[i] > ans) ans = ve[i];
+    printf("%d\n", ans);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <functional>
+using namespace std;
+int main() {
+    int n, m; cin >> n >> m;
+    vector<vector<pair<int, int>>> rev(n);
+    while (m--) {
+        int u, v, w; cin >> u >> v >> w;
+        rev[v].push_back({u, w});
+    }
+    vector<int> state(n, 0), dp(n, 0);
+    bool cyc = false;
+    function<int(int)> solve = [&](int v) -> int {
+        if (state[v] == 1) { cyc = true; return 0; }
+        if (state[v] == 2) return dp[v];
+        state[v] = 1;
+        int best = 0;
+        for (auto [u, w] : rev[v]) best = max(best, solve(u) + w);
+        state[v] = 2;
+        return dp[v] = best;
+    };
+    int ans = 0;
+    for (int i = 0; i < n; i++) ans = max(ans, solve(i));
+    if (cyc) cout << "Impossible\n";
+    else cout << ans << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_101(text: str) -> str:
+    d = text.split()
+    n, m = int(d[0]), int(d[1])
+    adj = [[] for _ in range(n + 1)]
+    edges = []
+    indeg = [0] * (n + 1)
+    p = 2
+    for idx in range(m):
+        u, v, w = int(d[p]), int(d[p + 1]), int(d[p + 2]); p += 3
+        adj[u].append((v, w, idx))
+        edges.append((u, v, w, idx))
+        indeg[v] += 1
+    q = [i for i in range(1, n + 1) if indeg[i] == 0]
+    topo = []
+    ve = [0] * (n + 1)
+    while q:
+        u = q.pop(0)
+        topo.append(u)
+        for v, w, _ in adj[u]:
+            if ve[u] + w > ve[v]:
+                ve[v] = ve[u] + w
+            indeg[v] -= 1
+            if indeg[v] == 0:
+                q.append(v)
+    if len(topo) < n:
+        return "0\n"
+    total = max(ve[1:n + 1])
+    vl = [total] * (n + 1)
+    for u in reversed(topo):
+        for v, w, _ in adj[u]:
+            if vl[v] - w < vl[u]:
+                vl[u] = vl[v] - w
+    crit = [(u, -idx, v) for u, v, w, idx in edges if ve[u] + w == vl[v]]
+    crit.sort()
+    lines = [str(total)] + ["%d->%d" % (u, v) for u, _, v in crit]
+    return "\n".join(lines) + "\n"
+
+add(
+    title="关键活动",
+    section="第 06 讲 · 图",
+    difficulty=4, score=25, tags=["图", "AOE网", "关键路径", "ve与vl", "08-图9"],
+    statement_md=(
+        "PTA 经典压轴题 `08-图9 关键活动`：给定 AOE 网的 `N` 个事件（编号 `1` ~ `N`）和 `M` 项有向活动 `(u, v, w)`：\n\n"
+        "1. 若网络中有环（调度不可行），只输出一行 `0`；\n"
+        "2. 若可行，第一行输出整个工程的**最短完成时间 `T = max(ve)`**，随后输出所有**关键活动**（满足 `ve[u] + w == vl[v]` 的活动 `u->v`）。\n\n"
+        "★ 两个经典的 PTA 判分细节（踩过的人无数）：\n"
+        "- 汇点可能不止一个，所以逆拓扑求最迟发生时间时，**全体 `vl[1..N]` 统一初始化为总工期 `T`**；\n"
+        "- 输出顺序规定：按起点 `u` **从小到大**；起点相同时，按**输入时出现的先后顺序相反**（即邻接表**头插法**的自然遍历顺序）！"
+    ),
+    input_format="第一行两个正整数 `N M`。\n\n随后 `M` 行，每行三个正整数 `u v w`。",
+    output_format="若不可行输出 `0`；否则第一行输出总工期，随后每行输出一条关键活动 `u->v`。",
+    constraints_md="- 1 ≤ N ≤ 100\n- 1 ≤ M ≤ 1000",
+    inputs=[
+        "7 8\n1 2 4\n1 3 3\n2 4 5\n3 4 3\n4 5 1\n4 6 6\n5 7 5\n6 7 2\n",
+        "4 4\n1 2 3\n1 3 3\n2 4 4\n3 4 4\n",
+        "3 3\n1 2 2\n2 3 2\n3 1 2\n",
+    ],
+    samples=2,
+    oracle=_oracle_101,
+    solution=r"""#include <stdio.h>
+int head[105], nxt[1005], to[1005], wt[1005], ecnt = 0;
+int indeg[105], q[105], ve[105], vl[105];
+/* 头插法建邻接表：同一个 u 的出边天然按输入逆序排列！ */
+int main(void) {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    for (int k = 0; k < m; k++) {
+        int u, v, w; scanf("%d %d %d", &u, &v, &w);
+        ++ecnt; to[ecnt] = v; wt[ecnt] = w; nxt[ecnt] = head[u]; head[u] = ecnt;
+        indeg[v]++;
+    }
+    int f = 0, r = 0;
+    for (int i = 1; i <= n; i++) if (indeg[i] == 0) q[r++] = i;
+    while (f < r) {
+        int u = q[f++];
+        for (int e = head[u]; e; e = nxt[e]) {
+            int v = to[e], w = wt[e];
+            if (ve[u] + w > ve[v]) ve[v] = ve[u] + w;
+            if (--indeg[v] == 0) q[r++] = v;
+        }
+    }
+    if (r < n) { printf("0\n"); return 0; }
+    int tot = 0;
+    for (int i = 1; i <= n; i++) if (ve[i] > tot) tot = ve[i];
+    for (int i = 1; i <= n; i++) vl[i] = tot;
+    for (int i = r - 1; i >= 0; i--) {
+        int u = q[i];
+        for (int e = head[u]; e; e = nxt[e]) {
+            int v = to[e], w = wt[e];
+            if (vl[v] - w < vl[u]) vl[u] = vl[v] - w;
+        }
+    }
+    printf("%d\n", tot);
+    for (int u = 1; u <= n; u++)
+        for (int e = head[u]; e; e = nxt[e])
+            if (ve[u] + wt[e] == vl[to[e]])
+                printf("%d->%d\n", u, to[e]);
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct E { int u, v, w, idx; };
+int main() {
+    int n, m; cin >> n >> m;
+    vector<E> edges(m);
+    vector<vector<int>> adj(n + 1);
+    vector<int> indeg(n + 1, 0);
+    for (int i = 0; i < m; i++) {
+        cin >> edges[i].u >> edges[i].v >> edges[i].w;
+        edges[i].idx = i;
+        adj[edges[i].u].push_back(i);
+        indeg[edges[i].v]++;
+    }
+    vector<int> q;
+    for (int i = 1; i <= n; i++) if (!indeg[i]) q.push_back(i);
+    vector<int> ve(n + 1, 0);
+    for (size_t f = 0; f < q.size(); f++) {
+        int u = q[f];
+        for (int id : adj[u]) {
+            int v = edges[id].v, w = edges[id].w;
+            ve[v] = max(ve[v], ve[u] + w);
+            if (--indeg[v] == 0) q.push_back(v);
+        }
+    }
+    if ((int)q.size() < n) { cout << 0 << "\n"; return 0; }
+    int tot = *max_element(ve.begin() + 1, ve.end());
+    vector<int> vl(n + 1, tot);
+    for (int i = n - 1; i >= 0; i--) {
+        int u = q[i];
+        for (int id : adj[u]) {
+            int v = edges[id].v, w = edges[id].w;
+            vl[u] = min(vl[u], vl[v] - w);
+        }
+    }
+    vector<E> crit;
+    for (auto &e : edges) if (ve[e.u] + e.w == vl[e.v]) crit.push_back(e);
+    sort(crit.begin(), crit.end(), [](const E &a, const E &b) {
+        return a.u != b.u ? a.u < b.u : a.idx > b.idx;
+    });
+    cout << tot << "\n";
+    for (auto &e : crit) cout << e.u << "->" << e.v << "\n";
+    return 0;
+}
+""",
+)
+
+def _oracle_102(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    par = list(range(10000))
+    seen = set()
+    sets_mp = {}
+    area_mp = {}
+
+    def find(x: int) -> int:
+        while par[x] != x:
+            par[x] = par[par[x]]
+            x = par[x]
+        return x
+
+    def union(a: int, b: int) -> None:
+        ra, rb = find(a), find(b)
+        if ra != rb:
+            if ra < rb:
+                par[rb] = ra
+            else:
+                par[ra] = rb
+
+    p = 1
+    for _ in range(n):
+        uid = int(d[p]); fa = int(d[p + 1]); mo = int(d[p + 2]); k = int(d[p + 3]); p += 4
+        seen.add(uid)
+        if fa != -1:
+            seen.add(fa); union(uid, fa)
+        if mo != -1:
+            seen.add(mo); union(uid, mo)
+        for _ in range(k):
+            ch = int(d[p]); p += 1
+            seen.add(ch); union(uid, ch)
+        sets_mp[uid] = int(d[p]); area_mp[uid] = int(d[p + 1]); p += 2
+    fams: dict[int, list[int]] = {}
+    for u in seen:
+        r = find(u)
+        fams.setdefault(r, []).append(u)
+    res = []
+    for r, members in fams.items():
+        cnt = len(members)
+        ts = sum(sets_mp.get(u, 0) for u in members)
+        ta = sum(area_mp.get(u, 0) for u in members)
+        res.append((r, cnt, ts, ta))
+    res.sort(key=lambda x: (-x[3] / x[1], x[0]))
+    lines = [str(len(res))]
+    for r, cnt, ts, ta in res:
+        lines.append("%04d %d %.3f %.3f" % (r, cnt, ts / cnt, ta / cnt))
+    return "\n".join(lines) + "\n"
+
+add(
+    title="家庭房产",
+    section="第 06 讲 · 图",
+    difficulty=4, score=25, tags=["并查集", "图连通块", "多关键字排序", "L2-007"],
+    statement_md=(
+        "PTA 天梯赛经典综合题 `L2-007 家庭房产`：给定每个人的家庭成员关系（父母、子女）以及各自名下的房产套数与总面积，"
+        "凡有亲属关系的人都属于同一个**家庭**。\n\n"
+        "请统计共有多少个家庭，并对每个家庭输出：\n"
+        "`家庭最小编号（4位补零） 家庭人口数 人均房产套数 人均房产面积`（两位均值均保留 3 位小数）。\n"
+        "按**人均面积降序**排列；若人均面积相同，则按**家庭最小编号升序**排列。\n\n"
+        "★ 巧用并查集：合并两个集合时**永远让编号更小的当根**（`if (ra < rb) par[rb] = ra`），"
+        "这样每个连通块的根天然就是该家庭的最小编号！"
+    ),
+    input_format=(
+        "第一行正整数 `N`。\n\n"
+        "随后 `N` 行，每行格式为：`编号 父 母 k 孩子1 ... 孩子k 房产套数 总面积`"
+        "（编号为 0~9999 的整数，父母未知或去世填 `-1`）。"
+    ),
+    output_format=(
+        "第一行输出家庭个数。\n\n"
+        "随后每行输出一个家庭的信息：`%04d 人数 人均套数 人均面积`（保留 3 位小数）。"
+    ),
+    constraints_md="- 1 ≤ N ≤ 1000\n- 编号范围 0000 ~ 9999",
+    inputs=[
+        "4\n6666 5551 5552 1 7777 1 100\n1234 5678 9012 1 0002 2 300\n8888 -1 -1 0 1 1000\n2468 0001 0004 1 2222 1 500\n",
+        "2\n0005 -1 -1 1 0002 3 150\n0008 -1 -1 0 2 100\n",
+        "3\n0010 0020 -1 0 2 200\n0020 -1 -1 1 0030 2 200\n0030 -1 -1 0 0 0\n",
+    ],
+    samples=2,
+    oracle=_oracle_102,
+    solution=r"""#include <stdio.h>
+#include <stdlib.h>
+int par[10000], seen[10000], sets_v[10000], area_v[10000];
+struct Fam { int id, cnt, ts, ta; } fams[10000];
+int find(int x) {
+    while (par[x] != x) { par[x] = par[par[x]]; x = par[x]; }
+    return x;
+}
+void uni(int a, int b) {
+    int ra = find(a), rb = find(b);
+    if (ra == rb) return;
+    if (ra < rb) par[rb] = ra;
+    else par[ra] = rb;
+}
+int cmp(const void *a, const void *b) {
+    const struct Fam *x = (const struct Fam *)a, *y = (const struct Fam *)b;
+    long long lhs = (long long)x->ta * y->cnt, rhs = (long long)y->ta * x->cnt;
+    if (lhs != rhs) return lhs > rhs ? -1 : 1;
+    return x->id - y->id;
+}
+int main(void) {
+    for (int i = 0; i < 10000; i++) par[i] = i;
+    int n;
+    scanf("%d", &n);
+    while (n--) {
+        int id, fa, mo, k;
+        scanf("%d %d %d %d", &id, &fa, &mo, &k);
+        seen[id] = 1;
+        if (fa != -1) { seen[fa] = 1; uni(id, fa); }
+        if (mo != -1) { seen[mo] = 1; uni(id, mo); }
+        while (k--) { int ch; scanf("%d", &ch); seen[ch] = 1; uni(id, ch); }
+        scanf("%d %d", &sets_v[id], &area_v[id]);
+    }
+    int fcnt = 0;
+    for (int i = 0; i < 10000; i++) {
+        if (seen[i] && find(i) == i) {
+            fams[fcnt++] = (struct Fam){i, 0, 0, 0};
+        }
+    }
+    for (int i = 0; i < 10000; i++) {
+        if (!seen[i]) continue;
+        int r = find(i);
+        for (int j = 0; j < fcnt; j++) {
+            if (fams[j].id == r) {
+                fams[j].cnt++;
+                fams[j].ts += sets_v[i];
+                fams[j].ta += area_v[i];
+                break;
+            }
+        }
+    }
+    qsort(fams, fcnt, sizeof(struct Fam), cmp);
+    printf("%d\n", fcnt);
+    for (int i = 0; i < fcnt; i++) {
+        printf("%04d %d %.3f %.3f\n", fams[i].id, fams[i].cnt,
+               (double)fams[i].ts / fams[i].cnt, (double)fams[i].ta / fams[i].cnt);
+    }
+    return 0;
+}
+""",
+    alt=r"""#include <iostream>
+#include <vector>
+#include <queue>
+#include <algorithm>
+#include <iomanip>
+using namespace std;
+struct Fam { int id, cnt, ts, ta; };
+int main() {
+    int n; cin >> n;
+    vector<vector<int>> adj(10000);
+    vector<char> seen(10000, 0);
+    vector<int> sv(10000, 0), av(10000, 0);
+    while (n--) {
+        int id, fa, mo, k;
+        cin >> id >> fa >> mo >> k;
+        seen[id] = 1;
+        if (fa != -1) { seen[fa] = 1; adj[id].push_back(fa); adj[fa].push_back(id); }
+        if (mo != -1) { seen[mo] = 1; adj[id].push_back(mo); adj[mo].push_back(id); }
+        while (k--) {
+            int ch; cin >> ch;
+            seen[ch] = 1; adj[id].push_back(ch); adj[ch].push_back(id);
+        }
+        cin >> sv[id] >> av[id];
+    }
+    vector<char> vis(10000, 0);
+    vector<Fam> fams;
+    for (int i = 0; i < 10000; i++) {
+        if (!seen[i] || vis[i]) continue;
+        queue<int> q; q.push(i); vis[i] = 1;
+        Fam f{i, 0, 0, 0};
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            f.id = min(f.id, u);
+            f.cnt++; f.ts += sv[u]; f.ta += av[u];
+            for (int v : adj[u]) if (!vis[v]) { vis[v] = 1; q.push(v); }
+        }
+        fams.push_back(f);
+    }
+    sort(fams.begin(), fams.end(), [](const Fam &x, const Fam &y) {
+        long long lhs = 1LL * x.ta * y.cnt, rhs = 1LL * y.ta * x.cnt;
+        return lhs != rhs ? lhs > rhs : x.id < y.id;
+    });
+    cout << fams.size() << "\n" << fixed << setprecision(3);
+    for (auto &f : fams)
+        cout << setw(4) << setfill('0') << f.id << " " << f.cnt << " "
+             << (double)f.ts / f.cnt << " " << (double)f.ta / f.cnt << "\n";
+    return 0;
+}
+""",
+)
+
+
+# --------------------------------------------------------------------- #
 
 def _sa(title: str, statement_md: str, answers: list[str], *, section: str,
         explanation: str, tags: list[str], difficulty: int = 2,
