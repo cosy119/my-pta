@@ -257,12 +257,12 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（379 题 / 4900 分 / 972 测试点）
+## 题库（419 题 / 5524 分 / 1173 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
-| `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(67 = 53 + ext2 14) | 70 | 1060 | python | Python |
-| `ds` | `problems_bank_ds.py`（含 28 理论 + 102 编程，覆盖 02~08 讲全部经典题型） | **130** | **2046** | cpp | **C 或 C++ 任选** |
+| `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(67 = 53 + ext2 14) + `problems_bank_py_tricks.py`(20) | **90** | **1351** | python | Python |
+| `ds` | `problems_bank_ds.py`（含 28 理论 + 102 编程）+ `problems_bank_ds_tricks.py`(20) | **150** | **2379** | cpp | **C 或 C++ 任选** |
 | `linux` | `problems_bank_linux.py` | 179 | 1794 | text | 理论题（单选 / 多选 / 判断 / 填空） |
 
 - ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
@@ -273,7 +273,23 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   **11→7 / 12→14 / 13→14 / 14→14 / 15→6 / 16→6**；另加「基础命令」45 + 「实验」20。
   （第 02 讲的内容由「基础命令」组覆盖 —— 那 45 道就是围绕 Shell 命令出的。）
   - 2026-10-15 再补：`part_multi()` 8 道**多选**，落在 07 / 11 / 12（×2）/ 13（×2）/ 14（×2）。
-- **题型分布（全库）**：编程 172 / 单选 131 / 判断 39 / 填空 25 / **多选 10** / 简答 2。
+- **题型分布（全库）**：编程 212 / 单选 131 / 判断 39 / 填空 25 / **多选 10** / 简答 2。
+
+### ★ 技巧特训章（2026-10-18 晚，两线各 +20 道编程题）
+
+讲义没专门讲、但做题（蓝桥杯 / 码蹄杯 / ACM）总会遇到的**技巧性简便用法**单独成章：
+`tools/gen_py_tricks.py` → 「技巧特训 · Python」20 题；`tools/gen_ds_tricks.py` → 「技巧特训 · C/C++」20 题。
+难度 1→4 递进，三段式：基础语法糖 → 竞赛工具箱（STL/算法套路）→ 竞赛强度（DP/二分/分治）。
+
+| 线 | 分节 | 基础 | 套路 | 竞赛 | 点名的技巧 |
+|---|---|---|---|---|---|
+| python | 技巧特训 · Python（8/6/6） | upper/负索引切片/split-join/推导式/enumerate-zip/sorted多关键字/dict.get/集合运算 | Counter/heapq/前缀和/**bisect 第一个大于 x**/lru_cache/回文清洗 | 01背包/LIS n log n/快速幂 pow(a,b,m)/区间合并/阶乘大数/筛法 | upper()、[-1]、函数式 |
+| ds | 技巧特训 · C/C++（7/7/6） | **vector push_back**/string find/sort+cmp/pair/map/set/stringstream | **upper_bound 第一个大于 x**/lower_bound/差分/双指针/单调栈/单调队列/**二分答案·伐木** | 01背包/完全背包/LIS/LCS/快速幂/逆序对归并 | push_back、二分找 x、背包 |
+
+- ★ 独立文件 + seed/verify_bank 各加一行挂载，**不动另一窗口维护的 gen_ds_bank / gen_py_bank**。
+- ★ oracle 用「笨办法」（如 LIS O(n²)、背包二维 DP）与参考解不同路；随机大用例用固定种子生成（可复现）。
+- ★ 背包口诀写进题面：「倒序 = 0-1，正序 = 完全」。
+- 踩坑：oracle 里别写 O(maxH) 线性扫（10⁹ 的伐木用例直接卡死 198s）——oracle 也要用与约束匹配的复杂度。
 
 ### ★ DS 经典题型编程题（2026-10-18 补，_oracle_44~56）
 

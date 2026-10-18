@@ -226,10 +226,15 @@ def main() -> int:
     # ---------- 5. ★ 真编真跑：C++ 与 Python 各来一发 ----------
     from app.problems_bank import BANK_PROBLEMS                 # noqa: E402
     from app.problems_bank_ds import DS_PROBLEMS                # noqa: E402
+    from app.problems_bank_ds_tricks import DS_TRICKS_PROBLEMS  # noqa: E402
+    from app.problems_bank_py_tricks import PY_TRICKS_PROBLEMS  # noqa: E402
     from app.seed import CORE_PROBLEMS                          # noqa: E402
 
     def ref_of(title: str) -> str:
-        for p in list(DS_PROBLEMS) + list(CORE_PROBLEMS) + list(BANK_PROBLEMS):
+        # ★ 技巧特训章的题按分节名排在前头，会被「第一道 xx 题」选中——
+        #   所以这里必须把两个 tricks 库也搜进来（2026-10-18 踩过）
+        for p in (list(DS_TRICKS_PROBLEMS) + list(PY_TRICKS_PROBLEMS)
+                  + list(DS_PROBLEMS) + list(CORE_PROBLEMS) + list(BANK_PROBLEMS)):
             if p.get("title") == title:
                 return p.get("reference_solution") or ""
         return ""
