@@ -387,4 +387,32 @@ PY_THEORY2_PROBLEMS: list[dict] = [
          tags=["统计"],
          explanation="真跑实证：`sum([90, 85, 90]) / len([90, 85, 90])` = 88.33…。"
                      "除数是元素个数 len(scores)，千万别写成列表里最后一个数或常量。"),
+
+    # ============ 第 04 讲 · 字符串（rfind 知识点，讲义 4.5 常用函数） ============
+    mc("rfind 返回最右出现的位置",
+       "表达式 `'banana'.rfind('a')` 的值是多少？",
+       ["1", "3", "5", "-1"],
+       "C", subject=T, section="第 04 讲 · 字符串", difficulty=2,
+       tags=["字符串", "rfind"],
+       explanation="真跑实证：`rfind` 是从**右往左**找，返回最后一次出现的下标——banana 里最右的 a 在下标 5。"
+                   "对比 `find('a')` 返回 1（第一次出现）。三个 a 的下标是 1、3、5。"),
+
+    tf("rfind 找不到返回 -1",
+       "`'banana'.rfind('z')` 找不到子串时不报错，返回 `-1`（和 `find` 一样）；"
+       "而 `rindex` 找不到会直接抛 `ValueError`。",
+       True, subject=T, section="第 04 讲 · 字符串", difficulty=2,
+       tags=["字符串", "rfind"],
+       explanation="真跑实证：`'banana'.rfind('z')` 返回 -1；`'abc'.rindex('z')` 抛 ValueError。"
+                   "所以拿返回值做判断用 find/rfind（判 -1），确定存在才用 index/rindex。"),
+
+    fill("rfind 提取文件扩展名",
+         "想取文件名里**最后一个**点后面的部分（有多个点时 find 会找错）。"
+         "表达式 `\"report.tar.gz\"[\"report.tar.gz\".rfind('.') + 1:]` 的值是多少？（带引号的字符串）",
+         ["'gz'", "\"gz\""],
+         subject=T, section="第 04 讲 · 字符串", difficulty=3,
+         tags=["字符串", "rfind", "切片"],
+         explanation="真跑实证：`'report.tar.gz'.rfind('.')` 返回 10（最后一个点），"
+                     "`s[11:]` 得到 `'gz'`。这就是讲义习题里「取扩展名」的标准姿势——"
+                     "文件名里可能有很多点（tar.gz），必须用 rfind 找最后一个；"
+                     "用 find 会命中下标 6，切成 `'tar.gz'` 就错了。"),
 ]

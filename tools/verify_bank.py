@@ -63,9 +63,11 @@ except ImportError:                                          # pragma: no cover
 
 try:                                                         # 理论题章（两线，2026-10-19）
     from app.problems_bank_py_theory import PY_THEORY_PROBLEMS
+    from app.problems_bank_py_theory2 import PY_THEORY2_PROBLEMS
     from app.problems_bank_ds_theory import DS_THEORY_PROBLEMS
 except ImportError:                                          # pragma: no cover
     PY_THEORY_PROBLEMS = []
+    PY_THEORY2_PROBLEMS = []
     DS_THEORY_PROBLEMS = []
 
 try:                                                         # 编程精练章（两线，2026-10-19）
@@ -80,7 +82,7 @@ except ImportError:                                          # pragma: no cover
 #   而这里只验了 BANK，于是 CORE 那几道题**连单撞都没有**（2026-10-13 发现）。
 LINES = (
     ("py", "Python 线", CORE_PROBLEMS + BANK_PROBLEMS + PY_TRICKS_PROBLEMS
-                        + PY_THEORY_PROBLEMS + PY_PROG_PROBLEMS),
+                        + PY_THEORY_PROBLEMS + PY_THEORY2_PROBLEMS + PY_PROG_PROBLEMS),
     ("ds", "数据结构线（C/C++）", DS_PROBLEMS + DS_TRICKS_PROBLEMS
                                   + DS_THEORY_PROBLEMS + DS_PROG_PROBLEMS),
     ("linux", "Linux 线（理论题）", LINUX_PROBLEMS),
