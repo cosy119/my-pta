@@ -22,6 +22,8 @@ STL 与算法套路，单独成章，量大、循序渐进（difficulty 1 → 4�
                next_permutation / accumulate-iota / bitset 位统计 /
                unordered_map 词频 / unique 离散化 / 树状数组 /
                高精度加法 / 前缀和 + 哈希计数）
+  插入维护     4 题（upper_bound + insert：单次插入 / 批量插入 /
+               lower 与 upper 的稳定性差异 / 动态有序表名次查询）
 """
 from __future__ import annotations
 
@@ -2826,6 +2828,466 @@ int main() {
                    - it->second.begin();     /* 只数下标 < j 的 */
     }
     printf("%lld\n", ans);
+    return 0;
+}
+''',
+)
+
+
+# --------------------------------------------------------------------- #
+#  有序表的插入维护（upper_bound + insert）　difficulty 1~3
+#
+#  这组题专门练 `auto it = upper_bound(...); a.insert(it, x);` 这一对：
+#  找位置、插进去、保持有序。四道题分别覆盖「一次插入」「批量插入」
+#  「lower_bound 与 upper_bound 的稳定性差异」「插完还要按位置查询」。
+
+def _oracle_31(text: str) -> str:
+    d = text.split()
+    i = 0
+    n = int(d[i]); i += 1
+    a = [int(d[i + k]) for k in range(n)]
+    i += n
+    x = int(d[i])
+    pos = 0
+    while pos < n and a[pos] <= x:         # 第一个严格大于 x 的位置
+        pos += 1
+    a.insert(pos, x)
+    return "%d\n%s\n" % (pos, " ".join(map(str, a)))
+
+
+add(
+    title="有序表插入（upper_bound + insert）",
+    section="技巧特训 · C/C++",
+    difficulty=1, score=10, tags=["技巧特训", "upper_bound", "insert", "有序表"],
+    statement_md=(
+        "读入一个**升序**数组和一个整数 `x`，把 `x` 插进去并保持升序。\n\n"
+        "输出两行：第一行是插入的**下标**（0 基）；第二行是插入后的数组。\n\n"
+        "★ 技巧点，两行就能写完：\n"
+        "```cpp\n"
+        "auto it = upper_bound(a.begin(), a.end(), x);\n"
+        "a.insert(it, x);\n"
+        "```\n"
+        "三件事必须记住：\n"
+        "1. `upper_bound` 返回**第一个严格大于 x** 的位置。`x` 和已有元素相等时，"
+        "新元素落在这些相等元素的**后面**（这就是它和 `lower_bound` 的唯一区别）。\n"
+        "2. 下标要在 `insert` **之前**算：`int pos = it - a.begin();`。"
+        "`insert` 之后 `it` 已经失效，继续用是未定义行为。\n"
+        "3. `insert` 的代价是 O(n)（后面的元素整体后移）。插一次很便宜，"
+        "在循环里插 10⁵ 次就是 O(n²) —— 那时候要换平衡树或树状数组。"
+    ),
+    input_format=(
+        "第一行 `n`；第二行 `n` 个**升序**整数；第三行一个整数 `x`。\n"
+        "- 1 ≤ n ≤ 10⁵，|值| ≤ 10⁹"
+    ),
+    output_format="两行：插入下标；插入后的数组（空格分隔）。",
+    constraints_md="- 1 ≤ n ≤ 10⁵；输入保证数组升序",
+    inputs=[
+        "5\n1 3 5 7 9\n4\n",
+        "5\n1 3 5 7 9\n5\n",
+        "3\n2 2 2\n2\n",
+        "1\n5\n3\n",
+        "1\n-1000000000\n1000000000\n",
+    ],
+    samples=2,
+    oracle=_oracle_31,
+    solution=r'''#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<int> a(n);
+    for (int k = 0; k < n; k++) scanf("%d", &a[k]);
+    int x;
+    scanf("%d", &x);
+    /* 第一个「严格大于 x」的位置：相等的元素都排在它前面 */
+    auto it = upper_bound(a.begin(), a.end(), x);
+    int pos = (int)(it - a.begin());     /* ★ 下标必须在 insert 之前算 */
+    a.insert(it, x);                     /* O(n) 搬移；此后 it 失效 */
+    printf("%d\n", pos);
+    for (int k = 0; k < (int)a.size(); k++) printf(k ? " %d" : "%d", a[k]);
+    printf("\n");
+    return 0;
+}
+''',
+    alt=r'''#include <iostream>
+#include <vector>
+using namespace std;
+int main() {
+    int n;
+    cin >> n;
+    vector<int> a(n);
+    for (int k = 0; k < n; k++) cin >> a[k];
+    int x;
+    cin >> x;
+    int lo = 0, hi = n;                  /* 手写二分：第一个 > x */
+    while (lo < hi) {
+        int mid = (lo + hi) / 2;
+        if (a[mid] <= x) lo = mid + 1;
+        else hi = mid;
+    }
+    a.insert(a.begin() + lo, x);
+    cout << lo << "\n";
+    for (size_t k = 0; k < a.size(); k++) cout << (k ? " " : "") << a[k];
+    cout << "\n";
+    return 0;
+}
+''',
+)
+
+
+def _oracle_32(text: str) -> str:
+    d = text.split()
+    i = 0
+    n = int(d[i]); i += 1
+    a = [int(d[i + k]) for k in range(n)]
+    i += n
+    m = int(d[i]); i += 1
+    for k in range(m):                     # 插完再排，结果与逐个 upper_bound 插入一致
+        a.append(int(d[i + k]))
+    a.sort()
+    return " ".join(map(str, a)) + "\n"
+
+
+def _rand_case_32() -> str:
+    import random
+    rnd = random.Random(20261019)
+    n, m = 1500, 1500
+    base = sorted(rnd.randint(-10 ** 9, 10 ** 9) for _ in range(n))   # ★ 题面要求升序
+    lines = ["%d" % n, " ".join(map(str, base))]
+    lines.append("%d" % m)
+    lines.append(" ".join(str(rnd.randint(-10 ** 9, 10 ** 9)) for _ in range(m)))
+    return "\n".join(lines) + "\n"
+
+
+add(
+    title="批量插入保持有序",
+    section="技巧特训 · C/C++",
+    difficulty=2, score=15, tags=["技巧特训", "upper_bound", "insert", "批量插入"],
+    statement_md=(
+        "有 `n` 个**升序**元素，再来 `m` 个待插入的整数。**按给出的顺序**逐个插入，"
+        "每次都插到 `upper_bound` 找到的位置（相同值的插在已有的相同值之后），"
+        "最后输出整个数组。\n\n"
+        "★ 套路：\n"
+        "```cpp\n"
+        "for (int k = 0; k < m; k++) {\n"
+        "    a.insert(upper_bound(a.begin(), a.end(), x[k]), x[k]);\n"
+        "}\n"
+        "```\n"
+        "一行完成「找位置 + 插入」。注意这不是排序算法：每插一个都是 O(n) 的搬移，"
+        "`m` 次就是 O(m·(n+m))。\n\n"
+        "★ 什么时候不该这么写：`n`、`m` 都到 10⁵ 时，上面的写法会 TLE。"
+        "要么像参考解那样先插完再**整体排一次**（O((n+m)log(n+m))），"
+        "要么用 `multiset` / 树状数组。"
+        "本题数据量小，两种写法都能过 —— 重点是看清代价差在哪。"
+    ),
+    input_format=(
+        "第一行 `n`；第二行 `n` 个升序整数；第三行 `m`；第四行 `m` 个整数。\n"
+        "- 1 ≤ n, m ≤ 2000，|值| ≤ 10⁹"
+    ),
+    output_format="一行，插入完成后的数组（空格分隔）。",
+    constraints_md="- 1 ≤ n, m ≤ 2000",
+    inputs=[
+        "3\n1 3 5\n2\n2 0\n",
+        "4\n2 2 4 8\n3\n2 2 6\n",
+        "1\n0\n4\n-3 -1 1 2\n",
+        "5\n-10 -5 0 5 10\n5\n-100 100 -1 1 0\n",
+        _rand_case_32(),
+    ],
+    samples=2,
+    oracle=_oracle_32,
+    solution=r'''#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n, m;
+    scanf("%d", &n);
+    vector<int> a(n);
+    for (int k = 0; k < n; k++) scanf("%d", &a[k]);
+    scanf("%d", &m);
+    vector<int> x(m);
+    for (int k = 0; k < m; k++) scanf("%d", &x[k]);
+    for (int k = 0; k < m; k++)
+        a.insert(upper_bound(a.begin(), a.end(), x[k]), x[k]);   /* 找位置 + 插入一行 */
+    for (int k = 0; k < (int)a.size(); k++) printf(k ? " %d" : "%d", a[k]);
+    printf("\n");
+    return 0;
+}
+''',
+    alt=r'''#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n, m;
+    cin >> n;
+    vector<int> a(n);
+    for (int k = 0; k < n; k++) cin >> a[k];
+    cin >> m;
+    for (int k = 0; k < m; k++) {         /* 先全部收进来，最后一次排序 */
+        int x;
+        cin >> x;
+        a.push_back(x);
+    }
+    sort(a.begin(), a.end());
+    for (size_t k = 0; k < a.size(); k++) cout << (k ? " " : "") << a[k];
+    cout << "\n";
+    return 0;
+}
+''',
+)
+
+
+def _oracle_33(text: str) -> str:
+    lines = [ln for ln in text.strip("\n").split("\n") if ln.strip()]
+    n = int(lines[0])
+    recs = []
+    for k in range(1, n + 1):
+        v, rid = lines[k].split()
+        recs.append((int(v), int(rid)))
+    x, newid = map(int, lines[n + 1].split())
+    lo = 0
+    while lo < n and recs[lo][0] < x:      # 第一个 >= x
+        lo += 1
+    up = lo
+    while up < n and recs[up][0] <= x:     # 第一个 > x
+        up += 1
+    low_seq = [r[1] for r in recs[:lo]] + [newid] + [r[1] for r in recs[lo:]]
+    up_seq = [r[1] for r in recs[:up]] + [newid] + [r[1] for r in recs[up:]]
+    return "%d %d\n%s\n%s\n" % (lo, up,
+                                " ".join(map(str, low_seq)),
+                                " ".join(map(str, up_seq)))
+
+
+add(
+    title="lower 与 upper 插入的稳定性",
+    section="技巧特训 · C/C++",
+    difficulty=2, score=15, tags=["技巧特训", "lower_bound", "upper_bound", "稳定性"],
+    statement_md=(
+        "`n` 条记录，每条有 `value` 和 `id`，按 value 升序给出（value 可以重复）。"
+        "现在要插入一条新记录 `(x, newid)`。\n\n"
+        "分别用两种写法插一次，输出三行：\n"
+        "1. 两个插入下标：`lo up`（`lo` 用 `lower_bound`，`up` 用 `upper_bound`）\n"
+        "2. 用 `lower_bound` 插入后的 **id 序列**\n"
+        "3. 用 `upper_bound` 插入后的 **id 序列**\n\n"
+        "★ 这就是两个函数的本质区别：\n"
+        "| 函数 | 返回 | 相等元素时新记录落在 |\n"
+        "|---|---|---|\n"
+        "| `lower_bound` | 第一个 **≥ x** | 已有相同值的**前面** |\n"
+        "| `upper_bound` | 第一个 **> x** | 已有相同值的**后面** |\n\n"
+        "★ 只有 value 没有 id 时，两种插入得到的数组**长得一模一样**——"
+        "差异只在「谁是第一个」。一旦记录带 id、带时间戳、带原始顺序，"
+        "选错函数就会把「后到的排在后面」这个稳定性破坏掉。\n"
+        "需要稳定插入时用 `upper_bound`。"
+    ),
+    input_format=(
+        "第一行 `n`；随后 `n` 行每行 `value id`（按 value 升序，id 互不相同）；"
+        "最后一行 `x newid`。\n"
+        "- 1 ≤ n ≤ 10⁵，|value|, |x| ≤ 10⁹，1 ≤ id, newid ≤ 10⁹"
+    ),
+    output_format="三行：`lo up`；lower 插入后的 id 序列；upper 插入后的 id 序列。",
+    constraints_md="- 1 ≤ n ≤ 10⁵",
+    inputs=[
+        "4\n1 10\n2 20\n2 21\n4 40\n2 99\n",
+        "3\n1 1\n3 3\n5 5\n3 9\n",
+        "2\n5 1\n7 2\n1 9\n",
+        "2\n5 1\n7 2\n9 9\n",
+        "3\n4 1\n4 2\n4 3\n4 9\n",
+    ],
+    samples=2,
+    oracle=_oracle_33,
+    solution=r'''#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct Rec { int v, id; };
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<Rec> a(n);
+    for (int k = 0; k < n; k++) scanf("%d %d", &a[k].v, &a[k].id);
+    int x, newid;
+    scanf("%d %d", &x, &newid);
+
+    /* lower_bound：第一个 v >= x —— 比较函数写成 (元素, 值) */
+    auto itLo = lower_bound(a.begin(), a.end(), x,
+                            [](const Rec &r, int val) { return r.v < val; });
+    /* upper_bound：第一个 v > x —— 注意参数顺序是 (值, 元素) */
+    auto itUp = upper_bound(a.begin(), a.end(), x,
+                            [](int val, const Rec &r) { return val < r.v; });
+    int lo = (int)(itLo - a.begin());
+    int up = (int)(itUp - a.begin());
+    printf("%d %d\n", lo, up);
+
+    int pos[2] = {lo, up};
+    for (int pass = 0; pass < 2; pass++) {
+        vector<Rec> b = a;
+        b.insert(b.begin() + pos[pass], Rec{x, newid});
+        for (int k = 0; k < (int)b.size(); k++) printf(k ? " %d" : "%d", b[k].id);
+        printf("\n");
+    }
+    return 0;
+}
+''',
+    alt=r'''#include <iostream>
+#include <vector>
+#include <algorithm>
+using namespace std;
+struct Rec { int v, id; };
+int main() {
+    int n;
+    cin >> n;
+    vector<Rec> a(n);
+    for (int k = 0; k < n; k++) cin >> a[k].v >> a[k].id;
+    int x, newid;
+    cin >> x >> newid;
+    int lo = 0, up = 0;                       /* 手写两套边界，不调 STL */
+    while (lo < n && a[lo].v < x) lo++;       /* 第一个 >= x */
+    while (up < n && a[up].v <= x) up++;      /* 第一个 > x */
+    cout << lo << " " << up << "\n";
+    for (int pass = 0; pass < 2; pass++) {
+        vector<Rec> b = a;
+        b.insert(b.begin() + (pass == 0 ? lo : up), Rec{x, newid});
+        for (size_t k = 0; k < b.size(); k++) cout << (k ? " " : "") << b[k].id;
+        cout << "\n";
+    }
+    return 0;
+}
+''',
+)
+
+
+def _oracle_34(text: str) -> str:
+    lines = [ln for ln in text.strip("\n").split("\n") if ln.strip()]
+    n, m = map(int, lines[0].split())
+    a = sorted(map(int, lines[1].split())) if n else []
+    out = []
+    for k in range(2, 2 + m):
+        op, x = map(int, lines[k].split())
+        if op == 1:
+            lo, hi = 0, len(a)
+            while lo < hi:                     # 第一个 > x，插在相等元素之后
+                mid = (lo + hi) // 2
+                if a[mid] <= x:
+                    lo = mid + 1
+                else:
+                    hi = mid
+            a.insert(lo, x)
+        else:
+            lo, hi = 0, len(a)
+            while lo < hi:                     # 第一个 >= x
+                mid = (lo + hi) // 2
+                if a[mid] < x:
+                    lo = mid + 1
+                else:
+                    hi = mid
+            out.append(str(lo + 1) if lo < len(a) and a[lo] == x else "-1")
+    return "\n".join(out) + ("\n" if out else "")
+
+
+def _rand_case_34() -> str:
+    import random
+    rnd = random.Random(20261020)
+    n, m = 1200, 1600
+    base = sorted(rnd.randint(-10 ** 6, 10 ** 6) for _ in range(n))
+    lines = ["%d %d" % (n, m), " ".join(map(str, base))]
+    for _ in range(m):
+        if rnd.random() < 0.5:
+            lines.append("1 %d" % rnd.randint(-10 ** 6, 10 ** 6))
+        else:
+            lines.append("2 %d" % rnd.choice(base) if rnd.random() < 0.7
+                         else "2 %d" % rnd.randint(-2 * 10 ** 6, 2 * 10 ** 6))
+    return "\n".join(lines) + "\n"
+
+
+add(
+    title="动态有序表的名次查询",
+    section="技巧特训 · C/C++",
+    difficulty=3, score=20, tags=["技巧特训", "upper_bound", "lower_bound", "insert", "名次"],
+    statement_md=(
+        "维护一个始终**升序**的集合，支持两种操作（共 `m` 次）：\n\n"
+        "- `1 x`：把 `x` 插入集合（相同的值允许重复，新值插在已有的相同值之后）\n"
+        "- `2 x`：查询 `x` 的**名次**（1 基，即**第一个** `x` 的位置）；`x` 不存在输出 `-1`\n\n"
+        "对每个 `2` 操作输出一行。\n\n"
+        "★ 两个函数各管一件事，正好对上两种操作：\n"
+        "```cpp\n"
+        "if (op == 1) a.insert(upper_bound(a.begin(), a.end(), x), x);   // 插：第一个 > x\n"
+        "else {\n"
+        "    auto it = lower_bound(a.begin(), a.end(), x);               // 查：第一个 >= x\n"
+        "    if (it == a.end() || *it != x) puts(\"-1\");\n"
+        "    else printf(\"%d\\n\", int(it - a.begin()) + 1);\n"
+        "}\n"
+        "```\n"
+        "**插入用 upper、查询用 lower** —— 记住这条就不会把重复元素的名次算错。"
+        "用 `upper_bound` 查询的话，重复元素会返回最后一个之后的位置，名次偏大，"
+        "而且分不清「存在」还是「不存在」。\n\n"
+        "★ 复杂度：`vector::insert` 是 O(n)，本套做法整体 O(m·n)。"
+        "数据量再大就得换成 `multiset` + 树状数组，或者干脆离线离散化后用 Fenwick 求排名。"
+    ),
+    input_format=(
+        "第一行 `n m`；第二行 `n` 个**升序**整数（初始集合）；"
+        "随后 `m` 行，每行 `op x`（`op` = 1 插入 / 2 查询）。\n"
+        "- 1 ≤ n ≤ 2000，1 ≤ m ≤ 2000，|值| ≤ 10⁹"
+    ),
+    output_format="每个 `2` 操作输出一行：名次（1 基），不存在输出 `-1`。",
+    constraints_md="- 1 ≤ n, m ≤ 2000",
+    inputs=[
+        "5 5\n1 2 4 8 9\n1 5\n2 5\n1 2\n2 2\n2 100\n",
+        "3 4\n1 1 1\n2 1\n1 1\n2 1\n2 2\n",
+        "1 3\n7\n2 7\n1 7\n2 7\n",
+        "2 4\n-5 5\n2 -5\n1 0\n2 0\n2 -100\n",
+        _rand_case_34(),
+    ],
+    samples=2,
+    oracle=_oracle_34,
+    solution=r'''#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    vector<int> a(n);
+    for (int k = 0; k < n; k++) scanf("%d", &a[k]);
+    while (m--) {
+        int op, x;
+        scanf("%d %d", &op, &x);
+        if (op == 1) {
+            a.insert(upper_bound(a.begin(), a.end(), x), x);   /* 插在相等元素之后 */
+        } else {
+            auto it = lower_bound(a.begin(), a.end(), x);      /* 第一个 >= x */
+            if (it == a.end() || *it != x) printf("-1\n");
+            else printf("%d\n", (int)(it - a.begin()) + 1);    /* 下标 + 1 = 名次 */
+        }
+    }
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <set>
+using namespace std;
+int main() {
+    int n, m;
+    scanf("%d %d", &n, &m);
+    multiset<int> s;
+    for (int k = 0; k < n; k++) {
+        int v;
+        scanf("%d", &v);
+        s.insert(v);
+    }
+    while (m--) {
+        int op, x;
+        scanf("%d %d", &op, &x);
+        if (op == 1) {
+            s.insert(x);
+        } else {
+            auto it = s.lower_bound(x);
+            if (it == s.end() || *it != x) printf("-1\n");
+            else printf("%d\n", (int)distance(s.begin(), it) + 1);   /* distance 是 O(n) */
+        }
+    }
     return 0;
 }
 ''',

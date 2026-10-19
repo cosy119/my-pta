@@ -257,12 +257,12 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（581 题 / 7613 分 / 1414 测试点）
+## 题库（856 题 / 10905 分 / 1794 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
 | `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(67 = 53 编程 + ext2 14) + `problems_bank_py_prog.py`(10) + `problems_bank_py_tricks.py`(30) + 理论 `problems_bank_py_theory.py`(66) + `problems_bank_py_theory2.py`(63 = 49 + 进制转换 14) | **239** | **2988** | python | Python |
-| `ds` | `problems_bank_ds.py`（含 28 理论 + 102 编程）+ `problems_bank_ds_tricks.py`(30) | **160** | **2574** | cpp | **C 或 C++ 任选** |
+| `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(34) | **235** | **3406** | cpp | **C 或 C++ 任选** |
 | `linux` | `problems_bank_linux.py` | **194** | **2169** | text | 理论题（单选 / 多选 / 判断 / 填空）+ **实操题 15** |
 
 - ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
@@ -278,16 +278,27 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
 - **题型分布（全库）**：编程 232 / 单选 178 / 判断 68 / 填空 48 / **多选 30** / 简答 10 / **实操 15**。
   （这行跟着题库涨，别当常量用 —— 要准数就 `SELECT question_type, COUNT(*) FROM problems GROUP BY 1`。）
 
-### ★ 技巧特训章（2026-10-18 晚建章，两线各 20 题；2026-10-19 各 +10 进阶）
+### ★ 技巧特训章（2026-10-18 晚建章，两线各 20 题；2026-10-19 各 +10 进阶；2026-10-19 晚 DS +4 插入维护）
 
 讲义没专门讲、但做题（蓝桥杯 / 码蹄杯 / ACM）总会遇到的**技巧性简便用法**单独成章：
-`tools/gen_py_tricks.py` → 「技巧特训 · Python」30 题；`tools/gen_ds_tricks.py` → 「技巧特训 · C/C++」30 题。
+`tools/gen_py_tricks.py` → 「技巧特训 · Python」30 题；`tools/gen_ds_tricks.py` → 「技巧特训 · C/C++」34 题。
 难度 1→4 递进，四段式：基础语法糖 → 竞赛工具箱（STL/算法套路）→ 竞赛强度（DP/二分/分治）→ **进阶套路**。
 
 | 线 | 分节 | 基础 | 套路 | 竞赛 | 进阶（10 题） |
 |---|---|---|---|---|---|
 | python | 技巧特训 · Python（8/6/6/10） | upper/负索引切片/split-join/推导式/enumerate-zip/sorted多关键字/dict.get/集合运算 | Counter/heapq/前缀和/**bisect 第一个大于 x**/lru_cache/回文清洗 | 01背包/LIS n log n/快速幂 pow(a,b,m)/区间合并/阶乘大数/筛法 | **str.translate(ROT13)**/re.findall/格式化四连 f-string/**zip(*a) 转置**/itertools 第 k 排列/math.gcd-lcm/**bit_count + lowbit**/**子集枚举 + 线性基**/**二维前缀和**/**deque 单调队列** |
-| ds | 技巧特训 · C/C++（7/7/6/10） | **vector push_back**/string find/sort+cmp/pair/map/set/stringstream | **upper_bound 第一个大于 x**/lower_bound/差分/双指针/单调栈/单调队列/**二分答案·伐木** | 01背包/完全背包/LIS/LCS/快速幂/逆序对归并 | **stable_sort 多关键字**/**priority_queue Top-K**/**next_permutation**/**accumulate + iota**/**bitset 位统计**/unordered_map 词频/**unique 离散化**/**树状数组**/**高精度字符串加法**/**前缀和 + 哈希计数** |
+| ds | 技巧特训 · C/C++（7/7/6/10 + **插入维护 4**） | **vector push_back**/string find/sort+cmp/pair/map/set/stringstream | **upper_bound 第一个大于 x**/lower_bound/差分/双指针/单调栈/单调队列/**二分答案·伐木** | 01背包/完全背包/LIS/LCS/快速幂/逆序对归并 | **stable_sort 多关键字**/**priority_queue Top-K**/**next_permutation**/**accumulate + iota**/**bitset 位统计**/unordered_map 词频/**unique 离散化**/**树状数组**/**高精度字符串加法**/**前缀和 + 哈希计数** |
+
+**插入维护 4 题（`upper_bound` + `insert`，2026-10-19 晚加）**
+
+| # | 标题 | 难度/分 | 练什么 |
+|---|---|---|---|
+| 1 | 有序表插入（upper_bound + insert） | 1 / 10 | `auto it = upper_bound(...); a.insert(it, x);` 两行模板；下标必须在 insert 前算（insert 后 it 失效）；insert 是 O(n) |
+| 2 | 批量插入保持有序 | 2 / 15 | 循环插入 vs 先收完再整体排序的复杂度差（O(m·(n+m)) vs O(N log N)） |
+| 3 | lower 与 upper 插入的稳定性 | 2 / 15 | 带 id 的记录插入：lower 插在相同值**前**、upper 插在**后**；只有 value 时两种结果长得一样 |
+| 4 | 动态有序表的名次查询 | 3 / 20 | **插入用 upper、查询用 lower**；名次 = `it - begin() + 1`；不存在判 `it==end() || *it!=x` |
+
+- ★ 每条都带「什么时候不该这么写」的说明，避免把 O(n) insert 当 O(log n) 用。
 
 - ★ 独立文件 + seed/verify_bank 各加一行挂载，**不动另一窗口维护的 gen_ds_bank / gen_py_bank**。
 - ★ oracle 用「笨办法」（如 LIS O(n²)、背包二维 DP）与参考解不同路；随机大用例用固定种子生成（可复现）。
