@@ -33,7 +33,7 @@ SQLite（题库 + 提交记录 + 进度）
 
 ```bat
 python tools\export_static.py      &rem ★ 改题库/前端后必须重跑，重新生成 docs/
-python tools\verify_bank.py        &rem 581 题 / 1414 点，双实现对拍
+python tools\verify_bank.py        &rem 856 题 / 1794 点，双实现对拍
 python tools\selftest_cpp.py       &rem 9 项
 python tools\selftest_theory.py    &rem 14 项
 python tools\selfcheck.py          &rem 62 项
@@ -274,8 +274,12 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   （第 02 讲的内容由「基础命令」组覆盖 —— 那 45 道就是围绕 Shell 命令出的。）
   - 2026-10-15 再补：`part_multi()` 8 道**多选**，落在 07 / 11 / 12（×2）/ 13（×2）/ 14（×2）。
   - 2026-10-19 再补：`part_practical()` **15 道实操题**，把作业 1~5 的 46 个操作步骤全覆盖
-    （实验1 装机 1 / 实验2 2 / 实验3 3 / 实验4 4 / 实验5 5），见下面「★ 实操题」一节。
-- **题型分布（全库）**：编程 232 / 单选 178 / 判断 68 / 填空 48 / **多选 30** / 简答 10 / **实操 15**。
+    （实验1 装机 1 / 实验2 2 / 实验3 3 / 实验4 4 / 实验5 5）。
+  - **2026-10-19 晚大改**：实操题从「跑验收命令 → 填输出」改成「**给场景 → 写命令**」，
+    并且从 15 道扩到 **203 道**（`tools/linux_cmd_bank.py`，见下面「★ 命令题」一节）。
+    原因见那节开头 —— 旧形态考的是「会不会抄屏幕」，不是「会不会用命令」。
+- **题型分布（全库）**：编程 256 / 单选 200 / 多选 34 / 判断 84 / 填空 69 / 简答 10 / **实操 203**。
+  Linux 线单独一份：单选 115 / 多选 8 / 判断 31 / 填空 25 / **实操 203** = 382 题。
   （这行跟着题库涨，别当常量用 —— 要准数就 `SELECT question_type, COUNT(*) FROM problems GROUP BY 1`。）
 
 ### ★ 技巧特训章（2026-10-18 晚建章，两线各 20 题；2026-10-19 各 +10 进阶；2026-10-19 晚 DS +4 插入维护）
@@ -361,35 +365,76 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `selftest_theory.py` 把选项集合的**所有子集**穷举一遍（只选一个、多选一个、全选…），
   除了正确答案本身，其余必须全 WA —— 否则「只选一半也能 AC」等于这道题白出。
 
-### ★ 实操题（课程实验 1~5，2026-10-19）
+### ★ 命令题（实操题 = 给场景写命令，2026-10-19 晚重构）
 
-Linux 线原来只有「选择 / 判断 / 填空」，**课程实验本身一道题都没有** ——
-学生做完作业 1~5 在平台上找不到对应的东西。现在补了 **15 道 `practical`**，
-把五份实验指导书（`E:\学习\001\Linux学习\2026-*.pdf`，共 46 个操作步骤）逐个覆盖：
+#### 形态为什么改过
 
-| 实验 | 步骤 | 实操题 | 验收命令（提交它的**输出**） |
-|---|---|---|---|
-| 1 装机 | 1 | 1 | `grep ^VERSION_ID= /etc/os-release` |
-| 2 基本命令 | 10 | 2 | `cd /usr/local/bin && cd ../.. && pwd` 等 |
-| 3 常用命令 | 10 | 3 | `find /tmp/a1 -type d \| sort` 等 |
-| 4 综合命令 | 10 | 4 | `tar -tzf ~/test5.tar.gz \| head -1`、`readlink /myshare` 等 |
-| 5 用户与权限 | 15 | 5 | `stat -c '%A' ~/11.txt`、`stat -c '%a %A' ~/sdutfile1` 等 |
+**旧形态（已废弃）**：题干给完整实验步骤 + 附一条**验收命令**，学生提交那条命令的**输出**。
 
-**形态：多步任务 + 一条验收命令 → 提交那条命令的真实输出。**
+能跑，但考错了东西：学生把实验做完，答案就是屏幕上复制一段文字，
+**到底会不会写命令完全没被考察** —— 写不出命令的人照样拿分，
+背下 `VERSION_ID=44` 的人甚至不用碰机器。
 
-- 为什么不做「无测试点 + 自评」：后端对 0 测试点的题直接判 `IE`
-  （`worker.py`：「这道题还没有测试用例」），线上就废了。带测试点才能两边一致。
-- 为什么不做「提交命令」：那就和填空题没区别了。交**输出**不一样 ——
-  `stat -c '%a'` 出来的 `402`、`find` 出来的四层路径、`sort -r` 出来的顺序，
-  得真做过（或真算过）才写得出。
-- ★ **一道实操题只能有 1 个测试点**：`runner_text` 把**同一份提交**当作每个测试点的
+**现形态**：题干给**场景与约束**，提交**命令本身**。
+会写就写得出，不会写就是不会 —— 这才是命令题该考的东西。
+
+#### 判题怎么做到「宽容但不放水」
+
+平台不执行提交内容（云端跑任意 shell 是 RCE），只做**文本等价比对**。
+宽容度全压在两层：
+
+| 层 | 做什么 | 位置 |
+|---|---|---|
+| 空白 | 多少空格、换行都折成一个 | `compare._squeeze_ws` |
+| 标点 | 只剥排版类标点（全角、中文引号），ASCII 的 `. ' " ( )` 不动 | `compare._EDGE_PUNCT` |
+| 短选项 | `-l -a` ≡ `-la`；`-la` ≡ `-al`（簇内字母排序去重） | `compare._norm_cmd` |
+| 家目录 | `/home/<任意名>` ≡ `~` | `compare._norm_home` |
+| 引号 | `'*.log'` ≡ `"*.log"` ≡ `*.log`（**仅当引号内无空白**） | `bank_kit._quote_forms` |
+| 单字母 | `w` 也认 `W`（`runner_text` 会把单字母转大写） | `bank_kit.practical` |
+
+★★ **自动归一化兜不住「真正的两套写法」** ——
+`chmod 751 f` 与 `chmod u=rwx,g=rx,o=x f` 得在 `answers` 里手工都列上。
+漏一条就是让人白掉一次分，所以每道题的备选都逐条核过参考解。
+
+#### 203 道怎么组织（「举一反三」的落地方式）
+
+`tools/linux_cmd_bank.py`，一族一个函数，**每族按同一套梯度出题**：
+
+1. **基本用法** —— 最朴素的一条
+2. **参数组合** —— 加两个选项，考「选哪个参数」
+3. **真实场景** —— 不给命令名，只给需求，逼你自己选工具
+4. **易错辨析** —— 同族两个近义命令/参数，选错就废
+
+| 分节 | 题数 | 覆盖 |
+|---|---|---|
+| 实验 1~5 | 17 | 五份实验指导书的关键步骤（改写成命令） |
+| 文件与目录 | 17 | ls / cp / mv / rm / mkdir / ln / readlink / truncate |
+| 查看文件内容 | 13 | head / tail / wc / cat / less / file / tac / od |
+| 查找与定位 | 16 | find 全家（-name/-size/-mtime/-perm/-exec）+ which/whereis/type/rpm -qf |
+| 文本处理 | 22 | grep / sed / awk / cut / sort / uniq / tr / paste / diff / comm |
+| 权限与属性 | 15 | chmod（数字+符号+特殊位）/ chown / chgrp / ACL / umask / stat |
+| 用户与组 | 15 | useradd / usermod / userdel / passwd / id / su / visudo / lastlog |
+| 进程与作业 | 18 | ps / pgrep / kill / pkill / nohup / jobs / bg / nice / top / lsof / pstree |
+| 磁盘与存储 | 12 | df / du / lsblk / mount / blkid / iostat / inode |
+| 压缩与打包 | 12 | tar 全参数 / gzip / zip / unzip / xz / 追加与部分解压 |
+| 网络与远程 | 14 | ip / ss / ping / curl / wget / ssh / scp / rsync / DNS |
+| 软件包与服务 | 14 | dnf / rpm -q* / systemctl / journalctl |
+| Shell 与管道 | 18 | 重定向 / 变量 / alias / xargs / 算术 / if / for / set -e / awk 求和 |
+
+分值按难度：1→10 / 2→12 / 3→15 / 4→18（`SCORE_BY_DIFF`）。
+
+#### 铁律（改题库前必读）
+
+- ★ **一道命令题只能有 1 个测试点**：`runner_text` 把**同一份提交**当作每个测试点的
   stdout，两个期望值不同的点，参考答案必然只能过一个。
-- ★ **多行输出必须压成一行再进 `oneof`**：期望值的约定是「一行一个可接受答案」，
-  答案自带换行的话第二行会被当成另一个答案，题目永远判不过。
-  `bank_kit.practical()` 里统一 `" ".join(x.split())`；不影响宽容度，
-  因为 `compare._squeeze_ws` 本来就把换行和空格当一回事。
-- ★ 验收命令的挑选标准（写题时照这个卡）：输出**短**、**与机器无关**
-  （不含时间戳 / 主机名 / 内核版本 / 不定目录）、**不做实验拿不到**。
+- ★ **答案里不能出现换行**：期望值约定是「一行一个可接受答案」，
+  答案自带换行的话第二行会被当成另一个答案。`practical()` 统一 `" ".join(x.split())`。
+- ★ **单字母命令（`w`）要补大写备选** —— 已在 `practical()` 里自动补，不用记。
+- ★ 改完 `linux_cmd_bank.py` 后必跑：
+  `gen_linux_bank.py --check` → `verify_bank.py --linux` → `selftest_theory.py`
+  → `test_question_types.py` → `export_static.py --with-cases` → `ui_test_linux_user.mjs`。
+- ★ **改老题（含删题）后必须重 seed**，否则库里还是旧版本。
+  `ensure()` 只插不改；删题还要**手工删 `testcases`**（本次删 15 道旧实操题就是这么做）。
 
 ### ★ Linux 登录名 `{user}`（2026-10-19）
 
@@ -689,7 +734,7 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
    改用持久的测试库之后，第二次跑必定数到上一次留下的记录 → 假失败。
    → 加 `_testdb.fresh_test_db()`：开跑前把测试库**删掉重建**
    （schema 不用管，`app/db.py` 的 `connect()` 会自己建表）。
-2. **等待时限刚好卡边界**：删库重建后服务要重新播种 581 题 / 1414 个测试点，
+2. **等待时限刚好卡边界**：删库重建后服务要重新播种 856 题 / 1794 个测试点，
    本机实测约 40 秒，而 `wait_port` / `wait_http` 的默认上限**正好是 40 秒**。
    → 提到 120 秒。
 
@@ -860,7 +905,7 @@ editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_
 后端的定位因此**从「必须」降级为「可选增强」**，只干三件事：
 **跨设备进度、C/C++ 判题、防作弊**。
 
-> ★★ 代价必须记住：`docs/problems.json` 现在**带全部 1414 个测试点**（`--with-cases`），
+> ★★ 代价必须记住：`docs/problems.json` 现在**带全部 1794 个测试点**（`--with-cases`），
 > 也就是**期望输出是公开的**（仓库公开、Pages 公开）。自学平台无所谓（随时对答案反而是加分项），
 > 但**分享给别人刷题就有作弊空间**。**参考解 `reference_solution` 仍然绝不外传**。
 > 想回退到「不下发」：不加该参数重导一次即可（前端会自动退回手动标记，不会报错）。

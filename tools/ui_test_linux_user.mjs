@@ -107,19 +107,24 @@ try {
   const sub = await page.evaluate(() => subUser('家目录 /home/{user}/docs 和 {user}'));
   check('占位符 {user} 会被替换', sub === '家目录 /home/zhangsan/docs 和 zhangsan', sub);
 
-  /* ── 5. 实操题的题面 ── */
-  const p5 = practical.find(p => p.title === '把 11.txt 改成 -rwxr-x--x');
+  /* ── 5. 命令题（实操题）的题面与输入框 ── */
+  const p5 = practical.find(p => p.title === '把 11.txt 改成 rwxr-x--x（数字模式）');
+  if (!p5) throw Error('找不到命令题：把 11.txt 改成 rwxr-x--x（数字模式）');
   await page.goto(base + '#/p/' + p5.id);
   await page.waitForSelector('.chips .tyTag');
   check('实操题徽章', await page.$eval('.chips .tyTag', e => e.textContent === '实操题'));
+  check('命令题用专门的短输入框', (await page.$('.editor.cmdBox')) !== null);
   const body = await page.$eval('.pstmt', e => e.textContent);
-  check('题面带验收命令', /验收/.test(body) && /stat -c/.test(body));
-  check('满分 25', /满分 25 分/.test(body), body.slice(0, 0));
+  const hint = await page.$eval('.peditBody', e => e.textContent);
+  check('作答区提示要写命令本身',
+        /一整条命令/.test(hint) && /算同一种|都算|认/.test(hint), hint.slice(0, 120));
+  check('满分与题库一致',
+        new RegExp('满分 ' + p5.total_score + ' 分').test(body), String(p5.total_score));
 
-  /* ── 6. 填对验收输出 → AC ── */
-  await page.evaluate(() => { CUR && (document.getElementById('codeBox').value = ''); });
+  /* ── 6. 写对命令 → AC 满分 ── */
+  await page.evaluate(() => { const b = document.getElementById('codeBox'); if (b) b.value = ''; });
   await page.click('#codeBox');
-  await page.type('#codeBox', '-rwxr-x--x');
+  await page.type('#codeBox', 'chmod 751 11.txt');
   await page.click('#btnSubmit');
   await page.waitForFunction(() => {
     const h = document.querySelector('#resultBox .verdict');
@@ -129,20 +134,58 @@ try {
     const s = JSON.parse(localStorage.getItem('pta.localProgress') || '{}');
     return s[String(CUR.id)];
   });
-  check('实操题判题满分', !!score6 && score6.best_score === 25, JSON.stringify(score6));
+  check('命令题判题满分',
+        !!score6 && score6.best_score === p5.total_score, JSON.stringify(score6));
 
-  /* ── 7. 绝对路径写法也认 ── */
-  const p7 = find('复制目录并保留权限与时间戳');
-  await page.goto(base + '#/p/' + p7.id);
-  await page.waitForSelector('#codeBox');
-  await page.type('#codeBox', 'cp -a /home/zhangsan/docs /tmp/');
+  /* ── 7. 等价写法也要认（前导 0 + 选项顺序） ── */
+  await page.evaluate(() => { const b = document.getElementById('codeBox'); if (b) b.value = ''; });
+  await page.click('#codeBox');
+  await page.type('#codeBox', 'chmod 0751 11.txt');
   await page.click('#btnSubmit');
   await page.waitForFunction(() => {
     const h = document.querySelector('#resultBox .verdict');
     return h && /答案正确|AC|答案错误|WA/.test(h.textContent);
   }, { timeout: 8000 });
   const verdict7 = await page.$eval('#resultBox .verdict', e => e.textContent);
-  check('写 /home/zhangsan/... 也判对', /答案正确|AC/.test(verdict7), verdict7);
+  check('前导 0 的等价写法也判对', /答案正确|AC/.test(verdict7), verdict7);
+
+  /* ── 7b. 参数顺序打乱也要认（-l -a 与 -la、-la 与 -al） ── */
+  const p7b = practical.find(p => p.title === '列出所有条目（含隐藏），按修改时间倒序，大小人性化');
+  if (!p7b) throw Error('找不到命令题：ls -lath 那道');
+  await page.goto(base + '#/p/' + p7b.id);
+  await page.waitForSelector('#codeBox');
+  await page.type('#codeBox', 'ls -t -h -a -l');
+  await page.click('#btnSubmit');
+  await page.waitForFunction(() => {
+    const h = document.querySelector('#resultBox .verdict');
+    return h && /答案正确|AC|答案错误|WA/.test(h.textContent);
+  }, { timeout: 8000 });
+  const verdict7b = await page.$eval('#resultBox .verdict', e => e.textContent);
+  check('拆开的短选项也判对（-t -h -a -l）', /答案正确|AC/.test(verdict7b), verdict7b);
+
+  /* ── 7c. 写错就是 WA（不能糊弄过去） ── */
+  await page.goto(base + '#/p/' + p5.id);
+  await page.waitForSelector('#codeBox');
+  await page.type('#codeBox', 'chmod 755 11.txt');
+  await page.click('#btnSubmit');
+  await page.waitForFunction(() => {
+    const h = document.querySelector('#resultBox .verdict');
+    return h && /答案错误|WA/.test(h.textContent);
+  }, { timeout: 8000 });
+  check('写错数字判 WA', true);
+
+  /* ── 7d. 回车直接提交（不用点按钮） ── */
+  await page.goto(base + '#/p/' + p5.id);
+  await page.waitForSelector('#codeBox');
+  // 上一题（7c）的草稿会被恢复，先清掉再输入，否则拼成一串必然 WA
+  await page.evaluate(() => { const b = document.getElementById('codeBox'); if (b) b.value = ''; });
+  await page.type('#codeBox', 'chmod 751 11.txt');
+  await page.keyboard.press('Enter');
+  await page.waitForFunction(() => {
+    const h = document.querySelector('#resultBox .verdict');
+    return h && /答案正确|AC/.test(h.textContent);
+  }, { timeout: 8000 });
+  check('回车即提交', true);
 
   /* ── 8. 别的线不该被打扰 ── */
   await page.goto(base + '#/p/' + dsP.id);

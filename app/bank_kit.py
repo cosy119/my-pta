@@ -20,6 +20,8 @@
 """
 from __future__ import annotations
 
+import re
+
 # 判断题的两个规范答案（runner_text 会把 正确/√/T 之类收成「对」）
 TRUE = "对"
 FALSE = "错"
@@ -29,7 +31,8 @@ SCORE_CHOICE = 10      # 单选
 SCORE_MULTI = 14       # 多选（要对若干个，比单选难，分值给高一点）
 SCORE_JUDGE = 8        # 判断
 SCORE_FILL = 12        # 填空
-SCORE_PRACTICAL = 25   # 实操（要真把一套操作做完，才拿得到那段输出）
+SCORE_PRACTICAL = 25   # 实操类实验（多步任务，一步做错整题就废）
+SCORE_COMMAND = 12     # 单条命令题（写一条命令解决一个场景）
 
 
 def _oneof(alts: list[str]) -> tuple[str, str]:
@@ -181,48 +184,80 @@ def multi(title: str, statement_md: str, options: list[str], answers: list[str],
         tip=answer_note or "**多选题**：正确选项不止一个，点选切换，再次点击可取消。")
 
 
-def practical(title: str, statement_md: str, outputs: list[str], *,
-              verify_cmd: str, subject: str, section: str,
-              explanation: str, tags: list[str],
-              difficulty: int = 4, total_score: int = SCORE_PRACTICAL,
-              hint: str = "") -> dict:
-    """实操题：多步任务 + **一条验收命令**，提交命令的真实输出。
+# 单/双引号包住、且里面**不含空白**的片段。
+# 只对这种片段做「去引号 / 换引号」扩展 —— 带空格的引号一去掉语义就变了
+# （`echo "a b"` 与 `echo a b` 参数个数都不一样），绝不能碰。
+_QUOTED_RE = re.compile(r"""(['"])([^\s'"]+)\1""")
 
-    为什么做成「提交输出」而不是「提交命令」
-    ----------------------------------------
-    课程实验（装系统、建用户、改权限、打包解压……）在平台里没法替你执行，
-    但**做完之后那台机器的状态是可以自证的**：`stat -c '%a'` 出来的 751、
-    `readlink /myshare` 出来的 `/usr/local/sdutshare`、`sort -r` 出来的顺序，
-    都不是靠猜能编出来的（或者至少得真算一遍）。
 
-    所以这里的口径是：
-    - 题干给完整任务清单（照实验指导书，步骤编号保留）
-    - 附一条**验收命令** —— 输出短、且与机器无关（不含时间戳 / 主机名 / 内核版本）
-    - 学生把那条命令的**输出**贴回来，不是命令本身
+def _quote_forms(ans: str) -> list[str]:
+    """同一条命令的引号变体：`find . -name '*.log'` → 也认 `*.log` / `"*.log"`。
 
-    ★ 期望值仍然走 `oneof`（多行 = 多个可接受写法）。
-      把「几种都对的写法」列全，是这类题唯一的宽容口子：
-      比如软链目标写绝对路径还是相对路径、tar 用绝对路径打包会不会多一层 `usr/`。
+    为什么值得宽容
+    --------------
+    「要不要加引号」是手打命令时最容易两边不一的地方：答案里写了 `'*.log'`，
+    学生不打引号照样能跑（当前目录没有匹配文件时），判错纯属刁难。
+    `compare._norm_cmd` 只管空白与短选项，管不到引号，所以在这一层补。
 
-    ★ 一道题只能有**一个测试点**。原因在 `runner_text`：它把**同一份提交**
-      当作每个测试点的 stdout —— 两个期望值不同的点，参考答案必然只能过一个。
+    ★ 硬约束：引号内出现空白就**一律不动** —— 那种情况下引号是语义的一部分。
     """
-    tip = ("**验收（先在机器上把任务做完，再把输出贴回来）**\n\n"
-           "```bash\n%s\n```\n" % verify_cmd)
-    if hint:
-        tip += "\n" + hint
-    # ★ 多行输出必须压成一行再交给 oneof。
-    #   期望值的格式是「**一行一个**可接受答案，行首加 `|`」——
-    #   答案自身带换行的话，从第二行起会被当成「另一个答案」，题目必然判不过。
-    #   压平不会让判题变宽松：两边最终都要过 compare._squeeze_ws，
-    #   换行和空格在那里本来就是一回事。
-    flat = [" ".join(str(x).split()) for x in outputs]
+    out = [ans]
+    for m in _QUOTED_RE.finditer(ans):
+        other = '"' if m.group(1) == "'" else "'"
+        out.append(ans.replace(m.group(0), m.group(2)))                 # 去引号
+        out.append(ans.replace(m.group(0), other + m.group(2) + other))  # 换引号
+    seen: set[str] = set()
+    uniq: list[str] = []
+    for v in out:
+        if v not in seen:
+            seen.add(v)
+            uniq.append(v)
+    return uniq
+
+
+def practical(title: str, statement_md: str, answers: list[str], *,
+              subject: str, section: str, explanation: str, tags: list[str],
+              difficulty: int = 3, total_score: int = SCORE_COMMAND,
+              hint: str = "", input_format: str = "") -> dict:
+    """实操题 / 命令题：**给场景，写出命令本身**。
+
+    形态为什么改过（2026-10-19）
+    ----------------------------
+    早先的版本是「多步任务 + 附一条验收命令 → 提交那条命令的**输出**」。
+    能跑，但考错了东西：学生把实验做完，答案就是屏幕上复制一段文字，
+    **到底会不会写命令完全没被考察** —— 写不出命令的人照样拿分，
+    背下 `VERSION_ID=44` 的人甚至不用碰机器。
+
+    现在改成：题干给场景与约束，提交**命令本身**。
+    - 会写就写得出，不会写就是不会 —— 这才是命令题该考的东西
+    - 平台不执行提交内容（云端跑任意 shell 是 RCE），只做**文本等价比对**，
+      宽容度全压在 `app/judge/compare.py`：
+      空白折叠、`-l -a` ≡ `-la`、`-la` ≡ `-al`（短选项簇内排序去重）、
+      `/home/<谁>` ≡ `~`，加上这里再补的**引号变体**。
+
+    ★ `answers` 要列全「语义等价但形式不同」的写法。
+      自动归一化兜得住形式抖动，兜不住真正的两套写法 ——
+      `chmod 751 f` 与 `chmod u=rwx,g=rx,o=x f` 得手工都列上。
+    ★ 一道题仍然只能有**一个测试点**：`runner_text` 把同一份提交
+      当作每个测试点的 stdout，两个不同期望值必然只能过一个。
+    """
+    flat = [" ".join(str(x).split()) for x in answers]
+    alts: list[str] = []
+    for a in flat:
+        alts.extend(_quote_forms(a))
+        # ★ 单字母命令（`w`）要额外补一个大写形式：
+        #   runner_text.normalize_answer 把「单个 ASCII 字母」当成选项字母转成大写，
+        #   于是学生写 `w` 会被判成 `W`。这不是 bug（选择题就靠它），
+        #   但命令题里得补上 `W` 这条备选，否则 `w` 永远判不过自己。
+        if len(a) == 1 and a.isascii() and a.isalpha():
+            alts.append(a.upper())
     return _theory(
         title=title, subject=subject, section=section,
-        statement_md=statement_md, answers=flat,
+        statement_md=statement_md, answers=alts,
         explanation=explanation, tags=tags, difficulty=difficulty,
         total_score=total_score,
         question_type="practical",
-        input_format="只贴验收命令跑出来的**输出**，不要贴命令本身",
-        output_format="验收命令的输出（可以多行，原样贴）",
-        tip=tip)
+        input_format=input_format or
+        "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+        output_format="一整条命令",
+        tip=hint)

@@ -361,6 +361,12 @@ select.sel:focus,input.inp:focus{border-color:var(--primary)}
   line-height:1.62; padding:12px 13px; outline:0; tab-size:4;
 }
 .pedit.hasCode .editor{flex:1 0 300px}
+/* 命令题：只写一条命令，框压到两三行高，不占满整屏 */
+.editor.cmdBox{
+  min-height:64px; flex:0 0 auto; font-size:15.5px; letter-spacing:.2px;
+  white-space:pre-wrap; word-break:break-all;
+}
+.editor.cmdBox::placeholder{color:var(--muted); opacity:.75}
 .codeEditor{flex:1 0 300px; min-height:300px; border:1px solid var(--border); border-radius:9px; background:var(--panel2)}
 .codeEditor:focus-within{border-color:var(--primary); background:var(--panel)}
 .codeEditor .cm-editor{height:100%; min-height:300px; font:15px/1.62 var(--mono); color:var(--text); background:transparent}
@@ -2159,9 +2165,20 @@ function renderProblem(){
           + '<span class="txt md">' + mdRender(c) + '</span></div>').join('')
       + '</div>';
   } else if (isTheory){
-    right += '<div class="hintline">把答案写在这里（大小写、首尾空格、多余标点都会自动忽略）。</div>'
-      + '<textarea class="editor" id="codeBox" style="min-height:110px" placeholder="'
-      + (isJudge ? '填「对」或「错」' : '填你的答案') + '">' + esc(draftOf(draftKey)) + '</textarea>';
+    if (questionTypeKey(p) === 'practical'){
+      // 命令题：一条命令就够，用矮一点的框，等宽字体，提示里说清「宽容到什么程度」——
+      // 这类题最容易因为「写法不同」被冤枉，提交前就把规则摆出来。
+      right += '<div class="hintline">写<b>一整条命令</b>（命令名 + 参数）。'
+        + '大小写敏感；空格多少、<code>-l -a</code> 与 <code>-la</code>、'
+        + '<code>-la</code> 与 <code>-al</code>、<code>~/x</code> 与 <code>/home/你/x</code> 都算同一种，'
+        + '引号加不加也认。</div>'
+        + '<textarea class="editor cmdBox" id="codeBox" spellcheck="false" rows="2" placeholder="'
+        + '例：ls -la /etc' + '">' + esc(draftOf(draftKey)) + '</textarea>';
+    } else {
+      right += '<div class="hintline">把答案写在这里（大小写、首尾空格、多余标点都会自动忽略）。</div>'
+        + '<textarea class="editor" id="codeBox" style="min-height:110px" placeholder="'
+        + (isJudge ? '填「对」或「错」' : '填你的答案') + '">' + esc(draftOf(draftKey)) + '</textarea>';
+    }
   } else {
     const pre = p.last_submission && p.last_submission.code;
     const val = pre || draftOf(draftKey) || '';
@@ -2191,6 +2208,17 @@ function renderProblem(){
   renderHistory();
   const box = document.getElementById('codeBox');
   if (box) box.addEventListener('input', onCodeInput);
+  /* 命令题：回车即提交（Shift+回车换行）。命令本来就没有多行，
+     多敲一下回车再去点按钮纯属多余动作。isComposing 挡住中文输入法的候选框回车。 */
+  if (box && p.line === 'text' && questionTypeKey(p) === 'practical'){
+    box.addEventListener('keydown', function(ev){
+      if (ev.key === 'Enter' && !ev.shiftKey && !ev.ctrlKey && !ev.altKey && !ev.isComposing){
+        ev.preventDefault();
+        const btn = document.getElementById('btnSubmit');
+        if (btn) btn.click();
+      }
+    });
+  }
   if (!isTheory) initSmartEditor(p.id);
 }
 
