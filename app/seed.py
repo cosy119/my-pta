@@ -14,8 +14,12 @@ from . import db, scoring
 from .question_types import infer as infer_question_type
 from .problems_bank import BANK_PROBLEMS
 from .problems_bank_ds import DS_PROBLEMS
+from .problems_bank_ds_prog import DS_PROG_PROBLEMS
+from .problems_bank_ds_theory import DS_THEORY_PROBLEMS
 from .problems_bank_ds_tricks import DS_TRICKS_PROBLEMS
 from .problems_bank_linux import LINUX_PROBLEMS
+from .problems_bank_py_prog import PY_PROG_PROBLEMS
+from .problems_bank_py_theory import PY_THEORY_PROBLEMS
 from .problems_bank_py_tricks import PY_TRICKS_PROBLEMS
 
 # 三条件学线。`subject` 是**学科维度**（不是语言）：
@@ -196,11 +200,12 @@ CORE_PROBLEMS: list[dict] = [
 ]
 
 
-# 全部种子题 = 核心题 + 三条线的题库（含各线的技巧特训章）
+# 全部种子题 = 核心题 + 三条线的题库（含各线的技巧特训章与理论题章）
 # 顺序就是前端默认展示顺序：Python → 数据结构 → Linux
 SEED_PROBLEMS: list[dict] = (CORE_PROBLEMS + BANK_PROBLEMS
-                             + PY_TRICKS_PROBLEMS
-                             + DS_PROBLEMS + DS_TRICKS_PROBLEMS
+                             + PY_TRICKS_PROBLEMS + PY_THEORY_PROBLEMS + PY_PROG_PROBLEMS
+                             + DS_PROBLEMS + DS_TRICKS_PROBLEMS + DS_THEORY_PROBLEMS
+                             + DS_PROG_PROBLEMS
                              + LINUX_PROBLEMS)
 
 

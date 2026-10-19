@@ -45,6 +45,13 @@ import _testdb                                                   # noqa: E402  �
 from app.judge.compare import compare, oneof_alternatives   # noqa: E402
 from app.judge.runner_text import TextRunner, normalize_answer  # noqa: E402
 from app.problems_bank_linux import LINUX_PROBLEMS           # noqa: E402
+from app.problems_bank_py_theory import PY_THEORY_PROBLEMS    # noqa: E402
+from app.problems_bank_ds_theory import DS_THEORY_PROBLEMS    # noqa: E402
+
+# ★ 2026-10-19：理论题不再只有 Linux 一条线。
+#   Python / 数据结构两线补了 127 道理论题，如果这里还只扫 LINUX_PROBLEMS，
+#   那批新题的「错答案必须判错」就完全没人守 —— 而单选题最危险的方向恰恰是判太宽。
+ALL_THEORY = LINUX_PROBLEMS + PY_THEORY_PROBLEMS + DS_THEORY_PROBLEMS
 
 PASSED: list[str] = []
 FAILED: list[str] = []
@@ -77,13 +84,15 @@ def find(keyword: str) -> dict | None:
 def main() -> int:
     print("=" * 78)
     print("理论题自测：正确答案判过 + 错误答案判错")
-    print("题目库：Linux 线 %d 题" % len(LINUX_PROBLEMS))
+    print("题目库：三线理论题 %d 题（Linux %d / Python %d / 数据结构 %d）"
+          % (len(ALL_THEORY), len(LINUX_PROBLEMS),
+             len(PY_THEORY_PROBLEMS), len(DS_THEORY_PROBLEMS)))
     print("=" * 78)
 
     # ---------- 1 · 单选题：其余选项必须判错 ----------
     #   ★ 多选题也是「有选项」的题，但判法不同（正确选项不止一个），
     #     所以先按 question_type 分开，单选走这一节、多选走 1b。
-    choice_probs = [p for p in LINUX_PROBLEMS
+    choice_probs = [p for p in ALL_THEORY
                     if p.get("choices") and p["choices"] != ["对", "错"]]
     mc_probs = [p for p in choice_probs if p.get("question_type") != "multiple_choice"]
     multi_probs = [p for p in choice_probs if p.get("question_type") == "multiple_choice"]
@@ -139,7 +148,7 @@ def main() -> int:
           bool(multi_probs) and not bad_multi, "; ".join(bad_multi[:3]))
 
     # ---------- 2 · 判断题的各种写法 ----------
-    tf_probs = [p for p in LINUX_PROBLEMS if p.get("choices") == ["对", "错"]]
+    tf_probs = [p for p in ALL_THEORY if p.get("choices") == ["对", "错"]]
     true_p = next((p for p in tf_probs
                    if oneof_alternatives(p["cases"][0]["expected_stdout"])[0] == "对"), None)
     false_p = next((p for p in tf_probs
@@ -230,17 +239,17 @@ def main() -> int:
     # 它跟期望值里的第一条可选答案**必然**是同一个东西 ——
     # 判不过就说明「归一化 / 比对」这一层动了不该动的东西
     bad: list[str] = []
-    for p in LINUX_PROBLEMS:
+    for p in ALL_THEORY:
         c = p["cases"][0]
         if not compare(c["expected_stdout"], normalize_answer(p["reference_solution"]),
                        p.get("checker"), 1e-6):
             bad.append(p["title"])
-    check("全库扫：%d 道理论题的参考答案都能判过自己" % len(LINUX_PROBLEMS),
+    check("全库扫：%d 道理论题的参考答案都能判过自己" % len(ALL_THEORY),
           not bad, "、".join(bad[:4]))
 
     # ---------- 9 · 全库扫：期望值的每一条备选答案都要能判过 ----------
     bad2: list[str] = []
-    for p in LINUX_PROBLEMS:
+    for p in ALL_THEORY:
         c = p["cases"][0]
         alts = oneof_alternatives(c["expected_stdout"])
         for a in alts:
@@ -253,7 +262,7 @@ def main() -> int:
     # ---------- 10 · 全库扫：形近错误答案仍然要判错 ----------
     # 宽容口径不能宽到「什么都算对」
     bad3: list[str] = []
-    for p in LINUX_PROBLEMS:
+    for p in ALL_THEORY:
         c = p["cases"][0]
         alts = [a.strip() for a in oneof_alternatives(c["expected_stdout"])]
         if not alts:
