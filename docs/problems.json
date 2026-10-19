@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-10-19 08:05:39",
- "count": 439,
- "total_score": 5884,
- "total_testcases": 1272,
+ "generated_at": "2026-10-19 08:53:08",
+ "count": 581,
+ "total_score": 7613,
+ "total_testcases": 1414,
  "items": [
   {
    "id": 1,
@@ -9088,7 +9088,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|cp -a ~/docs /tmp/\n|cp -a ~/docs /tmp\n|cp -rp ~/docs /tmp/\n|cp -a /home/lijihao/docs /tmp/\n",
+     "expected_stdout": "|cp -a ~/docs /tmp/\n|cp -a ~/docs /tmp\n|cp -rp ~/docs /tmp/\n",
      "points": 12
     }
    ],
@@ -9306,7 +9306,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|tar -czf project.tar.gz ~/project\n|tar -czf project.tar.gz /home/lijihao/project\n|tar czf project.tar.gz ~/project\n|tar -zcf project.tar.gz ~/project\n",
+     "expected_stdout": "|tar -czf project.tar.gz ~/project\n|tar czf project.tar.gz ~/project\n|tar -zcf project.tar.gz ~/project\n",
      "points": 12
     }
    ],
@@ -10256,7 +10256,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|ls /usr/local > ~/test1.txt && cat -n ~/test1.txt\n|ls /usr/local > ~/test1.txt; cat -n ~/test1.txt\n|ls /usr/local > /home/lijihao/test1.txt && cat -n /home/lijihao/test1.txt\n|ls /usr/local > ~/test1.txt && cat -n /home/lijihao/test1.txt\n",
+     "expected_stdout": "|ls /usr/local > ~/test1.txt && cat -n ~/test1.txt\n|ls /usr/local > ~/test1.txt; cat -n ~/test1.txt\n",
      "points": 12
     }
    ],
@@ -10496,7 +10496,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|mkdir -p ~/abc && sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc && cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/\n|mkdir -p /home/lijihao/abc && sudo cp /boot/vmlinuz* /home/lijihao/abc/\n",
+     "expected_stdout": "|mkdir -p ~/abc && sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc && cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/\n",
      "points": 15
     }
    ],
@@ -10689,7 +10689,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|sort -r ~/mysort1\n|sort -r /home/lijihao/mysort1\n",
+     "expected_stdout": "|sort -r ~/mysort1\n",
      "points": 10
     }
    ],
@@ -18350,7 +18350,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|B\n",
+     "expected_stdout": "|B\n|数据元素之间的逻辑关系，与怎么存储无关\n",
      "points": 10
     }
    ],
@@ -18444,7 +18444,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|C\n",
+     "expected_stdout": "|C\n|O(n)\n",
      "points": 10
     }
    ],
@@ -18492,7 +18492,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|A\n",
+     "expected_stdout": "|A\n|n(n-1)/2\n",
      "points": 10
     }
    ],
@@ -18586,7 +18586,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|D\n",
+     "expected_stdout": "|D\n|Dijkstra\n",
      "points": 10
     }
    ],
@@ -18634,7 +18634,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|B\n",
+     "expected_stdout": "|B\n|顺序存储，且元素按关键字有序\n",
      "points": 10
     }
    ],
@@ -18683,7 +18683,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|A\n",
+     "expected_stdout": "|A\n|3.0\n",
      "points": 10
     }
    ],
@@ -18777,7 +18777,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|A\n",
+     "expected_stdout": "|A\n|直接插入排序\n",
      "points": 10
     }
    ],
@@ -18825,7 +18825,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|C\n",
+     "expected_stdout": "|C\n|O(n²)\n",
      "points": 10
     }
    ],
@@ -19513,7 +19513,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|A\n",
+     "expected_stdout": "|A\n|n/2\n",
      "points": 10
     }
    ],
@@ -19561,7 +19561,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|B\n",
+     "expected_stdout": "|B\n|a3 a2 a1\n",
      "points": 10
     }
    ],
@@ -19656,7 +19656,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|D\n",
+     "expected_stdout": "|D\n|3 1 2\n",
      "points": 10
     }
    ],
@@ -19752,7 +19752,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|B\n",
+     "expected_stdout": "|B\n|栈\n",
      "points": 10
     }
    ],
@@ -19801,7 +19801,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|B\n",
+     "expected_stdout": "|B\n|0\n",
      "points": 10
     }
    ],
@@ -19850,7 +19850,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|A\n",
+     "expected_stdout": "|A\n|i(i-1)/2 + j\n",
      "points": 10
     }
    ],
@@ -19945,7 +19945,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|B\n",
+     "expected_stdout": "|B\n|n0 = n2 + 1\n",
      "points": 10
     }
    ],
@@ -19994,7 +19994,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|B\n",
+     "expected_stdout": "|B\n|先序 + 中序\n",
      "points": 10
     }
    ],
@@ -30583,6 +30583,6551 @@
     4
    ],
    "points_sum": 20
+  },
+  {
+   "id": 440,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "幂运算符是右结合",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "运算符",
+    "优先级"
+   ],
+   "choices": [
+    "64",
+    "512",
+    "12",
+    "语法错误"
+   ],
+   "statement_md": "表达式 `2 ** 3 ** 2` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|512\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 441,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "负数整除是向下取整",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "运算符",
+    "整除"
+   ],
+   "choices": [
+    "-4",
+    "-3",
+    "-3.5",
+    "3"
+   ],
+   "statement_md": "表达式 `-7 // 2` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|-4\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 442,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "取模结果的符号跟着除数",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "运算符",
+    "取模"
+   ],
+   "choices": [
+    "-1",
+    "1",
+    "2",
+    "-2"
+   ],
+   "statement_md": "表达式 `-7 % 3` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|2\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 443,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "浮点数参与整除的结果类型",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "运算符",
+    "类型"
+   ],
+   "choices": [
+    "3",
+    "3.0",
+    "3.5",
+    "4.0"
+   ],
+   "statement_md": "表达式 `7 // 2.0` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|3.0\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 444,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "range 的负步长",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "range",
+    "循环"
+   ],
+   "choices": [
+    "[5, 3, 1]",
+    "[5, 3, 1, -1]",
+    "[4, 2, 0]",
+    "[5, 4, 3, 2, 1]"
+   ],
+   "statement_md": "`list(range(5, 0, -2))` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|[5, 3, 1]\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 445,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "循环被 break 时 else 不执行",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "for-else",
+    "break"
+   ],
+   "choices": [
+    "[]",
+    "['else']",
+    "[0, 1]",
+    "报错"
+   ],
+   "statement_md": "下面这段代码执行后 `hit` 是什么？\n\n```python\nhit = []\nfor i in range(3):\n    if i == 1:\n        break\nelse:\n    hit.append('else')\n```",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|[]\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 446,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "循环变量在循环结束后仍存在",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "作用域",
+    "循环"
+   ],
+   "choices": [
+    "2",
+    "3",
+    "0",
+    "NameError：i 不存在"
+   ],
+   "statement_md": "执行 `for i in range(3): pass` 之后，变量 `i` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|2\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 447,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "切片反转字符串",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "切片",
+    "字符串"
+   ],
+   "choices": [
+    "'abc'",
+    "'cba'",
+    "'c'",
+    "报错"
+   ],
+   "statement_md": "`'abc'[::-1]` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|'cba'\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 448,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "split 不合并连续分隔符产生的空串",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "split",
+    "字符串"
+   ],
+   "choices": [
+    "['a', 'b', 'c']",
+    "['a', 'b', '', 'c']",
+    "['a', 'b', ',', 'c']",
+    "报错"
+   ],
+   "statement_md": "`'a,b,,c'.split(',')` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|['a', 'b', '', 'c']\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 449,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "find 找不到时返回 -1",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "find",
+    "字符串"
+   ],
+   "choices": [
+    "-1",
+    "0",
+    "None",
+    "抛出 ValueError"
+   ],
+   "statement_md": "`'abc'.find('z')` 的返回值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|-1\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 450,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "列表乘法的浅拷贝",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "列表",
+    "乘法"
+   ],
+   "choices": [
+    "[1, 2, 1, 2]",
+    "[2, 4]",
+    "[1, 2, 2]",
+    "报错"
+   ],
+   "statement_md": "`[1, 2] * 2` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|[1, 2, 1, 2]\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 451,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "sort 返回 None 而不是新列表",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "sort",
+    "就地"
+   ],
+   "choices": [
+    "None",
+    "[1, 2, 3]",
+    "[3, 1, 2]",
+    "报错"
+   ],
+   "statement_md": "```python\na = [3, 1, 2]\nr = a.sort()\n```\n执行后 `r` 是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|None\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 452,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "单元素元组必须带逗号",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "元组",
+    "语法"
+   ],
+   "choices": [
+    "1",
+    "0",
+    "2",
+    "报错"
+   ],
+   "statement_md": "`len((1,))` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|1\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 453,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "get 取不到时返回 None",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "dict",
+    "get"
+   ],
+   "choices": [
+    "None",
+    "KeyError",
+    "0",
+    "''"
+   ],
+   "statement_md": "`{'a': 1}.get('b')` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|None\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 454,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "集合自动去重",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "set",
+    "去重"
+   ],
+   "choices": [
+    "3",
+    "5",
+    "1",
+    "报错"
+   ],
+   "statement_md": "`len({1, 1, 2, 2, 3})` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|3\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 455,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "默认参数只在定义时求值一次",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "默认参数",
+    "陷阱"
+   ],
+   "choices": [
+    "([1, 2], [1, 2])",
+    "([1], [2])",
+    "([1], [1, 2])",
+    "报错"
+   ],
+   "statement_md": "```python\ndef f(a, acc=[]):\n    acc.append(a)\n    return acc\n```\n连续调用 `f(1)`、`f(2)`，两次的返回值合起来是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|([1, 2], [1, 2])\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 456,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "*args 收到的是元组",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "*args",
+    "参数"
+   ],
+   "choices": [
+    "(4, 5)",
+    "(1, 3, 4, 5)",
+    "(3, 4, 5)",
+    "报错"
+   ],
+   "statement_md": "```python\ndef g(a, b=2, *args, **kw):\n    return args\n```\n`g(1, 3, 4, 5, x=6)` 返回什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|(4, 5)\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 457,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "函数内赋值会让变量变成局部变量",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "作用域",
+    "UnboundLocalError"
+   ],
+   "choices": [
+    "返回 2",
+    "返回 1",
+    "UnboundLocalError",
+    "NameError"
+   ],
+   "statement_md": "```python\nx = 1\ndef h():\n    x += 1\n    return x\n```\n调用 `h()` 会发生什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|UnboundLocalError\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 458,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "import 之后必须用限定名",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "import",
+    "命名空间"
+   ],
+   "choices": [
+    "正常返回 4.0",
+    "NameError",
+    "AttributeError",
+    "返回 2"
+   ],
+   "statement_md": "只写了 `import math`，然后直接调用 `sqrt(4)`，会怎样？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 模块与包",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|NameError\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 459,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "math.sqrt 返回浮点数",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "math",
+    "类型"
+   ],
+   "choices": [
+    "4",
+    "4.0",
+    "2",
+    "16"
+   ],
+   "statement_md": "`math.sqrt(16)` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 模块与包",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B\n|4.0\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 460,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "bool 是 int 的子类",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "bool",
+    "继承"
+   ],
+   "choices": [
+    "True",
+    "False",
+    "TypeError",
+    "None"
+   ],
+   "statement_md": "`isinstance(True, int)` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · 面向对象（上）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|True\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 461,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "实例属性赋值不会改类属性",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "类属性",
+    "实例属性"
+   ],
+   "choices": [
+    "0",
+    "5",
+    "None",
+    "AttributeError"
+   ],
+   "statement_md": "```python\nclass C:\n    n = 0\nc = C()\nc.n = 5\n```\n此时 `C.n` 是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|0\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 462,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "w 模式打开就清空",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "open",
+    "文件模式"
+   ],
+   "choices": [
+    "0",
+    "3",
+    "6",
+    "报错"
+   ],
+   "statement_md": "先往文件写入 `abc`，再用 `open(p, 'w')` 打开并立刻关闭，文件大小是多少字节？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 12 讲 · 文件",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|0\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 463,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "readlines 返回列表",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "readlines",
+    "文件"
+   ],
+   "choices": [
+    "'list'",
+    "'str'",
+    "'generator'",
+    "'tuple'"
+   ],
+   "statement_md": "`f.readlines()` 返回什么类型的对象？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 12 讲 · 文件",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|'list'\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 464,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "哪些是不可变类型",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "不可变",
+    "类型"
+   ],
+   "choices": [
+    "int",
+    "list",
+    "tuple",
+    "str"
+   ],
+   "statement_md": "下列哪些类型是**不可变**类型？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ACD\n|ADC\n|CAD\n|CDA\n|DAC\n|DCA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 465,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "哪些操作会就地修改列表",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "list",
+    "就地"
+   ],
+   "choices": [
+    "append",
+    "sort",
+    "reverse",
+    "sorted"
+   ],
+   "statement_md": "下列哪些操作会**就地**修改列表本身？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 466,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "关于 break / continue / for-else 的说法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "break",
+    "for-else"
+   ],
+   "choices": [
+    "break 会结束整个循环",
+    "continue 只跳过本轮剩余语句，进入下一轮",
+    "for-else 的 else 在被 break 打断时不执行",
+    "for-else 的 else 在循环体一次都没执行时也不执行"
+   ],
+   "statement_md": "关于 `break` / `continue` / `for-else`，下列哪些说法正确？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 467,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "下列哪些是 Python 内置异常",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "异常",
+    "内置"
+   ],
+   "choices": [
+    "ZeroDivisionError",
+    "ValueError",
+    "IndexError",
+    "NullPointerError"
+   ],
+   "statement_md": "下列哪些是 Python 的**内置异常**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 13 讲 · 异常",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 468,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "哪些能当字典的键",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "dict",
+    "哈希"
+   ],
+   "choices": [
+    "3",
+    "'a'",
+    "(1, 2)",
+    "[1]"
+   ],
+   "statement_md": "下列哪些值可以直接作为字典的键？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 469,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "哪些写法会得到新对象",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "拷贝",
+    "list"
+   ],
+   "choices": [
+    "a.copy()",
+    "sorted(a)",
+    "a[:]",
+    "a.append(1)"
+   ],
+   "statement_md": "`a` 是个列表，下列哪些写法会得到一个**新列表**（而不是原地修改）？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 470,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "关于 *args 与 **kwargs 的说法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "*args",
+    "**kwargs"
+   ],
+   "choices": [
+    "*args 收集多余的位置实参，是元组",
+    "**kwargs 收集多余的关键字实参，是字典",
+    "形参顺序里 *args 必须写在 **kwargs 前面",
+    "调用时 f(*lst) 会把列表拆成若干个位置实参"
+   ],
+   "statement_md": "关于 `*args` 与 `**kwargs`，下列哪些说法正确？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABCD\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 471,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "用 with 打开文件的好处",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "with",
+    "文件"
+   ],
+   "choices": [
+    "离开代码块时自动关闭文件",
+    "块内抛异常时也会关闭",
+    "省去手写 try/finally",
+    "会把整个文件读进内存"
+   ],
+   "statement_md": "用 `with open(...) as f:` 打开文件，下列哪些说法正确？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 12 讲 · 文件",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 472,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "关于文件模式的正确说法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "文件模式",
+    "open"
+   ],
+   "choices": [
+    "'r' 只读，文件不存在直接报错",
+    "'w' 清空已有内容或新建文件",
+    "'a' 在文件末尾追加，不截断",
+    "'r+' 打开时会清空文件"
+   ],
+   "statement_md": "关于 `open()` 的文件模式，下列哪些说法正确？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 12 讲 · 文件",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 473,
+   "subject": "python",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "关于魔术方法的说法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "魔术方法",
+    "OOP"
+   ],
+   "choices": [
+    "__str__ 面向用户，print 时调用",
+    "__repr__ 面向开发者，交互环境里显示",
+    "super() 用来调用父类的方法",
+    "__init__ 必须返回 self"
+   ],
+   "statement_md": "关于 `__str__` / `__repr__` / `super()` / `__init__`，下列哪些说法正确？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 474,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "input() 的返回值总是字符串",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "input"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`input()` 读进来的内容，类型总是 `str`。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 475,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "int 能直接转换 '3.5'",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "类型转换"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`int('3.5')` 能成功把字符串转成整数 3。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 476,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "字符串是不可变的",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "字符串",
+    "不可变"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`s = 'a'` 之后执行 `s[0] = 'b'` 会抛 TypeError。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 477,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "b = a 不是复制列表",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "引用",
+    "list"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`a = [1]` 之后 `b = a`，再 `b.append(2)`，`a` 也会变成 `[1, 2]`。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 478,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "元组完全不可变",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "元组",
+    "陷阱"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "元组一旦创建，连它内部元素的内容都不会变。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 479,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "字典的键必须可哈希",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "dict",
+    "哈希"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "把列表当字典的键会抛 TypeError。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 480,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "集合支持下标访问",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "set"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`{10, 20}[0]` 能取到集合里的第一个元素。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 481,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "默认参数只求值一次",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "默认参数",
+    "陷阱"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "函数写成 `def f(acc=[])`，多次调用会共用同一个默认列表。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 482,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "Python 支持同名函数重载",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "重载",
+    "函数"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "Python 里可以定义两个同名但参数个数不同的函数，调用时按参数自动选。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 483,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "import 之后模块内的名字不自动可见",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "import"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "只写 `import math` 就能直接调用 `sqrt(4)`。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 09 讲 · 模块与包",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 484,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "__init__ 可以返回值",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "__init__",
+    "OOP"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "定义 `def __init__(self): return 1` 之后，实例化对象能拿到 1。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 10 讲 · 面向对象（上）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 485,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "with 退出时一定关闭文件",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "with",
+    "文件"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`with open(p) as f:` 代码块结束后 `f.closed` 为 True。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 12 讲 · 文件",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 486,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "finally 在 return 时也会执行",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "finally",
+    "异常"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`try` 里 `return` 了，`finally` 块照样会跑。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 13 讲 · 异常",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 487,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "except Exception 能捕获所有异常",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "Exception",
+    "异常层级"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`except Exception:` 能捕获包括 KeyboardInterrupt 在内的所有异常。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 13 讲 · 异常",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 488,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "range 返回列表",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "range"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`range(10)` 返回的是一个列表。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 489,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "字典保持插入顺序",
+   "difficulty": 1,
+   "total_score": 8,
+   "tags": [
+    "dict",
+    "顺序"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "Python 3.7 起，字典遍历顺序就是键的插入顺序。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 490,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "浮点数相等比较的坑",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "浮点数",
+    "陷阱"
+   ],
+   "choices": [],
+   "statement_md": "表达式 `0.1 + 0.2 == 0.3` 的值是什么？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|False\n|错\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 491,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "带步长的 range 有几个元素",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "range"
+   ],
+   "choices": [],
+   "statement_md": "`len(range(1, 10, 3))` 的值是多少？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|3\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 492,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "strip 去掉两端空白",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "strip"
+   ],
+   "choices": [],
+   "statement_md": "`'  hi  '.strip()` 的结果是什么？（直接写结果）",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|hi\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 493,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "join 把列表拼成字符串",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "join"
+   ],
+   "choices": [],
+   "statement_md": "`'-'.join(['a', 'b'])` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|a-b\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 494,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "整除的结果",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "整除"
+   ],
+   "choices": [],
+   "statement_md": "`10 // 4` 的值是多少？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|2\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 495,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "空列表的布尔值",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "布尔",
+    "真值"
+   ],
+   "choices": [],
+   "statement_md": "`bool([])` 的值是什么？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 流程控制语句",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|False\n|错\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 496,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "除法结果的类型名",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "类型",
+    "除法"
+   ],
+   "choices": [],
+   "statement_md": "`type(3 / 2).__name__` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|float\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 497,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "字典键的数量",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "dict",
+    "keys"
+   ],
+   "choices": [],
+   "statement_md": "`len({'a': 1, 'b': 2}.keys())` 的值是多少？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|2\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 498,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "upper 转大写",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "upper"
+   ],
+   "choices": [],
+   "statement_md": "`'abc'.upper()` 的结果是什么？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 499,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "除零抛什么异常",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "异常",
+    "除零"
+   ],
+   "choices": [],
+   "statement_md": "`1 / 0` 抛出的异常类名是什么？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 13 讲 · 异常",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ZeroDivisionError\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 500,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "reverse 排序后取第一个",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "sorted"
+   ],
+   "choices": [],
+   "statement_md": "`sorted([3, 1, 2], reverse=True)[0]` 的值是多少？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|3\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 501,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "集合去重后的元素个数",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "set",
+    "去重"
+   ],
+   "choices": [],
+   "statement_md": "`len(set('banana'))` 的值是多少？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 字典与集合",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|3\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 502,
+   "subject": "python",
+   "line": "text",
+   "question_type": "short_answer",
+   "title": "列表与元组有什么区别",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "list",
+    "tuple",
+    "简答"
+   ],
+   "choices": [],
+   "statement_md": "**简答题**：说出列表（`list`）和元组（`tuple`）的三点区别。\n\n按这个顺序答：可变性 → 语法 → 使用场景。\n\n三句话，每句一个区别即可。",
+   "input_format": "",
+   "output_format": "一句话作答（不要写解释、不要抄题目）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|列表可变，元组不可变；列表用方括号，元组用圆括号；列表适合存会变的数据，元组适合存固定记录\n|列表可变元组不可变；列表用[]元组用()；列表用于增删改元组用于固定数据\n|list可变tuple不可变；list用方括号tuple用圆括号；list存可变序列tuple存常量集合\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 503,
+   "subject": "python",
+   "line": "text",
+   "question_type": "short_answer",
+   "title": "简述 *args 与 **kwargs 的作用",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "*args",
+    "**kwargs",
+    "简答"
+   ],
+   "choices": [],
+   "statement_md": "**简答题**：`*args` 和 `**kwargs` 分别收集什么？各自是什么类型？\n\n两句话：一个元组、一个字典。",
+   "input_format": "",
+   "output_format": "一句话作答（不要写解释、不要抄题目）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|*args收集多余的位置参数，是元组；**kwargs收集多余的关键字参数，是字典\n|*args收集位置实参得到元组，**kwargs收集关键字实参得到字典\n|args收集多余位置参数为元组，kwargs收集多余关键字参数为字典\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 504,
+   "subject": "python",
+   "line": "text",
+   "question_type": "short_answer",
+   "title": "__str__ 与 __repr__ 的区别",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "魔术方法",
+    "简答"
+   ],
+   "choices": [],
+   "statement_md": "**简答题**：`__str__` 和 `__repr__` 分别给谁看？`print(obj)` 走哪个？\n\n一句话说清「给谁看」，再点出 print 走哪个。",
+   "input_format": "",
+   "output_format": "一句话作答（不要写解释、不要抄题目）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 11 讲 · 面向对象（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|__str__面向用户可读，__repr__面向开发者调试，print走__str__\n|str给用户看repr给开发者看，print调用__str__\n|__str__给人看__repr__给开发调试看，print用__str__\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 505,
+   "subject": "python",
+   "line": "text",
+   "question_type": "short_answer",
+   "title": "浅拷贝与深拷贝的区别",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "拷贝",
+    "简答"
+   ],
+   "choices": [],
+   "statement_md": "**简答题**：浅拷贝（`copy.copy` / `list.copy` / `a[:]`）与深拷贝（`copy.deepcopy`）的区别是什么？\n\n重点说「内层对象」是共享还是各一份。",
+   "input_format": "",
+   "output_format": "一句话作答（不要写解释、不要抄题目）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 列表与元组",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|浅拷贝只复制最外层，内层对象仍是同一份；深拷贝递归复制所有层，互不影响\n|浅拷贝复制外层引用共享内层，深拷贝递归复制全部，改内层不影响原对象\n|浅拷贝只复制第一层，深拷贝把所有嵌套对象都复制一份\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 506,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "双重循环的语句频度",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "时间复杂度",
+    "语句频度"
+   ],
+   "choices": [
+    "4950",
+    "5000",
+    "5050",
+    "100"
+   ],
+   "statement_md": "下面这段代码的内层循环体一共执行多少次？\n\n```c\nfor (i = 0; i < 100; i++)\n    for (j = 0; j < i; j++)\n        x++;\n```",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 01 讲 · 绪论",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|4950\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 507,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "数据结构里不可分割的最小单位",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "基本概念"
+   ],
+   "choices": [
+    "数据项",
+    "数据元素",
+    "数据对象",
+    "数据类型"
+   ],
+   "statement_md": "数据结构中，**不可分割的最小单位**是：",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 01 讲 · 绪论",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|数据项\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 508,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "顺序表插入要移动几个元素（平均值）",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "顺序表",
+    "平均移动"
+   ],
+   "choices": [
+    "5",
+    "4.5",
+    "5.5",
+    "10"
+   ],
+   "statement_md": "长度为 10 的顺序表，等概率地在第 1 ~ 11 个位置（含表尾）插入一个元素，**平均**需要移动多少个元素？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|5\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 509,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "顺序表随机访问的时间复杂度",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "顺序表",
+    "随机存取"
+   ],
+   "choices": [
+    "O(1)",
+    "O(log n)",
+    "O(n)",
+    "O(n²)"
+   ],
+   "statement_md": "顺序表（数组）按**下标**访问第 i 个元素的时间复杂度是：",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|O(1)\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 510,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "头插法建表得到逆序",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "头插法",
+    "单链表"
+   ],
+   "choices": [
+    "321",
+    "123",
+    "231",
+    "213"
+   ],
+   "statement_md": "依次读入 1、2、3，用**头插法**建立单链表，从头结点往后遍历得到的序列是：",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|321\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 511,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "哪个出栈序列不可能出现",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "栈",
+    "出栈序列"
+   ],
+   "choices": [
+    "4321",
+    "3214",
+    "2431",
+    "4123"
+   ],
+   "statement_md": "元素 1、2、3、4 依次入栈，入栈过程中允许随时出栈。下列哪个序列**不可能**是出栈序列？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|D\n|4123\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 512,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "循环队列的元素个数",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "循环队列",
+    "元素个数"
+   ],
+   "choices": [
+    "5",
+    "4",
+    "6",
+    "9"
+   ],
+   "statement_md": "循环队列容量 `MAXSIZE = 10`（0 ~ 9 号单元），`front = 3`、`rear = 8`，当前队列里有多少个元素？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|5\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 513,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "三个元素能得到的出栈序列种数",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "栈",
+    "卡特兰数"
+   ],
+   "choices": [
+    "5",
+    "6",
+    "4",
+    "3"
+   ],
+   "statement_md": "1、2、3 依次入栈、随时可出栈，一共能得到多少种**不同**的出栈序列？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|5\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 514,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "KMP 的 next 数组（教材口径）",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "KMP",
+    "next 数组"
+   ],
+   "choices": [
+    "1",
+    "2",
+    "3",
+    "4"
+   ],
+   "statement_md": "模式串 `abaabc`，按教材口径（下标从 1 起、`next[1] = 0`）求 next 数组，`next[6]` 等于多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|3\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 515,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "BF 算法最坏情况的时间复杂度",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "BF",
+    "时间复杂度"
+   ],
+   "choices": [
+    "O(n)",
+    "O(n + m)",
+    "O(n×m)",
+    "O(m²)"
+   ],
+   "statement_md": "朴素模式匹配（BF）在最坏情况下的时间复杂度是（主串长 n、模式串长 m）：",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|O(n×m)\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 516,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "下三角矩阵压缩存储的下标",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "压缩存储",
+    "下标计算"
+   ],
+   "choices": [
+    "8",
+    "9",
+    "7",
+    "10"
+   ],
+   "statement_md": "5 阶下三角矩阵按**行优先**压缩到一维数组，元素 `a[4][2]`（行列都从 **1** 起）存在一维数组的第几个位置？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|8\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 517,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "完全二叉树的叶子结点数",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "完全二叉树",
+    "叶子数"
+   ],
+   "choices": [
+    "6",
+    "5",
+    "7",
+    "4"
+   ],
+   "statement_md": "一棵有 12 个结点的**完全二叉树**，叶子结点有多少个？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|6\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 518,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "完全二叉树的高度",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "完全二叉树",
+    "高度"
+   ],
+   "choices": [
+    "7",
+    "6",
+    "8",
+    "100"
+   ],
+   "statement_md": "一棵有 100 个结点的完全二叉树，高度（层数）是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|7\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 519,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "二叉树的空指针域个数",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "二叉链表",
+    "空指针域"
+   ],
+   "choices": [
+    "21",
+    "20",
+    "19",
+    "22"
+   ],
+   "statement_md": "一棵有 20 个结点的二叉树，用二叉链表存储（每个结点两个指针域），共有多少个**空指针域**？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|21\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 520,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "由先序和中序求后序",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "遍历",
+    "还原二叉树"
+   ],
+   "choices": [
+    "DEBFCA",
+    "DBEFCA",
+    "DEBCFA",
+    "EDBFCA"
+   ],
+   "statement_md": "某二叉树的先序遍历是 `ABDECF`，中序遍历是 `DBEAFC`。它的后序遍历是什么？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|DEBFCA\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 521,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "五个叶子的哈夫曼树 WPL",
+   "difficulty": 3,
+   "total_score": 10,
+   "tags": [
+    "哈夫曼树",
+    "WPL"
+   ],
+   "choices": [
+    "57",
+    "52",
+    "60",
+    "44"
+   ],
+   "statement_md": "权值为 2、3、5、7、9 的 5 个叶子结点构造哈夫曼树，它的带权路径长度 WPL 是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|57\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 522,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "六阶无向完全图的边数",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "完全图",
+    "边数"
+   ],
+   "choices": [
+    "15",
+    "30",
+    "12",
+    "36"
+   ],
+   "statement_md": "6 个顶点的**无向完全图**有多少条边？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 图",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|15\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 523,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "有向完全图的弧数",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "完全图",
+    "弧数"
+   ],
+   "choices": [
+    "20",
+    "10",
+    "25",
+    "12"
+   ],
+   "statement_md": "5 个顶点的**有向完全图**有多少条弧？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 图",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|20\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 524,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "无向图各顶点度数之和",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "握手定理",
+    "度"
+   ],
+   "choices": [
+    "14",
+    "7",
+    "12",
+    "35"
+   ],
+   "statement_md": "一个无向图有 5 个顶点、7 条边，所有顶点的度数之和是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 图",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|14\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 525,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "折半查找最多比较次数",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "折半查找",
+    "判定树"
+   ],
+   "choices": [
+    "7",
+    "6",
+    "8",
+    "100"
+   ],
+   "statement_md": "对 100 个元素的有序表做**折半查找**，最多需要比较多少次？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 查找",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|7\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 526,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "装填因子的上限换算",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "散列表",
+    "装填因子"
+   ],
+   "choices": [
+    "9",
+    "10",
+    "13",
+    "8"
+   ],
+   "statement_md": "散列表长 13，要求装填因子不超过 0.75，最多能存多少个元素？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 查找",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n|9\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 527,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "快速排序为什么会退化到 O(n²)",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "快速排序",
+    "时间复杂度"
+   ],
+   "choices": [
+    "O(n log n)",
+    "O(n)",
+    "O(n²)",
+    "O(n²log n)"
+   ],
+   "statement_md": "快速排序在最坏情况下的时间复杂度是：",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|O(n²)\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 528,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "归并排序的辅助空间",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "归并排序",
+    "空间复杂度"
+   ],
+   "choices": [
+    "O(1)",
+    "O(log n)",
+    "O(n)",
+    "O(n log n)"
+   ],
+   "statement_md": "二路归并排序需要的**辅助空间**是：",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|C\n|O(n)\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 529,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "哪些排序算法的最坏时间复杂度是 O(n log n)",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "时间复杂度",
+    "排序"
+   ],
+   "choices": [
+    "归并排序",
+    "堆排序",
+    "快速排序",
+    "冒泡排序"
+   ],
+   "statement_md": "下列排序算法中，**最坏情况**时间复杂度为 O(n log n) 的有：\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|AB\n|BA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 530,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "哪些排序需要 O(n) 的辅助空间",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "空间复杂度",
+    "排序"
+   ],
+   "choices": [
+    "归并排序",
+    "基数排序",
+    "快速排序",
+    "堆排序"
+   ],
+   "statement_md": "下列排序算法中，**需要额外 O(n) 辅助空间**的有：\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|AB\n|BA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 531,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "图的常用存储结构",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "图的存储"
+   ],
+   "choices": [
+    "邻接矩阵",
+    "邻接表",
+    "十字链表",
+    "邻接多重表"
+   ],
+   "statement_md": "下列哪些属于图的存储结构？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 图",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABCD\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 532,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "栈的典型应用",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "栈",
+    "应用"
+   ],
+   "choices": [
+    "括号匹配检查",
+    "表达式求值",
+    "函数调用与递归",
+    "按层遍历二叉树"
+   ],
+   "statement_md": "下列哪些问题天然适合用**栈**解决？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 533,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "散列冲突的解决方法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "散列",
+    "冲突处理"
+   ],
+   "choices": [
+    "开放定址法",
+    "链地址法",
+    "再散列法",
+    "建立公共溢出区"
+   ],
+   "statement_md": "下列哪些可用于处理散列冲突？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 查找",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABCD\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 534,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "链式存储相对顺序存储的优点",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "链表",
+    "优缺点"
+   ],
+   "choices": [
+    "插入删除不需要移动元素",
+    "不需要一整块连续空间",
+    "容量可以动态伸缩",
+    "按下标随机访问更快"
+   ],
+   "statement_md": "相比顺序存储，**链式存储**的优点有：\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 535,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "最小生成树的算法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "最小生成树",
+    "Prim",
+    "Kruskal"
+   ],
+   "choices": [
+    "Prim 算法",
+    "Kruskal 算法",
+    "Dijkstra 算法",
+    "Floyd 算法"
+   ],
+   "statement_md": "下列算法中，用于求**最小生成树**的有：\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 图",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|AB\n|BA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 536,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "关于二叉排序树的正确说法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "二叉排序树"
+   ],
+   "choices": [
+    "中序遍历得到递增序列",
+    "平均查找长度是 O(log n)",
+    "插入新结点不需要移动已有元素",
+    "最坏情况下查找退化为 O(n)"
+   ],
+   "statement_md": "关于二叉排序树（BST），下列哪些说法正确？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 查找",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABCD\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 537,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "哪些操作会用到队列",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "队列",
+    "应用"
+   ],
+   "choices": [
+    "按层遍历二叉树",
+    "图的广度优先搜索",
+    "操作系统的作业调度",
+    "表达式括号匹配"
+   ],
+   "statement_md": "下列哪些场景适合用**队列**？\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ABC\n|ACB\n|BAC\n|BCA\n|CAB\n|CBA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 538,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "multiple_choice",
+   "title": "排序趟数与初始序列有关的算法",
+   "difficulty": 4,
+   "total_score": 14,
+   "tags": [
+    "排序",
+    "趟数"
+   ],
+   "choices": [
+    "冒泡排序",
+    "快速排序",
+    "直接插入排序",
+    "二路归并排序"
+   ],
+   "statement_md": "下列排序算法中，**执行趟数会随初始序列不同而变化**的有：\n\n**多选题**：正确选项不止一个，点选切换，再次点击可取消。",
+   "input_format": "",
+   "output_format": "若干个选项字母，按字母升序连写（如 `AC`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|AB\n|BA\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 539,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "二叉排序树的中序遍历是有序的",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "二叉排序树",
+    "中序遍历"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "二叉排序树的中序遍历结果一定是**递增有序**的。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 查找",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 540,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "大根堆满足父结点不小于孩子",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "堆",
+    "性质"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "用数组存储的大根堆，下标 i 的结点值不小于下标 2i+1、2i+2 的结点值。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 541,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "希尔排序是稳定的",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "希尔排序",
+    "稳定性"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "希尔排序是**稳定**的排序算法。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 542,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "快速排序是稳定的",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "快速排序",
+    "稳定性"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "快速排序是**稳定**的排序算法。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 543,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "顺序表可以随机存取",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "顺序表",
+    "随机存取"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "顺序表支持**随机存取**（按序号直接定位元素）。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 544,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "单链表可以随机存取",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "链表",
+    "存取方式"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "单链表支持**随机存取**，可以直接跳到第 i 个结点。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 545,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "栈是先进先出",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "栈",
+    "队列"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "栈的特点是**先进先出**（FIFO）。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 546,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "循环队列牺牲一个单元判满",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "循环队列",
+    "判满"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "循环队列常用「牺牲一个存储单元」的办法来区分队空与队满。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 547,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "KMP 的 next 只与模式串有关",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "KMP"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "KMP 的 next 数组只取决于**模式串**本身，与主串无关。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 548,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "完全二叉树的叶子只出现在最后两层",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "完全二叉树"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "完全二叉树中，叶子结点只可能出现在**最下面两层**。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 549,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "最小生成树是唯一的",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "最小生成树",
+    "唯一性"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "一个连通图的最小生成树一定是**唯一**的。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 图",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 550,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "折半查找要求有序且顺序存储",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "折半查找",
+    "适用条件"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "折半查找要求线性表**有序**，并且必须**顺序存储**。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 查找",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 551,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "归并排序的辅助空间是 O(1)",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "归并排序",
+    "空间复杂度"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "二路归并排序只需要 O(1) 的辅助空间。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|错\n|错误\n|×\n|F\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 552,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "完全二叉树的度为 1 的结点数",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "完全二叉树",
+    "度"
+   ],
+   "choices": [],
+   "statement_md": "一棵有 1000 个结点的完全二叉树，**度为 1** 的结点有多少个？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|1\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 553,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "五阶下三角矩阵的非零元素数",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "压缩存储"
+   ],
+   "choices": [],
+   "statement_md": "5 阶下三角矩阵（含主对角线）一共有多少个元素需要压缩存储？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|15\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 554,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "哈夫曼树的结点总数",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "哈夫曼树",
+    "结点数"
+   ],
+   "choices": [],
+   "statement_md": "一棵哈夫曼树有 5 个叶子结点，整棵树一共有多少个结点？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|9\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 555,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "二叉树的结点总数",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "二叉树",
+    "结点数"
+   ],
+   "choices": [],
+   "statement_md": "一棵二叉树有 10 个度为 2 的结点、5 个度为 1 的结点，它一共有多少个结点？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|26\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 556,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "10 个元素折半查找的最大比较次数",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "折半查找"
+   ],
+   "choices": [],
+   "statement_md": "对 10 个元素的有序表做折半查找，最多比较多少次？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 07 讲 · 查找",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|4\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 557,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "直接插入排序的最多比较次数",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "直接插入排序",
+    "比较次数"
+   ],
+   "choices": [],
+   "statement_md": "对 5 个元素做直接插入排序，最坏情况下共需要比较多少次？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|10\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 558,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "冒泡排序的最少趟数",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "冒泡排序",
+    "趟数"
+   ],
+   "choices": [],
+   "statement_md": "对 100 个元素做冒泡排序（带「本趟无交换则提前结束」优化），如果初始序列**已经有序**，需要几趟？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|1\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 559,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "n 个元素出栈序列的种数",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "栈",
+    "卡特兰数"
+   ],
+   "choices": [],
+   "statement_md": "1、2、3、4 依次入栈、随时可出栈，一共能得到多少种不同的出栈序列？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|14\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 560,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "模式串 next 数组的末位",
+   "difficulty": 4,
+   "total_score": 12,
+   "tags": [
+    "KMP",
+    "next 数组"
+   ],
+   "choices": [],
+   "statement_md": "模式串 `abcac`，按教材口径（1 起、`next[1]=0`）求 next 数组，`next[5]` 等于多少？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|2\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 561,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "对称矩阵压缩后的元素个数",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "对称矩阵",
+    "压缩存储"
+   ],
+   "choices": [],
+   "statement_md": "4 阶对称矩阵只存下三角（含主对角线），需要多少个存储单元？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 串、数组和广义表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|10\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 562,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "无向图的边数与度数关系",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "握手定理"
+   ],
+   "choices": [],
+   "statement_md": "一个无向图所有顶点的度数之和是 24，它有多少条边？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 06 讲 · 图",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|24\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 563,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "short_answer",
+   "title": "栈和队列的区别",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "栈",
+    "队列",
+    "简答"
+   ],
+   "choices": [],
+   "statement_md": "**简答题**：栈和队列在「操作位置」和「进出顺序」上有什么区别？\n\n按「插入删除在哪一端 → 是什么顺序」作答。",
+   "input_format": "",
+   "output_format": "一句话作答（不要写解释、不要抄题目）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 03 讲 · 栈和队列",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|栈只在栈顶插入和删除，后进先出；队列在队尾插入、队头删除，先进先出\n|栈在栈顶操作是后进先出，队列队尾进队头出是先进先出\n|栈只能在栈顶插入删除，遵循后进先出；队列一端进另一端出，遵循先进先出\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 564,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "short_answer",
+   "title": "顺序存储与链式存储的优缺点",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "顺序存储",
+    "链式存储",
+    "简答"
+   ],
+   "choices": [],
+   "statement_md": "**简答题**：顺序存储和链式存储各有什么优点？（各说一条即可）",
+   "input_format": "",
+   "output_format": "一句话作答（不要写解释、不要抄题目）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 线性表",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|顺序存储可以随机存取、存储密度高；链式存储插入删除不需要移动元素、容量可动态伸缩\n|顺序存储支持随机访问且不浪费指针空间，链式存储插删方便且不用连续空间\n|顺序存取快密度高，链式插删快可动态分配\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 565,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "short_answer",
+   "title": "快速排序为什么最坏是 O(n²)",
+   "difficulty": 4,
+   "total_score": 12,
+   "tags": [
+    "快速排序",
+    "简答"
+   ],
+   "choices": [],
+   "statement_md": "**简答题**：快速排序在什么情况下退化成 O(n²)？怎么缓解？",
+   "input_format": "",
+   "output_format": "一句话作答（不要写解释、不要抄题目）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 排序",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|每次划分都极不均衡（基准是最大或最小值）时退化成O(n²)，用随机选基准或三数取中缓解\n|序列已基本有序且固定取首元素为基准时最坏O(n²)，可随机化基准或取中位数\n|划分极不均衡时递归深度退化为n，比较次数约n²/2，用随机基准缓解\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 566,
+   "subject": "ds",
+   "line": "text",
+   "question_type": "short_answer",
+   "title": "哈夫曼树的构造过程",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "哈夫曼树",
+    "简答"
+   ],
+   "choices": [],
+   "statement_md": "**简答题**：简述哈夫曼树的构造步骤（用「每次选两个最小的」这句话开头）。",
+   "input_format": "",
+   "output_format": "一句话作答（不要写解释、不要抄题目）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 05 讲 · 树和二叉树",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|每次从森林中选两个权值最小的树合并成一棵新树，新树权值为两者之和，重复直到只剩一棵\n|每次选两个最小权值合并，新结点权值为二者之和放回森林，直到只剩一棵树\n|反复取两个最小权值的树合并，新根权值为两者和，重复直到森林只剩一棵\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 567,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "装好 Fedora 44 之后先自报版本",
+   "difficulty": 1,
+   "total_score": 25,
+   "tags": [
+    "实验 1",
+    "Fedora",
+    "os-release",
+    "装机"
+   ],
+   "choices": [],
+   "statement_md": "**作业 1（装机）**\n\n1. 装一个虚拟化软件（VirtualBox 或其它都行）。\n2. 在它上面安装 **Fedora Workstation 44**。\n3. 安装过程中把用户名设成**本人姓名拼音全拼**（张三 → `zhangsan`），密码设简单点。\n4. 装完打开终端，对终端界面截图（过程每一步都要截）。\n\n截图那部分平台没法替你验，但**机器本身会自报家门** —— 版本对不对，一条命令就问出来了。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ngrep ^VERSION_ID= /etc/os-release\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 1 · 环境搭建",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|VERSION_ID=44\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 568,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "从 /usr/local/bin 用相对路径退回 /usr",
+   "difficulty": 1,
+   "total_score": 25,
+   "tags": [
+    "实验 2",
+    "cd",
+    "相对路径",
+    "pwd"
+   ],
+   "choices": [],
+   "statement_md": "**作业 2 第 1 步**\n\n1. 打开终端，`cd` 到 `/usr/local/bin`，看看这个目录下有哪些文件。\n2. **使用相对路径**退到 `/usr` 目录，再查看 `/usr` 下有哪些文件。\n\n题目要考的是「`..` 到底往上走几层」—— 所以先真的进到 `/usr/local/bin`，别直接 `cd /usr`。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ncd /usr/local/bin && cd ../.. && pwd\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|/usr\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 569,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "从 applications 一路回到 share",
+   "difficulty": 2,
+   "total_score": 25,
+   "tags": [
+    "实验 2",
+    "cd",
+    "相对路径",
+    "层级"
+   ],
+   "choices": [],
+   "statement_md": "**作业 2 第 4 步**\n\n1. 切到 `/usr/local/share/applications`，看看里面有哪些文件。\n2. **用相对路径**切到 `local` 目录，看里面的文件。\n3. **继续用相对路径**切到 `share` 目录，看里面的文件。\n\n全程不许写绝对路径 —— 想清楚 `applications` 的爷爷是谁。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ncd /usr/local/share/applications && cd ../.. && cd share && pwd\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|/usr/local/share\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 570,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "一条命令建出 a1 到 a4 四级子目录",
+   "difficulty": 2,
+   "total_score": 25,
+   "tags": [
+    "实验 3",
+    "mkdir -p",
+    "find",
+    "多级目录"
+   ],
+   "choices": [],
+   "statement_md": "**作业 3 第 2 步**\n\n1. 切到 `/tmp`，在里面建一个名为 `aa` 的目录。\n2. 还在 `/tmp` 下，建出多级子目录 `a1/a2/a3/a4`。\n3. 查看目录是否已经创建。\n\n注意：`a1/a2/a3/a4` 是**多级**，不是同级四个。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nfind /tmp/a1 -type d | sort\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|/tmp/a1 /tmp/a1/a2 /tmp/a1/a2/a3 /tmp/a1/a2/a3/a4\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 571,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "把 a1 整棵树复制进 /usr",
+   "difficulty": 2,
+   "total_score": 25,
+   "tags": [
+    "实验 3",
+    "cp -r",
+    "递归复制",
+    "sudo"
+   ],
+   "choices": [],
+   "statement_md": "**作业 3 第 3 步**\n\n1. 用 `cp` 把 `/tmp/a1` 目录**及其子目录**复制到 `/usr` 下。\n2. 切到 `/usr`，确认复制成功（四层目录都得在）。\n\n这一步要用 `sudo` —— 普通用户往 `/usr` 写会被拒绝。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nfind /usr/a1 -type d | sort\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|/usr/a1 /usr/a1/a2 /usr/a1/a2/a3 /usr/a1/a2/a3/a4\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 572,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "vi 改 hello、echo 写 mysdutfile，一起验",
+   "difficulty": 2,
+   "total_score": 25,
+   "tags": [
+    "实验 3",
+    "vi",
+    "echo 重定向",
+    "touch"
+   ],
+   "choices": [],
+   "statement_md": "**作业 3 第 7 ~ 8 步**\n\n1. 用 `touch` 在用户主目录下建一个空文件 `hello`。\n2. 用 `vi` 打开 `hello`，把内容改成 `this is a file of sdut`，存盘退出。\n3. 用 `echo` 把 `this is my new file` **重定向**到主目录下的 `mysdutfile`。\n4. 用 `less` 或 `more` 看一遍 `mysdutfile`。\n\n两个文件都要真的留下内容 —— 一个走编辑器，一个走重定向，是两条不同的路。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ncat ~/hello; echo; cat ~/mysdutfile\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|this is a file of sdut this is my new file\n|this is a file of sdut this is my new file\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 573,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "把 /usr/test5 打包备份再解压回 /usr/local",
+   "difficulty": 3,
+   "total_score": 25,
+   "tags": [
+    "实验 4",
+    "tar",
+    "gzip",
+    "打包解压"
+   ],
+   "choices": [],
+   "statement_md": "**作业 4 第 1 步**\n\n1. 在 `/usr` 下新建目录 `test5`。\n2. 用 `tar` 把它**压缩备份**到普通用户主目录，命名 `test5.tar.gz`。\n3. 查看是否压缩成功（看文件在不在、有多大）。\n4. 把压缩包**解压**到 `/usr/local`，并确认解压结果。\n\n`test5` 是空目录，所以包里的清单很短。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ntar -tzf ~/test5.tar.gz | head -1; ls -d /usr/local/test5\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|test5/ /usr/local/test5\n|usr/test5/ /usr/local/test5\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 574,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "给 /usr/local/sdutshare 挂一个根目录软链",
+   "difficulty": 3,
+   "total_score": 25,
+   "tags": [
+    "实验 4",
+    "ln -s",
+    "符号链接",
+    "readlink"
+   ],
+   "choices": [],
+   "statement_md": "**作业 4 第 3 步**\n\n1. 在 `/usr/local` 下创建目录 `sdutshare`。\n2. 在**根目录**下建立一个名为 `myshare` 的**符号链接**，指向它。\n3. 在根目录下确认软链已经建立。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nreadlink /myshare\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|/usr/local/sdutshare\n|usr/local/sdutshare\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 575,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "字典逆序排序，再输出一串不换行的字",
+   "difficulty": 3,
+   "total_score": 25,
+   "tags": [
+    "实验 4",
+    "sort -r",
+    "echo -n",
+    "wc"
+   ],
+   "choices": [],
+   "statement_md": "**作业 4 第 4 ~ 5 步**\n\n1. 在主目录下用 `vim` 建文件 `mysort1`，内容四行：`is` / `this` / `excellent` / `my`。\n2. 用 `sort` 把这个文件按**字典逆序**显示出来。\n3. 用 `echo` 输出 `hello everyone!`，要求**输出后不换行**。\n\n第 3 步的关键是「怎么证明它真的没换行」—— 数一下字节数最直接。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nsort -r ~/mysort1; echo -n \"hello everyone!\" | wc -c\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|this my is excellent 15\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 576,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "把两个文件的内容拼成第三个文件",
+   "difficulty": 3,
+   "total_score": 25,
+   "tags": [
+    "实验 4",
+    "cat",
+    "重定向",
+    "mv"
+   ],
+   "choices": [],
+   "statement_md": "**作业 4 第 8 步**\n\n1. 在主目录下建 `file11`（内容 `sdut11`）和 `file12`（内容 `sdut12`）。\n2. 在主目录下建一个新目录 `dir1`。\n3. 在 `dir1` 下建 `file13`，内容用 `cat` 把上面两个文件**拼**进来。\n4. 把 `file11`、`file12` **移动**到 `dir1` 里，确认移动成功。\n5. 查看 `file13` 的内容。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ncat ~/dir1/file13; echo; ls ~/dir1\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sdut11 sdut12 file11 file12 file13\n|sdut11 sdut12 /home/\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 577,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "把 11.txt 改成 -rwxr-x--x",
+   "difficulty": 3,
+   "total_score": 25,
+   "tags": [
+    "实验 5",
+    "chmod",
+    "权限",
+    "八进制"
+   ],
+   "choices": [],
+   "statement_md": "**作业 5 第 1 ~ 4 步**\n\n1. 新建用户 `user01` 和 `user02`，切到 `user01`。\n2. 在 `user01` 主目录下建文件 `11.txt` 和目录 `abc`。\n3. 查看两者的权限。\n4. 把 `11.txt` 的权限改成 **`-rwxr-x--x`**（用八进制最快），再看一次。\n\n改完别急着交 —— 题目问的就是改完那一瞬间的权限串。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%A' ~/11.txt\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|-rwxr-x--x\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 578,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "把 abc 整棵树交出去给 user02",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "实验 5",
+    "chown -R",
+    "属主",
+    "stat"
+   ],
+   "choices": [],
+   "statement_md": "**作业 5 第 5 步**\n\n1. 在 `abc` 目录里建一个文件 `22.txt`。\n2. 把 `abc` **目录及其中的文件**的所属用户和用户组都改成 `user02`。\n3. 查看改完的结果 —— 目录和里面的文件都要变。\n\n只改目录不改里面的文件，是这一步最典型的漏做。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%U:%G' ~/abc ~/abc/22.txt\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|user02:user02 user02:user02\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 579,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "八进制 744 之后长什么样",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "实验 5",
+    "chmod 744",
+    "八进制",
+    "权限位"
+   ],
+   "choices": [],
+   "statement_md": "**作业 5 第 6 ~ 9 步**\n\n1. 切到 `user02`，在主目录下建目录 `sdutjsj`，进去建空文件 `sdutfile1`。\n2. 用长格式看它的权限、属主、属组。\n3. 先让它「其他用户可写」，再「取消同组用户的读权限」，各看一次结果。\n4. 最后用**八进制**设成：属主 `rwx`，属组和其他都只有 `r`。再看一次。\n\n第 4 步是本题的终点，前面几步的结果不用交。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%a %A' ~/sdutjsj/sdutfile1\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|744 -rwxr--r--\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 580,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "400 再给其他用户加写，最后是几",
+   "difficulty": 5,
+   "total_score": 25,
+   "tags": [
+    "实验 5",
+    "chmod 400",
+    "o+w",
+    "权限位"
+   ],
+   "choices": [],
+   "statement_md": "**作业 5 第 10 ~ 11 步**\n\n接着上一题的文件（`~/sdutjsj/sdutfile1`）：\n\n1. 用八进制把权限设成「**只有属主可读**，属组和其他什么权限都没有」。\n2. 再用字符法给**其他用户**加上可写权限。\n3. 查看最后的结果。\n\n这题考的是「八进制 → 符号位 → 再回八进制」的来回换算，中途算错一步就到不了。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%a %A' ~/sdutjsj/sdutfile1\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|402 -r------w-\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
+  },
+  {
+   "id": 581,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "把 temp1 交给 root",
+   "difficulty": 4,
+   "total_score": 25,
+   "tags": [
+    "实验 5",
+    "useradd",
+    "groupadd",
+    "chown",
+    "tail"
+   ],
+   "choices": [],
+   "statement_md": "**作业 5 第 12 ~ 15 步**\n\n1. 切回自己（姓名拼音那个用户），新建用户 `zhangsan`，密码设 `123`。\n2. 用 `tail` 看 `/etc/passwd` 的最后 10 行，确认新用户进去了。\n3. 建组 `sdutstuff`，看 `/etc/group` 最后 5 行；再把它删掉，再看一次。\n4. 在 `zhangsan` 的主目录下建 `temp1`，查看它的属主和属组，然后改成 `root`，再看一次。\n\n最后一小步才是本题要交的东西。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%U:%G' /home/zhangsan/temp1\n```\n",
+   "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+   "output_format": "验收命令的输出（可以多行，原样贴）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|root:root\n",
+     "points": 25
+    }
+   ],
+   "case_points": [
+    25
+   ],
+   "points_sum": 25
   }
  ]
 }

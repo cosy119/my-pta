@@ -932,6 +932,9 @@ const LS = {
   wbSubject:'pta.wbSubject',
   problemSidebar: 'pta.problemSidebarCollapsed',
   problemSplit: 'pta.problemSplitRatio',
+  /* Linux 线的题面里会出现「你的家目录」这种因人而异的东西。题库里统一写成
+     占位符 `{user}`（例：`/home/{user}/docs`），渲染时才换成这个人自己的登录名。 */
+  linuxUser: 'pta.linuxUser',
 };
 
 const VERDICT_TXT = {
@@ -1187,8 +1190,43 @@ const CAL_TITLE = { warning:'注意', note:'说明', tip:'提示', success:'答�
 const CAL_CLASS = { warning:'cal-warning', danger:'cal-danger', tip:'cal-tip', info:'cal-info',
                     success:'cal-success', note:'cal-note', question:'cal-info' };
 
+/* ── Linux 登录名 ─────────────────────────────────────────────────────
+   Linux 线的题面与解析里会出现「你的家目录」（`/home/<谁>/docs`）这种因人而异
+   的东西。题库里一律写成占位符 `{user}`，渲染的时候才替换 —— 所以每个人
+   看到的都是自己的名字，而不是写死作者一个人的。
+
+   ★ 判题完全不受影响，也不需要在提交里带名字：
+     题库的答案只认 `~/docs` 这种写法，而 `app/judge/compare.py` 的
+     `_norm_home()` 会把 `/home/<任意登录名>/…` 折成 `~/…` 再比。
+     换句话说：题面显示谁的名字，就照着写谁的绝对路径，一样判得过。
+   ──────────────────────────────────────────────────────────────────── */
+function linuxUser(){
+  try { return String(localStorage.getItem(LS.linuxUser) || '').trim(); } catch(e){ return ''; }
+}
+function saveLinuxUser(v){
+  /* 顺手容忍两种手滑：粘贴了 `~/zhangsan`、把整条 `whoami` 结果粘进来 */
+  const name = String(v === undefined || v === null ? '' : v).trim()
+    .replace(/^~\//, '').replace(/^\/home\//, '').replace(/\/$/, '');
+  if (!name){ toast('先写个名字再点「记住」', 'err'); return; }
+  if (/[\s/]/.test(name)){ toast('登录名里不会有空格或斜杠，检查一下', 'err'); return; }
+  try { localStorage.setItem(LS.linuxUser, name); } catch(e){}
+  toast('已记住你的 Linux 用户名：' + name, 'ok');
+  renderProblem();
+}
+function clearLinuxUser(){
+  try { localStorage.removeItem(LS.linuxUser); } catch(e){}
+  renderProblem();
+}
+function subUser(s){
+  if (s === undefined || s === null) return s;
+  const t = String(s);
+  if (t.indexOf('{user}') < 0) return t;
+  return t.split('{user}').join(linuxUser() || '你的登录名');
+}
+
 function mdRender(md){
   if (!md) return '';
+  md = subUser(md);
   const lines = String(md).replace(/\r\n?/g,'\n').split('\n');
   const out = [];
   let para = [], i = 0, list = '';
@@ -1966,6 +2004,21 @@ function renderProblem(){
     + '<div class="problemSteps"><button type="button" ' + (previous ? 'onclick="location.hash=\'#/p/' + previous.id + '\'"' : 'disabled') + '>← 上一题</button>'
     + '<button type="button" ' + (next ? 'onclick="location.hash=\'#/p/' + next.id + '\'"' : 'disabled') + '>下一题 →</button></div></div>';
 
+  /* Linux 线：没填过登录名就先问一次 —— 题面里的 `/home/xxx` 要用它 */
+  let userCard = '';
+  if (subject === 'linux' && !linuxUser()){
+    userCard = '<div class="pcard" id="linuxUserCard" style="border-color:var(--warn)">'
+      + '<h4 style="margin:0 0 8px">先填一下：你的 Linux 用户名</h4>'
+      + '<div class="hintline">就是你在 Fedora 里 `whoami` 打出来的那个登录名'
+      + '（装机时设的姓名拼音，例：<code>zhangsan</code>）。<br>'
+      + 'Linux 线的题面与解析里凡是出现家目录的地方，都会换成你自己这个名字。</div>'
+      + '<div style="display:flex;gap:8px;margin-top:10px;align-items:center">'
+      + '<input class="inp" id="linuxUserInp" placeholder="例如 zhangsan"'
+      + ' style="max-width:220px" autocomplete="off" spellcheck="false">'
+      + '<button class="btn" id="linuxUserBtn" type="button">记住这个名字</button>'
+      + '</div></div>';
+  }
+
   /* ------- 左边：题面 ------- */
   let left = '<div class="pcard pstmt">'
     + '<h1 class="ptitle">' + esc(p.title) + '</h1>'
@@ -1973,6 +2026,10 @@ function renderProblem(){
     +   '<span class="pill p-pri" data-pid="' + p.id + '">' + esc(SUBJ_SEQ[p.id] || ('#' + p.id)) + '</span>'
     +   '<span class="tyTag ' + typeClass(p) + '">' + esc(problemType(p)) + '</span>'
     +   '<span class="pill">' + esc(p.source_section || '') + '</span>'
+    +   (subject === 'linux' && linuxUser()
+          ? '<span class="pill" id="linuxUserChip" title="点一下改名字">登录名 '
+            + esc(linuxUser()) + '</span>'
+          : '')
     +   noteChipFor(p)
     +   '<span class="pill">难度 ' + stars(p.difficulty) + '</span>'
     +   '<span class="pill">满分 ' + (p.total_score||0) + ' 分</span>'
@@ -1985,6 +2042,12 @@ function renderProblem(){
     +     ' title="' + (isStarred(p) ? '取消收藏' : '收藏这道题') + '">'
     +     (isStarred(p) ? '★ 已收藏' : '☆ 收藏') + '</button>'
     + '</div>'
+    + (subject === 'linux' && linuxUser()
+        ? '<div class="hintline" style="margin:12px 0 0">'
+          + '<span class="pill">Fedora 44</span> 本机登录名 <b>' + esc(linuxUser()) + '</b>'
+          + ' · 家目录 <code>~/</code> 就是 <code>/home/' + esc(linuxUser()) + '</code>'
+          + '</div>'
+        : '')
     + '<div class="mdsec"><h4>题目描述</h4><div class="md">' + mdRender(p.statement_md) + '</div></div>';
 
   if (p.input_format)  left += '<div class="mdsec"><h4>输入格式</h4><div class="md">' + mdRender(p.input_format) + '</div></div>';
@@ -2064,17 +2127,38 @@ function renderProblem(){
     + '</div></div>';
 
   app.innerHTML = html + '<div class="pgrid' + (sidebarIsCollapsed() ? ' sidebarCollapsed' : '') + '" id="problemGrid">'
-    + problemSidebarHtml(subject, p.id) + left
+    + problemSidebarHtml(subject, p.id) + userCard + left
     + '<div class="pdivider" id="problemDivider" role="separator" aria-label="调整题面和作答区宽度" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" tabindex="0"></div>'
     + right + '</div>';
   const toggle = app.querySelector('.psideToggle');
   if (toggle) toggle.textContent = sidebarIsCollapsed() ? '⇥' : '⇤';
   initProblemLayout();
+  bindLinuxUserCard();
   renderButtons();
   renderHistory();
   const box = document.getElementById('codeBox');
   if (box) box.addEventListener('input', onCodeInput);
   if (!isTheory) initSmartEditor(p.id);
+}
+
+/* 登录名卡片的事件绑定（卡片是按需拼出来的，所以放在渲染之后统一挂） */
+function bindLinuxUserCard(){
+  const inp = document.getElementById('linuxUserInp');
+  if (inp){
+    inp.addEventListener('keydown', function(e){
+      if (e.key === 'Enter') saveLinuxUser(inp.value);
+    });
+    try { inp.focus(); } catch(e){}
+  }
+  const btn = document.getElementById('linuxUserBtn');
+  if (btn) btn.addEventListener('click', function(){
+    const i = document.getElementById('linuxUserInp');
+    saveLinuxUser(i ? i.value : '');
+  });
+  const chip = document.getElementById('linuxUserChip');
+  if (chip) chip.addEventListener('click', function(){
+    if (confirm('要换成别的 Linux 用户名吗？题面里的家目录会跟着变。')) clearLinuxUser();
+  });
 }
 
 function draftOf(k){
@@ -2175,6 +2259,13 @@ function copySample(i){
    返回 null 表示不合格 —— 提示已经弹过了，调用方直接 return。 */
 function readTheoryAnswer(){
   const p = CUR;
+  /* Linux 线先要一个登录名：题面里的家目录靠它显示，没填就别急着交 */
+  if ((p.subject || '') === 'linux' && !linuxUser()){
+    toast('先在上面填一下你的 Linux 用户名', 'err');
+    const inp = document.getElementById('linuxUserInp');
+    if (inp) inp.focus();
+    return null;
+  }
   if (p.is_choice){
     const selected = Array.from(document.querySelectorAll('.choice.on'));
     if (!selected.length){ toast('先选一个选项', 'err'); return null; }

@@ -29,6 +29,7 @@ SCORE_CHOICE = 10      # 单选
 SCORE_MULTI = 14       # 多选（要对若干个，比单选难，分值给高一点）
 SCORE_JUDGE = 8        # 判断
 SCORE_FILL = 12        # 填空
+SCORE_PRACTICAL = 25   # 实操（要真把一套操作做完，才拿得到那段输出）
 
 
 def _oneof(alts: list[str]) -> tuple[str, str]:
@@ -178,3 +179,50 @@ def multi(title: str, statement_md: str, options: list[str], answers: list[str],
         question_type="multiple_choice",
         output_format="若干个选项字母，按字母升序连写（如 `AC`）",
         tip=answer_note or "**多选题**：正确选项不止一个，点选切换，再次点击可取消。")
+
+
+def practical(title: str, statement_md: str, outputs: list[str], *,
+              verify_cmd: str, subject: str, section: str,
+              explanation: str, tags: list[str],
+              difficulty: int = 4, total_score: int = SCORE_PRACTICAL,
+              hint: str = "") -> dict:
+    """实操题：多步任务 + **一条验收命令**，提交命令的真实输出。
+
+    为什么做成「提交输出」而不是「提交命令」
+    ----------------------------------------
+    课程实验（装系统、建用户、改权限、打包解压……）在平台里没法替你执行，
+    但**做完之后那台机器的状态是可以自证的**：`stat -c '%a'` 出来的 751、
+    `readlink /myshare` 出来的 `/usr/local/sdutshare`、`sort -r` 出来的顺序，
+    都不是靠猜能编出来的（或者至少得真算一遍）。
+
+    所以这里的口径是：
+    - 题干给完整任务清单（照实验指导书，步骤编号保留）
+    - 附一条**验收命令** —— 输出短、且与机器无关（不含时间戳 / 主机名 / 内核版本）
+    - 学生把那条命令的**输出**贴回来，不是命令本身
+
+    ★ 期望值仍然走 `oneof`（多行 = 多个可接受写法）。
+      把「几种都对的写法」列全，是这类题唯一的宽容口子：
+      比如软链目标写绝对路径还是相对路径、tar 用绝对路径打包会不会多一层 `usr/`。
+
+    ★ 一道题只能有**一个测试点**。原因在 `runner_text`：它把**同一份提交**
+      当作每个测试点的 stdout —— 两个期望值不同的点，参考答案必然只能过一个。
+    """
+    tip = ("**验收（先在机器上把任务做完，再把输出贴回来）**\n\n"
+           "```bash\n%s\n```\n" % verify_cmd)
+    if hint:
+        tip += "\n" + hint
+    # ★ 多行输出必须压成一行再交给 oneof。
+    #   期望值的格式是「**一行一个**可接受答案，行首加 `|`」——
+    #   答案自身带换行的话，从第二行起会被当成「另一个答案」，题目必然判不过。
+    #   压平不会让判题变宽松：两边最终都要过 compare._squeeze_ws，
+    #   换行和空格在那里本来就是一回事。
+    flat = [" ".join(str(x).split()) for x in outputs]
+    return _theory(
+        title=title, subject=subject, section=section,
+        statement_md=statement_md, answers=flat,
+        explanation=explanation, tags=tags, difficulty=difficulty,
+        total_score=total_score,
+        question_type="practical",
+        input_format="只贴验收命令跑出来的**输出**，不要贴命令本身",
+        output_format="验收命令的输出（可以多行，原样贴）",
+        tip=tip)

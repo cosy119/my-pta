@@ -928,7 +928,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|cp -a ~/docs /tmp/\n|cp -a ~/docs /tmp\n|cp -rp ~/docs /tmp/\n|cp -a /home/lijihao/docs /tmp/\n",
+                "expected_stdout": "|cp -a ~/docs /tmp/\n|cp -a ~/docs /tmp\n|cp -rp ~/docs /tmp/\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "**`cp -a ~/docs /tmp/`**。\n\n`-a` = 归档模式（archive），等价于 `-dR --preserve=all`，一次满足全部要求：\n- `-R` 递归\n- `-d` 符号链接原样复制（不跟随）\n- `--preserve=all` 保留权限、属主、时间戳、扩展属性\n\n**`cp -rp ~/docs /tmp/`** 也常被接受（递归 + 保留属性），差别只在 `-r` 会**跟随符号链接**而不是照搬。\n\n★ 反面教材：裸 `cp ~/docs /tmp/` 会报 `cp: -r not specified; omitting directory` —— **什么都不复制**，但它**不报错退出**（退出码是 1，但只打印一句警告），很容易以为成功了。"
@@ -1086,7 +1086,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|tar -czf project.tar.gz ~/project\n|tar -czf project.tar.gz /home/lijihao/project\n|tar czf project.tar.gz ~/project\n|tar -zcf project.tar.gz ~/project\n",
+                "expected_stdout": "|tar -czf project.tar.gz ~/project\n|tar czf project.tar.gz ~/project\n|tar -zcf project.tar.gz ~/project\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "**`tar -czf project.tar.gz ~/project`**。\n\n四个字母各管一摊：\n| 字母 | 作用 |\n|---|---|\n| `-c` | create，创建归档 |\n| `-z` | 走 gzip 压缩（**小写！大写 `-Z` 是 compress**） |\n| `-v` | verbose，显示处理过程（本题不需要，所以省掉） |\n| `-f` | file，**后面紧跟归档文件名** |\n\n★ `-f` 必须是**最后一个**（或者说它的参数必须紧跟其后）：\n`tar -czf project.tar.gz ~/project` ✅\n`tar -cfz project.tar.gz ~/project` ❌ —— 会把 `z` 当成归档文件名。\n\n口诀：**`czvf` 打包、`xzvf` 解包、`tzvf` 看内容**。"
@@ -1444,7 +1444,7 @@ LINUX_PROBLEMS: list[dict] = [
                 "expected_stdout": "|B\n",
                 "is_sample": 0,
                 "kind": "manual",
-                "explanation": "**`cp -r ~/docs /tmp/`** —— 复制目录**必须**加递归开关 （`-r`、`-R` 或 `-a`）。\n\n不加会得到：\n```\ncp: -r not specified; omitting directory '/home/lijihao/docs'\n```\n⚠️ **注意这是个「温柔的错误」**：它只打印一句警告、跳过这个目录，而不是报错崩掉 —— 在脚本里跑的话，你以为复制成功了，其实什么都没发生。\n\n另外两个选项：\n- `-u`（update）只在目标比源**旧**时才复制 —— 跟「能不能复制目录」无关\n- `-i`（interactive）覆盖前先问一句 —— 同理，不解决递归问题\n\n★ 更好的选择是 **`cp -a ~/docs /tmp/`**：递归 + 保留权限时间。"
+                "explanation": "**`cp -r ~/docs /tmp/`** —— 复制目录**必须**加递归开关 （`-r`、`-R` 或 `-a`）。\n\n不加会得到：\n```\ncp: -r not specified; omitting directory '/home/{user}/docs'\n```\n⚠️ **注意这是个「温柔的错误」**：它只打印一句警告、跳过这个目录，而不是报错崩掉 —— 在脚本里跑的话，你以为复制成功了，其实什么都没发生。\n\n另外两个选项：\n- `-u`（update）只在目标比源**旧**时才复制 —— 跟「能不能复制目录」无关\n- `-i`（interactive）覆盖前先问一句 —— 同理，不解决递归问题\n\n★ 更好的选择是 **`cp -a ~/docs /tmp/`**：递归 + 保留权限时间。"
             }
         ]
     },
@@ -1637,6 +1637,502 @@ LINUX_PROBLEMS: list[dict] = [
         ]
     },
     {
+        "title": "装好 Fedora 44 之后先自报版本",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 25,
+        "tags": [
+            "实验 1",
+            "Fedora",
+            "os-release",
+            "装机"
+        ],
+        "choices": [],
+        "source_section": "实验 1 · 环境搭建",
+        "statement_md": "**作业 1（装机）**\n\n1. 装一个虚拟化软件（VirtualBox 或其它都行）。\n2. 在它上面安装 **Fedora Workstation 44**。\n3. 安装过程中把用户名设成**本人姓名拼音全拼**（张三 → `zhangsan`），密码设简单点。\n4. 装完打开终端，对终端界面截图（过程每一步都要截）。\n\n截图那部分平台没法替你验，但**机器本身会自报家门** —— 版本对不对，一条命令就问出来了。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ngrep ^VERSION_ID= /etc/os-release\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "VERSION_ID=44",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|VERSION_ID=44\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`VERSION_ID=44`。\n\n`/etc/os-release` 是 systemd 定下的**跨发行版标准文件**（Fedora 上它是个指向 `/usr/lib/os-release` 的软链，`grep` 会顺着链读到真文件）。里面的 `VERSION_ID` 就是主版本号，Fedora 44 上就是 `44`。\n\n★ 为什么不用 `cat /etc/fedora-release` —— 那行的写法是`Fedora release 44 (Forty Four)`，带括号代号，**代号随版本变**，而 `VERSION_ID` 一直是纯数字，拿来当判据最稳。\n\n★ 顺带一个排查习惯：任何发行版上先 `cat /etc/os-release` 看两眼，比凭 `lsb_release` 猜靠谱 —— 后者很多最小化安装里压根没装。"
+            }
+        ]
+    },
+    {
+        "title": "从 /usr/local/bin 用相对路径退回 /usr",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 25,
+        "tags": [
+            "实验 2",
+            "cd",
+            "相对路径",
+            "pwd"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**作业 2 第 1 步**\n\n1. 打开终端，`cd` 到 `/usr/local/bin`，看看这个目录下有哪些文件。\n2. **使用相对路径**退到 `/usr` 目录，再查看 `/usr` 下有哪些文件。\n\n题目要考的是「`..` 到底往上走几层」—— 所以先真的进到 `/usr/local/bin`，别直接 `cd /usr`。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ncd /usr/local/bin && cd ../.. && pwd\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "/usr",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|/usr\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`/usr`。\n\n`/usr/local/bin` 往上走：一次 `..` 到 `/usr/local`，再一次 `..` 到 `/usr` —— 所以是**两级**，写 `cd ../..`（等价写法 `cd ../../`、`cd -` 回上一次目录）。\n\n★ 常见的错是把 `..` 当成「回到根」或者「回到上一个访问过的目录」。`..` 永远只表示**父目录**；和 shell 的历史无关。\n\n★ 还有个细节：`cd ..` 不改变任何东西，它只是让进程的 cwd 指向上层；`cd` 不带参数才是「回家目录」（`$HOME`）。"
+            }
+        ]
+    },
+    {
+        "title": "从 applications 一路回到 share",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 25,
+        "tags": [
+            "实验 2",
+            "cd",
+            "相对路径",
+            "层级"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**作业 2 第 4 步**\n\n1. 切到 `/usr/local/share/applications`，看看里面有哪些文件。\n2. **用相对路径**切到 `local` 目录，看里面的文件。\n3. **继续用相对路径**切到 `share` 目录，看里面的文件。\n\n全程不许写绝对路径 —— 想清楚 `applications` 的爷爷是谁。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ncd /usr/local/share/applications && cd ../.. && cd share && pwd\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "/usr/local/share",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|/usr/local/share\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`/usr/local/share`。\n\n`/usr/local/share/applications` 的父目录是 `share`，`share` 的父目录才是 `local` —— 所以「去 local」要退**两级** `cd ../..`，之后再 `cd share` 走回来。\n\n★ 这类题的通用解法：把路径按 `/` 切开写在纸上，`..` 就是从尾巴上划掉一段。`/usr/local/share/applications` 划两段→ `/usr/local`，再进 `share` → 回到 `/usr/local/share`。\n\n★ 用 `pwd` 而不是 `echo $PWD` 来验：`pwd` 显示的是**逻辑**路径，软链目录下 `pwd -P` 才给物理路径 —— 这一步两者一样，用 `pwd` 最直观。"
+            }
+        ]
+    },
+    {
+        "title": "一条命令建出 a1 到 a4 四级子目录",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 25,
+        "tags": [
+            "实验 3",
+            "mkdir -p",
+            "find",
+            "多级目录"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**作业 3 第 2 步**\n\n1. 切到 `/tmp`，在里面建一个名为 `aa` 的目录。\n2. 还在 `/tmp` 下，建出多级子目录 `a1/a2/a3/a4`。\n3. 查看目录是否已经创建。\n\n注意：`a1/a2/a3/a4` 是**多级**，不是同级四个。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nfind /tmp/a1 -type d | sort\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "/tmp/a1 /tmp/a1/a2 /tmp/a1/a2/a3 /tmp/a1/a2/a3/a4",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|/tmp/a1 /tmp/a1/a2 /tmp/a1/a2/a3 /tmp/a1/a2/a3/a4\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "四行，从 `/tmp/a1` 一直到 `/tmp/a1/a2/a3/a4`。\n\n建法是 `mkdir -p /tmp/a1/a2/a3/a4`，`-p` 的作用是**沿途缺哪层补哪层**，已存在也不报错。\n\n★ 不用 `-p` 会直接报 `No such file or directory` —— 父目录都不存在，`mkdir` 不会替你凭空造出来。\n\n★ `find ... -type d` 只列目录（`-type f` 才是文件），再 `sort` 一遍让输出稳定；不排序时 `find` 的顺序依赖文件系统，同一棵树在不同机器上打印顺序可能不一样。"
+            }
+        ]
+    },
+    {
+        "title": "把 a1 整棵树复制进 /usr",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 25,
+        "tags": [
+            "实验 3",
+            "cp -r",
+            "递归复制",
+            "sudo"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**作业 3 第 3 步**\n\n1. 用 `cp` 把 `/tmp/a1` 目录**及其子目录**复制到 `/usr` 下。\n2. 切到 `/usr`，确认复制成功（四层目录都得在）。\n\n这一步要用 `sudo` —— 普通用户往 `/usr` 写会被拒绝。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nfind /usr/a1 -type d | sort\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "/usr/a1 /usr/a1/a2 /usr/a1/a2/a3 /usr/a1/a2/a3/a4",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|/usr/a1 /usr/a1/a2 /usr/a1/a2/a3 /usr/a1/a2/a3/a4\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "四行，路径从 `/usr/a1` 到 `/usr/a1/a2/a3/a4`。\n\n递归复制靠 `cp -r`（复制目录**必须**加 `-r` 或 `-a`，否则报 `omitting directory`）。\n`-a` 比 `-r` 更彻底：`-a` = `-dR --preserve=all`，连权限、时间戳、软链本身一起保留。\n\n★ 一个要点：`cp -r /tmp/a1 /usr` 和 `cp -r /tmp/a1 /usr/` 结果**一样**（都得到 `/usr/a1`）；但如果 `/usr/a1` 已经存在，`cp -r /tmp/a1 /usr` 会把源**塞进**已有的 `/usr/a1/a1` 里 —— 这是 `cp` 最坑人的行为差异，`rsync` 的尾斜杠规则也是同一类坑。"
+            }
+        ]
+    },
+    {
+        "title": "vi 改 hello、echo 写 mysdutfile，一起验",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 25,
+        "tags": [
+            "实验 3",
+            "vi",
+            "echo 重定向",
+            "touch"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**作业 3 第 7 ~ 8 步**\n\n1. 用 `touch` 在用户主目录下建一个空文件 `hello`。\n2. 用 `vi` 打开 `hello`，把内容改成 `this is a file of sdut`，存盘退出。\n3. 用 `echo` 把 `this is my new file` **重定向**到主目录下的 `mysdutfile`。\n4. 用 `less` 或 `more` 看一遍 `mysdutfile`。\n\n两个文件都要真的留下内容 —— 一个走编辑器，一个走重定向，是两条不同的路。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ncat ~/hello; echo; cat ~/mysdutfile\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "this is a file of sdut this is my new file",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|this is a file of sdut this is my new file\n|this is a file of sdut this is my new file\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "第一行 `this is a file of sdut`，第二行 `this is my new file`。\n\n`echo 内容 > 文件` 里的 `>` 是**覆盖**重定向：文件不存在就建，存在就先清空再写。追加要用 `>>`。\n\n★ vi 的三个必备操作：`i` 进插入模式 → 打字 → `Esc` 回普通模式 → `:wq` 存盘退出（`:q!` 是不存盘强退）。新手最常卡在「忘了按 `Esc` 就打 `:wq`」，结果那些字符被当成正文写进文件里。\n\n★ 验收里那个 `echo` 不是多余：vi 存的文件**末尾可能没有换行**（取决于你最后有没有回车），不补一个换行的话两条内容会粘在同一行。"
+            }
+        ]
+    },
+    {
+        "title": "把 /usr/test5 打包备份再解压回 /usr/local",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 25,
+        "tags": [
+            "实验 4",
+            "tar",
+            "gzip",
+            "打包解压"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**作业 4 第 1 步**\n\n1. 在 `/usr` 下新建目录 `test5`。\n2. 用 `tar` 把它**压缩备份**到普通用户主目录，命名 `test5.tar.gz`。\n3. 查看是否压缩成功（看文件在不在、有多大）。\n4. 把压缩包**解压**到 `/usr/local`，并确认解压结果。\n\n`test5` 是空目录，所以包里的清单很短。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ntar -tzf ~/test5.tar.gz | head -1; ls -d /usr/local/test5\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "test5/ /usr/local/test5",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|test5/ /usr/local/test5\n|usr/test5/ /usr/local/test5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "第一行 `test5/`（包里第一项），第二行 `/usr/local/test5`（解压出来的目录）。\n\n标准做法是先进到父目录再打相对路径：\n\n```bash\ncd /usr && sudo tar czf ~/test5.tar.gz test5\nsudo tar xzf ~/test5.tar.gz -C /usr/local\n```\n\n`czf` 三个字母：`c` 建包、`z` 走 gzip、`f` 指定文件名；解包是 `xzf`，`-C` 指定解到哪个目录。\n\n★ 如果用绝对路径打包（`tar czf ~/test5.tar.gz /usr/test5`），tar 会警告 `Removing leading '/' from member names`，包里的第一项变成 `usr/test5/` —— 这个写法也算对，所以两种都收。**这个警告不是错误**，是 tar 故意去掉开头的 `/`：带着绝对路径的包解压时会直接铺满根目录，太危险。"
+            }
+        ]
+    },
+    {
+        "title": "给 /usr/local/sdutshare 挂一个根目录软链",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 25,
+        "tags": [
+            "实验 4",
+            "ln -s",
+            "符号链接",
+            "readlink"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**作业 4 第 3 步**\n\n1. 在 `/usr/local` 下创建目录 `sdutshare`。\n2. 在**根目录**下建立一个名为 `myshare` 的**符号链接**，指向它。\n3. 在根目录下确认软链已经建立。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nreadlink /myshare\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "/usr/local/sdutshare",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|/usr/local/sdutshare\n|usr/local/sdutshare\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`/usr/local/sdutshare`（相对写法 `usr/local/sdutshare` 也认，因为软链就在根目录下，相对根解析结果一样）。\n\n建链是 `sudo ln -s /usr/local/sdutshare /myshare` —— **`-s` 是符号链接，目标写在前、链接名写在后**。参数顺序写反了会建出一个叫 `sdutshare` 的链接，而不是 `myshare`。\n\n★ `ln` 不加 `-s` 建的是**硬链接**：不能跨文件系统、不能指向目录、删掉任意一个名字文件都还在（inode 引用计数）。软链是另一个文件，只存一条路径字符串 —— 所以目标被删了，软链还在但打不开（`broken link`）。\n\n★ `ls -l` 看软链会显示 `myshare -> /usr/local/sdutshare`，要拿纯目标路径就用 `readlink`（加 `-f` 还会把相对路径解析成绝对路径）。"
+            }
+        ]
+    },
+    {
+        "title": "字典逆序排序，再输出一串不换行的字",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 25,
+        "tags": [
+            "实验 4",
+            "sort -r",
+            "echo -n",
+            "wc"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**作业 4 第 4 ~ 5 步**\n\n1. 在主目录下用 `vim` 建文件 `mysort1`，内容四行：`is` / `this` / `excellent` / `my`。\n2. 用 `sort` 把这个文件按**字典逆序**显示出来。\n3. 用 `echo` 输出 `hello everyone!`，要求**输出后不换行**。\n\n第 3 步的关键是「怎么证明它真的没换行」—— 数一下字节数最直接。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nsort -r ~/mysort1; echo -n \"hello everyone!\" | wc -c\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "this my is excellent 15",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|this my is excellent 15\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "前四行是排序结果 `this` / `my` / `is` / `excellent`，最后一行 `15`。\n\n**字典逆序**就是按字符编码从大到小比：`t` > `m` > `i` > `e`，所以顺序正好是 `this, my, is, excellent`。`sort -r` 的 `-r` 就是 reverse。\n\n`echo -n` 的 `-n` 关掉末尾那个换行。`hello everyone!` 一共 15 个字符（5 个字母 + 1 个空格 + 8 个字母 + 1 个感叹号），有换行的话 `wc -c` 会数成 16 —— **15 就是「真的没换行」的证据**。\n\n★ 顺带记住 `wc` 的三个开关：`-c` 字节、`-w` 单词、`-l` 行。「文件到底有没有末尾换行」这类问题，`wc -c` 加上 `tail -c 1 | xxd` 一看就知道。"
+            }
+        ]
+    },
+    {
+        "title": "把两个文件的内容拼成第三个文件",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 25,
+        "tags": [
+            "实验 4",
+            "cat",
+            "重定向",
+            "mv"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**作业 4 第 8 步**\n\n1. 在主目录下建 `file11`（内容 `sdut11`）和 `file12`（内容 `sdut12`）。\n2. 在主目录下建一个新目录 `dir1`。\n3. 在 `dir1` 下建 `file13`，内容用 `cat` 把上面两个文件**拼**进来。\n4. 把 `file11`、`file12` **移动**到 `dir1` 里，确认移动成功。\n5. 查看 `file13` 的内容。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\ncat ~/dir1/file13; echo; ls ~/dir1\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sdut11 sdut12 file11 file12 file13",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sdut11 sdut12 file11 file12 file13\n|sdut11 sdut12 /home/\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "先两行内容 `sdut11` / `sdut12`，再三行目录清单 `file11` / `file12` / `file13`。\n\n拼接靠重定向把两个 `cat` 的输出接到同一个文件里：\n\n```bash\ncat ~/file11 ~/file12 > ~/dir1/file13\nmv ~/file11 ~/file12 ~/dir1/\n```\n\n`mv` 最后一个参数是**目标目录**，前面几个都是要被搬走的东西 —— 和 `cp` 的多源语法一致。\n\n★ `mv` 在同一个文件系统内只是**改目录项**，不搬数据，所以再大的文件也是瞬间完成；跨文件系统才会真复制 + 删除。想验证「是移动还是复制」，搬完看主目录里还在不在就行 —— 这一步的 `ls ~/dir1` 里三个文件齐了，而主目录里的 `file11`/`file12` 应该已经消失。"
+            }
+        ]
+    },
+    {
+        "title": "把 11.txt 改成 -rwxr-x--x",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 25,
+        "tags": [
+            "实验 5",
+            "chmod",
+            "权限",
+            "八进制"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**作业 5 第 1 ~ 4 步**\n\n1. 新建用户 `user01` 和 `user02`，切到 `user01`。\n2. 在 `user01` 主目录下建文件 `11.txt` 和目录 `abc`。\n3. 查看两者的权限。\n4. 把 `11.txt` 的权限改成 **`-rwxr-x--x`**（用八进制最快），再看一次。\n\n改完别急着交 —— 题目问的就是改完那一瞬间的权限串。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%A' ~/11.txt\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "-rwxr-x--x",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|-rwxr-x--x\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`-rwxr-x--x`。\n\n把它拆回八进制就明白了：`rwx` = 4+2+1 = **7**，`r-x` = 4+1 = **5**，`--x` = **1** —— 所以 `chmod 751 ~/11.txt`。\n字符法等价写法：`chmod u=rwx,g=rx,o=x ~/11.txt`。\n\n★ 第一位的 `-` 是**文件类型**：`-` 普通文件、`d` 目录、`l` 软链。所以 `-rwxr-x--x` 一共 10 个字符，不是 9 个。\n\n★ 八进制三位分别对应 **属主 / 属组 / 其他**（u/g/o），顺序固定，不能按名字记混。"
+            }
+        ]
+    },
+    {
+        "title": "把 abc 整棵树交出去给 user02",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 25,
+        "tags": [
+            "实验 5",
+            "chown -R",
+            "属主",
+            "stat"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**作业 5 第 5 步**\n\n1. 在 `abc` 目录里建一个文件 `22.txt`。\n2. 把 `abc` **目录及其中的文件**的所属用户和用户组都改成 `user02`。\n3. 查看改完的结果 —— 目录和里面的文件都要变。\n\n只改目录不改里面的文件，是这一步最典型的漏做。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%U:%G' ~/abc ~/abc/22.txt\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "user02:user02 user02:user02",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|user02:user02 user02:user02\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "两行都是 `user02:user02`。\n\n命令是 `sudo chown -R user02:user02 ~/abc`（在 user01 的主目录下）。`-R` 递归，冒号后面那个是**组**；只写 `chown -R user02 abc` 只改属主，组不变。\n\n★ 为什么必须先建 `22.txt` 再 `chown -R`：`chown` 只作用于**当时已经存在**的文件，之后再往里放新文件，新文件的属主是**创建它的那个用户**，不会跟着目录走。\n\n★ `stat -c '%U:%G'` 里 `%U` 是属主名、`%G` 是属组名（要大写；小写 `%u` `%g` 给的是数字 UID/GID）。迁机器时数字 UID 更可靠，但看「有没有改对」用名字更直观。"
+            }
+        ]
+    },
+    {
+        "title": "八进制 744 之后长什么样",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 25,
+        "tags": [
+            "实验 5",
+            "chmod 744",
+            "八进制",
+            "权限位"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**作业 5 第 6 ~ 9 步**\n\n1. 切到 `user02`，在主目录下建目录 `sdutjsj`，进去建空文件 `sdutfile1`。\n2. 用长格式看它的权限、属主、属组。\n3. 先让它「其他用户可写」，再「取消同组用户的读权限」，各看一次结果。\n4. 最后用**八进制**设成：属主 `rwx`，属组和其他都只有 `r`。再看一次。\n\n第 4 步是本题的终点，前面几步的结果不用交。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%a %A' ~/sdutjsj/sdutfile1\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "744 -rwxr--r--",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|744 -rwxr--r--\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`744 -rwxr--r--`。\n\n「属主 rwx、属组 r、其他 r」= 7 / 4 / 4 → `chmod 744 sdutfile1`，符号位就是 `-rwxr--r--`。\n\n★ 注意这道题和前面那道（751）的差别：751 的**其他用户**是 `--x`（只有执行），744 的**属组**是 `r--`（只有读）。数值差一位，权限差一件事。\n\n★ 文件「能不能被执行」对普通文件来说取决于 x 位 —— 脚本没有 x 位就 `Permission denied`，加 x 才能 `./xxx` 跑。目录的 x 位含义不同：它管的是**能不能进出这个目录**（`cd` 进去、访问里面的文件都要它），所以目录通常至少 755。"
+            }
+        ]
+    },
+    {
+        "title": "400 再给其他用户加写，最后是几",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 5,
+        "total_score": 25,
+        "tags": [
+            "实验 5",
+            "chmod 400",
+            "o+w",
+            "权限位"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**作业 5 第 10 ~ 11 步**\n\n接着上一题的文件（`~/sdutjsj/sdutfile1`）：\n\n1. 用八进制把权限设成「**只有属主可读**，属组和其他什么权限都没有」。\n2. 再用字符法给**其他用户**加上可写权限。\n3. 查看最后的结果。\n\n这题考的是「八进制 → 符号位 → 再回八进制」的来回换算，中途算错一步就到不了。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%a %A' ~/sdutjsj/sdutfile1\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "402 -r------w-",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|402 -r------w-\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`402 -r------w-`。\n\n第一步 `chmod 400 sdutfile1` → `-r--------`（属主只读，其余全空）。\n第二步 `chmod o+w sdutfile1` → 其他用户加上 `w`，数值从 `400` 变 `402`，符号位是 `-r------w-`。\n\n★ 「其他用户」那一组的三个位是 `r=4 / w=2 / x=1` 中的后两位，所以 `o+w` 加的是**个位上的 2** —— 400 + 002 = 402。\n\n★ 一个真实的坑：权限 `402` 的意思是——别人**能写不能读**。能往文件里追加内容，但 `cat` 打不开。这不是笔误，是权限位本来就分开算；真要用「可写」通常得给 `o+rw`。"
+            }
+        ]
+    },
+    {
+        "title": "把 temp1 交给 root",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 25,
+        "tags": [
+            "实验 5",
+            "useradd",
+            "groupadd",
+            "chown",
+            "tail"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**作业 5 第 12 ~ 15 步**\n\n1. 切回自己（姓名拼音那个用户），新建用户 `zhangsan`，密码设 `123`。\n2. 用 `tail` 看 `/etc/passwd` 的最后 10 行，确认新用户进去了。\n3. 建组 `sdutstuff`，看 `/etc/group` 最后 5 行；再把它删掉，再看一次。\n4. 在 `zhangsan` 的主目录下建 `temp1`，查看它的属主和属组，然后改成 `root`，再看一次。\n\n最后一小步才是本题要交的东西。\n\n**验收（先在机器上把任务做完，再把输出贴回来）**\n\n```bash\nstat -c '%U:%G' /home/zhangsan/temp1\n```\n",
+        "input_format": "只贴验收命令跑出来的**输出**，不要贴命令本身",
+        "output_format": "验收命令的输出（可以多行，原样贴）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "root:root",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|root:root\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`root:root`。\n\n命令是 `sudo chown root:root /home/zhangsan/temp1`，或者简写 `sudo chown root: /home/zhangsan/temp1`（冒号后面留空 = 组也跟着属主走）。\n\n★ 删组用 `sudo groupdel sdutstuff`；如果还有用户把它当**主组**，`groupdel` 会拒绝（`cannot remove the primary group of user`）—— 得先把人挪走。作为附加组则可以先删。\n\n★ 顺带一句：`/etc/passwd` 里那个 `x` 是占位符，真正的密码散列在 `/etc/shadow`（只有 root 能读）。所以 `tail /etc/passwd` 看得见新用户，但看不见密码 —— 这是设计如此，不是 bug。"
+            }
+        ]
+    },
+    {
         "title": "用相对路径往上走两级",
         "subject": "linux",
         "line": "text",
@@ -1766,7 +2262,7 @@ LINUX_PROBLEMS: list[dict] = [
                 "expected_stdout": "|B\n",
                 "is_sample": 0,
                 "kind": "manual",
-                "explanation": "**`su -`** —— 那个减号（等价于 `su - root` / `su -l`）是本题唯一的机关。\n\n| 命令 | 换身份 | 换环境 | `$HOME` | `pwd` 落点 |\n|---|---|---|---|---|\n| `su` | ✅ | ❌ | 还是 `/home/lijihao` | 还在原目录 |\n| **`su -`** | ✅ | ✅ **完整登录** | `/root` | `/root` |\n\n所以不带减号时，你虽然已经**是 root 了**，但 `$HOME` 还留着普通用户的值 ——打印出来的「root 主目录」是错的，而且**不会报任何错**。\n\n★ 另外两条也不行：`sudo pwd` 只是用 root 权限跑了一下 pwd，**没有切换身份**，还在原目录；`su root` 同样没带减号。\n\n**前提**：Fedora 安装时默认**不给 root 设密码**（用 sudo 代替）。真要用 `su -` 得先 `sudo passwd root` 设一个。"
+                "explanation": "**`su -`** —— 那个减号（等价于 `su - root` / `su -l`）是本题唯一的机关。\n\n| 命令 | 换身份 | 换环境 | `$HOME` | `pwd` 落点 |\n|---|---|---|---|---|\n| `su` | ✅ | ❌ | 还是 `/home/{user}` | 还在原目录 |\n| **`su -`** | ✅ | ✅ **完整登录** | `/root` | `/root` |\n\n所以不带减号时，你虽然已经**是 root 了**，但 `$HOME` 还留着普通用户的值 ——打印出来的「root 主目录」是错的，而且**不会报任何错**。\n\n★ 另外两条也不行：`sudo pwd` 只是用 root 权限跑了一下 pwd，**没有切换身份**，还在原目录；`su root` 同样没带减号。\n\n**前提**：Fedora 安装时默认**不给 root 设密码**（用 sudo 代替）。真要用 `su -` 得先 `sudo passwd root` 设一个。"
             }
         ]
     },
@@ -1796,7 +2292,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|ls /usr/local > ~/test1.txt && cat -n ~/test1.txt\n|ls /usr/local > ~/test1.txt; cat -n ~/test1.txt\n|ls /usr/local > /home/lijihao/test1.txt && cat -n /home/lijihao/test1.txt\n|ls /usr/local > ~/test1.txt && cat -n /home/lijihao/test1.txt\n",
+                "expected_stdout": "|ls /usr/local > ~/test1.txt && cat -n ~/test1.txt\n|ls /usr/local > ~/test1.txt; cat -n ~/test1.txt\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "```bash\nls /usr/local > ~/test1.txt      # 覆盖重定向（会先清空原文件）\ncat -n ~/test1.txt               # -n 显示行号\n```\n\n★ 三个要点：\n\n**1. `>` 是覆盖，`>>` 是追加。** 用错 `>` 会把文件原有内容清空。\n（`>` 在命令执行**之前**就把文件截断了 —— 所以\n`cat a.txt > a.txt` 会得到**空文件**，因为 a.txt 先被清零了。）\n\n**2. `cat -n` 是「加行号输出」，不是「统计行数」。** 数行数用 `wc -l`。\n\n**3. 怎么验证自己做对了**：`cat -n` 输出的总行数应当等于`ls /usr/local | wc -l`，两个数对得上就没错。"
@@ -1976,7 +2472,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|mkdir -p ~/abc && sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc && cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/\n|mkdir -p /home/lijihao/abc && sudo cp /boot/vmlinuz* /home/lijihao/abc/\n",
+                "expected_stdout": "|mkdir -p ~/abc && sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc && cp /boot/vmlinuz* ~/abc/\n|mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "```bash\nls /boot/vmlinuz*          # ★ 先自证：这些文件真的存在\nmkdir -p ~/abc             # -p：已存在也不报错\nsudo cp /boot/vmlinuz* ~/abc/\n```\n\n★ 三个要点：\n\n**1. `mkdir -p` 而不是裸 `mkdir`** —— 目录已存在时裸 `mkdir` 会报错，`-p` 幂等，脚本里更稳。\n\n**2. 通配符先自证** —— 万一 `/boot` 下没有 `vmlinuz*`，shell 会把它**原样传给 cp**，报 `cp: cannot stat '/boot/vmlinuz*': No such file or directory`。看到这个错就知道是「根本没匹配上」，不是权限问题。\n\n**3. `cp` 支持一次拷多个** —— `*` 展开成若干文件名，通通扔进 `~/abc/`。（`/boot/vmlinuz-*` 通常是 `-rw-r--r--` 人人可读，普通用户其实也能拷；加 `sudo` 是求稳。）"
@@ -2121,7 +2617,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|sort -r ~/mysort1\n|sort -r /home/lijihao/mysort1\n",
+                "expected_stdout": "|sort -r ~/mysort1\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "**`sort -r ~/mysort1`**（`-r` = reverse）。\n\n输出：\n```\nthis\nmy\nis\nexcellent\n```\n\n对照（默认是字典**升序**，也就是 `-r` 的倒过来）：\n```\nexcellent\nis\nmy\nthis\n```\n\n★ 两个容易混的选项：\n- `sort -n` 是**按数值**排（`2` 排在 `10` 前面）—— 这题是纯字符串，用不上\n- `sort -k2` 是**按第 2 列**排\n\n注意字典序是**逐字符比 ASCII 码**，所以**大写字母全部排在小写字母前面**（`Z` = 90 < `a` = 97）。混大小写时 `sort` 的结果可能和直觉不一样。\n\n（`sort` **不改原文件**，只往屏幕输出。要写回用 `sort -r f > f.sorted`。）"
@@ -2596,7 +3092,7 @@ LINUX_PROBLEMS: list[dict] = [
                 "expected_stdout": "|对\n|正确\n|√\n|T\n",
                 "is_sample": 0,
                 "kind": "manual",
-                "explanation": "**对**。`.desktop` 文件就是应用的「菜单项定义」，有两个放的层次：\n\n| 位置 | 生效范围 |\n|---|---|\n| **`~/.local/share/applications/`** | 只对**当前用户**生效 |\n| `/usr/share/applications/` | **所有用户**（要 root 权限写） |\n\n最简模板：\n```ini\n[Desktop Entry]\nType=Application\nName=我的工具\nExec=/home/lijihao/tools/run.sh\nIcon=/home/lijihao/tools/icon.png\nTerminal=false\n```\n\n★ 三个容易卡住的点：\n1. **`Exec=` 要用绝对路径**（菜单启动时的 `PATH` 和你的终端不一样）\n2. 想让它在终端里跑就写 `Terminal=true`\n3. 写完可能**要重新登录**菜单才刷新（或者 `update-desktop-database`）\n\n权限别忘：`chmod +x` 那个 `.desktop` 文件并不必需，但 `Exec=` 指向的脚本**必须**可执行。"
+                "explanation": "**对**。`.desktop` 文件就是应用的「菜单项定义」，有两个放的层次：\n\n| 位置 | 生效范围 |\n|---|---|\n| **`~/.local/share/applications/`** | 只对**当前用户**生效 |\n| `/usr/share/applications/` | **所有用户**（要 root 权限写） |\n\n最简模板：\n```ini\n[Desktop Entry]\nType=Application\nName=我的工具\nExec=/home/{user}/tools/run.sh\nIcon=/home/{user}/tools/icon.png\nTerminal=false\n```\n\n★ 三个容易卡住的点：\n1. **`Exec=` 要用绝对路径**（菜单启动时的 `PATH` 和你的终端不一样）\n2. 想让它在终端里跑就写 `Terminal=true`\n3. 写完可能**要重新登录**菜单才刷新（或者 `update-desktop-database`）\n\n权限别忘：`chmod +x` 那个 `.desktop` 文件并不必需，但 `Exec=` 指向的脚本**必须**可执行。"
             }
         ]
     },
@@ -3111,7 +3607,7 @@ LINUX_PROBLEMS: list[dict] = [
                 "expected_stdout": "|B\n",
                 "is_sample": 0,
                 "kind": "manual",
-                "explanation": "**`scp -P 2222 ...`（大写 P）**。\n\n★ 这就是最坑的地方 —— **`ssh` 和 `scp` 的大小写刚好相反**：\n\n| 命令 | 指定端口 | 那另一个大小写是什么 |\n|---|---|---|\n| `ssh` | **`-p 2222`**（小写） | `-P` 是「不分配伪终端」 |\n| `scp` | **`-P 2222`**（大写） | `-p` 是「保留文件的时间戳和权限」 |\n| `sftp` | **`-P 2222`**（大写） | 同 scp |\n\n**用小写 `-p` 的后果**：scp **不报错**，只是默默地连到 22 端口 —— 如果 22 上没服务，你会看到 `Connection refused`，然后开始怀疑网络、怀疑防火墙，**就是想不到是大写小写的问题**。\n\n**另一条路**（记不住就用这个）：在 `~/.ssh/config` 里给主机建个别名：\n```\nHost myserver\n    HostName 192.168.1.10\n    Port 2222\n    User lijihao\n```\n之后 `scp 文件 myserver:` 和 `ssh myserver` 都不用再写端口了。"
+                "explanation": "**`scp -P 2222 ...`（大写 P）**。\n\n★ 这就是最坑的地方 —— **`ssh` 和 `scp` 的大小写刚好相反**：\n\n| 命令 | 指定端口 | 那另一个大小写是什么 |\n|---|---|---|\n| `ssh` | **`-p 2222`**（小写） | `-P` 是「不分配伪终端」 |\n| `scp` | **`-P 2222`**（大写） | `-p` 是「保留文件的时间戳和权限」 |\n| `sftp` | **`-P 2222`**（大写） | 同 scp |\n\n**用小写 `-p` 的后果**：scp **不报错**，只是默默地连到 22 端口 —— 如果 22 上没服务，你会看到 `Connection refused`，然后开始怀疑网络、怀疑防火墙，**就是想不到是大写小写的问题**。\n\n**另一条路**（记不住就用这个）：在 `~/.ssh/config` 里给主机建个别名：\n```\nHost myserver\n    HostName 192.168.1.10\n    Port 2222\n    User {user}\n```\n之后 `scp 文件 myserver:` 和 `ssh myserver` 都不用再写端口了。"
             }
         ]
     },

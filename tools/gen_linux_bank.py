@@ -53,7 +53,7 @@ OUT_PATH = ROOT / "app" / "problems_bank_linux.py"
 sys.path.insert(0, str(ROOT))
 
 import _console                                                   # noqa: E402
-from app.bank_kit import fill, mc, multi, tf                       # noqa: E402
+from app.bank_kit import fill, mc, multi, practical, tf                # noqa: E402
 
 SUBJ = "linux"
 
@@ -530,8 +530,7 @@ def part_b_group() -> None:
         "复制目录并保留权限与时间戳",
         "把 `~/docs` 整个目录复制到 `/tmp/` 下，"
         "要求**保留权限、属主和时间戳**。写出这条命令。",
-        ["cp -a ~/docs /tmp/", "cp -a ~/docs /tmp", "cp -rp ~/docs /tmp/",
-         "cp -a /home/lijihao/docs /tmp/"],
+        ["cp -a ~/docs /tmp/", "cp -a ~/docs /tmp", "cp -rp ~/docs /tmp/"],
         subject=SUBJ, section=sec, difficulty=3, total_score=12,
         explanation=(
             "**`cp -a ~/docs /tmp/`**。\n\n"
@@ -625,7 +624,7 @@ def part_b_group() -> None:
         "打包并 gzip 压缩",
         "把 `~/project` 目录打包并用 gzip 压缩，生成 `project.tar.gz`。"
         "写出这条命令（**不需要**显示处理过程）。",
-        ["tar -czf project.tar.gz ~/project", "tar -czf project.tar.gz /home/lijihao/project",
+        ["tar -czf project.tar.gz ~/project",
          "tar czf project.tar.gz ~/project", "tar -zcf project.tar.gz ~/project"],
         subject=SUBJ, section=sec, difficulty=2, total_score=12,
         explanation=(
@@ -861,7 +860,7 @@ def part_c_group() -> None:
             "（`-r`、`-R` 或 `-a`）。\n\n"
             "不加会得到：\n"
             "```\n"
-            "cp: -r not specified; omitting directory '/home/lijihao/docs'\n"
+            "cp: -r not specified; omitting directory '/home/{user}/docs'\n"
             "```\n"
             "⚠️ **注意这是个「温柔的错误」**：它只打印一句警告、跳过这个目录，"
             "而不是报错崩掉 —— 在脚本里跑的话，你以为复制成功了，其实什么都没发生。\n\n"
@@ -1062,7 +1061,7 @@ def part_experiments() -> None:
             "**`su -`** —— 那个减号（等价于 `su - root` / `su -l`）是本题唯一的机关。\n\n"
             "| 命令 | 换身份 | 换环境 | `$HOME` | `pwd` 落点 |\n"
             "|---|---|---|---|---|\n"
-            "| `su` | ✅ | ❌ | 还是 `/home/lijihao` | 还在原目录 |\n"
+            "| `su` | ✅ | ❌ | 还是 `/home/{user}` | 还在原目录 |\n"
             "| **`su -`** | ✅ | ✅ **完整登录** | `/root` | `/root` |\n\n"
             "所以不带减号时，你虽然已经**是 root 了**，但 `$HOME` 还留着普通用户的值 ——"
             "打印出来的「root 主目录」是错的，而且**不会报任何错**。\n\n"
@@ -1078,9 +1077,7 @@ def part_experiments() -> None:
         "把 `/usr/local` 下的文件列表输出重定向到家目录的 `test1.txt`，"
         "然后用 `cat` 查看并**显示行号**。写出这两条命令（用 `&&` 或 `;` 连起来）。",
         ["ls /usr/local > ~/test1.txt && cat -n ~/test1.txt",
-         "ls /usr/local > ~/test1.txt; cat -n ~/test1.txt",
-         "ls /usr/local > /home/lijihao/test1.txt && cat -n /home/lijihao/test1.txt",
-         "ls /usr/local > ~/test1.txt && cat -n /home/lijihao/test1.txt"],
+         "ls /usr/local > ~/test1.txt; cat -n ~/test1.txt"],
         subject=SUBJ, section=sec2, difficulty=3, total_score=12,
         explanation=(
             "```bash\n"
@@ -1198,8 +1195,7 @@ def part_experiments() -> None:
         ["mkdir -p ~/abc && sudo cp /boot/vmlinuz* ~/abc/",
          "mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/",
          "mkdir -p ~/abc && cp /boot/vmlinuz* ~/abc/",
-         "mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/",
-         "mkdir -p /home/lijihao/abc && sudo cp /boot/vmlinuz* /home/lijihao/abc/"],
+         "mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/"],
         subject=SUBJ, section=sec3, difficulty=4, total_score=15,
         explanation=(
             "```bash\n"
@@ -1306,7 +1302,7 @@ def part_experiments() -> None:
         "按字典逆序排序文件内容",
         "`~/mysort1` 里有四行：`is` / `this` / `excellent` / `my`。"
         "把它按**字典逆序**排序显示。写出这条命令。",
-        ["sort -r ~/mysort1", "sort -r /home/lijihao/mysort1"],
+        ["sort -r ~/mysort1"],
         subject=SUBJ, section=sec4, difficulty=2, total_score=10,
         explanation=(
             "**`sort -r ~/mysort1`**（`-r` = reverse）。\n\n"
@@ -1688,8 +1684,8 @@ def part_lectures_a() -> None:
             "[Desktop Entry]\n"
             "Type=Application\n"
             "Name=我的工具\n"
-            "Exec=/home/lijihao/tools/run.sh\n"
-            "Icon=/home/lijihao/tools/icon.png\n"
+            "Exec=/home/{user}/tools/run.sh\n"
+            "Icon=/home/{user}/tools/icon.png\n"
             "Terminal=false\n"
             "```\n\n"
             "★ 三个容易卡住的点：\n"
@@ -2101,7 +2097,7 @@ def part_lectures_b() -> None:
             "Host myserver\n"
             "    HostName 192.168.1.10\n"
             "    Port 2222\n"
-            "    User lijihao\n"
+            "    User {user}\n"
             "```\n"
             "之后 `scp 文件 myserver:` 和 `ssh myserver` 都不用再写端口了。"),
         tags=["scp", "ssh", "端口", "第 06 讲"], difficulty=3,
@@ -5146,12 +5142,396 @@ def part_multi() -> None:
     ))
 
 
+def part_practical() -> None:
+    """课程实验的实操题（作业 1 ~ 作业 5）。
+
+    ★ 题源：`E:\\学习\\001\\Linux学习\\2026-*.pdf` 五份实验指导书，逐步骤覆盖。
+    ★ 形态：多步任务 + 一条验收命令 → 提交命令的**真实输出**。
+      「读完就知道答案」在这里不成立：`stat -c '%a'` 出来的 751、
+      `sort -r` 出来的顺序、`find` 出来的四层路径，都得真做过（或真算过）才写得出。
+    ★ 所有期望值都在本机 GNU coreutils 上实跑核对过（`stat` / `find` / `tar` /
+      `sort` / `readlink` / `cd` 的语义与 Fedora 完全一致）；
+      八进制 → 符号位、`chown` 后的 `%U:%G` 属于定义级结果，另行算过。
+    """
+    s1 = "实验 1 · 环境搭建"
+    s2 = "实验 2 · 基本命令"
+    s3 = "实验 3 · 常用命令"
+    s4 = "实验 4 · 综合命令"
+    s5 = "实验 5 · 用户与权限"
+
+    # ══════════════════ 实验 1 ══════════════════
+    add(practical(
+        "装好 Fedora 44 之后先自报版本",
+        "**作业 1（装机）**\n\n"
+        "1. 装一个虚拟化软件（VirtualBox 或其它都行）。\n"
+        "2. 在它上面安装 **Fedora Workstation 44**。\n"
+        "3. 安装过程中把用户名设成**本人姓名拼音全拼**（张三 → `zhangsan`），密码设简单点。\n"
+        "4. 装完打开终端，对终端界面截图（过程每一步都要截）。\n\n"
+        "截图那部分平台没法替你验，但**机器本身会自报家门** —— "
+        "版本对不对，一条命令就问出来了。",
+        ["VERSION_ID=44"],
+        verify_cmd="grep ^VERSION_ID= /etc/os-release",
+        subject=SUBJ, section=s1,
+        explanation=(
+            "`VERSION_ID=44`。\n\n"
+            "`/etc/os-release` 是 systemd 定下的**跨发行版标准文件**"
+            "（Fedora 上它是个指向 `/usr/lib/os-release` 的软链，`grep` 会顺着链读到真文件）。"
+            "里面的 `VERSION_ID` 就是主版本号，Fedora 44 上就是 `44`。\n\n"
+            "★ 为什么不用 `cat /etc/fedora-release` —— 那行的写法是"
+            "`Fedora release 44 (Forty Four)`，带括号代号，**代号随版本变**，"
+            "而 `VERSION_ID` 一直是纯数字，拿来当判据最稳。\n\n"
+            "★ 顺带一个排查习惯：任何发行版上先 `cat /etc/os-release` 看两眼，"
+            "比凭 `lsb_release` 猜靠谱 —— 后者很多最小化安装里压根没装。"),
+        tags=["实验 1", "Fedora", "os-release", "装机"], difficulty=1,
+    ))
+
+    # ══════════════════ 实验 2 ══════════════════
+    add(practical(
+        "从 /usr/local/bin 用相对路径退回 /usr",
+        "**作业 2 第 1 步**\n\n"
+        "1. 打开终端，`cd` 到 `/usr/local/bin`，看看这个目录下有哪些文件。\n"
+        "2. **使用相对路径**退到 `/usr` 目录，再查看 `/usr` 下有哪些文件。\n\n"
+        "题目要考的是「`..` 到底往上走几层」—— 所以先真的进到 `/usr/local/bin`，别直接 `cd /usr`。",
+        ["/usr"],
+        verify_cmd="cd /usr/local/bin && cd ../.. && pwd",
+        subject=SUBJ, section=s2,
+        explanation=(
+            "`/usr`。\n\n"
+            "`/usr/local/bin` 往上走：一次 `..` 到 `/usr/local`，再一次 `..` 到 `/usr` —— "
+            "所以是**两级**，写 `cd ../..`（等价写法 `cd ../../`、`cd -` 回上一次目录）。\n\n"
+            "★ 常见的错是把 `..` 当成「回到根」或者「回到上一个访问过的目录」。"
+            "`..` 永远只表示**父目录**；和 shell 的历史无关。\n\n"
+            "★ 还有个细节：`cd ..` 不改变任何东西，它只是让进程的 cwd 指向上层；"
+            "`cd` 不带参数才是「回家目录」（`$HOME`）。"),
+        tags=["实验 2", "cd", "相对路径", "pwd"], difficulty=1,
+    ))
+
+    add(practical(
+        "从 applications 一路回到 share",
+        "**作业 2 第 4 步**\n\n"
+        "1. 切到 `/usr/local/share/applications`，看看里面有哪些文件。\n"
+        "2. **用相对路径**切到 `local` 目录，看里面的文件。\n"
+        "3. **继续用相对路径**切到 `share` 目录，看里面的文件。\n\n"
+        "全程不许写绝对路径 —— 想清楚 `applications` 的爷爷是谁。",
+        ["/usr/local/share"],
+        verify_cmd="cd /usr/local/share/applications && cd ../.. && cd share && pwd",
+        subject=SUBJ, section=s2,
+        explanation=(
+            "`/usr/local/share`。\n\n"
+            "`/usr/local/share/applications` 的父目录是 `share`，"
+            "`share` 的父目录才是 `local` —— 所以「去 local」要退**两级** `cd ../..`，"
+            "之后再 `cd share` 走回来。\n\n"
+            "★ 这类题的通用解法：把路径按 `/` 切开写在纸上，"
+            "`..` 就是从尾巴上划掉一段。`/usr/local/share/applications` 划两段"
+            "→ `/usr/local`，再进 `share` → 回到 `/usr/local/share`。\n\n"
+            "★ 用 `pwd` 而不是 `echo $PWD` 来验：`pwd` 显示的是**逻辑**路径，"
+            "软链目录下 `pwd -P` 才给物理路径 —— 这一步两者一样，用 `pwd` 最直观。"),
+        tags=["实验 2", "cd", "相对路径", "层级"], difficulty=2,
+    ))
+
+    # ══════════════════ 实验 3 ══════════════════
+    add(practical(
+        "一条命令建出 a1 到 a4 四级子目录",
+        "**作业 3 第 2 步**\n\n"
+        "1. 切到 `/tmp`，在里面建一个名为 `aa` 的目录。\n"
+        "2. 还在 `/tmp` 下，建出多级子目录 `a1/a2/a3/a4`。\n"
+        "3. 查看目录是否已经创建。\n\n"
+        "注意：`a1/a2/a3/a4` 是**多级**，不是同级四个。",
+        ["/tmp/a1\n/tmp/a1/a2\n/tmp/a1/a2/a3\n/tmp/a1/a2/a3/a4"],
+        verify_cmd="find /tmp/a1 -type d | sort",
+        subject=SUBJ, section=s3,
+        explanation=(
+            "四行，从 `/tmp/a1` 一直到 `/tmp/a1/a2/a3/a4`。\n\n"
+            "建法是 `mkdir -p /tmp/a1/a2/a3/a4`，`-p` 的作用是"
+            "**沿途缺哪层补哪层**，已存在也不报错。\n\n"
+            "★ 不用 `-p` 会直接报 `No such file or directory` —— "
+            "父目录都不存在，`mkdir` 不会替你凭空造出来。\n\n"
+            "★ `find ... -type d` 只列目录（`-type f` 才是文件），"
+            "再 `sort` 一遍让输出稳定；不排序时 `find` 的顺序依赖文件系统，"
+            "同一棵树在不同机器上打印顺序可能不一样。"),
+        tags=["实验 3", "mkdir -p", "find", "多级目录"], difficulty=2,
+    ))
+
+    add(practical(
+        "把 a1 整棵树复制进 /usr",
+        "**作业 3 第 3 步**\n\n"
+        "1. 用 `cp` 把 `/tmp/a1` 目录**及其子目录**复制到 `/usr` 下。\n"
+        "2. 切到 `/usr`，确认复制成功（四层目录都得在）。\n\n"
+        "这一步要用 `sudo` —— 普通用户往 `/usr` 写会被拒绝。",
+        ["/usr/a1\n/usr/a1/a2\n/usr/a1/a2/a3\n/usr/a1/a2/a3/a4"],
+        verify_cmd="find /usr/a1 -type d | sort",
+        subject=SUBJ, section=s3,
+        explanation=(
+            "四行，路径从 `/usr/a1` 到 `/usr/a1/a2/a3/a4`。\n\n"
+            "递归复制靠 `cp -r`（复制目录**必须**加 `-r` 或 `-a`，否则报 "
+            "`omitting directory`）。\n"
+            "`-a` 比 `-r` 更彻底：`-a` = `-dR --preserve=all`，"
+            "连权限、时间戳、软链本身一起保留。\n\n"
+            "★ 一个要点：`cp -r /tmp/a1 /usr` 和 `cp -r /tmp/a1 /usr/` 结果**一样**"
+            "（都得到 `/usr/a1`）；但如果 `/usr/a1` 已经存在，"
+            "`cp -r /tmp/a1 /usr` 会把源**塞进**已有的 `/usr/a1/a1` 里 —— "
+            "这是 `cp` 最坑人的行为差异，`rsync` 的尾斜杠规则也是同一类坑。"),
+        tags=["实验 3", "cp -r", "递归复制", "sudo"], difficulty=2,
+    ))
+
+    add(practical(
+        "vi 改 hello、echo 写 mysdutfile，一起验",
+        "**作业 3 第 7 ~ 8 步**\n\n"
+        "1. 用 `touch` 在用户主目录下建一个空文件 `hello`。\n"
+        "2. 用 `vi` 打开 `hello`，把内容改成 `this is a file of sdut`，存盘退出。\n"
+        "3. 用 `echo` 把 `this is my new file` **重定向**到主目录下的 `mysdutfile`。\n"
+        "4. 用 `less` 或 `more` 看一遍 `mysdutfile`。\n\n"
+        "两个文件都要真的留下内容 —— 一个走编辑器，一个走重定向，是两条不同的路。",
+        ["this is a file of sdut\nthis is my new file",
+         "this is a file of sdut this is my new file"],
+        verify_cmd="cat ~/hello; echo; cat ~/mysdutfile",
+        subject=SUBJ, section=s3,
+        explanation=(
+            "第一行 `this is a file of sdut`，第二行 `this is my new file`。\n\n"
+            "`echo 内容 > 文件` 里的 `>` 是**覆盖**重定向：文件不存在就建，"
+            "存在就先清空再写。追加要用 `>>`。\n\n"
+            "★ vi 的三个必备操作：`i` 进插入模式 → 打字 → `Esc` 回普通模式 → "
+            "`:wq` 存盘退出（`:q!` 是不存盘强退）。"
+            "新手最常卡在「忘了按 `Esc` 就打 `:wq`」，结果那些字符被当成正文写进文件里。\n\n"
+            "★ 验收里那个 `echo` 不是多余：vi 存的文件**末尾可能没有换行**"
+            "（取决于你最后有没有回车），不补一个换行的话两条内容会粘在同一行。"),
+        tags=["实验 3", "vi", "echo 重定向", "touch"], difficulty=2,
+    ))
+
+    # ══════════════════ 实验 4 ══════════════════
+    add(practical(
+        "把 /usr/test5 打包备份再解压回 /usr/local",
+        "**作业 4 第 1 步**\n\n"
+        "1. 在 `/usr` 下新建目录 `test5`。\n"
+        "2. 用 `tar` 把它**压缩备份**到普通用户主目录，命名 `test5.tar.gz`。\n"
+        "3. 查看是否压缩成功（看文件在不在、有多大）。\n"
+        "4. 把压缩包**解压**到 `/usr/local`，并确认解压结果。\n\n"
+        "`test5` 是空目录，所以包里的清单很短。",
+        ["test5/\n/usr/local/test5", "usr/test5/\n/usr/local/test5"],
+        verify_cmd="tar -tzf ~/test5.tar.gz | head -1; ls -d /usr/local/test5",
+        subject=SUBJ, section=s4,
+        explanation=(
+            "第一行 `test5/`（包里第一项），第二行 `/usr/local/test5`（解压出来的目录）。\n\n"
+            "标准做法是先进到父目录再打相对路径：\n\n"
+            "```bash\n"
+            "cd /usr && sudo tar czf ~/test5.tar.gz test5\n"
+            "sudo tar xzf ~/test5.tar.gz -C /usr/local\n"
+            "```\n\n"
+            "`czf` 三个字母：`c` 建包、`z` 走 gzip、`f` 指定文件名；"
+            "解包是 `xzf`，`-C` 指定解到哪个目录。\n\n"
+            "★ 如果用绝对路径打包（`tar czf ~/test5.tar.gz /usr/test5`），"
+            "tar 会警告 `Removing leading '/' from member names`，"
+            "包里的第一项变成 `usr/test5/` —— 这个写法也算对，所以两种都收。"
+            "**这个警告不是错误**，是 tar 故意去掉开头的 `/`："
+            "带着绝对路径的包解压时会直接铺满根目录，太危险。"),
+        tags=["实验 4", "tar", "gzip", "打包解压"], difficulty=3,
+    ))
+
+    add(practical(
+        "给 /usr/local/sdutshare 挂一个根目录软链",
+        "**作业 4 第 3 步**\n\n"
+        "1. 在 `/usr/local` 下创建目录 `sdutshare`。\n"
+        "2. 在**根目录**下建立一个名为 `myshare` 的**符号链接**，指向它。\n"
+        "3. 在根目录下确认软链已经建立。",
+        ["/usr/local/sdutshare", "usr/local/sdutshare"],
+        verify_cmd="readlink /myshare",
+        subject=SUBJ, section=s4,
+        explanation=(
+            "`/usr/local/sdutshare`（相对写法 `usr/local/sdutshare` 也认，"
+            "因为软链就在根目录下，相对根解析结果一样）。\n\n"
+            "建链是 `sudo ln -s /usr/local/sdutshare /myshare` —— "
+            "**`-s` 是符号链接，目标写在前、链接名写在后**。"
+            "参数顺序写反了会建出一个叫 `sdutshare` 的链接，而不是 `myshare`。\n\n"
+            "★ `ln` 不加 `-s` 建的是**硬链接**：不能跨文件系统、不能指向目录、"
+            "删掉任意一个名字文件都还在（inode 引用计数）。"
+            "软链是另一个文件，只存一条路径字符串 —— 所以目标被删了，"
+            "软链还在但打不开（`broken link`）。\n\n"
+            "★ `ls -l` 看软链会显示 `myshare -> /usr/local/sdutshare`，"
+            "要拿纯目标路径就用 `readlink`（加 `-f` 还会把相对路径解析成绝对路径）。"),
+        tags=["实验 4", "ln -s", "符号链接", "readlink"], difficulty=3,
+    ))
+
+    add(practical(
+        "字典逆序排序，再输出一串不换行的字",
+        "**作业 4 第 4 ~ 5 步**\n\n"
+        "1. 在主目录下用 `vim` 建文件 `mysort1`，内容四行："
+        "`is` / `this` / `excellent` / `my`。\n"
+        "2. 用 `sort` 把这个文件按**字典逆序**显示出来。\n"
+        "3. 用 `echo` 输出 `hello everyone!`，要求**输出后不换行**。\n\n"
+        "第 3 步的关键是「怎么证明它真的没换行」—— 数一下字节数最直接。",
+        ["this\nmy\nis\nexcellent\n15"],
+        verify_cmd="sort -r ~/mysort1; echo -n \"hello everyone!\" | wc -c",
+        subject=SUBJ, section=s4,
+        explanation=(
+            "前四行是排序结果 `this` / `my` / `is` / `excellent`，最后一行 `15`。\n\n"
+            "**字典逆序**就是按字符编码从大到小比：`t` > `m` > `i` > `e`，"
+            "所以顺序正好是 `this, my, is, excellent`。`sort -r` 的 `-r` 就是 reverse。\n\n"
+            "`echo -n` 的 `-n` 关掉末尾那个换行。"
+            "`hello everyone!` 一共 15 个字符（5 个字母 + 1 个空格 + 8 个字母 + 1 个感叹号），"
+            "有换行的话 `wc -c` 会数成 16 —— **15 就是「真的没换行」的证据**。\n\n"
+            "★ 顺带记住 `wc` 的三个开关：`-c` 字节、`-w` 单词、`-l` 行。"
+            "「文件到底有没有末尾换行」这类问题，`wc -c` 加上 `tail -c 1 | xxd` 一看就知道。"),
+        tags=["实验 4", "sort -r", "echo -n", "wc"], difficulty=3,
+    ))
+
+    add(practical(
+        "把两个文件的内容拼成第三个文件",
+        "**作业 4 第 8 步**\n\n"
+        "1. 在主目录下建 `file11`（内容 `sdut11`）和 `file12`（内容 `sdut12`）。\n"
+        "2. 在主目录下建一个新目录 `dir1`。\n"
+        "3. 在 `dir1` 下建 `file13`，内容用 `cat` 把上面两个文件**拼**进来。\n"
+        "4. 把 `file11`、`file12` **移动**到 `dir1` 里，确认移动成功。\n"
+        "5. 查看 `file13` 的内容。",
+        ["sdut11\nsdut12\nfile11\nfile12\nfile13",
+         "sdut11\nsdut12\n/home/" ],
+        verify_cmd="cat ~/dir1/file13; echo; ls ~/dir1",
+        subject=SUBJ, section=s4,
+        explanation=(
+            "先两行内容 `sdut11` / `sdut12`，再三行目录清单 `file11` / `file12` / `file13`。\n\n"
+            "拼接靠重定向把两个 `cat` 的输出接到同一个文件里：\n\n"
+            "```bash\n"
+            "cat ~/file11 ~/file12 > ~/dir1/file13\n"
+            "mv ~/file11 ~/file12 ~/dir1/\n"
+            "```\n\n"
+            "`mv` 最后一个参数是**目标目录**，前面几个都是要被搬走的东西 —— "
+            "和 `cp` 的多源语法一致。\n\n"
+            "★ `mv` 在同一个文件系统内只是**改目录项**，不搬数据，所以再大的文件也是瞬间完成；"
+            "跨文件系统才会真复制 + 删除。想验证「是移动还是复制」，"
+            "搬完看主目录里还在不在就行 —— 这一步的 `ls ~/dir1` 里三个文件齐了，"
+            "而主目录里的 `file11`/`file12` 应该已经消失。"),
+        tags=["实验 4", "cat", "重定向", "mv"], difficulty=3,
+    ))
+
+    # ══════════════════ 实验 5 ══════════════════
+    add(practical(
+        "把 11.txt 改成 -rwxr-x--x",
+        "**作业 5 第 1 ~ 4 步**\n\n"
+        "1. 新建用户 `user01` 和 `user02`，切到 `user01`。\n"
+        "2. 在 `user01` 主目录下建文件 `11.txt` 和目录 `abc`。\n"
+        "3. 查看两者的权限。\n"
+        "4. 把 `11.txt` 的权限改成 **`-rwxr-x--x`**（用八进制最快），再看一次。\n\n"
+        "改完别急着交 —— 题目问的就是改完那一瞬间的权限串。",
+        ["-rwxr-x--x"],
+        verify_cmd="stat -c '%A' ~/11.txt",
+        subject=SUBJ, section=s5,
+        explanation=(
+            "`-rwxr-x--x`。\n\n"
+            "把它拆回八进制就明白了：`rwx` = 4+2+1 = **7**，`r-x` = 4+1 = **5**，"
+            "`--x` = **1** —— 所以 `chmod 751 ~/11.txt`。\n"
+            "字符法等价写法：`chmod u=rwx,g=rx,o=x ~/11.txt`。\n\n"
+            "★ 第一位的 `-` 是**文件类型**：`-` 普通文件、`d` 目录、`l` 软链。"
+            "所以 `-rwxr-x--x` 一共 10 个字符，不是 9 个。\n\n"
+            "★ 八进制三位分别对应 **属主 / 属组 / 其他**（u/g/o），"
+            "顺序固定，不能按名字记混。"),
+        tags=["实验 5", "chmod", "权限", "八进制"], difficulty=3,
+    ))
+
+    add(practical(
+        "把 abc 整棵树交出去给 user02",
+        "**作业 5 第 5 步**\n\n"
+        "1. 在 `abc` 目录里建一个文件 `22.txt`。\n"
+        "2. 把 `abc` **目录及其中的文件**的所属用户和用户组都改成 `user02`。\n"
+        "3. 查看改完的结果 —— 目录和里面的文件都要变。\n\n"
+        "只改目录不改里面的文件，是这一步最典型的漏做。",
+        ["user02:user02\nuser02:user02"],
+        verify_cmd="stat -c '%U:%G' ~/abc ~/abc/22.txt",
+        subject=SUBJ, section=s5,
+        explanation=(
+            "两行都是 `user02:user02`。\n\n"
+            "命令是 `sudo chown -R user02:user02 ~/abc`（在 user01 的主目录下）。"
+            "`-R` 递归，冒号后面那个是**组**；只写 `chown -R user02 abc` 只改属主，组不变。\n\n"
+            "★ 为什么必须先建 `22.txt` 再 `chown -R`：`chown` 只作用于**当时已经存在**的文件，"
+            "之后再往里放新文件，新文件的属主是**创建它的那个用户**，不会跟着目录走。\n\n"
+            "★ `stat -c '%U:%G'` 里 `%U` 是属主名、`%G` 是属组名（要大写；"
+            "小写 `%u` `%g` 给的是数字 UID/GID）。迁机器时数字 UID 更可靠，"
+            "但看「有没有改对」用名字更直观。"),
+        tags=["实验 5", "chown -R", "属主", "stat"], difficulty=4,
+    ))
+
+    add(practical(
+        "八进制 744 之后长什么样",
+        "**作业 5 第 6 ~ 9 步**\n\n"
+        "1. 切到 `user02`，在主目录下建目录 `sdutjsj`，进去建空文件 `sdutfile1`。\n"
+        "2. 用长格式看它的权限、属主、属组。\n"
+        "3. 先让它「其他用户可写」，再「取消同组用户的读权限」，各看一次结果。\n"
+        "4. 最后用**八进制**设成：属主 `rwx`，属组和其他都只有 `r`。再看一次。\n\n"
+        "第 4 步是本题的终点，前面几步的结果不用交。",
+        ["744 -rwxr--r--"],
+        verify_cmd="stat -c '%a %A' ~/sdutjsj/sdutfile1",
+        subject=SUBJ, section=s5,
+        explanation=(
+            "`744 -rwxr--r--`。\n\n"
+            "「属主 rwx、属组 r、其他 r」= 7 / 4 / 4 → `chmod 744 sdutfile1`，"
+            "符号位就是 `-rwxr--r--`。\n\n"
+            "★ 注意这道题和前面那道（751）的差别：751 的**其他用户**是 `--x`（只有执行），"
+            "744 的**属组**是 `r--`（只有读）。数值差一位，权限差一件事。\n\n"
+            "★ 文件「能不能被执行」对普通文件来说取决于 x 位 —— "
+            "脚本没有 x 位就 `Permission denied`，加 x 才能 `./xxx` 跑。"
+            "目录的 x 位含义不同：它管的是**能不能进出这个目录**（`cd` 进去、"
+            "访问里面的文件都要它），所以目录通常至少 755。"),
+        tags=["实验 5", "chmod 744", "八进制", "权限位"], difficulty=4,
+    ))
+
+    add(practical(
+        "400 再给其他用户加写，最后是几",
+        "**作业 5 第 10 ~ 11 步**\n\n"
+        "接着上一题的文件（`~/sdutjsj/sdutfile1`）：\n\n"
+        "1. 用八进制把权限设成「**只有属主可读**，属组和其他什么权限都没有」。\n"
+        "2. 再用字符法给**其他用户**加上可写权限。\n"
+        "3. 查看最后的结果。\n\n"
+        "这题考的是「八进制 → 符号位 → 再回八进制」的来回换算，中途算错一步就到不了。",
+        ["402 -r------w-"],
+        verify_cmd="stat -c '%a %A' ~/sdutjsj/sdutfile1",
+        subject=SUBJ, section=s5,
+        explanation=(
+            "`402 -r------w-`。\n\n"
+            "第一步 `chmod 400 sdutfile1` → `-r--------`（属主只读，其余全空）。\n"
+            "第二步 `chmod o+w sdutfile1` → 其他用户加上 `w`，数值从 `400` 变 `402`，"
+            "符号位是 `-r------w-`。\n\n"
+            "★ 「其他用户」那一组的三个位是 `r=4 / w=2 / x=1` 中的后两位，"
+            "所以 `o+w` 加的是**个位上的 2** —— 400 + 002 = 402。\n\n"
+            "★ 一个真实的坑：权限 `402` 的意思是——别人**能写不能读**。"
+            "能往文件里追加内容，但 `cat` 打不开。这不是笔误，是权限位本来就分开算；"
+            "真要用「可写」通常得给 `o+rw`。"),
+        tags=["实验 5", "chmod 400", "o+w", "权限位"], difficulty=5,
+    ))
+
+    add(practical(
+        "把 temp1 交给 root",
+        "**作业 5 第 12 ~ 15 步**\n\n"
+        "1. 切回自己（姓名拼音那个用户），新建用户 `zhangsan`，密码设 `123`。\n"
+        "2. 用 `tail` 看 `/etc/passwd` 的最后 10 行，确认新用户进去了。\n"
+        "3. 建组 `sdutstuff`，看 `/etc/group` 最后 5 行；再把它删掉，再看一次。\n"
+        "4. 在 `zhangsan` 的主目录下建 `temp1`，查看它的属主和属组，"
+        "然后改成 `root`，再看一次。\n\n"
+        "最后一小步才是本题要交的东西。",
+        ["root:root"],
+        verify_cmd="stat -c '%U:%G' /home/zhangsan/temp1",
+        subject=SUBJ, section=s5,
+        explanation=(
+            "`root:root`。\n\n"
+            "命令是 `sudo chown root:root /home/zhangsan/temp1`，"
+            "或者简写 `sudo chown root: /home/zhangsan/temp1`（冒号后面留空 = 组也跟着属主走）。\n\n"
+            "★ 删组用 `sudo groupdel sdutstuff`；如果还有用户把它当**主组**，"
+            "`groupdel` 会拒绝（`cannot remove the primary group of user`）—— "
+            "得先把人挪走。作为附加组则可以先删。\n\n"
+            "★ 顺带一句：`/etc/passwd` 里那个 `x` 是占位符，"
+            "真正的密码散列在 `/etc/shadow`（只有 root 能读）。"
+            "所以 `tail /etc/passwd` 看得见新用户，但看不见密码 —— 这是设计如此，不是 bug。"),
+        tags=["实验 5", "useradd", "groupadd", "chown", "tail"], difficulty=4,
+    ))
+
+
 def build() -> list[dict]:
     PROBLEMS.clear()
     part_fix_six()
     part_a_group()
     part_b_group()
     part_c_group()
+    # ★ 先跑实操题：它按 实验 1~5 的顺序注册分组，
+    #   这样「实验」这几个分组在界面上就是 1→2→3→4→5，
+    #   而不是填空那几道先把 2/3/4 占了、1 和 5 落到最后。
+    part_practical()
     part_experiments()
     part_lectures_a()
     part_lectures_b()

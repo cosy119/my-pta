@@ -37,6 +37,7 @@ with tempfile.TemporaryDirectory(prefix="pta-types-") as tmp:
         assert counts[k] == explicit.get(k, 0), \
             f"{k} 只能来自题库显式标注：库里 {counts[k]} 条 / 题库 {explicit.get(k, 0)} 条"
     assert counts["multiple_choice"] > 0, "题库里应当有多选题"
+    assert counts["practical"] > 0, "题库里应当有实操题（课程实验那 15 道）"
 
     # 老库补标幂等；人工题显式类型不应被种子同步覆盖。
     old_id = rows[0]["id"]
@@ -47,4 +48,6 @@ with tempfile.TemporaryDirectory(prefix="pta-types-") as tmp:
 
     assert infer({"line": "text", "choices": ["A", "B", "C"], "reference_solution": "AC"}) == "multiple_choice"
     assert infer({"line": "text", "choices": [], "question_type": "short_answer"}) == "short_answer"
+    # 实操题 / 简答题不许被推断出来：没有显式标注的话，一律按填空题算
+    assert infer({"line": "text", "choices": [], "reference_solution": "744 -rwxr--r--"}) == "fill_blank"
     print("题型分类与老库补标通过：", len(rows), "题，", dict(counts))

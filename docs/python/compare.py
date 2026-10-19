@@ -75,10 +75,11 @@ def answer_forms(text: bytes | str | None) -> set[str]:
     只往里**加**等价写法，绝不删掉原样 —— 这样任何原本判得过的答案
     在加了宽容之后依然判得过，不会引入回归。
 
-    三层：
+    四层：
     1. 原文（空白折叠）
     2. 剥掉首尾的**排版类**标点（`ls -la /etc。` → `ls -la /etc`）
     3. 命令口径归一化（`ls -l -a /` → `ls -al /`，见 `_norm_cmd`）
+    4. 「家目录」归一化（`/home/zhangsan/docs` → `~/docs`，见 `_norm_home`）
     """
     t = normalize_newlines(to_text(text)).strip()
     forms = {_squeeze_ws(t)}
@@ -87,7 +88,32 @@ def answer_forms(text: bytes | str | None) -> set[str]:
         forms.add(_squeeze_ws(core))
     for f in list(forms):
         forms.add(_squeeze_ws(_norm_cmd(f)))
+    for f in list(forms):
+        forms.add(_squeeze_ws(_norm_home(f)))
     return forms
+
+
+# `/home/<某个名字>` 这一整段（不含其后的路径分隔符）
+_HOME_RE = re.compile(r"(?<![\w/])/home/[^/\s]+(?=/|\s|$)")
+
+
+def _norm_home(text: str) -> str:
+    """把 `/home/<谁>` 折成 `~`：`cp -a /home/zhangsan/docs /tmp/` → `cp -a ~/docs /tmp/`。
+
+    为什么需要
+    ----------
+    Linux 线的题面里，别人的家目录写法是 `/home/<你的登录名>/...`，
+    登录名**因人而异**（题库里写成占位符 `{user}`，显示时才替换）。
+    如果答案只认 `~/docs`，那照着题面写 `/home/zhangsan/docs` 的人就白判一次错。
+
+    所以不再往答案里堆「每个名字一个备选」（那永远堆不完），
+    而是两边都折成 `~` 再比 —— 任意用户名都通吃。
+
+    ★ 前提：**一道题的答案里不会出现「两个不同用户的家目录」**。
+      题库里确实没有这种题（`/etc/passwd`、`chown` 这类考的是 `%U:%G` 用户名，
+      不带 `/home/`）。真要出那种题，这条归一化就会把区分抹掉，得给题目开个开关。
+    """
+    return _HOME_RE.sub("~", text)
 
 
 # 纯字母的短选项，如 -l / -a / -lah（两个横杠的长选项、带数字的 -9、单独的 - 都不匹配）

@@ -187,8 +187,18 @@
     if (core && core !== t) forms.add(squeezeWs(core));
     /* 在已有个形式的基础上，再叠一层命令归一化 */
     Array.from(forms).forEach(function (f) { forms.add(squeezeWs(normCmd(f))); });
+    /* 再叠一层「家目录」归一化：/home/<谁> → ~，任意登录名都通吃 */
+    Array.from(forms).forEach(function (f) { forms.add(squeezeWs(normHome(f))); });
     return forms;
   }
+
+  /* `/home/<某个名字>` 这一整段（不含其后的路径分隔符） */
+  const HOME_RE = /(?<![\w/])\/home\/[^/\s]+(?=\/|\s|$)/g;
+
+  /* 把 `/home/<谁>` 折成 `~`：`cp -a /home/zhangsan/docs /tmp/` → `cp -a ~/docs /tmp/`。
+     题库里别人的家目录写成占位符 `{user}`（显示时才替换成人名），答案只认 `~/...`，
+     所以两边都折一遍，写 `/home/任意登录名/...` 也判得过。 */
+  function normHome(text) { return String(text).replace(HOME_RE, '~'); }
 
   /* 纯字母的短选项，如 -l / -a / -lah（两个横杠的长选项、带数字的 -9、单独的 - 都不匹配） */
   const SHORT_OPT_RE = /^-[A-Za-z]+$/;
