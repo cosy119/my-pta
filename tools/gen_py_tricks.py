@@ -17,6 +17,9 @@
                sorted 多关键字 / dict.get 词频 / 集合运算）
   竞赛工具箱   6 题（Counter / heapq / 前缀和 / bisect 第一个大于 x / lru_cache / 回文清洗）
   竞赛强度     6 题（01 背包 / LIS n log n / 快速幂 / 区间合并 / 阶乘大数 / 筛法）
+  进阶技巧    10 题（ROT13 映射表 / 正则提取整数 / 格式化四连 / zip 转置 /
+               第 k 个排列 / gcd-lcm / 位运算三连 / 子集枚举 / 二维前缀和 /
+               单调队列滑窗最大值）
 """
 from __future__ import annotations
 
@@ -1354,6 +1357,768 @@ for i in range(2, n + 1):
         if i % p == 0:
             break
 print(len(primes), primes[-1])
+''',
+)
+
+
+# --------------------------------------------------------------------- #
+#  进阶技巧（difficulty 2~4，第二批量）
+# --------------------------------------------------------------------- #
+
+def _oracle_21(text: str) -> str:
+    s = text.rstrip("\n")
+    enc = []
+    for c in s:
+        if "a" <= c <= "z":
+            enc.append(chr((ord(c) - 97 + 13) % 26 + 97))
+        elif "A" <= c <= "Z":
+            enc.append(chr((ord(c) - 65 + 13) % 26 + 65))
+        else:
+            enc.append(c)
+    vow = 0
+    for c in s:
+        if c in "aeiouAEIOU":
+            vow += 1
+    return "".join(enc) + "\n%d\n" % vow
+
+add(
+    title="ROT13 字母替换表",
+    section="技巧特训 · Python",
+    difficulty=2, score=10, tags=["技巧特训", "str.translate", "maketrans", "字符映射"],
+    statement_md=(
+        "读入一行字符串，输出两行：\n\n"
+        "1. 对每个字母做 ROT13 位移（a→n、z→m，大小写各自循环，非字母原样保留）\n"
+        "2. 原串里元音字母（a e i o u，大小写都算）的个数\n\n"
+        "★ 技巧点：`str.maketrans(from, to)` 造映射表，`s.translate(table)` 一次性替换——"
+        "比 `for c in s: if ... elif ...` 快一个量级，而且天然支持多字符映射。"
+        "ROT13 是自逆的（再位移一次就还原），所以它是理解「字符映射表」最好的例子。"
+    ),
+    input_format="一行字符串（长度 ≤ 10⁵，可含空格与标点）。",
+    output_format="两行：加密结果、元音个数。",
+    constraints_md="- 1 ≤ 字符串长度 ≤ 10⁵",
+    inputs=[
+        "Hello, World!\n",
+        "abcXYZ\n",
+        "123 !?\n",
+        "Uryyb\n",
+        "AEIOU aeiou\n",
+    ],
+    samples=2,
+    oracle=_oracle_21,
+    solution=r'''import sys
+
+s = sys.stdin.readline().rstrip("\n")
+lower = "abcdefghijklmnopqrstuvwxyz"
+upper = lower.upper()
+table = str.maketrans(lower + upper,
+                      lower[13:] + lower[:13] + upper[13:] + upper[:13])
+print(s.translate(table))
+print(sum(c in "aeiouAEIOU" for c in s))
+''',
+    alt=r'''import sys
+import codecs
+
+s = sys.stdin.readline().rstrip("\n")
+print(codecs.encode(s, "rot13"))          # 标准库自带 rot13 编解码器
+print(sum(1 for c in s if c.lower() in "aeiou"))
+''',
+)
+
+
+def _oracle_22(text: str) -> str:
+    s = text.rstrip("\n")
+    nums = []
+    cur = ""
+    for c in s:
+        if "0" <= c <= "9":
+            cur += c
+        else:
+            if cur:
+                nums.append(cur)
+                cur = ""
+    if cur:
+        nums.append(cur)
+    if not nums:
+        return "0\n0\nEMPTY\n"
+    total = 0
+    for x in nums:
+        total += int(x)
+    return "%d\n%d\n%d\n" % (len(nums), total, max(int(x) for x in nums))
+
+add(
+    title="正则提取所有整数",
+    section="技巧特训 · Python",
+    difficulty=2, score=10, tags=["技巧特训", "re", "findall", "正则"],
+    statement_md=(
+        "读入一行字符串，把里面所有**连续数字**当作整数提取出来，输出三行：\n\n"
+        "1. 整数的个数\n"
+        "2. 总和\n"
+        "3. 最大值（一个数字都没有时输出 `EMPTY`）\n\n"
+        "★ 技巧点：`re.findall(r\"\\d+\", s)` 一行拿到所有数字串，比手写扫描短十倍。"
+        "注意 `\\d+` 是贪婪的：`\"a12b\"` 抓到的是 `\"12\"` 而不是 `\"1\"、\"2\"`。"
+        "不想引入 `re` 时，`\"\".join(c if c.isdigit() else \" \" for c in s).split()` "
+        "是同样效果的手写版。"
+    ),
+    input_format="一行字符串（长度 ≤ 10⁵，可含字母、数字、标点、空格）。",
+    output_format="三行，如题面所述。数字按十进制解释，前导零忽略。",
+    constraints_md="- 1 ≤ 字符串长度 ≤ 10⁵\n- 每个数字串长度 ≤ 18（能用 int 直接装）",
+    inputs=[
+        "abc12de345\n",
+        "no digits here\n",
+        "2026-10-19\n",
+        "0 00 000\n",
+        "a1b22c333d4444\n",
+    ],
+    samples=2,
+    oracle=_oracle_22,
+    solution=r'''import re
+import sys
+
+s = sys.stdin.read()
+nums = re.findall(r"\d+", s)
+if not nums:
+    print(0)
+    print(0)
+    print("EMPTY")
+else:
+    print(len(nums))
+    print(sum(map(int, nums)))
+    print(max(map(int, nums)))
+''',
+    alt=r'''import sys
+
+s = sys.stdin.readline().rstrip("\n")
+nums = "".join(c if c.isdigit() else " " for c in s).split()
+if not nums:
+    sys.stdout.write("0\n0\nEMPTY\n")
+else:
+    vals = list(map(int, nums))
+    sys.stdout.write("%d\n%d\n%d\n" % (len(vals), sum(vals), max(vals)))
+''',
+)
+
+
+def _oracle_23(text: str) -> str:
+    n = int(text.split()[0])
+    return "%s\n%s\n%s\n%.3f\n" % (str(n).zfill(8), format(n, "x"),
+                                   format(n, "b"), n / 3.0)
+
+add(
+    title="格式化输出四连",
+    section="技巧特训 · Python",
+    difficulty=2, score=10, tags=["技巧特训", "f-string", "format", "补零"],
+    statement_md=(
+        "读入一个非负整数 `n`，输出四行：\n\n"
+        "1. 八位、左侧补零的十进制写法\n"
+        "2. 十六进制（小写，不带 `0x`）\n"
+        "3. 二进制（不带 `0b`）\n"
+        "4. `n / 3` 保留 3 位小数\n\n"
+        "★ 技巧点：`f\"{n:08d}\"` 的格式说明符 `[填充][对齐][宽度][类型]`——"
+        "`08d` = 补 0、宽 8、十进制；`x` 十六进制、`b` 二进制、`.3f` 三位小数。"
+        "同一套说明符 `format()` 和 `%` 风格都能用，但 f-string 最直观。"
+        "输出题里对齐、补零、定点小数几乎必考。"
+    ),
+    input_format="一行一个整数 `n`。",
+    output_format="四行，如题面所述。",
+    constraints_md="- 0 ≤ n ≤ 10⁹",
+    inputs=[
+        "7\n",
+        "0\n",
+        "123456789\n",
+        "1000000000\n",
+        "42\n",
+    ],
+    samples=2,
+    oracle=_oracle_23,
+    solution=r'''import sys
+
+n = int(sys.stdin.read())
+print(f"{n:08d}")
+print(f"{n:x}")
+print(f"{n:b}")
+print(f"{n / 3:.3f}")
+''',
+    alt=r'''import sys
+
+n = int(sys.stdin.read())
+print(format(n, "08d"))
+print(format(n, "x"))
+print(format(n, "b"))
+print(format(n / 3, ".3f"))
+''',
+)
+
+
+def _oracle_24(text: str) -> str:
+    d = text.split()
+    i = 0
+    n = int(d[i]); i += 1
+    m = int(d[i]); i += 1
+    a = []
+    for r in range(n):
+        a.append([int(d[i + r * m + c]) for c in range(m)])
+    out = ["%d %d" % (m, n)]
+    for c in range(m):
+        out.append(" ".join(str(a[r][c]) for r in range(n)))
+    out.append(" ".join(str(max(a[r][c] for r in range(n))) for c in range(m)))
+    return "\n".join(out) + "\n"
+
+add(
+    title="矩阵转置与列最大值",
+    section="技巧特训 · Python",
+    difficulty=2, score=10, tags=["技巧特训", "zip", "解包", "矩阵"],
+    statement_md=(
+        "读入 `n` 行 `m` 列的矩阵，输出：\n\n"
+        "1. 一行两个数：转置后的行数 列数（即 `m n`）\n"
+        "2. 转置后的矩阵（共 `m` 行，每行 `n` 个数）\n"
+        "3. 一行 `m` 个数：原矩阵每一列的最大值\n\n"
+        "★ 技巧点：`zip(*a)` 把「行列表」按列拉开——`list(zip(*a))` 就是转置，"
+        "一行顶两重循环。`*a` 是解包：`zip(a[0], a[1], ...)`。"
+        "配合 `max(col)` 直接拿列最大值，注意 `zip` 返回的是元组。"
+    ),
+    input_format="第一行 `n m`；随后 `n` 行，每行 `m` 个整数。",
+    output_format="如题面所述，矩阵元素之间用单个空格分隔。",
+    constraints_md="- 1 ≤ n, m ≤ 500\n- |元素| ≤ 10⁹",
+    inputs=[
+        "3 4\n1 2 3 4\n5 6 7 8\n9 10 11 12\n",
+        "1 1\n5\n",
+        "2 3\n-1 0 3\n7 -2 1\n",
+        "4 1\n1\n2\n3\n4\n",
+        "2 2\n0 0\n0 0\n",
+    ],
+    samples=2,
+    oracle=_oracle_24,
+    solution=r'''import sys
+
+d = sys.stdin.read().split()
+n, m = int(d[0]), int(d[1])
+vals = list(map(int, d[2:2 + n * m]))
+a = [vals[r * m:(r + 1) * m] for r in range(n)]
+t = list(zip(*a))                 # ★ 转置：一行搞定
+print(m, n)
+for row in t:
+    print(*row)
+print(*[max(col) for col in t])
+''',
+    alt=r'''import sys
+
+d = sys.stdin.read().split()
+n, m = int(d[0]), int(d[1])
+a = [[0] * m for _ in range(n)]
+k = 2
+for r in range(n):
+    for c in range(m):
+        a[r][c] = int(d[k]); k += 1
+print(m, n)
+for c in range(m):
+    print(" ".join(str(a[r][c]) for r in range(n)))
+print(" ".join(str(max(a[r][c] for r in range(n))) for c in range(m)))
+''',
+)
+
+
+def _oracle_25(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    s = d[1]
+    k = int(d[2])
+    chars = sorted(s[:n])
+    res = []
+
+    def dfs(cur, used):
+        if len(cur) == n:
+            res.append("".join(cur))
+            return
+        for i in range(n):
+            if not used[i]:
+                used[i] = True
+                cur.append(chars[i])
+                dfs(cur, used)
+                cur.pop()
+                used[i] = False
+
+    dfs([], [False] * n)
+    return res[k - 1] + "\n"
+
+add(
+    title="字典序第 k 个排列",
+    section="技巧特训 · Python",
+    difficulty=3, score=20, tags=["技巧特训", "itertools", "permutations", "全排列"],
+    statement_md=(
+        "读入 `n`、一个长度 `n` 的字符串（字符互不相同）、以及 `k`，"
+        "输出把这些字符**按字典序全排列**后的第 `k` 个（`k` 从 1 起）。\n\n"
+        "★ 技巧点：`itertools.permutations(seq)` 按输入顺序产出全排列，**不是**字典序——"
+        "所以要先 `sorted()` 再传给 `permutations`，这样产出的顺序恰好就是字典序。"
+        "取第 k 个直接 `list(permutations(...))[k-1]`；`n ≤ 8` 时 `8! = 40320`，"
+        "全部枚举完全够用，不必手写康托展开。"
+    ),
+    input_format="一行三个部分：`n`、字符串 `s`、`k`（空格分隔）。",
+    output_format="一行：第 `k` 个排列的字符序列。",
+    constraints_md="- 1 ≤ n ≤ 8\n- 1 ≤ k ≤ n!\n- `s` 由小写或大写字母组成，字符互不相同",
+    inputs=[
+        "3 abc 5\n",
+        "1 z 1\n",
+        "4 ABCD 24\n",
+        "3 321 1\n",
+        "5 abcde 100\n",
+    ],
+    samples=2,
+    oracle=_oracle_25,
+    solution=r'''import sys
+from itertools import permutations
+
+d = sys.stdin.read().split()
+n, s, k = int(d[0]), d[1], int(d[2])
+print("".join(list(permutations(sorted(s[:n])))[k - 1]))
+''',
+    alt=r'''import sys
+
+d = sys.stdin.read().split()
+n, s, k = int(d[0]), d[1], int(d[2])
+a = sorted(s[:n])
+for _ in range(k - 1):                 # 手写 next_permutation：原地推 k-1 次
+    i = n - 2
+    while i >= 0 and a[i] >= a[i + 1]:
+        i -= 1
+    j = n - 1
+    while a[j] <= a[i]:
+        j -= 1
+    a[i], a[j] = a[j], a[i]
+    a[i + 1:] = reversed(a[i + 1:])
+print("".join(a))
+''',
+)
+
+
+def _oracle_26(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    a = [int(x) for x in d[1:1 + n]]
+    g = a[0]
+    for x in a[1:]:
+        u, v = g, x
+        while v:
+            u, v = v, u % v
+        g = u
+    l = a[0]
+    for x in a[1:]:
+        u, v = l, x
+        while v:
+            u, v = v, u % v
+        l = l // u * x
+    return "%d\n%d\n" % (g, l)
+
+add(
+    title="一堆数的最大公约数与最小公倍数",
+    section="技巧特训 · Python",
+    difficulty=2, score=15, tags=["技巧特训", "math.gcd", "math.lcm", "reduce"],
+    statement_md=(
+        "读入 `n` 个正整数，输出两行：这 `n` 个数的最大公约数、最小公倍数。\n\n"
+        "★ 技巧点：`math.gcd` 只吃两个参数，多个数就靠 `functools.reduce` 折叠——"
+        "`reduce(gcd, a)` 一行拿全体 gcd。Python 3.9 起还有 `math.lcm`。"
+        "求 lcm 切记 `l = l // gcd(l, x) * x`：**先除后乘**，否则中间量可能白涨一大截。"
+        "本题 `aᵢ ≤ 100`，lcm 最大只有几十位，Python 大整数直接装得下，不用取模。"
+    ),
+    input_format="第一行 `n`；第二行 `n` 个正整数（空格分隔）。",
+    output_format="两行：gcd、lcm。",
+    constraints_md="- 1 ≤ n ≤ 100\n- 1 ≤ aᵢ ≤ 100",
+    inputs=[
+        "3\n12 18 24\n",
+        "1\n7\n",
+        "4\n97 89 83 79\n",
+        "5\n2 4 8 16 32\n",
+        "6\n100 99 98 97 96 95\n",
+    ],
+    samples=2,
+    oracle=_oracle_26,
+    solution=r'''import sys
+from functools import reduce
+from math import gcd, lcm
+
+d = sys.stdin.read().split()
+n = int(d[0])
+a = list(map(int, d[1:1 + n]))
+print(reduce(gcd, a))
+print(reduce(lcm, a))
+''',
+    alt=r'''import sys
+
+d = sys.stdin.read().split()
+n = int(d[0])
+a = list(map(int, d[1:1 + n]))
+
+
+def g2(x, y):
+    while y:
+        x, y = y, x % y
+    return x
+
+
+g = a[0]
+l = a[0]
+for x in a[1:]:
+    g = g2(g, x)
+    l = l // g2(l, x) * x          # 先除后乘，避免中间量膨胀
+print(g)
+print(l)
+''',
+)
+
+
+def _oracle_27(text: str) -> str:
+    x = int(text.split()[0])
+    pc = 0
+    t = x
+    while t:
+        pc += t & 1
+        t >>= 1
+    low = 1
+    while not (x & low):
+        low <<= 1
+    high = 1
+    while high * 2 <= x:
+        high <<= 1
+    return "%d\n%d\n%d\n" % (pc, low, high)
+
+add(
+    title="二进制里的三个位置",
+    section="技巧特训 · Python",
+    difficulty=3, score=20, tags=["技巧特训", "位运算", "lowbit", "bit_count"],
+    statement_md=(
+        "读入一个正整数 `x`，输出三行：\n\n"
+        "1. 二进制里 1 的个数\n"
+        "2. 最低位的 1 所代表的值（lowbit）\n"
+        "3. 最高位的 1 所代表的值\n\n"
+        "★ 技巧点：三个都是一行——`x.bit_count()`（3.10+）、`x & -x`（lowbit，"
+        "树状数组的核心操作）、`1 << (x.bit_length() - 1)`（最高位）。"
+        "负数是补码，`x & -x` 等价于 `x & (~x + 1)`。"
+        "手写版注意 lowbit 别写成 `x & (x-1)`——那个是**抹掉**最低位的 1。"
+    ),
+    input_format="一行一个正整数 `x`。",
+    output_format="三行，如题面所述。",
+    constraints_md="- 1 ≤ x ≤ 10¹⁸",
+    inputs=[
+        "1\n",
+        "6\n",
+        "1000000000000000000\n",
+        "13\n",
+        "1024\n",
+    ],
+    samples=2,
+    oracle=_oracle_27,
+    solution=r'''import sys
+
+x = int(sys.stdin.read())
+print(x.bit_count())              # 二进制 1 的个数
+print(x & -x)                     # lowbit：最低位的 1
+print(1 << (x.bit_length() - 1))  # 最高位的 1
+''',
+    alt=r'''import sys
+
+x = int(sys.stdin.read())
+print(len([c for c in bin(x)[2:] if c == "1"]))
+print(x & (~x + 1))               # lowbit 的补码写法
+print(2 ** (len(bin(x)[2:]) - 1))
+''',
+)
+
+
+def _oracle_28(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    a = [int(x) for x in d[1:1 + n]]
+    best = 0
+
+    def dfs(i, cur):
+        nonlocal best
+        if i == n:
+            if cur > best:
+                best = cur
+            return
+        dfs(i + 1, cur)
+        dfs(i + 1, cur ^ a[i])
+
+    dfs(0, 0)
+    return "%d\n" % best
+
+add(
+    title="子集异或的最大值",
+    section="技巧特训 · Python",
+    difficulty=4, score=25, tags=["技巧特训", "位掩码", "子集枚举", "线性基"],
+    statement_md=(
+        "读入 `n` 个非负整数，从中任选若干（可以一个都不选）做异或，"
+        "输出能得到的最大的异或值。\n\n"
+        "★ 技巧点：`n ≤ 18` 时用**位掩码枚举子集**——`for mask in range(1 << n)`，"
+        "第 i 位是 1 就表示选中 `a[i]`，总共 `2^n` 种，"
+        "`if mask >> i & 1` 判断取不取。这是所有「选或不选」题目的万能起手式。\n\n"
+        "进阶（另一套解）：`n` 到了 10⁵ 就得用**线性基**——把每个数往高位试插，"
+        "插不进就异或掉，最终得到一组「基底」，再从高位往下贪心异或，O(n·位数)。"
+        "本题两套解都在，可以对照着看。"
+    ),
+    input_format="第一行 `n`；第二行 `n` 个非负整数。",
+    output_format="一行：最大异或值（一个数都不选时为 0）。",
+    constraints_md="- 1 ≤ n ≤ 18\n- 0 ≤ aᵢ < 2²⁰",
+    time_limit_ms=2000,
+    inputs=[
+        "3\n1 2 3\n",
+        "1\n0\n",
+        "4\n5 5 5 5\n",
+        "18\n1 2 4 8 16 32 64 128 256 512 1024 2048 4096 8192 16384 32768 65536 131072\n",
+        "5\n7 7 7 7 7\n",
+    ],
+    samples=2,
+    oracle=_oracle_28,
+    solution=r'''import sys
+
+d = sys.stdin.read().split()
+n = int(d[0])
+a = list(map(int, d[1:1 + n]))
+best = 0
+for mask in range(1 << n):          # ★ 子集枚举
+    cur = 0
+    m = mask
+    i = 0
+    while m:
+        if m & 1:
+            cur ^= a[i]
+        m >>= 1
+        i += 1
+    if cur > best:
+        best = cur
+print(best)
+''',
+    alt=r'''import sys
+
+d = sys.stdin.read().split()
+n = int(d[0])
+a = list(map(int, d[1:1 + n]))
+BITS = 62
+p = [0] * BITS                     # 线性基
+for x in a:
+    for b in range(BITS - 1, -1, -1):
+        if not (x >> b) & 1:
+            continue
+        if p[b] == 0:
+            p[b] = x
+            break
+        x ^= p[b]
+res = 0
+for b in range(BITS - 1, -1, -1):
+    if (res ^ p[b]) > res:
+        res ^= p[b]
+print(res)
+''',
+)
+
+
+def _rand_big_case_29() -> str:
+    """29 号的大用例：500×500 矩阵 + 500 次查询，固定种子可复现。"""
+    import random
+    rnd = random.Random(20261019)
+    n = m = 500
+    q = 500
+    lines = ["%d %d" % (n, m)]
+    for _ in range(n):
+        lines.append(" ".join(str(rnd.randint(-1000, 1000)) for _ in range(m)))
+    lines.append(str(q))
+    for _ in range(q):
+        x1 = rnd.randint(1, n)
+        x2 = rnd.randint(x1, n)
+        y1 = rnd.randint(1, m)
+        y2 = rnd.randint(y1, m)
+        lines.append("%d %d %d %d" % (x1, y1, x2, y2))
+    return "\n".join(lines) + "\n"
+
+
+def _oracle_29(text: str) -> str:
+    d = text.split()
+    i = 0
+    n = int(d[i]); i += 1
+    m = int(d[i]); i += 1
+    a = []
+    for r in range(n):
+        a.append([int(d[i + k]) for k in range(m)])
+        i += m
+    rp = []
+    for r in range(n):
+        s = [0] * (m + 1)
+        for c in range(m):
+            s[c + 1] = s[c] + a[r][c]
+        rp.append(s)
+    q = int(d[i]); i += 1
+    out = []
+    for _ in range(q):
+        x1 = int(d[i]); y1 = int(d[i + 1])
+        x2 = int(d[i + 2]); y2 = int(d[i + 3])
+        i += 4
+        tot = 0
+        for r in range(x1 - 1, x2):
+            tot += rp[r][y2] - rp[r][y1 - 1]
+        out.append(str(tot))
+    return "".join(x + "\n" for x in out)
+
+add(
+    title="子矩阵和的 q 次查询",
+    section="技巧特训 · Python",
+    difficulty=4, score=25, tags=["技巧特训", "二维前缀和", "容斥", "查询"],
+    statement_md=(
+        "读入一个 `n × m` 的整数矩阵，再回答 `q` 次查询：每次给左上角 "
+        "`(x1, y1)` 和右下角 `(x2, y2)`（下标从 1 起），输出这个子矩阵里所有数的和。\n\n"
+        "★ 技巧点：**二维前缀和 + 容斥**。令 `S[i][j]` 为左上角 `(1,1)` 到 "
+        "`(i,j)` 的子矩阵和，递推式\n\n"
+        "```\nS[i][j] = a[i][j] + S[i-1][j] + S[i][j-1] - S[i-1][j-1]\n```\n\n"
+        "查询就是四个角加减：`S[x2][y2] - S[x1-1][y2] - S[x2][y1-1] + S[x1-1][y1-1]`。"
+        "预处理 `O(nm)`、每次查询 `O(1)`；暴力每次 `O(nm)` 在 `q = 10⁵` 时必超时。"
+        "记忆口诀：**加两次、减两次，左上角加回来**。"
+    ),
+    input_format=(
+        "第一行 `n m`；随后 `n` 行每行 `m` 个整数；\n"
+        "接着一行 `q`；随后 `q` 行每行 `x1 y1 x2 y2`。"
+    ),
+    output_format="`q` 行，每行一个查询结果。",
+    constraints_md="- 1 ≤ n, m ≤ 500\n- 1 ≤ q ≤ 500\n- |元素| ≤ 10³",
+    time_limit_ms=2000,
+    inputs=[
+        "3 3\n1 2 3\n4 5 6\n7 8 9\n3\n1 1 2 2\n2 2 3 3\n1 2 3 3\n",
+        "1 1\n-5\n1\n1 1 1 1\n",
+        "2 4\n1 -2 3 -4\n5 6 -7 8\n2\n1 1 2 4\n1 2 1 3\n",
+        _rand_big_case_29(),
+    ],
+    samples=2,
+    oracle=_oracle_29,
+    solution=r'''import sys
+
+data = sys.stdin.buffer.read().split()
+it = iter(data)
+n = int(next(it)); m = int(next(it))
+S = [[0] * (m + 1) for _ in range(n + 1)]
+for r in range(1, n + 1):
+    row = S[r]
+    prev = S[r - 1]
+    acc = 0
+    for c in range(1, m + 1):
+        acc += int(next(it))
+        row[c] = prev[c] + acc        # 二维前缀和
+q = int(next(it))
+out = []
+for _ in range(q):
+    x1 = int(next(it)); y1 = int(next(it))
+    x2 = int(next(it)); y2 = int(next(it))
+    out.append(str(S[x2][y2] - S[x1 - 1][y2] - S[x2][y1 - 1] + S[x1 - 1][y1 - 1]))
+sys.stdout.write("\n".join(out) + "\n")
+''',
+    alt=r'''import sys
+
+data = sys.stdin.buffer.read().split()
+it = iter(data)
+n = int(next(it)); m = int(next(it))
+C = [[0] * (n + 1) for _ in range(m + 1)]   # 按列建一维前缀
+for r in range(1, n + 1):
+    for c in range(1, m + 1):
+        C[c][r] = int(next(it))
+for c in range(1, m + 1):
+    col = C[c]
+    for r in range(1, n + 1):
+        col[r] += col[r - 1]
+q = int(next(it))
+out = []
+for _ in range(q):
+    x1 = int(next(it)); y1 = int(next(it))
+    x2 = int(next(it)); y2 = int(next(it))
+    tot = 0
+    for c in range(y1, y2 + 1):
+        tot += C[c][x2] - C[c][x1 - 1]   # 每列 O(1)，整体 O(列数)
+    out.append(str(tot))
+sys.stdout.write("\n".join(out) + "\n")
+''',
+)
+
+
+def _rand_big_case_30() -> str:
+    """30 号的大用例：n = 3000、k = 100，固定种子可复现。"""
+    import random
+    rnd = random.Random(20261019)
+    n, k = 3000, 100
+    return ("%d %d\n" % (n, k)
+            + " ".join(str(rnd.randint(-1000, 1000)) for _ in range(n)) + "\n")
+
+
+def _oracle_30(text: str) -> str:
+    d = text.split()
+    n = int(d[0]); k = int(d[1])
+    a = [int(x) for x in d[2:2 + n]]
+    out = []
+    for i in range(n - k + 1):
+        out.append(str(max(a[i:i + k])))
+    return " ".join(out) + "\n"
+
+add(
+    title="滑窗最大值（deque）",
+    section="技巧特训 · Python",
+    difficulty=3, score=20, tags=["技巧特训", "deque", "单调队列", "滑动窗口"],
+    statement_md=(
+        "读入 `n`、窗口长度 `k` 和 `n` 个整数，从左往右滑动大小为 `k` 的窗口，"
+        "依次输出每个窗口里的最大值（共 `n-k+1` 个，空格分隔，一行）。\n\n"
+        "★ 技巧点：**单调队列**。`collections.deque` 里存**下标**，"
+        "保证队首对应的值最大、值从队首到队尾单调递减：\n\n"
+        "1. 新元素进来前，把队尾所有 ≤ 它的都弹掉（它们永远不可能再当最大值）\n"
+        "2. 入队\n"
+        "3. 队首下标如果已经滑出窗口，弹掉\n\n"
+        "每个元素最多进出队各一次 → `O(n)`。用 `max(a[i:i+k])` 是 `O(nk)`，"
+        "`k = n/2` 时退化到 `O(n²)`。另一套解用 `heapq` + 惰性删除（`O(n log n)`），"
+        "思路更直观但常数更大。"
+    ),
+    input_format="第一行 `n k`；第二行 `n` 个整数。",
+    output_format="一行 `n-k+1` 个整数，空格分隔。",
+    constraints_md="- 1 ≤ k ≤ n ≤ 3000\n- |元素| ≤ 10⁹",
+    time_limit_ms=2000,
+    inputs=[
+        "8 3\n1 3 -1 -3 5 3 6 7\n",
+        "1 1\n5\n",
+        "5 5\n9 8 7 6 5\n",
+        "6 2\n-1 -2 -3 -4 -5 -6\n",
+        _rand_big_case_30(),
+    ],
+    samples=2,
+    oracle=_oracle_30,
+    solution=r'''import sys
+from collections import deque
+
+
+def main():
+    data = sys.stdin.buffer.read().split()
+    n = int(data[0]); k = int(data[1])
+    a = list(map(int, data[2:2 + n]))
+    dq = deque()                  # 存下标，对应值从大到小
+    out = []
+    for i, v in enumerate(a):
+        while dq and a[dq[-1]] <= v:
+            dq.pop()
+        dq.append(i)
+        if dq[0] <= i - k:
+            dq.popleft()
+        if i >= k - 1:
+            out.append(str(a[dq[0]]))
+    sys.stdout.write(" ".join(out) + "\n")
+
+
+main()
+''',
+    alt=r'''import sys
+import heapq
+
+data = sys.stdin.buffer.read().split()
+n = int(data[0]); k = int(data[1])
+a = list(map(int, data[2:2 + n]))
+h = []
+out = []
+for i, v in enumerate(a):
+    heapq.heappush(h, (-v, i))          # 大根堆（存负值）+ 惰性删除
+    if i >= k - 1:
+        while h[0][1] <= i - k:
+            heapq.heappop(h)
+        out.append(str(-h[0][0]))
+sys.stdout.write(" ".join(out) + "\n")
 ''',
 )
 

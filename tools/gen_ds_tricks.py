@@ -18,6 +18,10 @@ STL 与算法套路，单独成章，量大、循序渐进（difficulty 1 → 4�
   算法套路     7 题（upper_bound / lower_bound / 差分 / 双指针 / 单调栈 /
                单调队列 / 二分答案）
   竞赛强度     6 题（01 背包 / 完全背包 / LIS / LCS / 快速幂 / 逆序对）
+  进阶套路    10 题（stable_sort 多关键字 / priority_queue Top-K /
+               next_permutation / accumulate-iota / bitset 位统计 /
+               unordered_map 词频 / unique 离散化 / 树状数组 /
+               高精度加法 / 前缀和 + 哈希计数）
 """
 from __future__ import annotations
 
@@ -1836,6 +1840,992 @@ int main() {
         add(r);
     }
     cout << cnt << "\n";
+    return 0;
+}
+''',
+)
+
+
+# --------------------------------------------------------------------- #
+#  进阶套路（difficulty 2~4，第二批量）
+# --------------------------------------------------------------------- #
+
+def _oracle_21(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    rows = []
+    for i in range(n):
+        rows.append((d[1 + 2 * i], int(d[2 + 2 * i]), i))
+    rows.sort(key=lambda t: (-t[1], t[2]))
+    return "".join("%s %d\n" % (t[0], t[1]) for t in rows)
+
+add(
+    title="成绩表稳定排序",
+    section="技巧特训 · C/C++",
+    difficulty=2, score=15, tags=["技巧特训", "struct", "stable_sort", "多关键字"],
+    statement_md=(
+        "读入 `n` 个学生的姓名与成绩，按**成绩从高到低**输出；"
+        "**成绩相同的学生保持输入顺序**（这就是「稳定」）。每行输出 `姓名 成绩`。\n\n"
+        "★ 技巧点：`stable_sort(begin, end, cmp)` 在比较函数只比成绩时，"
+        "天然保证相等元素不换位；若用普通 `sort`，就必须在结构体里记下原始下标 "
+        "`id`，比较时补一句 `if (score 相同) return id 更小`——这是"
+        "「多关键字排序」的标准写法。两者都能过，但 `stable_sort` 少一个字段、"
+        "也少一次排序键的维护，是成绩/排名类题目的首选。"
+    ),
+    input_format="第一行 `n`；随后 `n` 行每行 `姓名 成绩`（姓名不含空格）。",
+    output_format="`n` 行，每行 `姓名 成绩`。",
+    constraints_md="- 1 ≤ n ≤ 10⁵\n- 姓名长度 ≤ 20（小写字母）\n- 0 ≤ 成绩 ≤ 10⁹",
+    inputs=[
+        "5\nalice 90\nbob 85\ncarol 90\ndave 85\neve 100\n",
+        "1\nsolo 0\n",
+        "4\na 5\nb 5\nc 5\nd 5\n",
+        "3\nx -1\ny 1000000000\nz -1\n",
+        "6\nn1 70\nn2 60\nn3 70\nn4 80\nn5 60\nn6 80\n",
+    ],
+    samples=2,
+    oracle=_oracle_21,
+    solution=r'''#include <cstdio>
+#include <algorithm>
+using namespace std;
+struct Stu { char name[32]; long long score; };
+bool byScore(const Stu& a, const Stu& b) { return a.score > b.score; }
+int main() {
+    int n;
+    if (scanf("%d", &n) != 1) return 0;
+    Stu* v = new Stu[n];
+    for (int i = 0; i < n; i++) scanf("%s %lld", v[i].name, &v[i].score);
+    stable_sort(v, v + n, byScore);   /* 只比成绩，相等时自动保持原顺序 */
+    for (int i = 0; i < n; i++) printf("%s %lld\n", v[i].name, v[i].score);
+    delete[] v;
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <vector>
+#include <string>
+#include <algorithm>
+using namespace std;
+struct Stu { string name; long long score; int id; };
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<Stu> v(n);
+    for (int i = 0; i < n; i++) {
+        char buf[64];
+        scanf("%s %lld", buf, &v[i].score);
+        v[i].name = buf;
+        v[i].id = i;                  /* 普通 sort 要靠 id 补稳定性 */
+    }
+    sort(v.begin(), v.end(), [](const Stu& a, const Stu& b) {
+        if (a.score != b.score) return a.score > b.score;
+        return a.id < b.id;
+    });
+    for (size_t i = 0; i < v.size(); i++)
+        printf("%s %lld\n", v[i].name.c_str(), v[i].score);
+    return 0;
+}
+''',
+)
+
+
+def _oracle_22(text: str) -> str:
+    d = text.split()
+    n = int(d[0]); k = int(d[1])
+    a = [int(x) for x in d[2:2 + n]]
+    a.sort(reverse=True)
+    return " ".join(map(str, a[:k])) + "\n"
+
+add(
+    title="前 k 大的数",
+    section="技巧特训 · C/C++",
+    difficulty=3, score=20, tags=["技巧特训", "priority_queue", "小根堆", "TopK"],
+    statement_md=(
+        "读入 `n` 个数和 `k`，输出其中最大的 `k` 个（从大到小，空格分隔）。\n\n"
+        "★ 技巧点：**用「小根堆」求 Top-K**。维护一个大小不超过 `k` 的小根堆——"
+        "新数进来就 `push`，堆超过 `k` 就 `pop` 掉堆顶（当前 k 个里最小的）。"
+        "扫完一遍，堆里就是最大的 `k` 个，复杂度 `O(n log k)`，内存只有 `O(k)`；"
+        "`n = 10⁷、k = 10` 时比全部排序快得多。\n\n"
+        "写法：`priority_queue<int, vector<int>, greater<int>>` 是小根堆；"
+        "**只写 `priority_queue<int>` 是大根堆**——这两个的区别是本题最容易踩的坑。"
+        "最后把堆里的数倒出来再逆序输出。"
+    ),
+    input_format="第一行 `n k`；第二行 `n` 个整数。",
+    output_format="一行 `k` 个整数，从大到小，空格分隔。",
+    constraints_md="- 1 ≤ k ≤ n ≤ 10⁵\n- |元素| ≤ 10⁹",
+    inputs=[
+        "5 3\n1 5 3 9 7\n",
+        "1 1\n42\n",
+        "6 6\n-3 -1 -2 -5 -4 -6\n",
+        "8 2\n5 5 5 5 5 5 5 1\n",
+        "7 4\n1000000000 -1000000000 0 7 -7 3 3\n",
+    ],
+    samples=2,
+    oracle=_oracle_22,
+    solution=r'''#include <cstdio>
+#include <vector>
+#include <queue>
+#include <functional>
+using namespace std;
+int main() {
+    int n, k;
+    scanf("%d %d", &n, &k);
+    priority_queue<int, vector<int>, greater<int>> pq;   /* ★ 小根堆 */
+    for (int i = 0; i < n; i++) {
+        int x; scanf("%d", &x);
+        pq.push(x);
+        if ((int)pq.size() > k) pq.pop();                /* 挤掉最小的 */
+    }
+    vector<int> res;
+    while (!pq.empty()) { res.push_back(pq.top()); pq.pop(); }
+    for (int i = (int)res.size() - 1; i >= 0; i--)
+        printf("%d%c", res[i], i ? ' ' : '\n');
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <queue>
+using namespace std;
+int main() {
+    int n, k;
+    scanf("%d %d", &n, &k);
+    priority_queue<int> pq;              /* 默认大根堆，全装进去 */
+    for (int i = 0; i < n; i++) { int x; scanf("%d", &x); pq.push(x); }
+    for (int i = 0; i < k; i++) {
+        printf("%d%c", pq.top(), i + 1 == k ? '\n' : ' ');
+        pq.pop();
+    }
+    return 0;
+}
+''',
+)
+
+
+def _oracle_23(text: str) -> str:
+    from itertools import permutations
+    d = text.split()
+    n = int(d[0])
+    a = [int(x) for x in d[1:1 + n]]
+    k = int(d[1 + n])
+    perms = sorted(permutations(sorted(a)))
+    return " ".join(map(str, perms[k - 1])) + "\n"
+
+add(
+    title="下一个排列推 k 次",
+    section="技巧特训 · C/C++",
+    difficulty=3, score=20, tags=["技巧特训", "next_permutation", "全排列", "字典序"],
+    statement_md=(
+        "读入 `n`、`n` 个互不相同的整数、以及 `k`，"
+        "先把它们升序排列，再输出**字典序第 `k` 个**排列（`k` 从 1 起，空格分隔）。\n\n"
+        "★ 技巧点：`next_permutation(first, last)` 就地把区间改成「字典序下一个排列」，"
+        "返回 `false` 表示已到最后一个。求第 `k` 个就是先 `sort`，再循环 `k-1` 次。"
+        "它还能当**去重排列生成器**用：有重复元素时配合 `sort` 也不会产出重复排列。\n\n"
+        "另一套解是手写「找降序后缀 → 交换 → 反转」三步，理解它比背 STL 更有用——"
+        "很多面试题正考这个。"
+    ),
+    input_format="第一行 `n`；第二行 `n` 个互不相同的整数；第三行 `k`。",
+    output_format="一行 `n` 个整数。",
+    constraints_md="- 1 ≤ n ≤ 8\n- 1 ≤ k ≤ n!\n- |元素| ≤ 10⁹",
+    inputs=[
+        "3\n3 1 2\n4\n",
+        "1\n7\n1\n",
+        "4\n1 2 3 4\n24\n",
+        "5\n5 4 3 2 1\n120\n",
+        "3\n0 -1 1\n2\n",
+    ],
+    samples=2,
+    oracle=_oracle_23,
+    solution=r'''#include <cstdio>
+#include <algorithm>
+using namespace std;
+int a[10];
+int main() {
+    int n, k;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    scanf("%d", &k);
+    sort(a, a + n);                          /* 从最小排列出发 */
+    for (int t = 1; t < k; t++) next_permutation(a, a + n);
+    for (int i = 0; i < n; i++) printf("%d%c", a[i], i + 1 == n ? '\n' : ' ');
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <algorithm>
+using namespace std;
+int a[10];
+int main() {
+    int n, k;
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    scanf("%d", &k);
+    sort(a, a + n);
+    for (int t = 1; t < k; t++) {
+        int i = n - 2;
+        while (i >= 0 && a[i] >= a[i + 1]) i--;   /* 找最右的升序对 */
+        int j = n - 1;
+        while (a[j] <= a[i]) j--;                 /* 找最小的更大值 */
+        swap(a[i], a[j]);
+        reverse(a + i + 1, a + n);                /* 后缀反转成最小 */
+    }
+    for (int i = 0; i < n; i++) printf("%d%c", a[i], i + 1 == n ? '\n' : ' ');
+    return 0;
+}
+''',
+)
+
+
+def _oracle_24(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    a = [int(x) for x in d[1:1 + n]]
+    pre = []
+    s = 0
+    for x in a:
+        s += x
+        pre.append(s)
+    prod = 1
+    for x in a:
+        prod = prod * (x % 1000000007) % 1000000007
+    best = pre[0]
+    bi = 1
+    for i, v in enumerate(pre, 1):
+        if v > best:
+            best = v
+            bi = i
+    return " ".join(map(str, pre)) + "\n%d\n%d %d\n" % (prod, best, bi)
+
+add(
+    title="前缀和与累计乘积",
+    section="技巧特训 · C/C++",
+    difficulty=2, score=15, tags=["技巧特训", "accumulate", "partial_sum", "iota"],
+    statement_md=(
+        "读入 `n` 个整数，输出三行：\n\n"
+        "1. 前缀和（`n` 个数，空格分隔）\n"
+        "2. 全部数的乘积对 `1000000007` 取模\n"
+        "3. 最大的前缀和，以及它第一次出现的下标（从 1 起）\n\n"
+        "★ 技巧点：`<numeric>` 里三个轮子——`partial_sum` 一次算完前缀和，"
+        "`accumulate` 带自定义函数做累计乘积，`iota` 把 `1..n` 填进下标数组。"
+        "`accumulate` 的初值一定要写成 `1LL`（乘积）或 `0LL`（求和）："
+        "写 `0` 或 `1` 会让整个计算退回 `int`，`n = 10⁵` 时乘积早就溢出了。\n\n"
+        "本题元素可为负，所以「最大前缀和」不能用「前缀和单调递增」的直觉，"
+        "得老老实实扫一遍。"
+    ),
+    input_format="第一行 `n`；第二行 `n` 个整数。",
+    output_format="三行，如题面所述。",
+    constraints_md="- 1 ≤ n ≤ 10⁵\n- |aᵢ| ≤ 10⁴",
+    inputs=[
+        "5\n1 -2 3 4 -1\n",
+        "1\n7\n",
+        "4\n0 0 0 0\n",
+        "3\n-5 -1 -3\n",
+        "6\n2 3 -10 5 5 5\n",
+    ],
+    samples=2,
+    oracle=_oracle_24,
+    solution=r'''#include <cstdio>
+#include <vector>
+#include <numeric>
+#include <algorithm>
+using namespace std;
+const long long MOD = 1000000007LL;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<long long> a(n), pre(n);
+    for (int i = 0; i < n; i++) scanf("%lld", &a[i]);
+    partial_sum(a.begin(), a.end(), pre.begin());       /* ★ 前缀和 */
+    auto mulmod = [](long long x, long long y) {
+        long long v = (y % MOD + MOD) % MOD;            /* 负数先转正 */
+        return x * v % MOD;
+    };
+    long long prod = accumulate(a.begin(), a.end(), 1LL, mulmod);
+    vector<int> idx(n);
+    iota(idx.begin(), idx.end(), 1);                    /* 1..n */
+    int bi = *max_element(idx.begin(), idx.end(), [&](int x, int y) {
+        if (pre[x - 1] != pre[y - 1]) return pre[x - 1] < pre[y - 1];
+        return x > y;                                   /* 并列取更小下标 */
+    });
+    for (int i = 0; i < n; i++) printf("%lld%c", pre[i], i + 1 == n ? '\n' : ' ');
+    printf("%lld\n%lld %d\n", prod, pre[bi - 1], bi);
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <vector>
+#include <numeric>
+using namespace std;
+const long long MOD = 1000000007LL;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<long long> a(n);
+    for (int i = 0; i < n; i++) scanf("%lld", &a[i]);
+    long long s = 0, prod = 1, best = 0, bi = 1;
+    for (int i = 0; i < n; i++) {
+        s += a[i];
+        long long v = (a[i] % MOD + MOD) % MOD;   /* 负数先转正再取模 */
+        prod = prod * v % MOD;
+        if (i == 0 || s > best) { best = s; bi = i + 1; }
+        printf("%lld%c", s, i + 1 == n ? '\n' : ' ');
+    }
+    printf("%lld\n%lld %lld\n", prod, best, bi);
+    return 0;
+}
+''',
+)
+
+
+def _oracle_25(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    a = [int(x) for x in d[1:1 + n]]
+    o = 0
+    mx = 0
+    tot = 0
+    for x in a:
+        o |= x
+        pc = bin(x).count("1")
+        if pc > mx:
+            mx = pc
+        tot += pc
+    return "%d\n%d\n%d\n" % (o, mx, tot)
+
+add(
+    title="bitset 做按位统计",
+    section="技巧特训 · C/C++",
+    difficulty=3, score=20, tags=["技巧特训", "bitset", "位运算", "popcount"],
+    statement_md=(
+        "读入 `n` 个非负整数（每个 < 2⁶⁰），输出三行：\n\n"
+        "1. 所有数**按位或**的结果（十进制）\n"
+        "2. 单个数里二进制 1 的个数的最大值\n"
+        "3. 所有数二进制 1 的个数之和\n\n"
+        "★ 技巧点：`bitset<64>(x).count()` 直接数 1，`b1 | b2` 直接按位或——"
+        "定长位集让「每一位」变成容器的元素，写起来比手写移位干净。"
+        "追求速度就用编译器内建 `__builtin_popcountll(x)`（一条硬件指令）；"
+        "想手写则用 `while (x) { x &= x - 1; cnt++; }`——"
+        "`x & (x-1)` 每次抹掉最低位的 1，循环次数就是 1 的个数。"
+    ),
+    input_format="第一行 `n`；第二行 `n` 个整数。",
+    output_format="三行，如题面所述。",
+    constraints_md="- 1 ≤ n ≤ 10⁵\n- 0 ≤ aᵢ < 2⁶⁰",
+    inputs=[
+        "3\n1 2 4\n",
+        "1\n0\n",
+        "4\n7 7 7 7\n",
+        "5\n1152921504606846975 1 2 3 4\n",
+        "6\n123456789012345678 987654321098765432 1 0 5 9\n",
+    ],
+    samples=2,
+    oracle=_oracle_25,
+    solution=r'''#include <cstdio>
+#include <bitset>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    unsigned long long orv = 0;
+    int mx = 0, tot = 0;
+    for (int i = 0; i < n; i++) {
+        unsigned long long x;
+        scanf("%llu", &x);
+        orv |= x;                                  /* 按位或 */
+        int pc = (int)bitset<64>(x).count();       /* ★ 数 1 */
+        if (pc > mx) mx = pc;
+        tot += pc;
+    }
+    printf("%llu\n%d\n%d\n", orv, mx, tot);
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    unsigned long long orv = 0;
+    int mx = 0, tot = 0;
+    for (int i = 0; i < n; i++) {
+        unsigned long long x;
+        scanf("%llu", &x);
+        orv |= x;
+        int pc = __builtin_popcountll(x);          /* 硬件指令版 */
+        if (pc > mx) mx = pc;
+        tot += pc;
+    }
+    printf("%llu\n%d\n%d\n", orv, mx, tot);
+    return 0;
+}
+''',
+)
+
+
+def _oracle_26(text: str) -> str:
+    from collections import Counter
+    d = text.split()
+    n = int(d[0])
+    words = d[1:1 + n]
+    c = Counter(words)
+    items = sorted(c.items(), key=lambda kv: (-kv[1], kv[0]))
+    return "".join("%s %d\n" % (w, m) for w, m in items)
+
+add(
+    title="词频统计再排序",
+    section="技巧特训 · C/C++",
+    difficulty=2, score=15, tags=["技巧特训", "unordered_map", "词频", "排序"],
+    statement_md=(
+        "读入 `n` 个单词（只含小写字母），统计每个单词出现的次数，"
+        "按「次数从高到低、次数相同按字典序从小到大」输出，每行 `单词 次数`。\n\n"
+        "★ 技巧点：`unordered_map<string,int>` 做桶计数是 O(1) 摊还，"
+        "但**它本身无序**——想按次数排序必须先倒进 `vector<pair<...>>` 再 `sort`。"
+        "反过来说，如果只要「按单词字典序」输出，直接用 `map` 就够了，"
+        "连 sort 都省了。选容器先问自己：**最后按什么顺序输出？**"
+    ),
+    input_format="第一行 `n`；第二行 `n` 个单词（空格分隔）。",
+    output_format="每行 `单词 次数`，按题面规则排序。",
+    constraints_md="- 1 ≤ n ≤ 10⁵\n- 单词长度 ≤ 20，只含小写字母",
+    time_limit_ms=2000,
+    inputs=[
+        "6\napple banana apple cherry banana apple\n",
+        "1\nz\n",
+        "5\na b c d e\n",
+        "4\nbb aa aa bb\n",
+        "7\nx x y y z z z\n",
+    ],
+    samples=2,
+    oracle=_oracle_26,
+    solution=r'''#include <cstdio>
+#include <string>
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    unordered_map<string, int> mp;
+    mp.reserve((size_t)n * 2 + 10);
+    char buf[64];
+    for (int i = 0; i < n; i++) {
+        scanf("%s", buf);
+        mp[buf]++;                       /* 桶计数 */
+    }
+    vector<pair<string, int>> v(mp.begin(), mp.end());   /* 倒进 vector 才能排序 */
+    sort(v.begin(), v.end(), [](const pair<string, int>& a,
+                                const pair<string, int>& b) {
+        if (a.second != b.second) return a.second > b.second;
+        return a.first < b.first;
+    });
+    for (size_t i = 0; i < v.size(); i++)
+        printf("%s %d\n", v[i].first.c_str(), v[i].second);
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <string>
+#include <vector>
+#include <map>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    map<string, int> mp;                 /* 有序 map：遍历即字典序 */
+    char buf[64];
+    for (int i = 0; i < n; i++) { scanf("%s", buf); mp[buf]++; }
+    vector<pair<string, int>> v;
+    for (map<string, int>::iterator it = mp.begin(); it != mp.end(); ++it)
+        v.push_back(*it);
+    stable_sort(v.begin(), v.end(),
+                [](const pair<string, int>& a, const pair<string, int>& b) {
+                    return a.second > b.second;   /* 只按次数，稳定排序保住字典序 */
+                });
+    for (size_t i = 0; i < v.size(); i++)
+        printf("%s %d\n", v[i].first.c_str(), v[i].second);
+    return 0;
+}
+''',
+)
+
+
+def _oracle_27(text: str) -> str:
+    d = text.split()
+    n = int(d[0])
+    a = [int(x) for x in d[1:1 + n]]
+    u = sorted(set(a))
+    rank = {v: i + 1 for i, v in enumerate(u)}
+    return "%d\n%s\n%s\n" % (len(u), " ".join(map(str, u)),
+                             " ".join(str(rank[x]) for x in a))
+
+add(
+    title="排序去重与离散化",
+    section="技巧特训 · C/C++",
+    difficulty=3, score=20, tags=["技巧特训", "unique", "离散化", "lower_bound"],
+    statement_md=(
+        "读入 `n` 个整数，输出三行：\n\n"
+        "1. 去重后有多少个不同的值\n"
+        "2. 所有不同的值，从小到大（空格分隔）\n"
+        "3. 原数组每个元素的「名次」——比它小的不同值的个数 + 1\n\n"
+        "★ 技巧点：**排序去重三件套**\n\n"
+        "```\n"
+        "sort(a.begin(), a.end());\n"
+        "a.erase(unique(a.begin(), a.end()), a.end());\n"
+        "```\n\n"
+        "`unique` 只是把重复元素挪到末尾并返回「新末尾」，**并不真的删除**，"
+        "所以必须自己 `erase`——这是最经典的坑。\n\n"
+        "名次用 `lower_bound` 一查就有：`rank = lower_bound(u, x) - u.begin() + 1`，"
+        "这就是**离散化**——把 `±10⁹` 的大值压成 `1..m` 的小下标，"
+        "之后就能拿它当树状数组 / 计数数组的下标用。"
+    ),
+    input_format="第一行 `n`；第二行 `n` 个整数。",
+    output_format="三行，如题面所述。",
+    constraints_md="- 1 ≤ n ≤ 10⁵\n- |元素| ≤ 10⁹",
+    inputs=[
+        "6\n5 3 5 1 3 9\n",
+        "1\n0\n",
+        "4\n-1 -1 -1 -1\n",
+        "5\n1000000000 -1000000000 0 0 7\n",
+        "8\n3 1 4 1 5 9 2 6\n",
+    ],
+    samples=2,
+    oracle=_oracle_27,
+    solution=r'''#include <cstdio>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    vector<int> u = a;
+    sort(u.begin(), u.end());
+    u.erase(unique(u.begin(), u.end()), u.end());   /* ★ 排序去重三件套 */
+    printf("%d\n", (int)u.size());
+    for (size_t i = 0; i < u.size(); i++)
+        printf("%d%c", u[i], i + 1 == u.size() ? '\n' : ' ');
+    for (int i = 0; i < n; i++) {
+        int r = (int)(lower_bound(u.begin(), u.end(), a[i]) - u.begin()) + 1;
+        printf("%d%c", r, i + 1 == n ? '\n' : ' ');
+    }
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <vector>
+#include <map>
+using namespace std;
+int main() {
+    int n;
+    scanf("%d", &n);
+    vector<int> a(n);
+    for (int i = 0; i < n; i++) scanf("%d", &a[i]);
+    map<int, int> rank;                 /* 有序 map 天然去重 + 排序 */
+    for (int i = 0; i < n; i++) rank[a[i]] = 0;
+    int id = 0;
+    for (map<int, int>::iterator it = rank.begin(); it != rank.end(); ++it)
+        it->second = ++id;
+    printf("%d\n", id);
+    id = 0;
+    for (map<int, int>::iterator it = rank.begin(); it != rank.end(); ++it) {
+        ++id;
+        printf("%d%c", it->first, id == (int)rank.size() ? '\n' : ' ');
+    }
+    for (int i = 0; i < n; i++)
+        printf("%d%c", rank[a[i]], i + 1 == n ? '\n' : ' ');
+    return 0;
+}
+''',
+)
+
+
+def _rand_big_case_28() -> str:
+    """28 号的大用例：n = q = 30000，操作五五开，固定种子可复现。"""
+    import random
+    rnd = random.Random(20261019)
+    n = q = 30000
+    lines = ["%d %d" % (n, q)]
+    lines.append(" ".join(str(rnd.randint(-1000, 1000)) for _ in range(n)))
+    for _ in range(q):
+        if rnd.random() < 0.5:
+            lines.append("1 %d %d" % (rnd.randint(1, n), rnd.randint(-1000, 1000)))
+        else:
+            l = rnd.randint(1, n)
+            r = rnd.randint(l, n)
+            lines.append("2 %d %d" % (l, r))
+    return "\n".join(lines) + "\n"
+
+
+def _oracle_28(text: str) -> str:
+    d = text.split()
+    i = 0
+    n = int(d[i]); i += 1
+    q = int(d[i]); i += 1
+    a = [int(d[i + k]) for k in range(n)]
+    i += n
+    B = 200
+    nb = (n + B - 1) // B
+    blk = [0] * nb
+    for k in range(n):
+        blk[k // B] += a[k]
+    out = []
+    for _ in range(q):
+        op = d[i]
+        if op == "1":
+            pos = int(d[i + 1]) - 1
+            v = int(d[i + 2])
+            i += 3
+            a[pos] += v
+            blk[pos // B] += v
+        else:
+            l = int(d[i + 1]) - 1
+            r = int(d[i + 2]) - 1
+            i += 3
+            b1 = l // B
+            b2 = r // B
+            if b1 == b2:
+                s = 0
+                for k in range(l, r + 1):
+                    s += a[k]
+            else:
+                s = 0
+                for k in range(l, (b1 + 1) * B):
+                    s += a[k]
+                for b in range(b1 + 1, b2):
+                    s += blk[b]
+                for k in range(b2 * B, r + 1):
+                    s += a[k]
+            out.append(str(s))
+    return "".join(x + "\n" for x in out)
+
+add(
+    title="单点修改与区间求和",
+    section="技巧特训 · C/C++",
+    difficulty=4, score=25, tags=["技巧特训", "树状数组", "Fenwick", "lowbit"],
+    statement_md=(
+        "维护一个长度为 `n` 的数组，支持 `q` 次操作：\n\n"
+        "- `1 i v`：把 `a[i]` 加上 `v`\n"
+        "- `2 l r`：输出 `a[l] + a[l+1] + ... + a[r]`\n\n"
+        "★ 技巧点：**树状数组（Fenwick）**。核心只有两个循环、一个 `lowbit`：\n\n"
+        "```\n"
+        "lowbit(i) = i & -i\n"
+        "add(i, v)   : for (; i <= n; i += i & -i) t[i] += v;\n"
+        "sum(i)      : for (; i > 0; i -= i & -i) s += t[i];\n"
+        "```\n\n"
+        "`t[i]` 存的是「以 i 结尾、长度为 lowbit(i)」那一段的和，所以 `sum(i)` "
+        "跳着累加正好不重不漏。单点加 `O(log n)`、前缀和 `O(log n)`、"
+        "区间和 = 两个前缀和相减。代码比线段树短一半，常数也小——"
+        "**只要操作是「单点改 + 前缀查」，闭眼选树状数组**。\n\n"
+        "另一套解用迭代式线段树（自底向上），思路对照着看更清楚。"
+    ),
+    input_format=(
+        "第一行 `n q`；第二行 `n` 个整数；\n"
+        "随后 `q` 行，每行 `1 i v` 或 `2 l r`。"
+    ),
+    output_format="每个 `2` 操作输出一行区间和。",
+    constraints_md="- 1 ≤ n, q ≤ 3×10⁴\n- |元素|、|v| ≤ 10³\n- 保证 1 ≤ i, l ≤ r ≤ n",
+    time_limit_ms=2000,
+    inputs=[
+        "5 4\n1 2 3 4 5\n2 1 3\n1 2 10\n2 1 5\n2 3 3\n",
+        "1 2\n7\n2 1 1\n1 1 -7\n",
+        "3 3\n0 0 0\n1 1 5\n1 3 5\n2 1 3\n",
+        _rand_big_case_28(),
+    ],
+    samples=2,
+    oracle=_oracle_28,
+    solution=r'''#include <cstdio>
+#include <vector>
+using namespace std;
+int n, q;
+vector<long long> t;
+
+void add(int i, long long v) {
+    for (; i <= n; i += i & -i) t[i] += v;    /* ★ lowbit 往上跳 */
+}
+
+long long sum(int i) {
+    long long s = 0;
+    for (; i > 0; i -= i & -i) s += t[i];     /* ★ lowbit 往下跳 */
+    return s;
+}
+
+int main() {
+    scanf("%d %d", &n, &q);
+    t.assign(n + 1, 0);
+    for (int i = 1; i <= n; i++) {
+        long long x;
+        scanf("%lld", &x);
+        add(i, x);
+    }
+    while (q--) {
+        int op;
+        scanf("%d", &op);
+        if (op == 1) {
+            int i; long long v;
+            scanf("%d %lld", &i, &v);
+            add(i, v);
+        } else {
+            int l, r;
+            scanf("%d %d", &l, &r);
+            printf("%lld\n", sum(r) - sum(l - 1));
+        }
+    }
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <vector>
+using namespace std;
+int main() {
+    int n, q;
+    scanf("%d %d", &n, &q);
+    int sz = 1;
+    while (sz < n) sz <<= 1;
+    vector<long long> t(2 * sz, 0);           /* 迭代式线段树 */
+    for (int i = 0; i < n; i++) scanf("%lld", &t[sz + i]);
+    for (int i = sz - 1; i >= 1; i--) t[i] = t[2 * i] + t[2 * i + 1];
+    while (q--) {
+        int op;
+        scanf("%d", &op);
+        if (op == 1) {
+            int pos; long long v;
+            scanf("%d %lld", &pos, &v);
+            int p = sz + pos - 1;
+            t[p] += v;
+            for (p >>= 1; p >= 1; p >>= 1) t[p] = t[2 * p] + t[2 * p + 1];
+        } else {
+            int l, r;
+            scanf("%d %d", &l, &r);
+            int a = sz + l - 1, b = sz + r;
+            long long s = 0;
+            while (a < b) {
+                if (a & 1) s += t[a++];
+                if (b & 1) s += t[--b];
+                a >>= 1; b >>= 1;
+            }
+            printf("%lld\n", s);
+        }
+    }
+    return 0;
+}
+''',
+)
+
+
+def _rand_big_case_29() -> str:
+    """29 号的大用例：两个 500 位大整数，固定种子可复现。"""
+    import random
+    rnd = random.Random(20261019)
+
+    def big():
+        return str(rnd.randint(1, 9)) + "".join(str(rnd.randint(0, 9)) for _ in range(499))
+
+    return big() + "\n" + big() + "\n"
+
+
+def _oracle_29(text: str) -> str:
+    lines = text.rstrip("\n").split("\n")
+    return str(int(lines[0]) + int(lines[1])) + "\n"
+
+add(
+    title="高精度加法",
+    section="技巧特训 · C/C++",
+    difficulty=3, score=20, tags=["技巧特训", "高精度", "字符串模拟", "进位"],
+    statement_md=(
+        "读入两个正整数（每个最多 500 位，可能带前导零），输出它们的和"
+        "（十进制，不带前导零；和为 0 时输出 `0`）。\n\n"
+        "★ 技巧点：C++ 没有内置大整数，**只能拿字符串模拟竖式加法**：\n\n"
+        "1. 两个串都 `reverse`，让低位对齐在下标 0\n"
+        "2. 从低位往高位加，`carry` 记进位，每位 `s % 10` 留下、`s / 10` 进上去\n"
+        "3. 加完后还要把 `carry` 补一位\n"
+        "4. 结果再 `reverse` 回正常顺序，去掉前导零\n\n"
+        "`long long` 上限约 9.2×10¹⁸（19 位），500 位的数必须走这条路。"
+        "同样的框架改一改就能做高精度减法 / 乘法 / 阶乘。"
+    ),
+    input_format="两行，每行一个正整数（位数 ≤ 500）。",
+    output_format="一行，两数之和。",
+    constraints_md="- 1 ≤ 位数 ≤ 500\n- 输入可能有前导零",
+    inputs=[
+        "123\n456\n",
+        "999\n1\n",
+        "0\n0\n",
+        "000123\n000077\n",
+        _rand_big_case_29(),
+    ],
+    samples=2,
+    oracle=_oracle_29,
+    solution=r'''#include <cstdio>
+#include <cstring>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    char A[1005], B[1005];
+    if (scanf("%s", A) != 1) return 0;
+    scanf("%s", B);
+    reverse(A, A + strlen(A));            /* 低位对齐到下标 0 */
+    reverse(B, B + strlen(B));
+    int na = (int)strlen(A), nb = (int)strlen(B);
+    string res;
+    int carry = 0;
+    for (int i = 0; i < na || i < nb || carry; i++) {
+        int s = carry;
+        if (i < na) s += A[i] - '0';
+        if (i < nb) s += B[i] - '0';
+        res.push_back(char('0' + s % 10));
+        carry = s / 10;
+    }
+    reverse(res.begin(), res.end());
+    size_t p = 0;
+    while (p + 1 < res.size() && res[p] == '0') p++;   /* 去前导零 */
+    printf("%s\n", res.c_str() + p);
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <cstring>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    char A[1005], B[1005];
+    if (scanf("%s %s", A, B) != 2) return 0;
+    vector<int> x, y;
+    for (int i = (int)strlen(A) - 1; i >= 0; i--) x.push_back(A[i] - '0');
+    for (int i = (int)strlen(B) - 1; i >= 0; i--) y.push_back(B[i] - '0');
+    size_t n = max(x.size(), y.size());
+    x.resize(n + 1, 0);
+    y.resize(n + 1, 0);
+    for (size_t i = 0; i < n; i++) {
+        x[i] += y[i];
+        if (x[i] >= 10) { x[i] -= 10; x[i + 1]++; }   /* 进位 */
+    }
+    int hi = (int)n;
+    while (hi > 0 && x[hi] == 0) hi--;
+    for (int i = hi; i >= 0; i--) printf("%d", x[i]);
+    printf("\n");
+    return 0;
+}
+''',
+)
+
+
+def _rand_big_case_30() -> str:
+    """30 号的大用例：n = 100000，固定种子可复现。"""
+    import random
+    rnd = random.Random(20261019)
+    n = 100000
+    k = rnd.randint(-50, 50)
+    return ("%d %d\n" % (n, k)
+            + " ".join(str(rnd.randint(-100, 100)) for _ in range(n)) + "\n")
+
+
+def _oracle_30(text: str) -> str:
+    from bisect import bisect_left
+    d = text.split()
+    n = int(d[0]); k = int(d[1])
+    a = [int(x) for x in d[2:2 + n]]
+    pref = [0] * (n + 1)
+    for i in range(n):
+        pref[i + 1] = pref[i] + a[i]
+    pos = {}
+    for idx, v in enumerate(pref):
+        pos.setdefault(v, []).append(idx)
+    ans = 0
+    for j, v in enumerate(pref):
+        lst = pos.get(v - k)
+        if lst:
+            ans += bisect_left(lst, j)      # 只数下标在 j 之前的
+    return "%d\n" % ans
+
+add(
+    title="和为 k 的连续子数组计数",
+    section="技巧特训 · C/C++",
+    difficulty=4, score=25, tags=["技巧特训", "前缀和", "哈希表", "计数"],
+    statement_md=(
+        "读入 `n`、`k` 和 `n` 个整数（可为负），统计**和恰好等于 `k`** 的"
+        "连续子数组有多少个。\n\n"
+        "★ 技巧点：**前缀和 + 哈希表**。设 `pre[j]` 是前 `j` 个数之和，"
+        "那么区间 `(i, j]` 的和就是 `pre[j] - pre[i]`。要它等于 `k`，"
+        "就等价于 `pre[i] = pre[j] - k`——于是**边扫边记**：\n\n"
+        "```\n"
+        "mp[0] = 1;                    // 空前缀，别漏\n"
+        "for (每个 x) {\n"
+        "    pre += x;\n"
+        "    ans += mp[pre - k];       // 之前有多少个前缀能凑成 k\n"
+        "    mp[pre]++;\n"
+        "}\n"
+        "```\n\n"
+        "`O(n)` 一趟过。两个经典坑：① `mp[0] = 1` 忘了写，从下标 0 开始的区间全丢；"
+        "② 元素有负数，滑动窗口会失效，**必须用前缀和哈希**。\n\n"
+        "另一套解先攒全部前缀和，再用有序 map + 二分查「下标更小的同值前缀」，"
+        "`O(n log n)`，可以对照理解为什么哈希版更快。"
+    ),
+    input_format="第一行 `n k`；第二行 `n` 个整数。",
+    output_format="一行：满足条件的子数组个数。",
+    constraints_md="- 1 ≤ n ≤ 10⁵\n- |元素| ≤ 10⁴\n- |k| ≤ 10⁹",
+    time_limit_ms=2000,
+    inputs=[
+        "5 3\n1 2 3 4 5\n",
+        "3 0\n0 0 0\n",
+        "1 5\n5\n",
+        "6 -2\n-1 -1 -1 1 1 1\n",
+        "4 100\n1 2 3 4\n",
+        _rand_big_case_30(),
+    ],
+    samples=2,
+    oracle=_oracle_30,
+    solution=r'''#include <cstdio>
+#include <unordered_map>
+using namespace std;
+int main() {
+    int n;
+    long long k;
+    scanf("%d %lld", &n, &k);
+    unordered_map<long long, long long> mp;
+    mp.reserve((size_t)n * 2 + 10);
+    mp[0] = 1;                       /* ★ 空前缀，漏了就从这错起 */
+    long long pre = 0, ans = 0;
+    for (int i = 0; i < n; i++) {
+        long long x;
+        scanf("%lld", &x);
+        pre += x;
+        auto it = mp.find(pre - k);
+        if (it != mp.end()) ans += it->second;
+        mp[pre]++;
+    }
+    printf("%lld\n", ans);
+    return 0;
+}
+''',
+    alt=r'''#include <cstdio>
+#include <map>
+#include <vector>
+#include <algorithm>
+using namespace std;
+int main() {
+    int n;
+    long long k;
+    scanf("%d %lld", &n, &k);
+    map<long long, vector<int>> pos;         /* 值 → 出现过的下标（升序） */
+    vector<long long> pref;
+    pref.push_back(0);
+    pos[0].push_back(0);
+    long long pre = 0;
+    for (int i = 1; i <= n; i++) {
+        long long x;
+        scanf("%lld", &x);
+        pre += x;
+        pref.push_back(pre);
+        pos[pre].push_back(i);
+    }
+    long long ans = 0;
+    for (int j = 0; j <= n; j++) {
+        auto it = pos.find(pref[j] - k);
+        if (it != pos.end())
+            ans += lower_bound(it->second.begin(), it->second.end(), j)
+                   - it->second.begin();     /* 只数下标 < j 的 */
+    }
+    printf("%lld\n", ans);
     return 0;
 }
 ''',
