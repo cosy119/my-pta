@@ -329,6 +329,9 @@ td.c-sc{width:96px; text-align:right; white-space:nowrap; font-variant-numeric:t
 }
 .sampleHead .cp{margin-left:auto; font-size:11.5px; color:var(--muted); cursor:pointer; border:1px solid var(--border); background:var(--panel); border-radius:6px; padding:1.5px 8px}
 .sampleHead .cp:hover{color:var(--primary); border-color:var(--primary)}
+/* 行内小按钮（登录名/密码那一行用） */
+.miniBtn{font:inherit; font-size:11.5px; color:var(--muted); cursor:pointer; border:1px solid var(--border); background:var(--panel); border-radius:6px; padding:1px 8px; margin-left:6px; line-height:1.7}
+.miniBtn:hover{color:var(--primary); border-color:var(--primary)}
 .sampleBody{display:grid; grid-template-columns:1fr 1fr; gap:0}
 .sampleBody>div{padding:9px 12px; min-width:0}
 .sampleBody>div:first-child{border-right:1px solid var(--border2)}
@@ -935,6 +938,9 @@ const LS = {
   /* Linux 线的题面里会出现「你的家目录」这种因人而异的东西。题库里统一写成
      占位符 `{user}`（例：`/home/{user}/docs`），渲染时才换成这个人自己的登录名。 */
   linuxUser: 'pta.linuxUser',
+  /* 装机时设的那个登录密码。做用户管理 / su / sudo 那些题时手边能查一眼。
+     ★ 只存在这台机器的浏览器里，任何提交、导出、日志都不带它。 */
+  linuxPass: 'pta.linuxPass',
 };
 
 const VERDICT_TXT = {
@@ -1203,18 +1209,54 @@ const CAL_CLASS = { warning:'cal-warning', danger:'cal-danger', tip:'cal-tip', i
 function linuxUser(){
   try { return String(localStorage.getItem(LS.linuxUser) || '').trim(); } catch(e){ return ''; }
 }
-function saveLinuxUser(v){
+/* 登录密码：只在浏览器本地存一份，用于做用户管理 / su / sudo 那几题时查一眼。
+   不参与判题、不进提交、不进导出。 */
+function linuxPass(){
+  try { return String(localStorage.getItem(LS.linuxPass) || ''); } catch(e){ return ''; }
+}
+function passMask(){
+  const p = linuxPass();
+  return p ? '●'.repeat(Math.min(Math.max(p.length, 4), 10)) : '';
+}
+function saveLinuxUser(v, pass){
   /* 顺手容忍两种手滑：粘贴了 `~/zhangsan`、把整条 `whoami` 结果粘进来 */
   const name = String(v === undefined || v === null ? '' : v).trim()
     .replace(/^~\//, '').replace(/^\/home\//, '').replace(/\/$/, '');
   if (!name){ toast('先写个名字再点「记住」', 'err'); return; }
   if (/[\s/]/.test(name)){ toast('登录名里不会有空格或斜杠，检查一下', 'err'); return; }
   try { localStorage.setItem(LS.linuxUser, name); } catch(e){}
-  toast('已记住你的 Linux 用户名：' + name, 'ok');
+  if (pass !== undefined && pass !== null && String(pass) !== ''){
+    try { localStorage.setItem(LS.linuxPass, String(pass)); } catch(e){}
+  }
+  toast('已记住：' + name + (linuxPass() ? '（密码只存在这台浏览器里）' : ''), 'ok');
   renderProblem();
 }
 function clearLinuxUser(){
-  try { localStorage.removeItem(LS.linuxUser); } catch(e){}
+  try {
+    localStorage.removeItem(LS.linuxUser);
+    localStorage.removeItem(LS.linuxPass);
+  } catch(e){}
+  renderProblem();
+}
+/* 密码默认打码，点「显示」才露出来 —— 屏幕上一个常驻的明文密码没什么必要 */
+function toggleLinuxPass(btn){
+  const box = document.getElementById('linuxPassVal');
+  if (!box) return;
+  const shown = box.getAttribute('data-shown') === '1';
+  box.textContent = shown ? passMask() : linuxPass();
+  box.setAttribute('data-shown', shown ? '0' : '1');
+  if (btn) btn.textContent = shown ? '显示' : '收起';
+}
+function setLinuxPass(){
+  const v = prompt('设置 / 修改你的 Linux 登录密码。\n\n'
+    + '只存在这台机器的浏览器里，不上传、不进提交、不进导出。\n'
+    + '留空并确定 = 清除已存的密码。', '');
+  if (v === null) return;
+  try {
+    if (String(v) === '') localStorage.removeItem(LS.linuxPass);
+    else localStorage.setItem(LS.linuxPass, String(v));
+  } catch(e){}
+  toast(String(v) === '' ? '已清除本地保存的密码' : '已记住密码（仅本机浏览器）', 'ok');
   renderProblem();
 }
 function subUser(s){
@@ -2008,15 +2050,21 @@ function renderProblem(){
   let userCard = '';
   if (subject === 'linux' && !linuxUser()){
     userCard = '<div class="pcard" id="linuxUserCard" style="border-color:var(--warn)">'
-      + '<h4 style="margin:0 0 8px">先填一下：你的 Linux 用户名</h4>'
-      + '<div class="hintline">就是你在 Fedora 里 `whoami` 打出来的那个登录名'
+      + '<h4 style="margin:0 0 8px">先填一下：你的 Linux 用户名（顺手把密码也记上）</h4>'
+      + '<div class="hintline">用户名就是你在 Fedora 里 <code>whoami</code> 打出来的那个登录名'
       + '（装机时设的姓名拼音，例：<code>zhangsan</code>）。<br>'
       + 'Linux 线的题面与解析里凡是出现家目录的地方，都会换成你自己这个名字。</div>'
-      + '<div style="display:flex;gap:8px;margin-top:10px;align-items:center">'
-      + '<input class="inp" id="linuxUserInp" placeholder="例如 zhangsan"'
-      + ' style="max-width:220px" autocomplete="off" spellcheck="false">'
-      + '<button class="btn" id="linuxUserBtn" type="button">记住这个名字</button>'
-      + '</div></div>';
+      + '<div style="display:flex;gap:8px;margin-top:10px;align-items:center;flex-wrap:wrap">'
+      + '<input class="inp" id="linuxUserInp" placeholder="用户名，例如 zhangsan"'
+      + ' style="max-width:200px" autocomplete="off" spellcheck="false">'
+      + '<input class="inp" id="linuxPassInp" type="password" placeholder="登录密码（可留空）"'
+      + ' style="max-width:200px" autocomplete="new-password" spellcheck="false">'
+      + '<button class="btn" id="linuxUserBtn" type="button">记住</button>'
+      + '</div>'
+      + '<div class="hintline" style="margin-top:8px">密码 <b>只存在这台机器的浏览器里</b>：'
+      + '不上传、不参与判题、不进导出。后面做用户管理、<code>su</code>、<code>sudo</code> '
+      + '那几题时，题面顶上点「密码」就能查一眼。</div>'
+      + '</div>';
   }
 
   /* ------- 左边：题面 ------- */
@@ -2046,6 +2094,11 @@ function renderProblem(){
         ? '<div class="hintline" style="margin:12px 0 0">'
           + '<span class="pill">Fedora 44</span> 本机登录名 <b>' + esc(linuxUser()) + '</b>'
           + ' · 家目录 <code>~/</code> 就是 <code>/home/' + esc(linuxUser()) + '</code>'
+          + (linuxPass()
+              ? ' · 密码 <code id="linuxPassVal" data-shown="0">' + esc(passMask()) + '</code>'
+                + '<button type="button" class="miniBtn" onclick="toggleLinuxPass(this)">显示</button>'
+                + '<button type="button" class="miniBtn" onclick="setLinuxPass()">改</button>'
+              : '<button type="button" class="miniBtn" onclick="setLinuxPass()">没记密码？点这里补</button>')
           + '</div>'
         : '')
     + '<div class="mdsec"><h4>题目描述</h4><div class="md">' + mdRender(p.statement_md) + '</div></div>';
@@ -2143,17 +2196,26 @@ function renderProblem(){
 
 /* 登录名卡片的事件绑定（卡片是按需拼出来的，所以放在渲染之后统一挂） */
 function bindLinuxUserCard(){
+  const grab = function(){
+    const n = document.getElementById('linuxUserInp');
+    const w = document.getElementById('linuxPassInp');
+    return [n ? n.value : '', w ? w.value : ''];
+  };
   const inp = document.getElementById('linuxUserInp');
   if (inp){
     inp.addEventListener('keydown', function(e){
-      if (e.key === 'Enter') saveLinuxUser(inp.value);
+      if (e.key === 'Enter') saveLinuxUser.apply(null, grab());
     });
     try { inp.focus(); } catch(e){}
   }
+  /* 密码框里回车也该提交 —— 不然填完密码还得回头点按钮 */
+  const pw = document.getElementById('linuxPassInp');
+  if (pw) pw.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') saveLinuxUser.apply(null, grab());
+  });
   const btn = document.getElementById('linuxUserBtn');
   if (btn) btn.addEventListener('click', function(){
-    const i = document.getElementById('linuxUserInp');
-    saveLinuxUser(i ? i.value : '');
+    saveLinuxUser.apply(null, grab());
   });
   const chip = document.getElementById('linuxUserChip');
   if (chip) chip.addEventListener('click', function(){

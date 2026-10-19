@@ -79,16 +79,29 @@ try {
   check('没填登录名时提交被拦住', blocked);
   await page.evaluate(() => { const b = document.getElementById('codeBox'); if (b) b.value = ''; });
 
-  /* ── 3. 填名字 → 记住 ── */
+  /* ── 3. 填名字 + 密码 → 记住 ── */
   await page.type('#linuxUserInp', 'zhangsan');
+  await page.type('#linuxPassInp', 'P@ssw0rd');
   await page.click('#linuxUserBtn');
   await page.waitForFunction(() => !document.getElementById('linuxUserCard'));
   const stored = await page.evaluate(() => localStorage.getItem('pta.linuxUser'));
   check('登录名已落 localStorage', stored === 'zhangsan', String(stored));
+  const storedPw = await page.evaluate(() => localStorage.getItem('pta.linuxPass'));
+  check('密码已落 localStorage（只存本地）', storedPw === 'P@ssw0rd', String(storedPw));
   const chip = await page.$eval('.chips #linuxUserChip', e => e.textContent);
   check('标题栏出现登录名', /zhangsan/.test(chip), chip);
   const envLine = await page.$eval('.pstmt .hintline', e => e.textContent);
   check('题面显示 /home/zhangsan', /\/home\/zhangsan/.test(envLine), envLine);
+
+  /* ── 3b. 密码默认打码，点「显示」才露明文 ── */
+  const maskTxt = await page.$eval('#linuxPassVal', e => e.textContent);
+  check('密码默认打码', /^●+$/.test(maskTxt), maskTxt);
+  await page.click('.pstmt .hintline .miniBtn');
+  const shownTxt = await page.$eval('#linuxPassVal', e => e.textContent);
+  check('点「显示」才露明文', shownTxt === 'P@ssw0rd', shownTxt);
+  await page.click('.pstmt .hintline .miniBtn');
+  check('再点一次收回掩码',
+        /^●+$/.test(await page.$eval('#linuxPassVal', e => e.textContent)));
 
   /* ── 4. {user} 占位符替换 ── */
   const sub = await page.evaluate(() => subUser('家目录 /home/{user}/docs 和 {user}'));
