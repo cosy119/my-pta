@@ -170,4 +170,202 @@ PY_BITS_PROBLEMS: list[dict] = [
              "kind": "manual", "explanation": "1023 = 0b1111111111 有 10 个 1，碾压全场"},
         ],
     },
+    {
+        "title": "汉明距离",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 1,
+        "total_score": 10,
+        "tags": ["进制转换", "位运算", "异或"],
+        "source_section": "第 02 讲 · 编程基础",
+        "statement_md": (
+            "读入两个非负整数 `x` 和 `y`，输出它们的**汉明距离**——"
+            "二进制表示里对应位不同的位置个数。\n\n"
+            "标准姿势一行完事：`x ^ y` 把「不同的位」全变成 1（相同为 0、不同为 1），"
+            "再 `bin(...)[2:].count('1')`（或 3.10+ `(...).bit_count()`）数 1 的个数。"
+            "上一题的「数 1」套路直接复用，核心新考点是**异或的语义**。"
+        ),
+        "input_format": "一行两个非负整数 `x y`（0 ≤ x, y < 2^30），空格分隔。",
+        "output_format": "一行：汉明距离。",
+        "constraints_md": "- 0 ≤ x, y < 2^30",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "x, y = map(int, input().split())\n"
+            "print(bin(x ^ y).count('1'))    # 异或：同 0 异 1，数 1 即距离\n"
+        ),
+        "alt_solution": (
+            "# 第二套：手写按位比较，不用异或运算符\n"
+            "x, y = map(int, input().split())\n"
+            "cnt = 0\n"
+            "while x > 0 or y > 0:\n"
+            "    if x % 2 != y % 2:          # 末位不同就计 1\n"
+            "        cnt += 1\n"
+            "    x //= 2\n"
+            "    y //= 2\n"
+            "print(cnt)\n"
+        ),
+        "cases": [
+            {"stdin": "1 4\n", "expected_stdout": "2\n", "is_sample": 1,
+             "kind": "sample", "explanation": "001 vs 100：第 0、2 位不同，距离 2"},
+            {"stdin": "0 0\n", "expected_stdout": "0\n", "kind": "manual",
+             "explanation": "全同，距离 0"},
+            {"stdin": "5 3\n", "expected_stdout": "2\n", "kind": "manual",
+             "explanation": "101 ^ 011 = 110，两个 1 → 距离 2"},
+            {"stdin": "255 0\n", "expected_stdout": "8\n", "kind": "manual",
+             "explanation": "8 个 1 对 8 个 0，每位都不同"},
+            {"stdin": "1073741823 123456789\n", "expected_stdout": "14\n", "kind": "manual",
+             "explanation": "2^30-1（30 个 1）与 123456789 的汉明距离：30 − 16 = 14"},
+        ],
+    },
+    {
+        "title": "位运算三兄弟",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": ["位运算", "异或", "与或"],
+        "source_section": "第 02 讲 · 编程基础",
+        "statement_md": (
+            "读入两个非负整数 `x` 和 `y`，按顺序输出三行：\n\n"
+            "1. `x & y`（按位与：两位都是 1 才是 1）\n"
+            "2. `x | y`（按位或：至少一位是 1 就是 1）\n"
+            "3. `x ^ y`（按位异或：两位不同才是 1）\n\n"
+            "对应讲义第 02 讲 5.5 的位运算表，用真实数字把三个运算符的语义过一遍。"
+        ),
+        "input_format": "一行两个非负整数 `x y`（0 ≤ x, y < 2^30），空格分隔。",
+        "output_format": "三行：`x & y`、`x | y`、`x ^ y`（十进制）。",
+        "constraints_md": "- 0 ≤ x, y < 2^30",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "x, y = map(int, input().split())\n"
+            "print(x & y)\n"
+            "print(x | y)\n"
+            "print(x ^ y)\n"
+        ),
+        "alt_solution": (
+            "# 第二套：恒等式 x + y = (x^y) + 2*(x&y)，用加法反推三兄弟\n"
+            "x, y = map(int, input().split())\n"
+            "a = x & y\n"
+            "print(a)                    # 与\n"
+            "print(x + y - a)            # 或 = x + y - 与\n"
+            "print(x + y - 2 * a)        # 异或 = x + y - 2*与\n"
+        ),
+        "cases": [
+            {"stdin": "5 3\n", "expected_stdout": "1\n7\n6\n", "is_sample": 1,
+             "kind": "sample", "explanation": "101 与 011：与=001，或=111，异或=110"},
+            {"stdin": "0 0\n", "expected_stdout": "0\n0\n0\n", "kind": "manual",
+             "explanation": "全零输入三个 0"},
+            {"stdin": "255 170\n", "expected_stdout": "170\n255\n85\n", "kind": "manual",
+             "explanation": "11111111 掩码：与=170，或=255，异或=85（恰好是差集位）"},
+            {"stdin": "12 10\n", "expected_stdout": "8\n14\n6\n", "kind": "manual",
+             "explanation": "1100 与 1010：与=1000，或=1110，异或=0110"},
+            {"stdin": "1024 1024\n", "expected_stdout": "1024\n1024\n0\n", "kind": "manual",
+             "explanation": "自己跟自己：与=或=自己，异或=0（x^x=0 的直接体现）"},
+        ],
+    },
+    {
+        "title": "只出现一次的数",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 3,
+        "total_score": 12,
+        "tags": ["位运算", "异或", "技巧"],
+        "source_section": "第 02 讲 · 编程基础",
+        "statement_md": (
+            "第一行读入 `n`，第二行读入 `n` 个非负整数——**其中恰好有一个数只出现一次，"
+            "其余每个数都恰好出现两次**。输出那个只出现一次的数。\n\n"
+            "★ 异或的杀手锏：`x ^ x = 0`、`x ^ 0 = x`，且异或满足交换律结合律——"
+            "把全部数**连异或**一遍，成对的互相抵消成 0，最后剩下的就是落单的那个。"
+            "一遍扫描、O(1) 额外空间，不用哈希表也不用排序。"
+        ),
+        "input_format": (
+            "第一行一个整数 `n`（1 ≤ n ≤ 10^5，n 为奇数）；\n"
+            "第二行 `n` 个非负整数（每个 0 ≤ x < 2^30），空格分隔。"
+        ),
+        "output_format": "一行：只出现一次的那个数。",
+        "constraints_md": "- n 为奇数，恰有一个数出现一次，其余各出现两次",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "import sys\n\n"
+            "data = sys.stdin.read().split()\n"
+            "n = int(data[0])\n"
+            "acc = 0\n"
+            "for i in range(1, n + 1):\n"
+            "    acc ^= int(data[i])         # 成对抵消，落单的留下来\n"
+            "print(acc)\n"
+        ),
+        "alt_solution": (
+            "# 第二套：计数表（与异或折叠不同算法，互为对拍）\n"
+            "import sys\n"
+            "from collections import Counter\n\n"
+            "data = sys.stdin.read().split()\n"
+            "n = int(data[0])\n"
+            "cnt = Counter(map(int, data[1:1 + n]))\n"
+            "print(next(v for v, c in cnt.items() if c == 1))\n"
+        ),
+        "cases": [
+            {"stdin": "5\n1 2 3 2 1\n", "expected_stdout": "3\n", "is_sample": 1,
+             "kind": "sample", "explanation": "1^1=0、2^2=0，只剩 3"},
+            {"stdin": "1\n42\n", "expected_stdout": "42\n", "kind": "manual",
+             "explanation": "只有一个数，它就是答案（异或 0 得自身）"},
+            {"stdin": "5\n4 4 7 7 9\n", "expected_stdout": "9\n", "kind": "manual",
+             "explanation": "4、7 成对抵消，剩 9"},
+            {"stdin": "3\n5 5 0\n", "expected_stdout": "0\n", "kind": "manual",
+             "explanation": "落单的可以是 0——5^5^0 = 0"},
+            {"stdin": "9\n1 1 2 2 3 3 4 4 5\n", "expected_stdout": "5\n", "kind": "manual",
+             "explanation": "四对全抵消，剩 5"},
+        ],
+    },
+    {
+        "title": "2 的幂判断",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": ["位运算", "与", "技巧"],
+        "source_section": "第 02 讲 · 编程基础",
+        "statement_md": (
+            "读入一个非负整数 `x`，判断它是不是 2 的幂（1, 2, 4, 8, …），"
+            "是输出 `YES`，不是输出 `NO`。\n\n"
+            "★ 位运算的著名技巧：`x & (x - 1) == 0` 当且仅当 x 是 2 的幂——"
+            "2 的幂二进制只有一个 1，`x - 1` 会把它借位成「后面全是 1」，两者相与必为 0。\n\n"
+            "⚠️ 陷阱：`0 & -1` 也是 0，但 **0 不是 2 的幂**——先判 `x >= 1`。"
+        ),
+        "input_format": "一行一个非负整数 `x`（0 ≤ x < 2^30）。",
+        "output_format": "一行：`YES` 或 `NO`。",
+        "constraints_md": "- 0 ≤ x < 2^30",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "x = int(input())\n"
+            "print(\"YES\" if x >= 1 and x & (x - 1) == 0 else \"NO\")\n"
+        ),
+        "alt_solution": (
+            "# 第二套：反复除 2（与位技巧不同算法）\n"
+            "x = int(input())\n"
+            "ok = x >= 1\n"
+            "while ok and x % 2 == 0:\n"
+            "    x //= 2\n"
+            "print(\"YES\" if ok and x == 1 else \"NO\")\n"
+        ),
+        "cases": [
+            {"stdin": "1\n", "expected_stdout": "YES\n", "is_sample": 1,
+             "kind": "sample", "explanation": "2^0 = 1，是"},
+            {"stdin": "0\n", "expected_stdout": "NO\n", "kind": "manual",
+             "explanation": "陷阱：0 & -1 == 0 会误判，必须先排除 0"},
+            {"stdin": "1024\n", "expected_stdout": "YES\n", "kind": "manual",
+             "explanation": "2^10"},
+            {"stdin": "1023\n", "expected_stdout": "NO\n", "kind": "manual",
+             "explanation": "0b11111111111111111111111111111 不止一个 1"},
+            {"stdin": "1073741824\n", "expected_stdout": "YES\n", "kind": "manual",
+             "explanation": "2^30，正好压约束上界"},
+        ],
+    },
 ]

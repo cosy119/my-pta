@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-10-20 10:20:05",
- "count": 864,
- "total_score": 11017,
- "total_testcases": 1834,
+ "generated_at": "2026-10-20 10:53:29",
+ "count": 870,
+ "total_score": 11083,
+ "total_testcases": 1856,
  "items": [
   {
    "id": 1,
@@ -51433,6 +51433,434 @@
     2,
     2,
     2
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 880,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "汉明距离",
+   "difficulty": 1,
+   "total_score": 10,
+   "tags": [
+    "进制转换",
+    "位运算",
+    "异或"
+   ],
+   "choices": [],
+   "statement_md": "读入两个非负整数 `x` 和 `y`，输出它们的**汉明距离**——二进制表示里对应位不同的位置个数。\n\n标准姿势一行完事：`x ^ y` 把「不同的位」全变成 1（相同为 0、不同为 1），再 `bin(...)[2:].count('1')`（或 3.10+ `(...).bit_count()`）数 1 的个数。上一题的「数 1」套路直接复用，核心新考点是**异或的语义**。",
+   "input_format": "一行两个非负整数 `x y`（0 ≤ x, y < 2^30），空格分隔。",
+   "output_format": "一行：汉明距离。",
+   "constraints_md": "- 0 ≤ x, y < 2^30",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1860,
+     "ord": 0,
+     "stdin": "1 4\n",
+     "expected_stdout": "2\n",
+     "explanation": "001 vs 100：第 0、2 位不同，距离 2"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1 4\n",
+     "expected_stdout": "2\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "0 0\n",
+     "expected_stdout": "0\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5 3\n",
+     "expected_stdout": "2\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "255 0\n",
+     "expected_stdout": "8\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "1073741823 123456789\n",
+     "expected_stdout": "14\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 881,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "位运算三兄弟",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "位运算",
+    "异或",
+    "与或"
+   ],
+   "choices": [],
+   "statement_md": "读入两个非负整数 `x` 和 `y`，按顺序输出三行：\n\n1. `x & y`（按位与：两位都是 1 才是 1）\n2. `x | y`（按位或：至少一位是 1 就是 1）\n3. `x ^ y`（按位异或：两位不同才是 1）\n\n对应讲义第 02 讲 5.5 的位运算表，用真实数字把三个运算符的语义过一遍。",
+   "input_format": "一行两个非负整数 `x y`（0 ≤ x, y < 2^30），空格分隔。",
+   "output_format": "三行：`x & y`、`x | y`、`x ^ y`（十进制）。",
+   "constraints_md": "- 0 ≤ x, y < 2^30",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1865,
+     "ord": 0,
+     "stdin": "5 3\n",
+     "expected_stdout": "1\n7\n6\n",
+     "explanation": "101 与 011：与=001，或=111，异或=110"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5 3\n",
+     "expected_stdout": "1\n7\n6\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "0 0\n",
+     "expected_stdout": "0\n0\n0\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "255 170\n",
+     "expected_stdout": "170\n255\n85\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "12 10\n",
+     "expected_stdout": "8\n14\n6\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "1024 1024\n",
+     "expected_stdout": "1024\n1024\n0\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 882,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "只出现一次的数",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "位运算",
+    "异或",
+    "技巧"
+   ],
+   "choices": [],
+   "statement_md": "第一行读入 `n`，第二行读入 `n` 个非负整数——**其中恰好有一个数只出现一次，其余每个数都恰好出现两次**。输出那个只出现一次的数。\n\n★ 异或的杀手锏：`x ^ x = 0`、`x ^ 0 = x`，且异或满足交换律结合律——把全部数**连异或**一遍，成对的互相抵消成 0，最后剩下的就是落单的那个。一遍扫描、O(1) 额外空间，不用哈希表也不用排序。",
+   "input_format": "第一行一个整数 `n`（1 ≤ n ≤ 10^5，n 为奇数）；\n第二行 `n` 个非负整数（每个 0 ≤ x < 2^30），空格分隔。",
+   "output_format": "一行：只出现一次的那个数。",
+   "constraints_md": "- n 为奇数，恰有一个数出现一次，其余各出现两次",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1870,
+     "ord": 0,
+     "stdin": "5\n1 2 3 2 1\n",
+     "expected_stdout": "3\n",
+     "explanation": "1^1=0、2^2=0，只剩 3"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "5\n1 2 3 2 1\n",
+     "expected_stdout": "3\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "1\n42\n",
+     "expected_stdout": "42\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "5\n4 4 7 7 9\n",
+     "expected_stdout": "9\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "3\n5 5 0\n",
+     "expected_stdout": "0\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "9\n1 1 2 2 3 3 4 4 5\n",
+     "expected_stdout": "5\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 883,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "2 的幂判断",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "位运算",
+    "与",
+    "技巧"
+   ],
+   "choices": [],
+   "statement_md": "读入一个非负整数 `x`，判断它是不是 2 的幂（1, 2, 4, 8, …），是输出 `YES`，不是输出 `NO`。\n\n★ 位运算的著名技巧：`x & (x - 1) == 0` 当且仅当 x 是 2 的幂——2 的幂二进制只有一个 1，`x - 1` 会把它借位成「后面全是 1」，两者相与必为 0。\n\n⚠️ 陷阱：`0 & -1` 也是 0，但 **0 不是 2 的幂**——先判 `x >= 1`。",
+   "input_format": "一行一个非负整数 `x`（0 ≤ x < 2^30）。",
+   "output_format": "一行：`YES` 或 `NO`。",
+   "constraints_md": "- 0 ≤ x < 2^30",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1875,
+     "ord": 0,
+     "stdin": "1\n",
+     "expected_stdout": "YES\n",
+     "explanation": "2^0 = 1，是"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "1\n",
+     "expected_stdout": "YES\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "0\n",
+     "expected_stdout": "NO\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "1024\n",
+     "expected_stdout": "YES\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1023\n",
+     "expected_stdout": "NO\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "1073741824\n",
+     "expected_stdout": "YES\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 884,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "异或自反性",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "位运算",
+    "异或"
+   ],
+   "choices": [
+    "x",
+    "y",
+    "0",
+    "x ^ y"
+   ],
+   "statement_md": "对任意整数 `x`，表达式 `(x ^ y) ^ y` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 885,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "异或求值的二进制串",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "位运算",
+    "异或",
+    "bin"
+   ],
+   "choices": [],
+   "statement_md": "表达式 `bin(6 ^ 3)[2:]` 的值是多少？（写**不带引号**的字符串内容）",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 02 讲 · 编程基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|101\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
    ],
    "points_sum": 12
   }
