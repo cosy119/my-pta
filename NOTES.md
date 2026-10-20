@@ -33,7 +33,7 @@ SQLite（题库 + 提交记录 + 进度）
 
 ```bat
 python tools\export_static.py      &rem ★ 改题库/前端后必须重跑，重新生成 docs/
-python tools\verify_bank.py        &rem 856 题 / 1794 点，双实现对拍
+python tools\verify_bank.py        &rem 861 题 / 1819 点，双实现对拍
 python tools\selftest_cpp.py       &rem 9 项
 python tools\selftest_theory.py    &rem 14 项
 python tools\selfcheck.py          &rem 62 项
@@ -257,13 +257,13 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（856 题 / 10905 分 / 1794 测试点）
+## 题库（861 题 / 10985 分 / 1819 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
 | `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(67 = 53 编程 + ext2 14) + `problems_bank_py_prog.py`(10) + `problems_bank_py_tricks.py`(30) + 理论 `problems_bank_py_theory.py`(66) + `problems_bank_py_theory2.py`(63 = 49 + 进制转换 14) | **239** | **2988** | python | Python |
-| `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(34) | **235** | **3406** | cpp | **C 或 C++ 任选** |
-| `linux` | `problems_bank_linux.py` | **194** | **2169** | text | 理论题（单选 / 多选 / 判断 / 填空）+ **实操题 15** |
+| `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(39) | **240** | **3486** | cpp | **C 或 C++ 任选** |
+| `linux` | `problems_bank_linux.py` | **382** | **4511** | text | 理论题（单选 / 多选 / 判断 / 填空）+ **实操题 203**（写命令） |
 
 - ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
   **CORE 那 3 题连单撞都没有**。现在 `LINES` 用的是 `CORE_PROBLEMS + BANK_PROBLEMS`。
@@ -278,20 +278,32 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   - **2026-10-19 晚大改**：实操题从「跑验收命令 → 填输出」改成「**给场景 → 写命令**」，
     并且从 15 道扩到 **203 道**（`tools/linux_cmd_bank.py`，见下面「★ 命令题」一节）。
     原因见那节开头 —— 旧形态考的是「会不会抄屏幕」，不是「会不会用命令」。
-- **题型分布（全库）**：编程 256 / 单选 200 / 多选 34 / 判断 84 / 填空 69 / 简答 10 / **实操 203**。
+- **题型分布（全库）**：编程 261 / 单选 200 / 多选 34 / 判断 84 / 填空 69 / 简答 10 / **实操 203**。
   Linux 线单独一份：单选 115 / 多选 8 / 判断 31 / 填空 25 / **实操 203** = 382 题。
   （这行跟着题库涨，别当常量用 —— 要准数就 `SELECT question_type, COUNT(*) FROM problems GROUP BY 1`。）
 
-### ★ 技巧特训章（2026-10-18 晚建章，两线各 20 题；2026-10-19 各 +10 进阶；2026-10-19 晚 DS +4 插入维护）
+### ★ 技巧特训章（2026-10-18 晚建章，两线各 20 题；2026-10-19 各 +10 进阶；2026-10-19 晚 DS +4 插入维护；2026-10-20 DS +5 整行反转）
 
 讲义没专门讲、但做题（蓝桥杯 / 码蹄杯 / ACM）总会遇到的**技巧性简便用法**单独成章：
-`tools/gen_py_tricks.py` → 「技巧特训 · Python」30 题；`tools/gen_ds_tricks.py` → 「技巧特训 · C/C++」34 题。
+`tools/gen_py_tricks.py` → 「技巧特训 · Python」30 题；`tools/gen_ds_tricks.py` → 「技巧特训 · C/C++」39 题。
 难度 1→4 递进，四段式：基础语法糖 → 竞赛工具箱（STL/算法套路）→ 竞赛强度（DP/二分/分治）→ **进阶套路**。
 
 | 线 | 分节 | 基础 | 套路 | 竞赛 | 进阶（10 题） |
 |---|---|---|---|---|---|
 | python | 技巧特训 · Python（8/6/6/10） | upper/负索引切片/split-join/推导式/enumerate-zip/sorted多关键字/dict.get/集合运算 | Counter/heapq/前缀和/**bisect 第一个大于 x**/lru_cache/回文清洗 | 01背包/LIS n log n/快速幂 pow(a,b,m)/区间合并/阶乘大数/筛法 | **str.translate(ROT13)**/re.findall/格式化四连 f-string/**zip(*a) 转置**/itertools 第 k 排列/math.gcd-lcm/**bit_count + lowbit**/**子集枚举 + 线性基**/**二维前缀和**/**deque 单调队列** |
-| ds | 技巧特训 · C/C++（7/7/6/10 + **插入维护 4**） | **vector push_back**/string find/sort+cmp/pair/map/set/stringstream | **upper_bound 第一个大于 x**/lower_bound/差分/双指针/单调栈/单调队列/**二分答案·伐木** | 01背包/完全背包/LIS/LCS/快速幂/逆序对归并 | **stable_sort 多关键字**/**priority_queue Top-K**/**next_permutation**/**accumulate + iota**/**bitset 位统计**/unordered_map 词频/**unique 离散化**/**树状数组**/**高精度字符串加法**/**前缀和 + 哈希计数** |
+| ds | 技巧特训 · C/C++（7/7/6/10 + **插入维护 4** + **整行反转 5**） | **vector push_back**/string find/sort+cmp/pair/map/set/stringstream | **upper_bound 第一个大于 x**/lower_bound/差分/双指针/单调栈/单调队列/**二分答案·伐木** | 01背包/完全背包/LIS/LCS/快速幂/逆序对归并 | **stable_sort 多关键字**/**priority_queue Top-K**/**next_permutation**/**accumulate + iota**/**bitset 位统计**/unordered_map 词频/**unique 离散化**/**树状数组**/**高精度字符串加法**/**前缀和 + 哈希计数** |
+
+**整行反转 5 题（`getline` + `reverse` 区间，2026-10-20 加）**
+
+| # | 标题 | 难度/分 | 练什么 |
+|---|---|---|---|
+| 1 | 按单词反转整行（getline + reverse 区间） | 1 / 10 | `cin >> s` 遇空格即停 → 必须 `getline`；扫到空格下标 `i` 直接当 `reverse` 的 `last`（**左闭右开**，空格不动） |
+| 2 | 整句翻转（两次 reverse） | 2 / 15 | 整句翻 + 每词再翻：把「词序」和「词内序」同时倒两次，后者抵消；对比不用数组的两套写法 |
+| 3 | 按分隔符逐段反转（i <= n 的收尾） | 2 / 15 | 循环必须 `i <= n`，只写 `i < n` **漏最后一段**；空段（`a,,b`）天然安全；分隔符用 `getline` 读，`cin >> c` 读不到空格 |
+| 4 | 每 k 个字符分组反转（min 收尾防越界） | 3 / 20 | `min(i+k, n)` 是必须的 —— 越界是 UB；`k > n`、`k = 1` 两个边界 |
+| 5 | 只反转字母（非字母原位不动） | 3 / 20 | 抽出字母串 `reverse` 再按 `pos` 填回；直接翻整串会带标点乱位；`isalpha((unsigned char)c)` 防负数 UB |
+
+- ★ 这组题面里都写明了「为什么不能直接整串 `reverse`」和 `s.begin()+n == s.end()` 这个合法性前提。
 
 **插入维护 4 题（`upper_bound` + `insert`，2026-10-19 晚加）**
 
@@ -734,7 +746,7 @@ D:\Pythontools\Python\python.exe tools\e2e_ui.py 8792
    改用持久的测试库之后，第二次跑必定数到上一次留下的记录 → 假失败。
    → 加 `_testdb.fresh_test_db()`：开跑前把测试库**删掉重建**
    （schema 不用管，`app/db.py` 的 `connect()` 会自己建表）。
-2. **等待时限刚好卡边界**：删库重建后服务要重新播种 856 题 / 1794 个测试点，
+2. **等待时限刚好卡边界**：删库重建后服务要重新播种 861 题 / 1819 个测试点，
    本机实测约 40 秒，而 `wait_port` / `wait_http` 的默认上限**正好是 40 秒**。
    → 提到 120 秒。
 
@@ -905,7 +917,7 @@ editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_
 后端的定位因此**从「必须」降级为「可选增强」**，只干三件事：
 **跨设备进度、C/C++ 判题、防作弊**。
 
-> ★★ 代价必须记住：`docs/problems.json` 现在**带全部 1794 个测试点**（`--with-cases`），
+> ★★ 代价必须记住：`docs/problems.json` 现在**带全部 1819 个测试点**（`--with-cases`），
 > 也就是**期望输出是公开的**（仓库公开、Pages 公开）。自学平台无所谓（随时对答案反而是加分项），
 > 但**分享给别人刷题就有作弊空间**。**参考解 `reference_solution` 仍然绝不外传**。
 > 想回退到「不下发」：不加该参数重导一次即可（前端会自动退回手动标记，不会报错）。

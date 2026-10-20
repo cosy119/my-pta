@@ -24,6 +24,8 @@ STL 与算法套路，单独成章，量大、循序渐进（difficulty 1 → 4�
                高精度加法 / 前缀和 + 哈希计数）
   插入维护     4 题（upper_bound + insert：单次插入 / 批量插入 /
                lower 与 upper 的稳定性差异 / 动态有序表名次查询）
+  整行反转     5 题（getline + reverse 区间：单词内反转 / 两次反转整句 /
+               按分隔符逐段 / 每 k 个分组 / 只反转字母）
 """
 from __future__ import annotations
 
@@ -3288,6 +3290,493 @@ int main() {
             else printf("%d\n", (int)distance(s.begin(), it) + 1);   /* distance 是 O(n) */
         }
     }
+    return 0;
+}
+''',
+)
+
+
+# --------------------------------------------------------------------- #
+#  整行读取与区间反转（getline + reverse）　difficulty 1~3
+#
+#  这一组专练三个连在一起的坑：
+#  1. `cin >> s` 遇空格就停，读不了一整行 → `getline(cin, s)`；
+#  2. `getline` 会吃掉行尾的 '\n'（不进字符串），而 `cin >> c` 会跳过空白
+#     —— 混用时要 `cin.ignore()` / `getchar()`，否则第一下读到空行；
+#  3. `reverse(first, last)` 是**左闭右开** [first, last)，last 自己不反转。
+#     所以扫到「分隔符的下标 i」时，直接拿 i 当 last 用，一行就够：
+#         reverse(s.begin() + start, s.begin() + i);
+#     而 `s.begin() + n` 等于 `s.end()`，最后一段靠 i == n 收尾。
+
+
+def _rand_words_35() -> str:
+    import random
+    rnd = random.Random(20261021)
+    words = []
+    for _ in range(1000):
+        L = rnd.randint(1, 8)
+        words.append("".join(rnd.choice("abcdefghijklmnopqrstuvwxyz0123456789")
+                             for _ in range(L)))
+    return " ".join(words) + "\n"
+
+
+def _oracle_35(text: str) -> str:
+    line = text.split("\n")[0].rstrip("\r")
+    return " ".join(w[::-1] for w in line.split(" ")) + "\n"
+
+
+add(
+    title="按单词反转整行（getline + reverse 区间）",
+    section="技巧特训 · C/C++",
+    difficulty=1, score=10, tags=["技巧特训", "getline", "reverse", "string"],
+    statement_md=(
+        "读入**一整行**（含空格），把每个单词内部的字符顺序颠倒，"
+        "单词之间的空格和单词顺序都不变。\n\n"
+        "输入 `I am a student`，输出 `I ma a tneduts`。\n\n"
+        "★ 技巧点：这一行字符串，**一个循环**就翻完了。\n"
+        "```cpp\n"
+        "string s;\n"
+        "getline(cin, s);                       // 整行读，空格照收\n"
+        "int n = s.size(), start = 0;\n"
+        "while (start < n) {\n"
+        "    int i = start;\n"
+        "    while (i < n && s[i] != ' ') i++;  // 圈出单词 [start, i)\n"
+        "    reverse(s.begin() + start, s.begin() + i);\n"
+        "    start = i + 1;                     // 跳过这个空格\n"
+        "}\n"
+        "```\n"
+        "三个必记点：\n"
+        "1. `cin >> s` **遇空格就停**，读不到整行 —— 必须 `getline`。\n"
+        "2. `reverse(first, last)` 是**左闭右开** `[first, last)`。"
+        "`i` 是空格的下标，正好当 `last`，空格自己不会被翻。\n"
+        "3. `s.begin() + n` 就是 `s.end()`，所以 `i` 走到 `n` 时这一段照样合法。"
+    ),
+    input_format=(
+        "一行字符串（大小写字母、数字、空格），单词之间**恰好一个空格**，"
+        "行首行尾没有多余空格。\n- 1 ≤ 行长 ≤ 10⁵"
+    ),
+    output_format="一行：每个单词内部反转后的字符串。",
+    constraints_md="- 行内单词间恰好一个空格；不含制表符",
+    inputs=[
+        "I am a student\n",
+        "a b c\n",
+        "hello\n",
+        "Hello World 2024\n",
+        _rand_words_35(),
+    ],
+    samples=2,
+    oracle=_oracle_35,
+    solution=r'''#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s;
+    if (!getline(cin, s)) return 0;          /* 整行读入，空格保留 */
+    int n = (int)s.size(), start = 0;
+    while (start < n) {
+        int i = start;
+        while (i < n && s[i] != ' ') i++;    /* 圈出一个单词 [start, i) */
+        reverse(s.begin() + start, s.begin() + i);   /* ★ 左闭右开，空格不动 */
+        start = i + 1;                       /* 跳过这个空格 */
+    }
+    cout << s << "\n";
+    return 0;
+}
+''',
+    alt=r'''#include <iostream>
+#include <sstream>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s;
+    if (!getline(cin, s)) return 0;
+    istringstream in(s);                     /* 换个思路：拆词再各自反转 */
+    string w;
+    bool first = true;
+    while (in >> w) {
+        reverse(w.begin(), w.end());
+        if (!first) cout << " ";
+        cout << w;
+        first = false;
+    }
+    cout << "\n";
+    return 0;
+}
+''',
+)
+
+
+def _rand_words_36() -> str:
+    import random
+    rnd = random.Random(20261022)
+    words = []
+    for _ in range(2000):
+        L = rnd.randint(1, 6)
+        words.append("".join(rnd.choice("abcdefghijklmnopqrstuvwxyz")
+                             for _ in range(L)))
+    return " ".join(words) + "\n"
+
+
+def _oracle_36(text: str) -> str:
+    line = text.split("\n")[0].rstrip("\r")
+    return " ".join(line.split(" ")[::-1]) + "\n"
+
+
+add(
+    title="整句翻转（两次 reverse）",
+    section="技巧特训 · C/C++",
+    difficulty=2, score=15, tags=["技巧特训", "getline", "reverse", "双指针"],
+    statement_md=(
+        "读入一整行，把**单词的顺序**倒过来，单词内部字符顺序不变。\n\n"
+        "输入 `the sky is blue`，输出 `blue is sky the`。\n\n"
+        "★ 技巧点：**翻两次**，不用额外数组。\n"
+        "```cpp\n"
+        "reverse(s.begin(), s.end());      // ① 整句倒：\"the sky is blue\" → \"eulb si yks eht\"\n"
+        "// ② 每个单词再倒回来，就只剩单词顺序颠倒了\n"
+        "```\n"
+        "为什么成立：整句反转把「单词顺序」和「单词内部顺序」**同时**倒了一次；"
+        "再对每个单词单独反转，只把后者抵消掉，前者留了下来。\n\n"
+        "这题还必须用 `getline`：`cin >> s` 只读得到第一个单词 `the`。"
+    ),
+    input_format=(
+        "一行字符串（小写字母、空格），单词之间恰好一个空格，行首行尾无空格。\n"
+        "- 1 ≤ 行长 ≤ 10⁵"
+    ),
+    output_format="一行：单词顺序倒置后的句子。",
+    constraints_md="- 单词间恰好一个空格",
+    inputs=[
+        "the sky is blue\n",
+        "hello\n",
+        "a b\n",
+        "Let it be\n",
+        _rand_words_36(),
+    ],
+    samples=2,
+    oracle=_oracle_36,
+    solution=r'''#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s;
+    if (!getline(cin, s)) return 0;
+    reverse(s.begin(), s.end());             /* ① 整句翻转 */
+    int n = (int)s.size(), start = 0;
+    while (start < n) {                      /* ② 每个单词再翻回来 */
+        int i = start;
+        while (i < n && s[i] != ' ') i++;
+        reverse(s.begin() + start, s.begin() + i);
+        start = i + 1;
+    }
+    cout << s << "\n";
+    return 0;
+}
+''',
+    alt=r'''#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+int main() {
+    string s;
+    if (!getline(cin, s)) return 0;
+    vector<string> w;                        /* 直接切词，从后往前输出 */
+    string cur;
+    for (size_t i = 0; i < s.size(); i++) {
+        if (s[i] == ' ') { w.push_back(cur); cur.clear(); }
+        else cur += s[i];
+    }
+    w.push_back(cur);
+    for (int i = (int)w.size() - 1; i >= 0; i--) {
+        cout << w[i];
+        if (i) cout << " ";
+    }
+    cout << "\n";
+    return 0;
+}
+''',
+)
+
+
+def _oracle_37(text: str) -> str:
+    d = text.split("\n")
+    s = d[0].rstrip("\r")
+    sep = d[1].rstrip("\r") if len(d) > 1 else ""
+    c = sep[0] if sep else " "
+    return c.join(seg[::-1] for seg in s.split(c)) + "\n"
+
+
+add(
+    title="按分隔符逐段反转（i <= n 的收尾）",
+    section="技巧特训 · C/C++",
+    difficulty=2, score=15,
+    tags=["技巧特训", "getline", "reverse", "边界"],
+    statement_md=(
+        "读入一行字符串 `s` 和一个分隔符字符 `c`，把 `s` 里被 `c` 分开的"
+        "**每一段各自反转**，分隔符本身位置不变。\n\n"
+        "例：`abc,de,fgh` 用 `,` 分隔 → `cba,ed,hgf`。\n\n"
+        "★ 技巧点：注意循环是 `i <= n`，不是 `i < n`。\n"
+        "```cpp\n"
+        "int start = 0;\n"
+        "for (int i = 0; i <= n; i++) {          // ★ 走到 n 才能收最后一段\n"
+        "    if (i == n || s[i] == c) {\n"
+        "        reverse(s.begin() + start, s.begin() + i);\n"
+        "        start = i + 1;\n"
+        "    }\n"
+        "}\n"
+        "```\n"
+        "两个坑：\n"
+        "1. 只写 `i < n` 就会漏掉**最后一段**（它后面没有分隔符，永远凑不出触发条件）。\n"
+        "2. 空段是合法的：`a,,b` 反转后还是 `a,,b`，"
+        "`reverse(begin+3, begin+3)` 是空区间，什么都不做，不用特判。\n\n"
+        "读分隔符也要用 `getline`：`cin >> c` 会**跳过空白**，"
+        "分隔符正好是空格时就永远读不到。"
+    ),
+    input_format=(
+        "第一行字符串 `s`（ASCII 可见字符，可含空格）；第二行一个字符 `c`。\n"
+        "- 1 ≤ 行长 ≤ 10⁵；`c` 不是换行符"
+    ),
+    output_format="一行：各段分别反转后的字符串（长度与输入相同）。",
+    constraints_md="- 允许连续分隔符、分隔符出现在首尾（此时出现空段）",
+    inputs=[
+        "abc,de,fgh\n,\n",
+        "a,,b\n,\n",
+        ",,x\n,\n",
+        "hello world\n \n",
+        "abcdef\nz\n",
+    ],
+    samples=2,
+    oracle=_oracle_37,
+    solution=r'''#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s, sep;
+    if (!getline(cin, s)) return 0;
+    getline(cin, sep);                       /* ★ 分隔符也整行读，空格才读得到 */
+    char c = sep.empty() ? ' ' : sep[0];
+    int n = (int)s.size(), start = 0;
+    for (int i = 0; i <= n; i++) {           /* ★ i 走到 n：最后一段靠它收尾 */
+        if (i == n || s[i] == c) {
+            reverse(s.begin() + start, s.begin() + i);
+            start = i + 1;
+        }
+    }
+    cout << s << "\n";
+    return 0;
+}
+''',
+    alt=r'''#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s, sep;
+    if (!getline(cin, s)) return 0;
+    getline(cin, sep);
+    char c = sep.empty() ? ' ' : sep[0];
+    size_t start = 0;
+    size_t p = s.find(c);                    /* 换个思路：用 find 一段段剥 */
+    while (p != string::npos) {
+        reverse(s.begin() + start, s.begin() + p);
+        start = p + 1;
+        p = s.find(c, start);
+    }
+    reverse(s.begin() + start, s.end());     /* 剩下最后一段 */
+    cout << s << "\n";
+    return 0;
+}
+''',
+)
+
+
+def _rand_line_38() -> str:
+    import random
+    rnd = random.Random(20261023)
+    s = "".join(rnd.choice("abcdefghijklmnopqrstuvwxyz") for _ in range(100000))
+    return s + "\n7\n"
+
+
+def _oracle_38(text: str) -> str:
+    d = text.split()
+    s = d[0]
+    k = int(d[1])
+    return "".join(s[i:i + k][::-1] for i in range(0, len(s), k)) + "\n"
+
+
+add(
+    title="每 k 个字符分组反转（min 收尾防越界）",
+    section="技巧特训 · C/C++",
+    difficulty=3, score=20,
+    tags=["技巧特训", "getline", "reverse", "偏移量"],
+    statement_md=(
+        "读入一个不含空格的字符串 `s` 和整数 `k`，从头开始每 `k` 个字符为一组，"
+        "**组内反转**；最后一组如果不足 `k` 个，就整组反转。\n\n"
+        "例：`abcdefg`, `k = 2` → `badcfeg`；`abcdefg`, `k = 3` → `cbafedg`。\n\n"
+        "★ 技巧点：全靠 `reverse` 的**区间**参数，`min` 是唯一要小心的地方。\n"
+        "```cpp\n"
+        "for (int i = 0; i < n; i += k)\n"
+        "    reverse(s.begin() + i, s.begin() + min(i + k, n));  // ★ min 防越界\n"
+        "```\n"
+        "为什么必须 `min`：`s.begin() + i + k` 在最后一组会**越过 `s.end()`**，"
+        "那是未定义行为（`std::reverse` 会一直走到越界地址，常见表现是段错误，"
+        "或者把 `std::string` 结尾的 `\\0` 也翻进去）。\n"
+        "显式写 `min(i + k, n)`，读到哪儿算哪儿，一次循环就干净了。\n\n"
+        "注意 `k` 可以大于 `n`，此时整串反转；`k = 1` 时原样输出。"
+    ),
+    input_format=(
+        "第一行字符串 `s`（小写字母，无空格）；第二行整数 `k`。\n"
+        "- 1 ≤ |s| ≤ 10⁵；1 ≤ k ≤ 10⁹"
+    ),
+    output_format="一行：分组反转后的字符串。",
+    constraints_md="- 字符串不含空格；k 可能远大于 |s|",
+    inputs=[
+        "abcdefg\n2\n",
+        "abcdefg\n3\n",
+        "abcd\n5\n",
+        "a\n1\n",
+        _rand_line_38(),
+    ],
+    samples=2,
+    oracle=_oracle_38,
+    solution=r'''#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s;
+    int k;
+    if (!getline(cin, s)) return 0;
+    cin >> k;
+    int n = (int)s.size();
+    for (int i = 0; i < n; i += k)
+        reverse(s.begin() + i, s.begin() + min(i + k, n));   /* ★ min 收尾 */
+    cout << s << "\n";
+    return 0;
+}
+''',
+    alt=r'''#include <iostream>
+#include <string>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s;
+    int k;
+    if (!getline(cin, s)) return 0;
+    cin >> k;
+    int n = (int)s.size();
+    int full = n / k;                        /* 整数个完整组 */
+    for (int g = 0; g < full; g++)
+        reverse(s.begin() + g * k, s.begin() + (g + 1) * k);
+    reverse(s.begin() + full * k, s.end());  /* 尾巴单独处理，天然不越界 */
+    cout << s << "\n";
+    return 0;
+}
+''',
+)
+
+
+def _rand_line_39() -> str:
+    import random
+    rnd = random.Random(20261024)
+    pool = ("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "0123456789 ,.;:!?-_/()[]{}@#$%^&*+=")
+    s = "".join(rnd.choice(pool) for _ in range(99999))
+    return s + "z\n"
+
+
+def _is_alpha(ch: str) -> bool:
+    return ("a" <= ch <= "z") or ("A" <= ch <= "Z")
+
+
+def _oracle_39(text: str) -> str:
+    line = text.rstrip("\n").rstrip("\r")
+    letters = [ch for ch in line if _is_alpha(ch)]
+    letters.reverse()
+    out = []
+    j = 0
+    for ch in line:
+        if _is_alpha(ch):
+            out.append(letters[j])
+            j += 1
+        else:
+            out.append(ch)
+    return "".join(out) + "\n"
+
+
+add(
+    title="只反转字母（非字母原位不动）",
+    section="技巧特训 · C/C++",
+    difficulty=3, score=20,
+    tags=["技巧特训", "getline", "reverse", "isalpha"],
+    statement_md=(
+        "读入一整行，把里面**所有字母**的先后顺序整体颠倒，"
+        "非字母字符（数字、标点、空格）**留在原来的位置**。\n\n"
+        "例：`a,b$c` → `c,b$a`；`Ab,c de!` → `ed,c bA!`。\n\n"
+        "★ 技巧点：**抽出来翻，再按原位置填回去**，`reverse` 只作用在字母串上。\n"
+        "```cpp\n"
+        "string t;  vector<int> pos;\n"
+        "for (int i = 0; i < n; i++)\n"
+        "    if (isalpha((unsigned char)s[i])) { pos.push_back(i); t += s[i]; }\n"
+        "reverse(t.begin(), t.end());          // 只翻字母串\n"
+        "for (int k = 0; k < (int)pos.size(); k++) s[pos[k]] = t[k];\n"
+        "```\n"
+        "为什么不能直接 `reverse(s.begin(), s.end())`：那样标点也跟着换位了，"
+        "`a,b$c` 会变成 `c$b,a`，位置全错。\n\n"
+        "一处必写：`isalpha((unsigned char)s[i])`。"
+        "直接传 `char` 时，若字符字节 ≥ 0x80 会被当成负数传进 `isalpha`，"
+        "那是**未定义行为**（可能崩溃或乱判）。加 `(unsigned char)` 强转就安全了。"
+    ),
+    input_format=(
+        "一行字符串（ASCII 可见字符 + 空格，可含中文以外的任意符号）。\n"
+        "- 1 ≤ 行长 ≤ 10⁵；可能一个字母都没有"
+    ),
+    output_format="一行：字母顺序整体反转、非字母原位不动后的字符串。",
+    constraints_md="- 仅含 ASCII 可见字符，不含制表符",
+    inputs=[
+        "a,b$c\n",
+        "Ab,c de!\n",
+        "123\n",
+        "aA\n",
+        _rand_line_39(),
+    ],
+    samples=2,
+    oracle=_oracle_39,
+    solution=r'''#include <iostream>
+#include <string>
+#include <vector>
+#include <cctype>
+#include <algorithm>
+using namespace std;
+int main() {
+    string s;
+    if (!getline(cin, s)) return 0;
+    string t;                                /* 抽出的字母，按出现顺序 */
+    vector<int> pos;                         /* 它们在原串里的下标 */
+    for (int i = 0; i < (int)s.size(); i++)
+        if (isalpha((unsigned char)s[i])) { pos.push_back(i); t += s[i]; }
+    reverse(t.begin(), t.end());             /* ★ 只反转字母串 */
+    for (int k = 0; k < (int)pos.size(); k++) s[pos[k]] = t[k];
+    cout << s << "\n";
+    return 0;
+}
+''',
+    alt=r'''#include <iostream>
+#include <string>
+#include <cctype>
+using namespace std;
+int main() {
+    string s;
+    if (!getline(cin, s)) return 0;
+    int l = 0, r = (int)s.size() - 1;        /* 双指针：两端都是字母就交换 */
+    while (l < r) {
+        while (l < r && !isalpha((unsigned char)s[l])) l++;
+        while (l < r && !isalpha((unsigned char)s[r])) r--;
+        if (l < r) { swap(s[l], s[r]); l++; r--; }
+    }
+    cout << s << "\n";
     return 0;
 }
 ''',
