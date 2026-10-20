@@ -368,4 +368,221 @@ PY_BITS_PROBLEMS: list[dict] = [
              "explanation": "2^30，正好压约束上界"},
         ],
     },
+    {
+        "title": "十六进制提取器",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": ["进制转换", "十六进制", "字符串过滤", "格式化"],
+        "source_section": "第 04 讲 · 字符串",
+        "statement_md": (
+            "读入一行字符串，把里面所有**十六进制字符**（`0-9` `a-f` `A-F`）按原顺序挑出来，"
+            "统一**小写**后拼成一个串，按 16 进制解析成整数 `num`，"
+            "然后输出一行：`num` 的十六进制、十进制、八进制、二进制（空格分隔，全不带前缀）。\n\n"
+            "一个十六进制字符都没有就输出 `0 0 0 0`。\n\n"
+            "四件套齐活：遍历筛选 → `append` 收集 → `\"\".join()` 拼串 → `int(s, 16)` 解析 → "
+            "`f\"{num:x} {num:d} {num:o} {num:b}\"` 一行输出四种进制。\n\n"
+            "⚠️ 注意：`x`、`g`、`z` 这些字母**不是**十六进制字符（只有 a~f）；"
+            "`0x1F` 里的 `x` 会被剔除，剩下 `01f`。"
+        ),
+        "input_format": "一行字符串（长度 ≤ 100，可能为空或全空格）。",
+        "output_format": "一行四个数：`十六进制 十进制 八进制 二进制`（空格分隔）。",
+        "constraints_md": "- 挑出的十六进制串长度 ≤ 8",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "import sys\n\n"
+            "s = sys.stdin.readline().strip()\n"
+            "res = []\n"
+            "for ch in s:\n"
+            "    if ch in '0123456789abcdefABCDEF':\n"
+            "        res.append(ch.lower())\n"
+            "if res:\n"
+            "    hex_str = \"\".join(res)      # 变量别起名 str——会遮蔽内置类型\n"
+            "    num = int(hex_str, 16)\n"
+            "    print(f\"{num:x} {num:d} {num:o} {num:b}\")\n"
+            "else:\n"
+            "    print(\"0 0 0 0\")\n"
+        ),
+        "alt_solution": (
+            "# 第二套：乘基累加解析（不用 int(s,16)），format() 函数代替 f-string\n"
+            "import sys\n\n"
+            "s = sys.stdin.readline().strip()\n"
+            "DIGITS = \"0123456789abcdef\"\n"
+            "num = 0\n"
+            "for ch in s.lower():\n"
+            "    if ch in DIGITS:\n"
+            "        num = num * 16 + DIGITS.index(ch)\n"
+            "print(f\"{format(num, 'x')} {format(num, 'd')} {format(num, 'o')} {format(num, 'b')}\")\n"
+        ),
+        "cases": [
+            {"stdin": "aB3x!\n", "expected_stdout": "ab3 2739 5263 101010110011\n",
+             "is_sample": 1, "kind": "sample",
+             "explanation": "挑出 a、B、3 → 小写 ab3 = 2739；x 和 ! 不是十六进制字符"},
+            {"stdin": "zzz\n", "expected_stdout": "0 0 0 0\n", "kind": "manual",
+             "explanation": "z 不是十六进制字符，一个都挑不出 → 四个 0"},
+            {"stdin": "deadbeef\n", "expected_stdout": "deadbeef 3735928559 33653337357 11011110101011011011111011101111\n",
+             "kind": "manual", "explanation": "0xdeadbeef = 3735928559，四种进制全展开"},
+            {"stdin": "0x1F\n", "expected_stdout": "1f 31 37 11111\n", "kind": "manual",
+             "explanation": "陷阱：x 被剔除，剩 01f = 31"},
+            {"stdin": "  \n", "expected_stdout": "0 0 0 0\n", "kind": "manual",
+             "explanation": "全空格：挑不出任何字符"},
+        ],
+    },
+    {
+        "title": "剔除十六进制字符",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": ["字符串过滤", "join", "十六进制"],
+        "source_section": "第 04 讲 · 字符串",
+        "statement_md": (
+            "读入一行字符串，把其中所有**十六进制字符**（`0-9` `a-f` `A-F`）**剔除**，"
+            "其余字符按原顺序、原样输出一行。\n\n"
+            "是上一题的「反着来」：筛选条件取反，且**不做**大小写转换。\n\n"
+            "⚠️ 大坑：`a`~`f` 都是十六进制字符——`\"hello, world!\"` 里的 `e` 和 `d` 也要被剔掉！"
+        ),
+        "input_format": "一行字符串（长度 ≤ 100）。",
+        "output_format": "一行：剔除后的字符串（可能为**空行**）。",
+        "constraints_md": "- 输入长度 ≤ 100",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "import sys\n\n"
+            "s = sys.stdin.readline().strip()\n"
+            "kept = \"\".join(ch for ch in s if ch not in \"0123456789abcdefABCDEF\")\n"
+            "print(kept)\n"
+        ),
+        "alt_solution": (
+            "# 第二套：逐字符范围判断 + 列表收集\n"
+            "import sys\n\n"
+            "s = sys.stdin.readline().strip()\n"
+            "res = []\n"
+            "for ch in s:\n"
+            "    if not ('0' <= ch <= '9' or 'a' <= ch <= 'f' or 'A' <= ch <= 'F'):\n"
+            "        res.append(ch)\n"
+            "print(\"\".join(res))\n"
+        ),
+        "cases": [
+            {"stdin": "aB3x!\n", "expected_stdout": "x!\n", "is_sample": 1,
+             "kind": "sample", "explanation": "a、B、3 是十六进制字符被剔除，x 和 ! 留下"},
+            {"stdin": "0123\n", "expected_stdout": "\n", "kind": "manual",
+             "explanation": "全是十六进制字符 → 空行"},
+            {"stdin": "abcdefg\n", "expected_stdout": "g\n", "kind": "manual",
+             "explanation": "a~f 全被剔掉，只剩 g"},
+            {"stdin": "hello, world!\n", "expected_stdout": "hllo, worl!\n", "kind": "manual",
+             "explanation": "陷阱：e 和 d 也是十六进制字符，一起被剔掉"},
+            {"stdin": "###\n", "expected_stdout": "###\n", "kind": "manual",
+             "explanation": "没有十六进制字符，原样输出"},
+        ],
+    },
+    {
+        "title": "二进制串解析",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": ["进制转换", "二进制", "字符串过滤", "int"],
+        "source_section": "第 04 讲 · 字符串",
+        "statement_md": (
+            "读入一行字符串，把里面所有 `0` 和 `1` 字符按原顺序挑出来拼成二进制串，"
+            "按 2 进制解析成整数 `num`，输出一行：`num` 的十进制、十六进制（空格分隔，不带前缀）。\n\n"
+            "一个 0/1 都没有就输出 `0 0`。\n\n"
+            "和十六进制提取器同一套流水线，只是把「筛选表 + 基数」换成了二进制——"
+            "体会 `int(s, base)` 里 base 的意思。"
+        ),
+        "input_format": "一行字符串（长度 ≤ 100）。",
+        "output_format": "一行两个数：`十进制 十六进制`（空格分隔）。",
+        "constraints_md": "- 挑出的二进制串长度 ≤ 30",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "import sys\n\n"
+            "s = sys.stdin.readline().strip()\n"
+            "bits = \"\".join(ch for ch in s if ch in \"01\")\n"
+            "num = int(bits, 2) if bits else 0\n"
+            "print(f\"{num:d} {num:x}\")\n"
+        ),
+        "alt_solution": (
+            "# 第二套：乘 2 累加（不用 int(s,2)）\n"
+            "import sys\n\n"
+            "s = sys.stdin.readline().strip()\n"
+            "num = 0\n"
+            "for ch in s:\n"
+            "    if ch in \"01\":\n"
+            "        num = num * 2 + (ch == \"1\")\n"
+            "print(f\"{num} {format(num, 'x')}\")\n"
+        ),
+        "cases": [
+            {"stdin": "10a1\n", "expected_stdout": "5 5\n", "is_sample": 1,
+             "kind": "sample", "explanation": "挑出 101 = 5；十进制 5 的十六进制也是 5"},
+            {"stdin": "xyz\n", "expected_stdout": "0 0\n", "kind": "manual",
+             "explanation": "没有 0/1 字符"},
+            {"stdin": "0011\n", "expected_stdout": "3 3\n", "kind": "manual",
+             "explanation": "前导零无所谓：0011 = 3"},
+            {"stdin": "1 0 1 0\n", "expected_stdout": "10 a\n", "kind": "manual",
+             "explanation": "空格不是 0/1，挑出 1010 = 10 = 0xa"},
+            {"stdin": "bin=1101!\n", "expected_stdout": "13 d\n", "kind": "manual",
+             "explanation": "从杂质里挑出 1101 = 13 = 0xd"},
+        ],
+    },
+    {
+        "title": "自动识别进制",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": ["进制转换", "int", "前缀", "格式化"],
+        "source_section": "第 08 讲 · 函数（下）",
+        "statement_md": (
+            "读入一行一个整数字面量——可能是十进制（直接写），"
+            "也可能带 `0x` / `0b` / `0o` 前缀。按 `int(s, 0)` 的语义解析成整数 `num`，"
+            "输出一行：`num` 的十六进制、十进制、八进制、二进制（空格分隔，全不带前缀）。\n\n"
+            "一行 `f\"{num:x} {num:d} {num:o} {num:b}\"` 就是四种进制全家福——"
+            "配合 `base=0` 的自动识别，进制的「读」和「写」两边就都通了。"
+        ),
+        "input_format": "一行一个整数字面量：十进制直接写，或带 `0x`/`0b`/`0o` 前缀（值 < 2^31）。",
+        "output_format": "一行四个数：`十六进制 十进制 八进制 二进制`（空格分隔）。",
+        "constraints_md": "- 解析结果 0 ≤ num < 2^31",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "import sys\n\n"
+            "s = sys.stdin.readline().strip()\n"
+            "num = int(s, 0)                 # base=0：按前缀自动识别\n"
+            "print(f\"{num:x} {num:d} {num:o} {num:b}\")\n"
+        ),
+        "alt_solution": (
+            "# 第二套：手写剥前缀 + 显式 base 解析\n"
+            "import sys\n\n"
+            "s = sys.stdin.readline().strip()\n"
+            "table = {\"0x\": 16, \"0b\": 2, \"0o\": 8}\n"
+            "low = s.lower()\n"
+            "base, body = 10, s\n"
+            "for pre, b in table.items():\n"
+            "    if low.startswith(pre):\n"
+            "        base, body = b, s[2:]\n"
+            "        break\n"
+            "n = int(body, base)\n"
+            "print(f\"{n:x} {n:d} {n:o} {n:b}\")\n"
+        ),
+        "cases": [
+            {"stdin": "255\n", "expected_stdout": "ff 255 377 11111111\n", "is_sample": 1,
+             "kind": "sample", "explanation": "十进制直写：ff / 255 / 377 / 11111111"},
+            {"stdin": "0xff\n", "expected_stdout": "ff 255 377 11111111\n", "kind": "manual",
+             "explanation": "带 0x 前缀，结果同上——base=0 认前缀"},
+            {"stdin": "0b1010\n", "expected_stdout": "a 10 12 1010\n", "kind": "manual",
+             "explanation": "二进制字面量 1010 = 10"},
+            {"stdin": "0o377\n", "expected_stdout": "ff 255 377 11111111\n", "kind": "manual",
+             "explanation": "八进制 377 = 255，三行殊途同归"},
+            {"stdin": "0\n", "expected_stdout": "0 0 0 0\n", "kind": "manual",
+             "explanation": "单个 0：四种进制都是 0"},
+        ],
+    },
 ]

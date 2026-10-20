@@ -261,7 +261,7 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
-| `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(74 = 53 编程 + ext2 14 + bits 7) + `problems_bank_py_prog.py`(10) + `problems_bank_py_tricks.py`(30) + 理论 `problems_bank_py_theory.py`(66) + `problems_bank_py_theory2.py`(65 = 49 + 进制转换 14 + 异或 2) | **248** | **3086** | python | Python |
+| `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(78 = 53 编程 + ext2 14 + bits 11) + `problems_bank_py_prog.py`(10) + `problems_bank_py_tricks.py`(30) + 理论 `problems_bank_py_theory.py`(66) + `problems_bank_py_theory2.py`(68 = 49 + 进制转换 14 + 异或 2 + 进制解析 3) | **255** | **3160** | python | Python |
 | `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(39) | **240** | **3486** | cpp | **C 或 C++ 任选** |
 | `linux` | `problems_bank_linux.py` | **382** | **4511** | text | 理论题（单选 / 多选 / 判断 / 填空）+ **实操题 203**（写命令） |
 

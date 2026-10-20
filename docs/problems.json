@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-10-20 10:53:29",
- "count": 870,
- "total_score": 11083,
- "total_testcases": 1856,
+ "generated_at": "2026-10-20 11:08:26",
+ "count": 877,
+ "total_score": 11157,
+ "total_testcases": 1879,
  "items": [
   {
    "id": 1,
@@ -51863,6 +51863,485 @@
     12
    ],
    "points_sum": 12
+  },
+  {
+   "id": 886,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "十六进制提取器",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "进制转换",
+    "十六进制",
+    "字符串过滤",
+    "格式化"
+   ],
+   "choices": [],
+   "statement_md": "读入一行字符串，把里面所有**十六进制字符**（`0-9` `a-f` `A-F`）按原顺序挑出来，统一**小写**后拼成一个串，按 16 进制解析成整数 `num`，然后输出一行：`num` 的十六进制、十进制、八进制、二进制（空格分隔，全不带前缀）。\n\n一个十六进制字符都没有就输出 `0 0 0 0`。\n\n四件套齐活：遍历筛选 → `append` 收集 → `\"\".join()` 拼串 → `int(s, 16)` 解析 → `f\"{num:x} {num:d} {num:o} {num:b}\"` 一行输出四种进制。\n\n⚠️ 注意：`x`、`g`、`z` 这些字母**不是**十六进制字符（只有 a~f）；`0x1F` 里的 `x` 会被剔除，剩下 `01f`。",
+   "input_format": "一行字符串（长度 ≤ 100，可能为空或全空格）。",
+   "output_format": "一行四个数：`十六进制 十进制 八进制 二进制`（空格分隔）。",
+   "constraints_md": "- 挑出的十六进制串长度 ≤ 8",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1882,
+     "ord": 0,
+     "stdin": "aB3x!\n",
+     "expected_stdout": "ab3 2739 5263 101010110011\n",
+     "explanation": "挑出 a、B、3 → 小写 ab3 = 2739；x 和 ! 不是十六进制字符"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "aB3x!\n",
+     "expected_stdout": "ab3 2739 5263 101010110011\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "zzz\n",
+     "expected_stdout": "0 0 0 0\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "deadbeef\n",
+     "expected_stdout": "deadbeef 3735928559 33653337357 11011110101011011011111011101111\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "0x1F\n",
+     "expected_stdout": "1f 31 37 11111\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "  \n",
+     "expected_stdout": "0 0 0 0\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 887,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "剔除十六进制字符",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "字符串过滤",
+    "join",
+    "十六进制"
+   ],
+   "choices": [],
+   "statement_md": "读入一行字符串，把其中所有**十六进制字符**（`0-9` `a-f` `A-F`）**剔除**，其余字符按原顺序、原样输出一行。\n\n是上一题的「反着来」：筛选条件取反，且**不做**大小写转换。\n\n⚠️ 大坑：`a`~`f` 都是十六进制字符——`\"hello, world!\"` 里的 `e` 和 `d` 也要被剔掉！",
+   "input_format": "一行字符串（长度 ≤ 100）。",
+   "output_format": "一行：剔除后的字符串（可能为**空行**）。",
+   "constraints_md": "- 输入长度 ≤ 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1887,
+     "ord": 0,
+     "stdin": "aB3x!\n",
+     "expected_stdout": "x!\n",
+     "explanation": "a、B、3 是十六进制字符被剔除，x 和 ! 留下"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "aB3x!\n",
+     "expected_stdout": "x!\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "0123\n",
+     "expected_stdout": "\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "abcdefg\n",
+     "expected_stdout": "g\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "hello, world!\n",
+     "expected_stdout": "hllo, worl!\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "###\n",
+     "expected_stdout": "###\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 888,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "二进制串解析",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "进制转换",
+    "二进制",
+    "字符串过滤",
+    "int"
+   ],
+   "choices": [],
+   "statement_md": "读入一行字符串，把里面所有 `0` 和 `1` 字符按原顺序挑出来拼成二进制串，按 2 进制解析成整数 `num`，输出一行：`num` 的十进制、十六进制（空格分隔，不带前缀）。\n\n一个 0/1 都没有就输出 `0 0`。\n\n和十六进制提取器同一套流水线，只是把「筛选表 + 基数」换成了二进制——体会 `int(s, base)` 里 base 的意思。",
+   "input_format": "一行字符串（长度 ≤ 100）。",
+   "output_format": "一行两个数：`十进制 十六进制`（空格分隔）。",
+   "constraints_md": "- 挑出的二进制串长度 ≤ 30",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1892,
+     "ord": 0,
+     "stdin": "10a1\n",
+     "expected_stdout": "5 5\n",
+     "explanation": "挑出 101 = 5；十进制 5 的十六进制也是 5"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "10a1\n",
+     "expected_stdout": "5 5\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "xyz\n",
+     "expected_stdout": "0 0\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0011\n",
+     "expected_stdout": "3 3\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "1 0 1 0\n",
+     "expected_stdout": "10 a\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "bin=1101!\n",
+     "expected_stdout": "13 d\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 889,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "自动识别进制",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "进制转换",
+    "int",
+    "前缀",
+    "格式化"
+   ],
+   "choices": [],
+   "statement_md": "读入一行一个整数字面量——可能是十进制（直接写），也可能带 `0x` / `0b` / `0o` 前缀。按 `int(s, 0)` 的语义解析成整数 `num`，输出一行：`num` 的十六进制、十进制、八进制、二进制（空格分隔，全不带前缀）。\n\n一行 `f\"{num:x} {num:d} {num:o} {num:b}\"` 就是四种进制全家福——配合 `base=0` 的自动识别，进制的「读」和「写」两边就都通了。",
+   "input_format": "一行一个整数字面量：十进制直接写，或带 `0x`/`0b`/`0o` 前缀（值 < 2^31）。",
+   "output_format": "一行四个数：`十六进制 十进制 八进制 二进制`（空格分隔）。",
+   "constraints_md": "- 解析结果 0 ≤ num < 2^31",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 1897,
+     "ord": 0,
+     "stdin": "255\n",
+     "expected_stdout": "ff 255 377 11111111\n",
+     "explanation": "十进制直写：ff / 255 / 377 / 11111111"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "255\n",
+     "expected_stdout": "ff 255 377 11111111\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "0xff\n",
+     "expected_stdout": "ff 255 377 11111111\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "0b1010\n",
+     "expected_stdout": "a 10 12 1010\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "0o377\n",
+     "expected_stdout": "ff 255 377 11111111\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "0\n",
+     "expected_stdout": "0 0 0 0\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 890,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "十六进制格式化输出",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "进制转换",
+    "格式化",
+    "十六进制"
+   ],
+   "choices": [],
+   "statement_md": "表达式 `f\"{48879:x}\"` 的值是多少？（写**不带引号**的字符串内容）",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|beef\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 891,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "int 按 16 进制解析混合串",
+   "difficulty": 2,
+   "total_score": 8,
+   "tags": [
+    "进制转换",
+    "int",
+    "十六进制"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "`int('1a', 16)` 的值是 26——16 进制里 `a` 代表 10，所以 1×16 + 10 = 26。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 08 讲 · 函数（下）",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
+  },
+  {
+   "id": 892,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "join 拼接收集结果",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "字符串",
+    "join",
+    "过滤"
+   ],
+   "choices": [
+    "'123'",
+    "'a1B2c3'",
+    "'1B2'",
+    "抛 TypeError"
+   ],
+   "statement_md": "表达式 `\"\".join(ch for ch in \"a1B2c3\" if ch.isdigit())` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
   }
  ]
 }
