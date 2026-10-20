@@ -602,3 +602,8 @@ BANK_PROBLEMS = BANK_PROBLEMS + _EXT_PROBLEMS
 from .problems_bank_ext2 import EXT2_PROBLEMS as _EXT2_PROBLEMS  # noqa: E402
 
 BANK_PROBLEMS = BANK_PROBLEMS + _EXT2_PROBLEMS
+
+# 第四批：二进制统计族（第 02 讲知识，2026-10-20 用户点名词型）。
+from .problems_bank_py_bits import PY_BITS_PROBLEMS as _PY_BITS_PROBLEMS  # noqa: E402
+
+BANK_PROBLEMS = BANK_PROBLEMS + _PY_BITS_PROBLEMS

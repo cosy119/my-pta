@@ -77,12 +77,18 @@ except ImportError:                                          # pragma: no cover
     PY_PROG_PROBLEMS = []
     DS_PROG_PROBLEMS = []
 
+try:                                                         # 二进制统计族（Python 线，2026-10-20）
+    from app.problems_bank_py_bits import PY_BITS_PROBLEMS
+except ImportError:                                          # pragma: no cover
+    PY_BITS_PROBLEMS = []
+
 # ★ CORE 必须并进来。它住在 `app/seed.py` 而不是 `problems_bank.py`，
 #   曾经因此完全落在对拍范围之外 —— SEED_PROBLEMS = CORE + BANK + DS + LINUX，
 #   而这里只验了 BANK，于是 CORE 那几道题**连单撞都没有**（2026-10-13 发现）。
 LINES = (
     ("py", "Python 线", CORE_PROBLEMS + BANK_PROBLEMS + PY_TRICKS_PROBLEMS
-                        + PY_THEORY_PROBLEMS + PY_THEORY2_PROBLEMS + PY_PROG_PROBLEMS),
+                        + PY_THEORY_PROBLEMS + PY_THEORY2_PROBLEMS + PY_PROG_PROBLEMS
+                        + PY_BITS_PROBLEMS),
     ("ds", "数据结构线（C/C++）", DS_PROBLEMS + DS_TRICKS_PROBLEMS
                                   + DS_THEORY_PROBLEMS + DS_PROG_PROBLEMS),
     ("linux", "Linux 线（理论题）", LINUX_PROBLEMS),
