@@ -124,7 +124,39 @@ const calloutExt = {
 };
 
 const marked = new Marked();
-marked.use({ gfm: true, breaks: false }, { extensions: [calloutExt] });
+// Some nested exports still contain Obsidian markers as ordinary paragraphs.
+// Recognize them at block level; fenced code is tokenized separately and preserved.
+const nestedTipExt = {
+  name: 'obsidianTip', level: 'block',
+  start(src) { const m = /^(?:> ?)?\[![a-z]+\]/im.exec(src); return m?.index; },
+  tokenizer(src) {
+    const head = /^(> ?)?\[!([a-z]+)\]([+-])?[ \t]*([^\n]*)(?:\n|$)/i.exec(src);
+    if (!head) return undefined;
+    let raw = head[0], body = '', rest = src.slice(raw.length);
+    if (head[1]) {
+      const match = /^(?:>[^\n]*(?:\n|$))*/.exec(rest)[0];
+      raw += match; body = match.replace(/^> ?/gm, '');
+    } else {
+      // Include the following paragraph/list, stopping at a blank separator or heading.
+      const blank = /^\n/.exec(rest); if (blank) { raw += blank[0]; rest = rest.slice(1); }
+      const lines = rest.split('\n'); let fence = null;
+      for (const line of lines) {
+        if (!fence && (!line.trim() || /^#{1,6}\s|^:::|^\[!/.test(line))) break;
+        const marker = /^\s*(`{3,}|~{3,})/.exec(line);
+        if (marker) { if (!fence) fence=marker[1]; else if (marker[1][0]===fence[0] && marker[1].length>=fence.length) fence=null; }
+        const part = line + (raw.length < src.length ? '\n' : '');
+        body += part; raw += part;
+      }
+      if (raw.length > src.length) raw=src;
+    }
+    return {type:'obsidianTip',raw,kind:CALLOUT_KINDS[head[2].toLowerCase()]||'note',fold:head[3]==='-',title:this.lexer.inlineTokens(head[4]||'提示'),tokens:this.lexer.blockTokens(body)};
+  },
+  renderer(token) {
+    const title=this.parser.parseInline(token.title),body=this.parser.parse(token.tokens),cls='callout callout-'+token.kind;
+    return token.fold ? `<details class="${cls}" data-callout="${token.kind}"><summary class="callout-title">${title}</summary><div class="callout-body">${body}</div></details>` : `<div class="${cls}" data-callout="${token.kind}"><div class="callout-title">${title}</div><div class="callout-body">${body}</div></div>`;
+  },
+};
+marked.use({ gfm: true, breaks: false }, { extensions: [calloutExt, nestedTipExt] });
 
 marked.use({
   renderer: {
