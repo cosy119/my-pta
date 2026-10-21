@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import json
+import os
 import sys
 import time
 import urllib.error
@@ -17,7 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))     # 为了能 import 
 import _console                                               # noqa: E402
 import _testdb                                                # noqa: E402  （只用它的 guard_live_db）
 
-BASE = "http://127.0.0.1:8765"
+BASE = os.environ.get("PTA_BASE", "http://127.0.0.1:8765")
 _ok: list[str] = []
 _bad: list[str] = []
 
@@ -90,8 +91,24 @@ for p in items:
 pid = items[0]["id"]
 pd = req("GET", f"/api/problems/{pid}")
 check("题目详情能取到题面", bool(pd.get("statement_md")), pd.get("title"))
-check("详情带样例", len(pd.get("samples") or []) >= 1, f"{len(pd.get('samples') or [])} 个样例")
 check("详情不泄露参考解", "reference_solution" not in pd)
+
+# ★ 「详情带样例」要**挑一道确实有公开样例的题**，不能碰运气用列表第一道。
+#   排序改成「按难度」后 items[0] 变成了一道理论题（只有隐藏点、没有公开样例），
+#   用它断言样例就会假失败 —— 那是断言写得太脆，不是接口坏了。
+#   列表接口不暴露 is_sample，所以只能逐个取详情来筛（列表前几道就够）。
+sample_pid = None
+sample_detail = None
+for p in items[:40]:
+    d = req("GET", f"/api/problems/{p['id']}")
+    if d.get("samples"):
+        sample_pid, sample_detail = p["id"], d
+        break
+check("存在带公开样例的题", sample_pid is not None,
+      f"#{sample_pid} {sample_detail.get('title') if sample_detail else ''}")
+if sample_detail is not None:
+    check("详情带样例", len(sample_detail.get("samples") or []) >= 1,
+          f"#{sample_pid} → {len(sample_detail.get('samples') or [])} 个样例")
 
 try:
     req("GET", "/api/problems/999999")
