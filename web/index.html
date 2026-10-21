@@ -7,11 +7,14 @@
 <!-- ★ 内联 SVG 图标：浏览器默认会去要 /favicon.ico，没图标就每次控制台一个 404。
      写成 data: URI 既不产生请求，也不用往 docs/ 里塞二进制。 -->
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232f6bed'/%3E%3Ctext x='16' y='23' font-size='19' font-family='system-ui,sans-serif' font-weight='700' fill='%23fff' text-anchor='middle'%3EC%3C/text%3E%3C/svg%3E">
+<script>
+try{const a=JSON.parse(localStorage.getItem('pta.appearance')||'{}');document.documentElement.dataset.theme=a.theme||'system';document.documentElement.dataset.density=a.density||'comfortable';document.documentElement.style.setProperty('--reading-size',([15,16,18].includes(Number(a.size))?a.size:16)+'px');}catch(e){}
+</script>
 <style>
 :root{
   --bg:#f4f6fa; --panel:#ffffff; --panel2:#f9fafc; --panel3:#f1f4f9;
   --border:#e2e7f0; --border2:#eef1f7;
-  --text:#1c2430; --text2:#4a5568; --muted:#8a94a6;
+  --text:#1c2430; --text2:#4a5568; --muted:#626f83;
   --primary:#2f6bed; --primary2:#1f57d6; --primaryWeak:#e9f0ff;
   --ok:#12a150; --okWeak:#e6f7ee;
   --warn:#e08c00; --warnWeak:#fff6e0;
@@ -27,7 +30,7 @@
   :root{
     --bg:#0e1319; --panel:#161d26; --panel2:#1b232e; --panel3:#212b38;
     --border:#2a3543; --border2:#232d39;
-    --text:#e6ecf4; --text2:#b3bece; --muted:#7d8899;
+    --text:#e6ecf4; --text2:#b3bece; --muted:#9aa7ba;
     --primary:#5b8bff; --primary2:#7ba3ff; --primaryWeak:#1c2a45;
     --ok:#3ecf7f; --okWeak:#14301f;
     --warn:#f0b429; --warnWeak:#332a12;
@@ -845,6 +848,79 @@ td.c-tt .wbStarSm.on,td.c-tt .wbStarSm:hover{opacity:1}
   .wbItem{flex-wrap:wrap}
   .wbOps{flex-direction:row; width:100%; justify-content:flex-end}
 }
+
+/* Desktop learning layout */
+.cards{grid-template-columns:repeat(3,minmax(0,1fr))}
+.hero{padding:22px 26px;gap:24px}
+.heroAction{display:inline-block;margin-top:14px;padding:7px 15px;background:#fff;color:#244fc3;border:0;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer}
+.heroAction:hover{background:#edf2ff;text-decoration:none}
+.modeNotice{background:var(--panel2);color:var(--text2);border-color:var(--border);font-size:13px;padding:9px 13px}
+.offlineTag{background:var(--primaryWeak);color:var(--primary);border-color:var(--border)}
+.setHead{padding:14px 18px;margin-bottom:12px}
+.setStats{gap:22px;margin-top:10px}
+.setStats>div{display:flex;align-items:baseline;gap:6px}
+.setStats b{font-size:16px}
+.setBarRow{margin-top:10px}
+td.c-no{width:76px;white-space:nowrap}
+.pgrid{--sidebar-width:184px}
+.psideTiles{grid-template-columns:repeat(2,minmax(0,1fr))}
+.psideTile{font-size:12px}
+.psideGroupHead{cursor:pointer;padding:8px 0}
+.psideGroupHead::marker{color:var(--muted)}
+.md{font-size:15px}
+.field .lb{display:block}
+.modal{max-height:calc(100dvh - 48px);overflow:auto}
+:where(button,a,summary,[role="button"],input,select,textarea):focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+@media(min-width:1081px){.toolbar{position:sticky;top:64px;z-index:20}}
+@media(max-width:1100px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.hero-r{flex:1 1 300px}}
+@media(max-width:600px){.cards{grid-template-columns:minmax(0,1fr)}.wrap{padding:16px}.hero{padding:20px}.hero-l{min-width:0}.hero-r{min-width:0}.psideTiles{grid-template-columns:repeat(auto-fill,minmax(68px,1fr))}}
+@media(prefers-color-scheme:dark){.btn.ghost{background:var(--panel2);color:var(--text2);border-color:var(--border)}.codeEditor .cm-activeLine,.codeEditor .cm-activeLineGutter{background:var(--panel3)}}
+
+
+#linuxUserCard{padding:16px 20px;margin-bottom:16px}
+.choice{position:relative}.choiceInput{position:absolute;width:1px;height:1px;opacity:0}
+.choice:focus-within{outline:2px solid var(--primary);outline-offset:2px}
+.resultLearning{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0;align-items:center}
+.resultDetails{margin-top:12px}.resultDetails summary{cursor:pointer;color:var(--text2)}
+.submissionSource{display:block;color:var(--muted);margin-top:4px}
+.submissionAnswer{max-width:420px;max-height:240px;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--mono)}
+.noteSearchOut{color:var(--text)}
+.resultActions a{text-decoration:none}
+#linuxUserCard>summary{cursor:pointer;color:var(--text2);font-weight:600}#linuxUserCard[open]>summary{margin-bottom:12px}.heroAction{margin-right:8px;max-width:100%;white-space:normal;text-decoration:none}
+.previousCode pre,.syncConflict pre{white-space:pre-wrap;max-height:220px;overflow:auto}.previousCode,.syncConflict{margin:8px 0}.previousCode summary,.syncConflict summary{cursor:pointer}
+
+/* Calm study surfaces. Shared tokens apply to both published and local UI. */
+:root{--bg:#f6f5f1;--panel:#fff;--panel2:#f8f8f5;--panel3:#eeefeb;--border:#dedfd9;--border2:#ebede7;--text:#242d34;--text2:#525e66;--muted:#69757c;--primary:#315edb;--primary2:#274fc2;--primaryWeak:#edf1fc;--ok:#23775c;--okWeak:#eaf4ee;--warn:#91651c;--warnWeak:#faf2df;--err:#c13f3a;--errWeak:#fbeceb;--shadow:0 2px 8px #1e302205;--shadow2:0 12px 36px #1e302212;--radius:12px;--radius2:7px;--reading-size:16px;--course-python:#4b62bb;--course-ds:#277c69;--course-linux:#967032}
+:root[data-theme="dark"]{--bg:#151b1d;--panel:#1c2427;--panel2:#202a2e;--panel3:#293438;--border:#39464a;--border2:#2c373b;--text:#e5ebe7;--text2:#bec9c5;--muted:#9aaca7;--primary:#93b0ff;--primary2:#b2c6ff;--primaryWeak:#29384b;--ok:#83c8a5;--okWeak:#233d32;--warn:#dcc184;--warnWeak:#403827;--err:#f69b94;--errWeak:#452d2c;--course-python:#a4b5f1;--course-ds:#8acdb7;--course-linux:#ddc08b;color-scheme:dark}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#151b1d;--panel:#1c2427;--panel2:#202a2e;--panel3:#293438;--border:#39464a;--border2:#2c373b;--text:#e5ebe7;--text2:#bec9c5;--muted:#9aaca7;--primary:#93b0ff;--primary2:#b2c6ff;--primaryWeak:#29384b;--ok:#83c8a5;--okWeak:#233d32;--warn:#dcc184;--warnWeak:#403827;--err:#f69b94;--errWeak:#452d2c;--course-python:#a4b5f1;--course-ds:#8acdb7;--course-linux:#ddc08b;color-scheme:dark}}
+:root[data-theme="light"]{color-scheme:light}
+body{font-family:"Segoe UI","PingFang SC","Microsoft YaHei","DengXian",sans-serif;font-size:14px;line-height:1.7}
+button,input,select,textarea{font-family:inherit}button,a,input,select,summary{transition:background-color .15s,border-color .15s,color .15s}
+.nav{height:64px;padding:0 30px;box-shadow:none;gap:26px}.brand{font-size:17px;letter-spacing:-.3px}.brand .logo{background:var(--text);color:var(--panel);border-radius:7px;width:29px;height:29px}
+.navlinks{gap:12px}.navlinks a{font-size:14px;padding:7px 10px;border-radius:6px}.navlinks a.on{background:transparent;color:var(--primary);box-shadow:inset 0 -2px var(--primary)}.navright{gap:12px}.offlineTag{border:0;background:var(--panel3);color:var(--text2)}
+.wrap{max-width:1280px;padding:30px 36px 80px}.crumb{margin-bottom:20px;font-size:12px}.modeNotice{border:0;background:transparent;padding:0 0 14px;color:var(--muted);font-size:12px}.modeNotice .btn{font-size:12px}.secTitle{font-size:20px;margin-bottom:20px;letter-spacing:-.3px}.secTitle .cnt{font-size:13px}
+.hero{background:transparent;color:var(--text);box-shadow:none;border-radius:0;padding:24px 0 36px;margin-bottom:28px;border-bottom:1px solid var(--border);gap:40px;align-items:center}.hero-hi{font-size:32px;line-height:1.35;font-weight:650;letter-spacing:-.8px;margin-bottom:14px}.hero-sub{font-size:14px;color:var(--text2);max-width:540px;line-height:1.9}.hero-r{flex:0 0 280px;border-left:1px solid var(--border);padding-left:30px;min-width:240px}.scoreBig{font-size:42px;color:var(--text);font-weight:600}.scoreOf{color:var(--muted);font-size:13px}.heroStats{color:var(--muted);font-size:12px;gap:22px}.heroStats b{color:var(--text);font-size:18px}.hero .bar{background:var(--panel3);height:4px;margin:8px 0}.hero .bar>i{background:var(--primary)}
+.heroAction{background:var(--primary);color:var(--panel);margin-top:22px;padding:10px 18px;font-size:13px;border-radius:7px}.heroAction:hover{background:var(--primary2);color:var(--panel)}.heroAction+button{background:transparent;color:var(--text2);border:1px solid var(--border)}.heroAction+button:hover{background:var(--panel3)}
+.cards{gap:22px}.card{padding:24px;border:1px solid var(--border);box-shadow:none;position:relative}.card:hover{transform:none;box-shadow:none;background:var(--panel2);border-color:var(--course)}.card.course-python{--course:var(--course-python)}.card.course-ds{--course:var(--course-ds)}.card.course-linux{--course:var(--course-linux)}.cardTop{align-items:flex-start;gap:14px;margin-bottom:22px}.cardIco{width:40px;height:40px;flex-basis:40px;background:var(--panel2);color:var(--course);border-radius:7px;font:700 12px var(--mono);border:1px solid var(--border)}.cardName{font-size:17px;line-height:1.55;font-weight:600;margin-top:-3px}.cardMeta{font-size:12px;margin-top:7px;line-height:1.8}.courseProgress{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-bottom:10px}.courseProgress strong{font-size:16px;font-weight:600;color:var(--course)}.card .bar>i{background:var(--course)}.card .bar{height:4px}.cardGroups{margin:22px 0;max-height:none;overflow:visible;gap:10px}.cardGrp{font-size:13px}.cardGrp .nm{max-width:100%;flex:1;line-height:1.6}.cardGrp .num{font-size:11px}.cardFoot{border-top:1px solid var(--border2);padding-top:16px}.cardFoot .go{color:var(--course);font-size:13px}.courseEyebrow{font-size:11px;letter-spacing:1.5px;color:var(--muted);margin:0 0 12px;text-transform:uppercase}
+.setHead{box-shadow:none;padding:20px 22px}.setTitle{font-size:24px;line-height:1.4;font-weight:600}.setStats{margin-top:16px}.setStats b{font-weight:600}.setBarRow{margin-top:18px}.toolbar{box-shadow:none;border:0;background:var(--bg);padding:12px 0;gap:8px;top:64px}.fbtn{border-color:transparent;background:transparent;border-radius:6px}.fbtn.on{background:var(--text);border-color:var(--text);color:var(--panel)}.typeSelect,.searchBox{background:var(--panel);font-size:13px}.searchBox{padding:7px 10px;min-width:220px}.searchBox>span{font-size:11px;color:var(--muted)}.searchBox input{min-width:0}.grpbox{box-shadow:none}.grpHead{padding:14px 18px;background:var(--panel2)}.grpName{font-size:14px;font-weight:600}.grpHead .pill{border:0;background:transparent;color:var(--muted)}table.ptable{font-size:14px}table.ptable td{padding:12px 14px}table.ptable th{padding:10px 14px;background:var(--panel2);font-size:12px}td.c-tt a{font-weight:500}.tag{border:0;background:var(--panel2);color:var(--muted);font-size:11px}.tyTag{border:0;border-radius:4px;font-size:11px}.c-tg .tag{margin-right:4px}.bar>i{background:var(--primary)}
+#app.problemView{padding:22px 24px 48px;max-width:1720px}.pgrid{gap:14px;--sidebar-width:178px}.pcard{box-shadow:none}.pside{background:transparent;border:0;border-right:1px solid var(--border);border-radius:0;top:84px}.psideHead{padding-left:5px;border-bottom:0}.psideBody{padding-left:4px}.psideTitle{font-size:12px;color:var(--muted);font-weight:500}.psideGroupHead{font-size:12px;margin-bottom:10px}.psideGroup{margin-bottom:12px}.psideTile{min-height:33px;border:0;background:transparent;border-radius:5px;color:var(--text2);font-size:11px}.psideTile:hover{background:var(--panel3)}.psideTile.active{outline:0;box-shadow:inset 2px 0 var(--primary);background:var(--primaryWeak);color:var(--primary)}.psideFoot{font-size:11px}.psideToggle{background:transparent;border:0}.pstmt,.pedit{border:0;border-radius:9px}.pstmt{padding:26px 28px}.ptitle{font-size:25px;font-weight:600;line-height:1.5;letter-spacing:-.5px}.chips{gap:8px 12px;margin:14px 0 26px;align-items:center}.chips .pill{border:0;padding:0;background:transparent;color:var(--muted);font-size:12px}.chips .p-note{color:var(--primary)}.chips .pStarBtn{border:0;background:transparent;color:var(--muted)}.chips .tyTag{padding:2px 7px}.chips .pill.p-ok{color:var(--ok)}.pedit{top:84px}.peditHead{padding:14px 18px;border-bottom:1px solid var(--border2);min-height:56px}.peditHead .tt{font-weight:600;font-size:14px}.peditBody{padding:16px;gap:12px}.codeEditor,.codeEditor:focus-within{border:0;background:var(--panel);border-radius:0;box-shadow:none}.codeEditor .cm-editor{font-size:15px;line-height:1.7}.codeEditor .cm-gutters{background:transparent;border-color:var(--border2)}.codeEditor .cm-activeLine,.codeEditor .cm-activeLineGutter{background:var(--panel2)}.editorKeys{font-size:11px;color:var(--muted)}.editorHelp summary{cursor:pointer}.peditBody>#btnRow{margin-top:auto;padding-top:14px;border-top:1px solid var(--border2);position:sticky;bottom:0;background:var(--panel);z-index:2;padding-bottom:6px}.btn{border-radius:6px;padding:8px 14px;font-size:13px;box-shadow:none}.btn.ghost{background:var(--panel);color:var(--text2)}.pdivider{top:84px}.pdivider:before{width:2px;background:var(--border)}.md{font-size:var(--reading-size);line-height:1.9}.mdsec{margin-bottom:26px}.mdsec>h4{font-size:14px;font-weight:600;border-left:0;padding-left:0;margin-bottom:12px;letter-spacing:.2px}.sample{border-color:var(--border2)}.choice{border:1px solid var(--border);border-radius:7px;padding:13px 15px}.choice.on{background:var(--primaryWeak)}.verdict{border-radius:7px}.wbMyNote{border-color:var(--border2)}
+#app.notesView{max-width:1440px;padding:30px 36px 80px}.notesHero{background:transparent;color:var(--text);box-shadow:none;border-radius:0;padding:6px 0 28px;border-bottom:1px solid var(--border);margin-bottom:28px;gap:30px}.notesHeroT{font-size:32px;letter-spacing:-.8px;font-weight:600;margin-bottom:10px}.notesHeroS{color:var(--text2);font-size:14px}.notesHeroR .noteSearch input{border:1px solid var(--border);box-shadow:none;padding:12px 15px;background:var(--panel)}.noteSearchOut{box-shadow:var(--shadow2)}.notesLines{gap:26px}.noteLineCard{box-shadow:none;border:0;border-radius:10px;padding:24px 26px;background:var(--panel)}.noteLineHead{padding-bottom:17px;border-bottom:1px solid var(--border2);margin-bottom:4px}.noteLineName{font-size:19px;font-weight:600}.noteLecGrid{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:26px;row-gap:0}.noteLec{border:0;border-bottom:1px solid var(--border2);border-radius:0;background:transparent;padding:13px 0;gap:12px;min-height:52px}.noteLec:hover{background:transparent;color:var(--primary);border-color:var(--primary)}.noteLecT{white-space:normal;line-height:1.6;font-size:14px}.noteLec b{font:500 12px var(--mono);color:var(--muted)}.noteLecC{font-size:11px}.noteLineFoot{border:0;margin-top:15px}.noteLineFoot a{background:transparent;border:0;color:var(--text2);font-size:12px}
+.noteLayout{grid-template-columns:220px minmax(0,1fr);gap:36px}.noteSide{background:transparent;border:0;border-right:1px solid var(--border);border-radius:0;padding:8px 14px 18px 0;top:84px;max-height:calc(100dvh - 106px)}.noteMain{max-width:820px;width:100%;margin:0 auto}.noteTitle{font-size:30px;line-height:1.5;font-weight:600;letter-spacing:-.6px;margin-bottom:22px}.noteBody{font-size:var(--reading-size);line-height:1.9}.noteBody p{margin:1em 0}.noteBody h1{font-size:25px;font-weight:600;margin:30px 0 18px}.noteBody h2{font-size:21px;font-weight:600;margin:32px 0 18px}.noteBody h3{font-size:18px;font-weight:600}.noteBody li{margin:7px 0}.noteBody pre{font-size:14px;border-radius:7px}.notePbar{border:0;border-left:2px solid var(--primary);background:var(--panel);padding:12px 16px;color:var(--text2)}.notePager{margin-top:40px;padding-top:22px}.noteTreeHead{border:0}.ntPage.on,.ntLecHead.on{background:var(--panel3);color:var(--text)}
+.wbTop .ttl{font-size:28px;font-weight:600}.wbStats{gap:14px}.wbStat{box-shadow:none}.emptyStudy{text-align:center;background:var(--panel);padding:64px 24px;border:1px solid var(--border);border-radius:12px;margin-top:24px}.emptyStudy .eyebrow{font:12px var(--mono);letter-spacing:2px;color:var(--muted)}.emptyStudy h2{font-size:26px;font-weight:500;margin:12px 0}.emptyStudy p{font-size:14px;color:var(--text2);margin:0 auto 22px;max-width:430px}.emptyStudy .btn{display:inline-block;text-decoration:none}.wbHint{border:0;background:var(--panel2)}
+.modal{width:min(620px,calc(100vw - 36px));border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow2)}.mask{background:#15212770;backdrop-filter:blur(3px)}.modalHead{font-size:19px;padding:19px 24px;font-weight:600}.modalBody{padding:22px 24px;gap:22px}.settingsGroup{border:0;margin:0;padding:0;min-width:0}.settingsGroup legend{font-size:12px;color:var(--muted);letter-spacing:1px;margin-bottom:12px}.settingsRow{display:grid;grid-template-columns:1fr 1fr;gap:16px}.settingsRow .field{min-width:0}.field .lb{font-size:13px;margin-bottom:7px;font-weight:500}.field input,.field select{font-size:14px;min-height:40px;width:100%;border-radius:6px}.field select{background:var(--panel2);border:1px solid var(--border);padding:8px}.field .desc{font-size:12px;line-height:1.8;margin-top:7px}.settingsAdvanced{border-top:1px solid var(--border);padding-top:16px}.settingsAdvanced>summary{font-size:13px;color:var(--text2);cursor:pointer}.settingsAdvanced .field{margin-top:16px}.modalFooter{display:flex;gap:9px;border-top:1px solid var(--border2);padding-top:18px}.settingsHelp{font-size:12px;color:var(--muted);line-height:1.8}.settingsHelp summary{cursor:pointer}.iconbtn{border-color:var(--border);font-size:12px}
+:root[data-density="compact"] table.ptable td{padding-top:7px;padding-bottom:7px}:root[data-density="compact"] .noteLec{padding:9px 0;min-height:42px}
+@media(max-width:1080px){.hero-r{flex:1 1 240px}.pedit{top:auto}.noteLecGrid{grid-template-columns:repeat(2,minmax(0,1fr))}.pstmt{padding:22px}.pside{border-right:0}.pgrid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){.nav{padding:0 12px;gap:12px}.navlinks{gap:2px}.wrap,#app.notesView{padding:22px 18px}.hero{gap:25px}.hero-hi,.notesHeroT{font-size:26px}.hero-r{border-left:0;padding-left:0}.cards{grid-template-columns:1fr}.noteLayout{grid-template-columns:1fr;gap:24px}.noteSide{position:relative;top:auto;max-height:230px;border:1px solid var(--border);padding:12px}.noteLecGrid{grid-template-columns:1fr}.noteTitle{font-size:25px}.navright #masterySyncStatus{display:none}.settingsRow{grid-template-columns:1fr}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{transition:none!important;scroll-behavior:auto!important}}
+
+.modal{max-width:620px}.btn:not(.ghost){color:var(--panel)}
+.emptyStudy h2{color:var(--text)}
+.md code{color:var(--text);background:var(--panel3)}
+.noteLineCard[data-course="linux"] .noteLineName{color:var(--course-linux)}
+.noteLineCard[data-course="py"] .noteLineName{color:var(--course-python)}
+.noteLineCard[data-course="ds"] .noteLineName{color:var(--course-ds)}
+:root[data-theme="light"] .notesView{--codeBg:#f0f1ec;--hl-key:#754da2;--hl-str:#326e48;--hl-com:#69757c;--hl-num:#865a24;--hl-fn:#315a9b;--hl-bi:#785517;--hl-var:#9a3f4d}
+:root[data-theme="dark"] .notesView{--codeBg:#202a2e;--hl-key:#d2ade8;--hl-str:#aad3ad;--hl-com:#9aaca7;--hl-num:#e1bd8c;--hl-fn:#a6c5ed;--hl-bi:#e1d19f;--hl-var:#ecb3b8}
 </style>
 </head>
 <body>
@@ -861,7 +937,7 @@ td.c-tt .wbStarSm.on,td.c-tt .wbStarSm:hover{opacity:1}
   </nav>
   <div class="navsp"></div>
   <div class="navright">
-    <span id="offlineTag" style="display:none" class="offlineTag">离线浏览</span>
+    <span id="offlineTag" style="display:none" class="offlineTag">浏览器判题</span>
     <span class="navscore" id="navScore">—</span>
     <span id="navUser" style="color:var(--muted)"></span>
     <button class="iconbtn" onclick="openSettings()">设置</button>
@@ -1041,7 +1117,7 @@ function nowStamp(){
      收藏不增加 attempts（见 app/api/mastery.py 的 _ensure_row 注释）。
    ========================================================================= */
 const NOTE_MAX = 2000;              // 与 app/api/mastery.py 的 NOTE_MAX 对齐
-const LEVEL_TXT = ['未掌握', '薄弱', '熟练'];
+const LEVEL_TXT = ['未评估', '需复习', '熟练'];
 
 function masteryAll(){
   try { return JSON.parse(localStorage.getItem(LS.mastery) || '{}') || {}; } catch(e){ return {}; }
@@ -1082,6 +1158,7 @@ function applyMasteryLocal(pid, patch){
 }
 
 /* 保存一处标注。返回后端给的 item；离线或纯网络失败时返回本地对象，校验失败返回 null。 */
+const masterySaveQueues = new Map();
 async function saveMastery(pid, patch){
   const body = Object.assign({}, patch);
   if ('note' in body){
@@ -1098,25 +1175,41 @@ async function saveMastery(pid, patch){
   if ('is_starred' in body) body.is_starred = body.is_starred ? 1 : 0;
 
   const prev = Object.assign({}, masteryOf(pid));   // 400 时回滚用
-  applyMasteryLocal(pid, body);
+  const revision = Date.now() + '-' + Math.random();
+  applyMasteryLocal(pid, {...body, _dirty:true, _revision:revision});
+  MASTERY_SYNCED = false;
+  updateMasterySyncStatus();
   if (OFFLINE) return body;
 
+  const previousRequest = masterySaveQueues.get(pid) || Promise.resolve();
+  const request = previousRequest.catch(() => {}).then(async () => {
+  if (masteryOf(pid)._revision !== revision) return masteryOf(pid);
   try {
-    const r = await api('/api/mastery/' + pid, { method:'PATCH', body });
+    const pending = masteryOf(pid);
+    const payload = {note:pending.note || '', level:pending.level || 0, is_starred:pending.is_starred ? 1 : 0};
+    const r = await api('/api/mastery/' + pid, { method:'PATCH', body:payload });
+    if (masteryOf(pid)._revision !== revision) return masteryOf(pid);
     const it = r && r.item;
-    if (it) applyMasteryLocal(pid, { is_starred: it.is_starred, level: it.level, note: it.note });
+    applyMasteryLocal(pid, {...(it ? {is_starred:it.is_starred,level:it.level,note:it.note} : {}), _dirty:false});
+    updateMasterySyncStatus();
     return it || body;
   } catch(e){
+    if (masteryOf(pid)._revision !== revision) return masteryOf(pid);
     const msg = String((e && e.message) || e);
     if (/^(HTTP )?4\d\d/.test(msg)){
       /* 后端明确不认（参数越界/题目不存在）→ 把本地改回去，别留个假状态 */
       _setMasteryRaw(pid, Object.keys(prev).length ? prev : null);
+      updateMasterySyncStatus();
       toast('没保存上：' + msg, 'err');
       return null;
     }
     toast('已存在本地，后端暂时没同步上', 'err');
     return body;
   }
+  });
+  masterySaveQueues.set(pid, request);
+  try { return await request; }
+  finally { if (masterySaveQueues.get(pid) === request) masterySaveQueues.delete(pid); }
 }
 
 /* 页面上「这颗星亮不亮」的唯一判据：本地缓存优先，其次用接口给的字段 */
@@ -1167,17 +1260,29 @@ function renderStarsFor(pid){
 /* 首屏从后端拉一次标注，补齐「换了浏览器/清了缓存」的那一半。
    服务端是权威，但本地独有的键保留（可能是刚写还没推上去的）。 */
 let MASTERY_SYNCED = false;
+function updateMasterySyncStatus(){
+  let badge=document.getElementById('masterySyncStatus');
+  if (!badge) { badge=document.createElement('span'); badge.id='masterySyncStatus'; badge.className='hintline'; document.querySelector('.navright')?.prepend(badge); }
+  const all=masteryAll(), pending=Object.values(all).filter(x=>x && x._dirty).length;
+  badge.textContent=pending ? (OFFLINE ? '标注仅存本机' : '标注待同步 '+pending) : (Object.keys(all).length && !OFFLINE ? '标注已同步' : '');
+}
 async function syncMasteryFromServer(){
-  if (MASTERY_SYNCED || OFFLINE) return;
+  if (MASTERY_SYNCED || OFFLINE) { updateMasterySyncStatus(); return; }
   try {
-    const r = await api('/api/mastery');
-    const all = masteryAll();
-    (r.items || []).forEach(it => {
-      all[String(it.id)] = { is_starred: it.is_starred, level: it.level, note: it.note };
-    });
-    _masteryWrite(all);
-    MASTERY_SYNCED = true;
-  } catch(e){ /* 后端不可用就算了，本地照样能用 */ }
+    const r=await api('/api/mastery');
+    for(const it of r.items || []) {
+      const pid=Number(it.id), current=masteryOf(pid);
+      if (current._dirty || (Object.keys(current).length && current._dirty === undefined)) {
+        const conflict=current.note && it.note && current.note !== it.note ? it.note : current._remoteNote;
+        applyMasteryLocal(pid,{_dirty:true,...(conflict ? {_remoteNote:conflict} : {})});
+      } else applyMasteryLocal(pid,{is_starred:it.is_starred,level:it.level,note:it.note,_dirty:false});
+    }
+    for (const [pid,item] of Object.entries(masteryAll())) {
+      if (item._dirty) await saveMastery(Number(pid),{note:item.note || '',level:item.level || 0,is_starred:item.is_starred ? 1 : 0});
+    }
+    MASTERY_SYNCED=!Object.values(masteryAll()).some(x=>x && x._dirty);
+  } catch(e) { /* Keep local edits pending when the backend is unavailable. */ }
+  updateMasterySyncStatus();
 }
 
 /* =========================================================================
@@ -1419,7 +1524,14 @@ function stars(n){
   return '<span class="stars">' + s + '</span>';
 }
 function pct(got, max){ return max > 0 ? Math.round(got * 100 / max) : 0; }
-function stamp(s){ return String(s || '').replace('T',' ').slice(0,16); }
+function stamp(s){
+  const raw = String(s || '');
+  if (/(Z|[+-]\d{2}:\d{2})$/.test(raw)) {
+    const d = new Date(raw);
+    if (!Number.isNaN(d.getTime())) return d.toLocaleString('zh-CN', {year:'numeric',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
+  }
+  return raw.replace('T',' ').slice(0,16);
+}
 
 /* 离线兜底：把静态题库聚合成和 /api/catalog 一样的结构 */
 function buildLocalCatalog(){
@@ -1540,8 +1652,9 @@ async function refreshAll(){
 function parseHash(){
   const h = (location.hash || '#/').replace(/^#/, '');
   const parts = h.split('/').filter(Boolean);
-  if (parts[0] === 'set' && parts[1]) return { view:'set', subject: parts[1] };
+  if (parts[0] === 'set' && parts[1]) return { view:'set', subject: parts[1], lecture:parts[2]==='lecture' ? parts[3] : '', note:parts[4]==='from' ? parts[5] : '' };
   if (parts[0] === 'p'   && parts[1]) return { view:'p', id: parseInt(parts[1],10) };
+  if (parts[0] === 'learn') return {view:'learn'};
   if (parts[0] === 'subs') return { view:'subs' };
   if (parts[0] === 'wrongbook') return { view:'wrongbook' };
   if (parts[0] === 'notes'){
@@ -1559,9 +1672,13 @@ function parseHash(){
   return { view:'home' };
 }
 
+let routeVersion = 0;
 function route(){
+  routeVersion++;
+  if (POLL) { clearInterval(POLL); POLL = null; }
   SET = parseHash();
   const app = document.getElementById('app');
+  app.classList.toggle('wrap', !['p','notes','note'].includes(SET.view));
   app.classList.toggle('problemView', SET.view === 'p');
   app.classList.toggle('notesView', SET.view === 'notes' || SET.view === 'note');
   document.getElementById('navHome').className = SET.view === 'home' ? 'on' : '';
@@ -1572,6 +1689,7 @@ function route(){
   window.scrollTo(0, 0);
   if (SET.view === 'set')   return viewSet(SET.subject);
   if (SET.view === 'p')     return viewProblem(SET.id);
+  if (SET.view === 'learn') return Learning.home();
   if (SET.view === 'subs')  return viewSubmissions();
   if (SET.view === 'wrongbook') return viewWrongbook();
   if (SET.view === 'notes') return viewNotes();
@@ -1584,6 +1702,7 @@ window.addEventListener('hashchange', route);
    6. 顶栏 / 提示
    ========================================================================= */
 function renderNav(){
+  updateMasterySyncStatus();
   const tag = document.getElementById('offlineTag');
   tag.style.display = OFFLINE ? '' : 'none';
   const s = CATALOG || { user_score:0, user_max_score:0 };
@@ -1625,27 +1744,23 @@ function viewHome(){
   const totalAtt   = subj.reduce((a,x) => a + (x.attempted || 0), 0);
   const got = s.user_score || 0, max = s.user_max_score || 0;
 
+  let last = null;
+  try { last = PROBLEMS.find(p => p.id === Number(localStorage.getItem(LS.seen))); } catch(e){}
   let html = '';
   if (OFFLINE){
-    /* 数字现算，别写死 —— 题库会变 */
-    const nLocal = window.TextJudge
-      ? PROBLEMS.filter(x => x.line === 'text' && TextJudge.canJudgeLocally(x)).length : 0;
-    const nPython = window.PythonLocal ? PROBLEMS.filter(x => x.line === 'python' && x.cases && x.cases.length).length : 0;
-    const nCpp = window.CppLocal ? PROBLEMS.filter(x => x.line === 'cpp' && x.cases && x.cases.length).length : 0;
-    html += '<div class="banner warn"><span>⚠</span><span class="grow">'
-         + '当前处于<b>离线模式</b>（没有连上判题后端）。'
-         + (nLocal || nPython || nCpp ? '<b>' + nLocal + ' 道理论题、' + nPython + ' 道 Python 题和 ' + nCpp + ' 道 C/C++ 题可在浏览器里判</b>；进度保存在此浏览器。' : '')
-         + '首次做 C/C++ 题需下载约 29 MB 编译器。</span>'
-         + '<button class="btn sm ghost" onclick="openSettings()">设置后端</button></div>';
+    html += '<div class="banner modeNotice"><span class="grow">浏览器判题 · 学习进度保存在此浏览器，换设备前请在设置中导出。</span>'
+         + '<button class="btn sm ghost" onclick="openSettings()">备份与设置</button></div>';
   }
 
   html += '<div class="hero"><div class="hero-l">'
-       +   '<div class="hero-hi">' + (nickname() ? '欢迎回来，' + esc(nickname()) : '欢迎回来') + '</div>'
-       +   '<div class="hero-sub">三条学习线 · ' + totalProb + ' 道题 · 判题在本机真实运行<br>'
-       +   '数据结构同一道题 <b>C 与 C++ 任选</b>；Linux 线是课程实验与基础命令的理论题</div>'
+       +   '<div class="courseEyebrow">YOUR STUDY DESK · 学习工作台</div><div class="hero-hi">' + (totalAtt ? (nickname() ? '欢迎回来，' + esc(nickname()) : '继续你的学习') : '从一页笔记，到一次掌握。') + '</div>'
+       +   '<div class="hero-sub">Python、数据结构与 Linux，三条清晰的学习路径。<br>'
+       +   '读懂知识，动手练习，再把每一次收获留在这里。</div>'
+       + (last ? '<a class="heroAction" href="#/p/' + last.id + '">继续上次：' + esc(SUBJ_SEQ[last.id] || last.id) + ' · ' + esc(last.title) + ' →</a>' : '')
+       + '<button class="heroAction" onclick="document.getElementById(\'courseList\').scrollIntoView({block:\'center\'})">浏览题集 →</button>'
        + '</div><div class="hero-r">'
        +   '<div class="scoreRow"><span class="scoreBig">' + got + '</span>'
-       +   '<span class="scoreOf">/ ' + max + ' 分</span></div>'
+       +   '<span class="scoreOf">/ ' + max + ' 分 · 累计收获</span></div>'
        +   '<div class="bar"><i style="width:' + pct(got, max) + '%"></i></div>'
        +   '<div class="heroStats">'
        +     '<div><b>' + totalSolved + '</b>已解决</div>'
@@ -1655,7 +1770,7 @@ function viewHome(){
        +   '</div>'
        + '</div></div>';
 
-  html += '<h2 class="secTitle">题集 <span class="cnt">共 ' + subj.length + ' 个题集</span></h2>';
+  html += '<h2 class="secTitle" id="courseList">题集 <span class="cnt">共 ' + subj.length + ' 个题集</span></h2>';
   if (!subj.length){
     html += '<div class="empty">题库还没导进来。先跑 <span class="codeInline">python tools\\export_static.py</span> 或启动本地服务。</div>';
   } else {
@@ -1665,36 +1780,13 @@ function viewHome(){
 }
 
 function cardHtml(s){
-  const got = s.score !== undefined ? s.score : (s.gained || 0);
-  const max = s.max_score || 0;
-  const p = pct(got, max);
-  const icon = SUBJECT_ICON[s.key] || '??';
-  const langs = s.key === 'ds' ? 'C / C++ 双通道'
-    : (s.key === 'linux' ? '课程实验 + 基础命令' : 'Python 3.13 / 3.14');
-  const groups = (s.sections || []).slice(0, 8).map(g => {
-    const gg = g.score !== undefined ? g.score : (g.gained || 0);
-    const done = g.total > 0 && g.solved >= g.total;
-    return '<div class="cardGrp' + (done ? ' done' : '') + '">'
-      + '<span class="nm">' + esc(g.name) + '</span>'
-      + '<span class="bar tiny"><i style="width:' + pct(gg, g.max_score) + '%"></i></span>'
-      + '<span class="num">' + g.solved + '/' + g.total + '</span></div>';
-  }).join('');
-  const more = (s.sections || []).length > 8
-    ? '<div class="cardGrp"><span class="nm" style="color:var(--muted)">…还有 '
-      + ((s.sections.length) - 8) + ' 个分组</span></div>' : '';
-  return '<a class="card" href="#/set/' + esc(s.key) + '">'
-    + '<div class="cardTop">'
-    +   '<div class="cardIco i-' + esc(s.key) + '">' + icon + '</div>'
-    +   '<div style="min-width:0"><div class="cardName">' + esc(s.label) + '</div>'
-    +   '<div class="cardMeta">' + s.total + ' 题 · ' + max + ' 分 · ' + esc(langs) + '</div></div>'
-    +   '<div class="cardPct">' + p + '<small>%</small></div>'
-    + '</div>'
-    + '<div class="bar sm"><i style="width:' + p + '%"></i></div>'
-    + '<div class="cardGroups">' + groups + more + '</div>'
-    + '<div class="cardFoot"><span>已解决 <b style="color:var(--ok)">' + s.solved + '</b> / ' + s.total + '</span>'
-    +   '<span>得分 ' + got + ' / ' + max + '</span>'
-    +   '<span class="go">进入题集 →</span></div>'
-    + '</a>';
+  const got=s.score !== undefined ? s.score : (s.gained || 0), max=s.max_score || 0, progress=pct(got,max);
+  const subtitle={python:'从基础语法，到独立编程',ds:'理解结构，让解题更有章法',linux:'认识系统，也熟悉手中的工具'};
+  const groups=(s.sections || []).slice(0,3).map((g,i)=>'<div class="cardGrp"><span class="num">'+String(i+1).padStart(2,'0')+'</span><span class="nm">'+esc(g.name)+'</span></div>').join('');
+  return '<a class="card course-'+esc(s.key)+'" href="#/set/'+esc(s.key)+'">'
+    + '<div class="cardTop"><div class="cardIco">'+(SUBJECT_ICON[s.key] || 'ST')+'</div><div><div class="cardName">'+esc(s.label)+'</div><div class="cardMeta">'+esc(subtitle[s.key] || '循序渐进，学以致用')+'</div></div></div>'
+    + '<div class="courseProgress"><span>'+s.total+' 道练习</span><strong>'+progress+'%</strong></div><div class="bar"><i style="width:'+progress+'%"></i></div>'
+    + '<div class="cardGroups">'+groups+'</div><div class="cardFoot"><span>已掌握 '+(s.solved || 0)+' 题</span><span class="go">进入学习 →</span></div></a>';
 }
 
 /* =========================================================================
@@ -1707,7 +1799,7 @@ const FILTERS = [
   { k:'solved',label:'已解决' },
   { k:'full',  label:'满分' },
 ];
-let FILTER = 'all', TYPE_FILTER = 'all', TYPE_SUBJECT = '', QUERY = '';
+let FILTER = 'all', TYPE_FILTER = 'all', TYPE_SUBJECT = '', QUERY = '', FILTER_CONTEXT = '';
 const CLOSED = {};   // 分组折叠状态：只有显式 true 才是收起
 let GNAMES = [];     // 当前题集的分组名（onclick 里传下标，避免名字里的引号把内联 JS 打断）
 
@@ -1729,9 +1821,11 @@ function matchQuery(p){
 }
 
 function viewSet(subject){
-  if (TYPE_SUBJECT !== subject){ TYPE_FILTER = 'all'; TYPE_SUBJECT = subject; }
+  const context = subject + ':' + (SET.lecture || '');
+  if (FILTER_CONTEXT !== context){ TYPE_FILTER = 'all'; FILTER = 'all'; QUERY = ''; TYPE_SUBJECT = subject; FILTER_CONTEXT = context; }
   const s = (CATALOG && (CATALOG.subjects || []).find(x => x.key === subject)) || null;
-  const all = PROBLEMS.filter(p => (p.subject || 'python') === subject);
+  const all = PROBLEMS.filter(p => (p.subject || 'python') === subject && (!SET.lecture || lecOf(p.source_section) === Number(SET.lecture)));
+  try { sessionStorage.setItem('pta.practiceContext',JSON.stringify(SET.lecture ? {subject,lecture:SET.lecture,note:SET.note} : null)); } catch(e){}
   const label = s ? s.label : (SUBJECT_LABELS[subject] || subject);
   const app = document.getElementById('app');
 
@@ -1765,8 +1859,9 @@ function viewSet(subject){
   });
 
   let html = crumb(label, s ? label : subject);
+  if (SET.lecture) html += '<div class="banner modeNotice">第 ' + esc(SET.lecture) + ' 讲配套题 · ' + all.length + ' 题 <a href="#/set/' + esc(subject) + '">查看全部题目</a>' + (SET.note ? ' · <a href="#/notes/' + escAttr(SET.note) + '">返回本讲笔记</a>' : '') + '</div>';
   if (OFFLINE){
-    html += '<div class="banner warn"><span>⚠</span><span class="grow">浏览器模式：理论题、Python 和 C/C++ 题可直接判题，进度保存在这个浏览器里。</span></div>';
+    html += '<div class="banner modeNotice"><span class="grow">浏览器判题 · 进度保存在此浏览器</span></div>';
   }
 
   html += '<div class="setHead">'
@@ -1781,7 +1876,6 @@ function viewSet(subject){
     +   '<div><b>' + att + '</b>已尝试</div>'
     +   '<div><b>' + (all.length - att) + '</b>未开始</div>'
     +   '<div><b>' + got + '</b>已得分</div>'
-    +   '<div><b>' + max + '</b>满分</div>'
     + '</div>'
     + '<div class="setBarRow"><div class="bar"><i style="width:' + pct(got,max) + '%"></i></div>'
     +   '<span style="font-size:12.5px;color:var(--muted);white-space:nowrap">' + pct(got,max) + '% 完成</span>'
@@ -1796,7 +1890,7 @@ function viewSet(subject){
         return '<option value="' + t.k + '"' + (TYPE_FILTER === t.k ? ' selected' : '')
           + (n ? '' : ' disabled') + '>' + t.label + '（' + n + '）</option>'; }).join('')
     + '</select>'
-    + '<div class="searchBox"><span>🔍</span>'
+    + '<div class="searchBox"><span aria-hidden="true">搜索</span>'
     + '<input id="qbox" placeholder="搜索题目标题 / 标签" value="' + escAttr(QUERY) + '" oninput="onQuery(this.value)"></div>'
     + '<button class="fbtn" onclick="toggleAllGroups()">展开 / 折叠</button>'
     + '</div>';
@@ -1811,7 +1905,7 @@ function viewSet(subject){
     const gSolved = groups[g].filter(solvedOf).length;
     const closed = CLOSED[g] === true;
     html += '<section class="grpbox' + (closed ? ' closed' : '') + '" data-g="' + escAttr(g) + '">'
-      + '<div class="grpHead" onclick="toggleGroup(' + gi + ')">'
+      + '<div class="grpHead" role="button" tabindex="0" aria-expanded="' + !closed + '" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleGroup(' + gi + ')}" onclick="toggleGroup(' + gi + ')">'
       +   '<span class="tri">▼</span><span class="grpName">' + esc(g) + '</span>'
       +   '<span class="pill' + (gSolved === groups[g].length ? ' p-ok' : '') + '">'
       +     gSolved + ' / ' + groups[g].length + ' 已解决</span>'
@@ -1827,7 +1921,7 @@ function viewSet(subject){
       + '</tbody></table></section>';
   });
 
-  if (!shown) html += '<div class="empty">当前筛选条件下没有题目。</div>';
+  if (!shown) html += '<div class="empty">没有符合当前搜索及筛选条件的题目。<br><button class="btn ghost" style="margin-top:12px" onclick="resetProblemFilters()">清空搜索及筛选</button></div>';
   app.innerHTML = html;
   const qb = document.getElementById('qbox');
   if (qb && QUERY) { qb.focus(); qb.setSelectionRange(qb.value.length, qb.value.length); }
@@ -1870,13 +1964,20 @@ function onQuery(v){
   clearTimeout(qTimer);
   qTimer = setTimeout(() => { viewSet(SET.subject); }, 180);
 }
+function resetProblemFilters(){ QUERY=''; FILTER='all'; TYPE_FILTER='all'; viewSet(SET.subject); document.getElementById('qbox').focus(); }
 function setFilter(k){ FILTER = k; viewSet(SET.subject); }
 function setTypeFilter(k){ TYPE_FILTER = k; viewSet(SET.subject); }
 function toggleGroup(i){
   const g = GNAMES[i];
   if (g === undefined) return;
+  const restoreFocus = document.activeElement && document.activeElement.classList.contains('grpHead');
   CLOSED[g] = CLOSED[g] !== true;
   viewSet(SET.subject);
+  if (restoreFocus) {
+    const section = [...document.querySelectorAll('.grpbox')].find(x => x.dataset.g === g);
+    const header = section && section.querySelector('.grpHead');
+    if (header) header.focus();
+  }
 }
 function toggleAllGroups(){
   /* 全部展开 = 所有分组都不带 CLOSED 标记。判断「现在是不是全开着」必须
@@ -1894,8 +1995,16 @@ let CUR = null;          // 当前题目详情
 let RESULT = null;       // 当前判题结果
 let POLL = null;
 
+function practiceSetHref(p){
+  let c=null;try{c=JSON.parse(sessionStorage.getItem('pta.practiceContext'));}catch(e){}
+  return '#/set/'+escAttr(p.subject || 'python')+(c && c.subject===p.subject && Number(c.lecture)===lecOf(p.source_section) ? '/lecture/'+encodeURIComponent(c.lecture)+(c.note ? '/from/'+encodeURIComponent(c.note) : '') : '');
+}
 function problemSequence(subject){
-  return PROBLEMS.filter(x => (x.subject || 'python') === subject);
+  const items = PROBLEMS.filter(x => (x.subject || 'python') === subject);
+  let context=null; try { context=JSON.parse(sessionStorage.getItem('pta.practiceContext')); } catch(e){}
+  const current=items.find(x=>x.id===SET.id);
+  return context && context.subject===subject && current && lecOf(current.source_section)===Number(context.lecture)
+    ? items.filter(x=>lecOf(x.source_section)===Number(context.lecture)) : items;
 }
 function problemSidebarHtml(subject, currentId){
   const items = problemSequence(subject), groups = new Map();
@@ -1912,19 +2021,19 @@ function problemSidebarHtml(subject, currentId){
     + '<div class="psideBody" id="psideBody">';
   groups.forEach((list, name) => {
     const solved = list.filter(solvedOf).length;
-    h += '<section class="psideGroup"><div class="psideGroupHead">' + esc(name)
-      + '<span>' + solved + ' / ' + list.length + ' 已解决</span></div><div class="psideTiles">';
+    h += '<details class="psideGroup"' + (list.some(x => x.id === currentId) ? ' open' : '') + '><summary class="psideGroupHead">' + esc(name)
+      + '<span>' + solved + ' / ' + list.length + ' 已解决</span></summary><div class="psideTiles">';
     list.forEach(x => {
       const status = statusOf(x);
       const label = { solved:'已解决', partial:'部分正确', att:'已尝试', none:'未做' }[status];
       const mark = { solved:'✓', partial:'◐', att:'•', none:'' }[status];
       h += '<a class="psideTile ' + status + (x.id === currentId ? ' active' : '')
-        + '" href="#/p/' + x.id + '" title="#' + x.id + ' ' + escAttr(x.title) + ' · ' + label + '"'
-        + ' aria-label="第 ' + x.id + ' 题 ' + escAttr(x.title) + '，' + label + '"'
-        + (x.id === currentId ? ' aria-current="page"' : '') + '>' + x.id
+        + '" href="#/p/' + x.id + '" title="' + escAttr(SUBJ_SEQ[x.id] || x.id) + ' ' + escAttr(x.title) + ' · ' + label + '"'
+        + ' aria-label="' + escAttr(SUBJ_SEQ[x.id] || x.id) + ' ' + escAttr(x.title) + '，' + label + '"'
+        + (x.id === currentId ? ' aria-current="page"' : '') + '>' + esc(SUBJ_SEQ[x.id] || x.id)
         + (mark ? '<span class="tileMark" aria-hidden="true">' + mark + '</span>' : '') + '</a>';
     });
-    h += '</div></section>';
+    h += '</div></details>';
   });
   return h + '</div><div class="psideFoot">当前 ' + (pos + 1) + ' / ' + items.length + ' 题</div></aside>';
 }
@@ -2017,11 +2126,16 @@ function localProblem(id){
 }
 
 async function viewProblem(id){
+  const version = routeVersion;
   const app = document.getElementById('app');
   app.innerHTML = '<div class="loading">正在打开题目…</div>';
   let p = null;
-  try { p = await api('/api/problems/' + id); OFFLINE = false; }
-  catch(e){ p = localProblem(id); OFFLINE = true; }
+  let offline = false;
+  try { p = await api('/api/problems/' + id); }
+  catch(e){ p = localProblem(id); offline = true; }
+  if (version !== routeVersion || SET.view !== 'p' || SET.id !== id) return;
+  OFFLINE = offline;
+  renderNav();
   if (!p){
     app.innerHTML = '<div class="empty">找不到这道题（id=' + id + '）。<br><br><a href="#/">← 回题集广场</a></div>';
     return;
@@ -2048,15 +2162,15 @@ function renderProblem(){
   const next = position >= 0 && position + 1 < sequence.length ? sequence[position + 1] : null;
   let html = '<div class="problemTop">' + crumb(p.subject_label || SUBJECT_LABELS[subject] || subject,
                    p.subject_label || SUBJECT_LABELS[subject] || subject)
-    .replace('href="#/"', 'href="#/set/' + esc(subject) + '"')
+    .replace('href="#/"', 'href="' + practiceSetHref(p) + '"')
     + '<div class="problemSteps"><button type="button" ' + (previous ? 'onclick="location.hash=\'#/p/' + previous.id + '\'"' : 'disabled') + '>← 上一题</button>'
     + '<button type="button" ' + (next ? 'onclick="location.hash=\'#/p/' + next.id + '\'"' : 'disabled') + '>下一题 →</button></div></div>';
 
   /* Linux 线：没填过登录名就先问一次 —— 题面里的 `/home/xxx` 要用它 */
   let userCard = '';
   if (subject === 'linux' && !linuxUser()){
-    userCard = '<div class="pcard" id="linuxUserCard" style="border-color:var(--warn)">'
-      + '<h4 style="margin:0 0 8px">先填一下：你的 Linux 用户名（顺手把密码也记上）</h4>'
+    userCard = '<details class="pcard" id="linuxUserCard"><summary>可选：个性化 Linux 实验环境</summary>'
+      + '<h4 style="margin:0 0 8px">可选：设置 Linux 实验用户名</h4>'
       + '<div class="hintline">用户名就是你在 Fedora 里 <code>whoami</code> 打出来的那个登录名'
       + '（装机时设的姓名拼音，例：<code>zhangsan</code>）。<br>'
       + 'Linux 线的题面与解析里凡是出现家目录的地方，都会换成你自己这个名字。</div>'
@@ -2070,7 +2184,7 @@ function renderProblem(){
       + '<div class="hintline" style="margin-top:8px">密码 <b>只存在这台机器的浏览器里</b>：'
       + '不上传、不参与判题、不进导出。后面做用户管理、<code>su</code>、<code>sudo</code> '
       + '那几题时，题面顶上点「密码」就能查一眼。</div>'
-      + '</div>';
+      + '</details>';
   }
 
   /* ------- 左边：题面 ------- */
@@ -2130,7 +2244,7 @@ function renderProblem(){
     left += '</div>';
   }
 
-  if (p.hidden_count){
+  if (p.hidden_count && !isTheory){
     left += '<div class="hintline" style="margin-top:6px">另有 <b>' + p.hidden_count
           + '</b> 个隐藏测试点，提交后才会评测（成绩取历史最高分）。</div>';
   }
@@ -2158,11 +2272,12 @@ function renderProblem(){
 
   if (isChoice){
     if (questionTypeKey(p) === 'multiple_choice') right += '<div class="hintline">可选多个选项；再次点击可取消。</div>';
-    right += '<div class="choiceList" id="choiceList">'
+    right += '<div class="choiceList" id="choiceList" role="group" aria-label="选择答案">'
       + (p.choices || []).map((c, i) =>
-          '<div class="choice" data-i="' + i + '" data-v="' + escAttr(c) + '" onclick="pickChoice(this)">'
+          '<label class="choice" data-i="' + i + '" data-v="' + escAttr(c) + '">'
+          + '<input class="choiceInput" type="' + (questionTypeKey(p) === 'multiple_choice' ? 'checkbox' : 'radio') + '" name="answerChoice" onchange="pickChoice(this.parentElement)">'
           + '<span class="mark">' + String.fromCharCode(65 + i) + '</span>'
-          + '<span class="txt md">' + mdRender(c) + '</span></div>').join('')
+          + '<span class="txt md">' + mdRender(c) + '</span></label>').join('')
       + '</div>';
   } else if (isTheory){
     if (questionTypeKey(p) === 'practical'){
@@ -2181,23 +2296,27 @@ function renderProblem(){
     }
   } else {
     const pre = p.last_submission && p.last_submission.code;
-    const val = pre || draftOf(draftKey) || '';
+    let existingDraft = null;
+    draftOf(draftKey);
+    try { existingDraft = localStorage.getItem(draftKey); } catch(e){}
+    const val = existingDraft !== null ? existingDraft : (pre || '');
     right += '<div class="hintline" id="langHint"></div>'
+      + (pre !== undefined && pre !== null ? '<details class="previousCode"><summary>查看上次提交代码</summary><pre>' + esc(pre) + '</pre><button type="button" class="btn ghost" onclick="loadPreviousCode()">载入此代码（覆盖当前编辑内容）</button></details>' : '')
       + '<div id="codeEditor" class="codeEditor" hidden></div>'
       + '<textarea class="editor" id="codeBox" spellcheck="false" placeholder="在这里写代码…">' + esc(val) + '</textarea>'
-      + '<div class="editorKeys">Ctrl+空格查看提示 · Tab 接受提示或缩进 · Shift+Tab 减少缩进 · Esc 后按 Tab 离开编辑器</div>'
+      + '<details class="editorHelp"><summary class="hintline">编辑器快捷键</summary><div class="editorKeys">Ctrl+空格查看提示 · Tab 接受提示或缩进 · Shift+Tab 减少缩进 · Esc 后按 Tab 离开编辑器</div></details>'
       + '<details><summary class="hintline" style="cursor:pointer">运行自测用的输入（可选）</summary>'
       + '<textarea class="stdinBox" id="stdinBox" style="margin-top:7px">'
-      + esc(samples.length ? samples[0].stdin : '') + '</textarea></details>';
+      + esc(practiceDraft('stdin', p.id) ?? (samples.length ? samples[0].stdin : '')) + '</textarea></details>';
   }
 
   right += '<div class="btnrow" id="btnRow"></div>'
-    + '<div id="resultBox"></div>'
+    + '<div id="resultBox" role="status" aria-live="polite" aria-atomic="true"></div>'
     + '<div id="histBox"></div>'
     + '</div></div>';
 
-  app.innerHTML = html + '<div class="pgrid' + (sidebarIsCollapsed() ? ' sidebarCollapsed' : '') + '" id="problemGrid">'
-    + problemSidebarHtml(subject, p.id) + userCard + left
+  app.innerHTML = html + userCard + '<div class="pgrid' + (sidebarIsCollapsed() ? ' sidebarCollapsed' : '') + '" id="problemGrid">'
+    + problemSidebarHtml(subject, p.id) + left
     + '<div class="pdivider" id="problemDivider" role="separator" aria-label="调整题面和作答区宽度" aria-orientation="vertical" aria-valuemin="0" aria-valuemax="100" tabindex="0"></div>'
     + right + '</div>';
   const toggle = app.querySelector('.psideToggle');
@@ -2208,6 +2327,8 @@ function renderProblem(){
   renderHistory();
   const box = document.getElementById('codeBox');
   if (box) box.addEventListener('input', onCodeInput);
+  const stdin = document.getElementById('stdinBox');
+  if (stdin) stdin.addEventListener('input', () => savePracticeDraft('stdin', p.id, stdin.value));
   /* 命令题：回车即提交（Shift+回车换行）。命令本来就没有多行，
      多敲一下回车再去点按钮纯属多余动作。isComposing 挡住中文输入法的候选框回车。 */
   if (box && p.line === 'text' && questionTypeKey(p) === 'practical'){
@@ -2234,7 +2355,7 @@ function bindLinuxUserCard(){
     inp.addEventListener('keydown', function(e){
       if (e.key === 'Enter') saveLinuxUser.apply(null, grab());
     });
-    try { inp.focus(); } catch(e){}
+    // Optional environment settings do not take focus from the question.
   }
   /* 密码框里回车也该提交 —— 不然填完密码还得回头点按钮 */
   const pw = document.getElementById('linuxPassInp');
@@ -2266,6 +2387,14 @@ function draftOf(k){
     if (old){ localStorage.setItem(k, old); localStorage.removeItem(legacy); return old; }
     return '';
   } catch(e){ return ''; }
+}
+function loadPreviousCode(){
+  if (!CUR || !CUR.last_submission) return;
+  if (!confirm('载入上次提交代码将覆盖当前编辑内容，是否继续？')) return;
+  const code = CUR.last_submission.code || '';
+  if (smartEditor) smartEditor.view.dispatch({changes:{from:0,to:smartEditor.view.state.doc.length,insert:code}});
+  else { const box=document.getElementById('codeBox'); if(box) box.value=code; }
+  onCodeInput();
 }
 function onCodeInput(){
   if (CUR) { try { localStorage.setItem(LS.draft(CUR.id), codeValue()); } catch(e){} }
@@ -2322,12 +2451,9 @@ function markPartial(){
 }
 
 function pickChoice(el){
-  if (questionTypeKey(CUR) === 'multiple_choice') el.classList.toggle('on');
-  else {
-    Array.prototype.forEach.call(document.querySelectorAll('.choice'), c => c.classList.remove('on'));
-    el.classList.add('on');
-  }
+  document.querySelectorAll('.choice').forEach(c => c.classList.toggle('on', c.querySelector('input').checked));
 }
+
 function onLangChange(){
   const sel = document.getElementById('langSel');
   const hint = document.getElementById('langHint');
@@ -2349,13 +2475,6 @@ function copySample(i){
    返回 null 表示不合格 —— 提示已经弹过了，调用方直接 return。 */
 function readTheoryAnswer(){
   const p = CUR;
-  /* Linux 线先要一个登录名：题面里的家目录靠它显示，没填就别急着交 */
-  if ((p.subject || '') === 'linux' && !linuxUser()){
-    toast('先在上面填一下你的 Linux 用户名', 'err');
-    const inp = document.getElementById('linuxUserInp');
-    if (inp) inp.focus();
-    return null;
-  }
   if (p.is_choice){
     const selected = Array.from(document.querySelectorAll('.choice.on'));
     if (!selected.length){ toast('先选一个选项', 'err'); return null; }
@@ -2423,6 +2542,7 @@ function doSubmitLocal(){
   const r = TextJudge.judgeTextProblem(p, answer);
   if (r.error){ toast(r.error, 'err'); return; }
 
+  saveLocalSubmission(p, r, answer, 'text');
   RESULT = r;
   renderResult(r);
   setLocalProgress(p.id, r.score, r.max_score || p.total_score || 0);
@@ -2441,7 +2561,7 @@ function localJudgeHint(e){
 }
 
 async function doSubmitPythonLocal(){
-  const p = CUR, code = codeValue();
+  const version = routeVersion, p = CUR, code = codeValue();
   if (!code.trim()){ toast('代码不能为空', 'err'); return; }
   const btn = document.getElementById('btnSubmit');
   if (btn) btn.disabled = true;
@@ -2449,18 +2569,19 @@ async function doSubmitPythonLocal(){
   rb.innerHTML = verdictHtml('pending', '正在加载 Python 并判题…', '');
   try {
     const r = await PythonLocal.submit(p, code, (done, total) => {
-      if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('judging', '正在评测 ' + done + '/' + total, '');
+      if (version === routeVersion && SET.view === 'p' && CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('judging', '正在评测 ' + done + '/' + total, '');
     });
+    saveLocalSubmission(p, r, code, p.line === 'cpp' ? lang : 'python');
     setLocalProgress(p.id, r.score, r.max_score);
-    if (CUR && CUR.id === p.id){ RESULT = r; renderResult(r); }
+    if (version === routeVersion && SET.view === 'p' && CUR && CUR.id === p.id){ RESULT = r; renderResult(r); }
     afterJudgeRefresh();
   } catch(e){
-    if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', localJudgeHint(e));
+    if (version === routeVersion && SET.view === 'p' && CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', localJudgeHint(e));
   } finally { if (btn) btn.disabled = false; }
 }
 
 async function doSubmitCppLocal(){
-  const p = CUR, code = codeValue();
+  const version = routeVersion, p = CUR, code = codeValue();
   if (!code.trim()){ toast('代码不能为空', 'err'); return; }
   const lang = document.getElementById('langSel')?.value || 'cpp';
   const btn = document.getElementById('btnSubmit');
@@ -2469,16 +2590,17 @@ async function doSubmitCppLocal(){
   rb.innerHTML = verdictHtml('pending', '正在加载编译器…', '');
   try {
     const r = await CppLocal.submit(p, code, lang, (phase, n, total) => {
-      if (!CUR || CUR.id !== p.id) return;
+      if (version !== routeVersion || SET.view !== 'p' || !CUR || CUR.id !== p.id) return;
       rb.innerHTML = phase === 'load'
         ? verdictHtml('judging', '正在加载 C/C++ 编译器 ' + n + '%', '')
         : verdictHtml('judging', '正在评测 ' + n + '/' + total, '');
     });
+    saveLocalSubmission(p, r, code, p.line === 'cpp' ? lang : 'python');
     setLocalProgress(p.id, r.score, r.max_score);
-    if (CUR && CUR.id === p.id){ RESULT = r; renderResult(r); }
+    if (version === routeVersion && SET.view === 'p' && CUR && CUR.id === p.id){ RESULT = r; renderResult(r); }
     afterJudgeRefresh();
   } catch(e){
-    if (CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', localJudgeHint(e));
+    if (version === routeVersion && SET.view === 'p' && CUR && CUR.id === p.id) rb.innerHTML = verdictHtml('IE', '浏览器判题失败', localJudgeHint(e));
   } finally { if (btn) btn.disabled = false; }
 }
 
@@ -2530,21 +2652,30 @@ function verdictHtml(v, title, detail){
 }
 
 function pollSubmission(sid){
+  const version = routeVersion, pid = CUR.id;
   if (POLL) clearInterval(POLL);
   let tries = 0;
   const tick = async () => {
+    if (version !== routeVersion || SET.view !== 'p' || !CUR || CUR.id !== pid) return;
     tries++;
-    if (tries > 90){ clearInterval(POLL); POLL = null; toast('评测超时，请到「我的提交」查看', 'err'); return; }
+    if (tries > 90){ POLL = null; renderButtons(); toast('评测超时，请到「我的提交」查看', 'err'); return; }
     let s;
     try { s = await api('/api/submissions/' + sid + '?with_cases=1'); }
-    catch(e){ clearInterval(POLL); POLL = null; return; }
+    catch(e){
+      if (version === routeVersion && SET.view === 'p' && CUR && CUR.id === pid) {
+        POLL = null; renderButtons();
+        document.getElementById('resultBox').innerHTML = verdictHtml('IE', '暂时无法获取评测结果', '请到「我的提交」查看，或稍后重试。');
+      }
+      return;
+    }
+    if (version !== routeVersion || SET.view !== 'p' || !CUR || CUR.id !== pid) return;
     const v = s.verdict;
-    if (v !== 'pending' && v !== 'judging'){ clearInterval(POLL); POLL = null; RESULT = s; renderResult(s); afterJudgeRefresh(); return; }
+    if (v !== 'pending' && v !== 'judging'){ POLL = null; RESULT = s; renderResult(s); afterJudgeRefresh(); return; }
     const rb = document.getElementById('resultBox');
     if (rb) rb.innerHTML = verdictHtml(v, '正在评测…（第 ' + s.passed + '/' + s.total + ' 个测试点）', '');
+    POLL = setTimeout(tick, 700);
   };
   tick();
-  POLL = setInterval(tick, 700);
 }
 
 async function afterJudgeRefresh(){
@@ -2573,6 +2704,11 @@ function renderResult(s){
   let h = '<div class="verdict ' + cls + '"><span>' + esc(title) + '</span>'
         + '<span style="margin-left:auto;font-size:14px">' + got + ' / ' + max + ' 分</span></div>';
 
+  const theory = CUR && CUR.line === 'text';
+  if (theory) {
+    h += '<div class="resultLearning"><b>' + (s.verdict === 'AC' ? '答对了，可以继续练习或查看本讲笔记。' : '再检查选项中的概念区别，也可以查看本讲笔记。') + '</b>' + noteChipFor(CUR) + '</div>';
+    h += '<details class="resultDetails"><summary>查看评测明细与参考答案</summary>';
+  }
   h += '<div class="resMeta">'
     + '<span>通过测试点 <b>' + (s.passed||0) + ' / ' + (s.total||0) + '</b></span>'
     + (s.time_ms ? '<span>耗时 <b>' + s.time_ms + ' ms</b></span>' : '')
@@ -2607,8 +2743,14 @@ function renderResult(s){
         + '</div></div>';
     }).join('');
   }
+  if (theory) h += '</details>';
+  const seq = problemSequence(CUR.subject || 'python'), index = seq.findIndex(p => p.id === CUR.id), next = seq[index + 1];
+  h += '<div class="btnrow resultActions">'
+    + (next ? '<a class="btn" href="#/p/' + next.id + '">下一题 →</a>' : '<a class="btn" href="#/set/' + esc(CUR.subject || 'python') + '">返回题集</a>')
+    + '<button class="btn ghost" onclick="openResultNote()">记录错因</button></div>';
   box.innerHTML = h;
 }
+function openResultNote(){ const box=document.querySelector('[data-pnotebox] .wbNote'); if(box) box.click(); const input=document.querySelector('[data-pnotebox] textarea'); if(input){ input.focus(); input.scrollIntoView({block:'center'}); } }
 function ioRow(label, val, cls){
   return '<div class="ioRow"><div class="lb">' + label + '</div><pre'
     + (cls ? ' class="' + cls + '"' : '') + '>' + (val === null || val === undefined || val === '' ? '（空）' : esc(val)) + '</pre></div>';
@@ -2649,9 +2791,15 @@ async function doRun(){
 function renderHistory(){
   const host = document.getElementById('histBox');
   if (!host) return;
-  const h = (CUR.history || []);
-  if (!h.length) { host.innerHTML = ''; return; }
-  host.innerHTML = '<div class="hintline" style="margin-top:14px;font-weight:600">最近提交（'
+  const h = [...(CUR.history || []), ...localSubmissions().filter(x => x.problem_id === CUR.id)].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
+  const last = [...h, CUR.last_submission].filter(s => s && typeof s.code === 'string')
+    .sort((a,b) => new Date(b.created_at) - new Date(a.created_at))[0];
+  const previous = CUR.is_choice && last && typeof last.code === 'string'
+    ? '<details class="previousAnswer" style="margin-top:16px"><summary>查看上次提交的答案</summary>'
+      + '<div class="hintline">' + esc(stamp(last.created_at)) + ' · ' + esc(VERDICT_TXT[last.verdict] || last.verdict || '') + '</div>'
+      + '<pre>' + esc(last.code) + '</pre><div class="hintline">仅供回顾，不会自动填入本次作答。</div></details>' : '';
+  if (!h.length) { host.innerHTML = previous; return; }
+  host.innerHTML = previous + '<div class="hintline" style="margin-top:14px;font-weight:600">最近提交（'
     + (CUR.history_count || h.length) + ' 次）</div>'
     + h.slice(0, 12).map(s => {
       const pending = s.verdict === 'pending' || s.verdict === 'judging';
@@ -2666,32 +2814,49 @@ function renderHistory(){
 /* =========================================================================
    10. 视图四：我的提交
    ========================================================================= */
+const LOCAL_SUBMISSIONS = 'pta.submissions.local.v1';
+function localSubmissions(){
+  try { const items = JSON.parse(localStorage.getItem(LOCAL_SUBMISSIONS) || '[]'); return Array.isArray(items) ? items : []; } catch(e){ return []; }
+}
+function saveLocalSubmission(p, result, answer, lang){
+  const item = {problem_id:p.id, verdict:result.verdict, score:result.score, max_score:result.max_score || p.total_score,
+    passed:result.passed, total:result.total, lang, code:String(answer), created_at:new Date().toISOString(), source:'local'};
+  try { localStorage.setItem(LOCAL_SUBMISSIONS, JSON.stringify([item, ...localSubmissions()])); }
+  catch(e){ toast('本次已判题，但提交记录未能保存；请检查浏览器存储空间', 'err'); }
+  renderHistory();
+}
+
 async function viewSubmissions(){
+  const version = routeVersion;
   const app = document.getElementById('app');
   app.innerHTML = '<div class="loading">正在加载提交记录…</div>';
   let items = [];
   if (!OFFLINE){
     try { const r = await api('/api/submissions?limit=200'); items = r.items || []; } catch(e){}
   }
+  if (version !== routeVersion || SET.view !== 'subs') return;
+  items = [...items.map(x => ({...x, source:'backend'})), ...localSubmissions()].sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
   const tmap = {};
   PROBLEMS.forEach(p => tmap[p.id] = p);
   let html = '<h2 class="secTitle">我的提交 <span class="cnt">最近 ' + items.length + ' 条</span></h2>';
+  html += '<p class="hintline">浏览器记录长期保存在此浏览器，受存储空间限制；后端列表最多读取最近 200 条。</p>';
   if (!items.length){
     html += '<div class="empty">' + (OFFLINE
-      ? '离线模式下看不到提交记录。启动本地服务或配置后端后再来。'
+      ? '还没有浏览器提交记录。<a href="#/">去题集开始练习 →</a>'
       : '还没有提交过。去 <a href="#/">题集广场</a> 挑一道题吧。') + '</div>';
   } else {
     html += '<div class="pcard" style="padding:8px 16px">'
       + '<table class="ptable"><thead><tr><th>结果</th><th>题目</th><th>语言</th>'
-      + '<th>通过</th><th style="text-align:right">得分</th><th style="text-align:right">时间</th></tr></thead><tbody>'
+      + '<th>通过</th><th>作答快照</th><th style="text-align:right">得分</th><th style="text-align:right">时间</th></tr></thead><tbody>'
       + items.map(s => {
           const p = tmap[s.problem_id];
           const pending = s.verdict === 'pending' || s.verdict === 'judging';
           const cls = pending ? 'vt-pending' : (s.verdict === 'AC' ? 'vt-AC' : 'vt-other');
           return '<tr><td><span class="vt ' + cls + '">' + esc(VERDICT_TXT[s.verdict] || s.verdict) + '</span></td>'
             + '<td>' + (p ? '<a href="#/p/' + p.id + '">' + esc(p.title) + '</a>' : '#' + s.problem_id) + '</td>'
-            + '<td><span class="tyTag">' + esc(String(s.lang || '').toUpperCase()) + '</span></td>'
+            + '<td><span class="tyTag">' + esc(s.lang === 'text' ? '理论题' : String(s.lang || '').toUpperCase()) + '</span><small class="submissionSource">' + (s.source === 'local' ? '此浏览器' : '后端') + '</small></td>'
             + '<td style="color:var(--muted)">' + (s.passed||0) + ' / ' + (s.total||0) + '</td>'
+            + '<td>' + (s.source === 'local' ? '<details><summary>查看作答</summary><pre class="submissionAnswer">' + esc(s.code || '') + '</pre></details>' : '—') + '</td>'
             + '<td style="text-align:right"><b>' + (s.score||0) + '</b> / ' + (s.max_score||0) + '</td>'
             + '<td style="text-align:right;color:var(--muted);font-size:12.5px">' + esc(stamp(s.created_at)) + '</td></tr>';
         }).join('')
@@ -2727,7 +2892,7 @@ const WB_FILTERS = [
   { k:'wrong',   t:'待攻克' },
   { k:'starred', t:'收藏' },
   { k:'noted',   t:'有备注' },
-  { k:'solved',  t:'已攻克' },
+  { k:'solved',  t:'已满分' },
 ];
 let WB_FILTER = 'all';
 let WB_SUBJECT = 'all';
@@ -2797,6 +2962,7 @@ function pNoteBoxHtml(p){
   const note = noteOf(p.id);
   return '<div class="wbMyNote" data-pnotebox="' + p.id + '">'
     + '<h4>我的错题备注 <span class="tip">只自己看得见 · 有后端时跟着账号走</span></h4>'
+    + (masteryOf(p.id)._remoteNote ? '<details class="syncConflict"><summary>查看同步前的后端备注（已保留）</summary><pre>' + esc(masteryOf(p.id)._remoteNote) + '</pre></details>' : '')
     + '<div class="wbNote' + (note ? '' : ' empty') + '" data-act="edit">'
       + (note ? esc(note) : '＋ 写一句错因 / 下次注意什么') + '</div>'
     + '<div class="wbEditor" hidden>'
@@ -2843,7 +3009,7 @@ function wbRow(it){
       + '</div>'
     + '</div>'
     + '<div class="wbOps">'
-      + '<div class="wbLvl" data-act="lvl" title="掌握度">'
+      + '<span class="hintline">自评掌握度</span><div class="wbLvl" data-act="lvl" title="自评掌握度，与答题成绩独立">'
         + [0,1,2].map(n => '<button type="button" data-l="' + n + '" class="'
             + (lvl === n ? 'on' : '') + '">' + LEVEL_TXT[n] + '</button>').join('')
       + '</div>'
@@ -2853,12 +3019,14 @@ function wbRow(it){
 }
 
 async function viewWrongbook(opts){
+  const version = routeVersion;
   const app = document.getElementById('app');
   const keep = !!(opts && opts.keepScroll);
   if (!keep) app.innerHTML = '<div class="loading">正在整理错题本…</div>';
   const y = window.scrollY;
 
   const all = await wrongbookData();
+  if (version !== routeVersion || SET.view !== 'wrongbook') return;
   const cnt = {
     wrong: all.filter(x => x.is_wrong).length,
     starred: all.filter(x => x.is_starred).length,
@@ -2878,14 +3046,13 @@ async function viewWrongbook(opts){
     + statCard('wrong',   cnt.wrong,   '待攻克', 'bad')
     + statCard('starred', cnt.starred, '已收藏', 'star')
     + statCard('noted',   cnt.noted,   '写了备注', 'warn')
-    + statCard('solved',  cnt.solved,  '已攻克', 'ok')
+    + statCard('solved',  cnt.solved,  '已满分', 'ok')
     + '</div>';
 
   if (!all.length){
-    html += '<div class="wbHint">还什么都没有。<b>两种方式能往这里放东西</b>：'
-      + '① 做题时点题号旁边的 ☆ 收藏；② 提交一次（哪怕错了）就会自动进「待攻克」。<br>'
-      + '离线也能收藏和写备注 —— 先存本地，等连上后端再同步。</div>';
-    html += '<div class="empty">去 <a href="#/">题集广场</a> 挑一道题开始吧。</div>';
+    html=html.slice(0,html.indexOf('<div class="wbStats">'));
+    html += '<div class="empty emptyStudy"><div class="eyebrow">A LITTLE PRACTICE, EVERY DAY</div><h2>把难点，慢慢变成会的。</h2><p>收藏想回顾的题目，留下自己的错因。这里会成为你的专属复习清单。</p><a class="btn" href="#/">去做第一题 →</a></div>';
+
     if (keep) { app.innerHTML = html; window.scrollTo(0, y); } else app.innerHTML = html;
     return;
   }
@@ -2909,7 +3076,7 @@ async function viewWrongbook(opts){
     /* 空态不能只说「没有」—— 得告诉人「东西在哪」，而且能一键跳过去。
        老用户的 localStorage 里可能还存着旧的默认值 `wrong`，全靠这块兜。 */
     const other = [['wrong', '待攻克', cnt.wrong], ['starred', '收藏', cnt.starred],
-                   ['noted', '有备注', cnt.noted], ['solved', '已攻克', cnt.solved]]
+                   ['noted', '有备注', cnt.noted], ['solved', '已满分', cnt.solved]]
                   .filter(x => x[0] !== WB_FILTER && x[2] > 0);
     html += '<div class="empty">'
       + (WB_Q ? '没有匹配「' + esc(WB_Q) + '」的题目。' : '「' + curName + '」里暂时是空的。')
@@ -2939,15 +3106,26 @@ async function viewWrongbook(opts){
 /* ---------- 错题本里的交互（事件委托，避免把标题拼进 onclick） ---------- */
 function wbItemOf(el){ const box = el.closest('.wbItem'); return box ? parseInt(box.dataset.pid, 10) : 0; }
 
+function practiceDraft(kind, pid){
+  try { return localStorage.getItem('pta.practice.' + kind + '.' + pid); } catch(e){ return null; }
+}
+function savePracticeDraft(kind, pid, value){
+  try { localStorage.setItem('pta.practice.' + kind + '.' + pid, value); } catch(e){}
+}
+function noteDraftId(box){ return box.dataset.pnotebox || box.dataset.pid; }
+
 function wbOpenEditor(box, it){
   const view = box.querySelector('.wbNote');
   const ed = box.querySelector('.wbEditor');
   const ta = ed.querySelector('textarea');
-  ta.value = (it && it.note) || '';
+  const pid = noteDraftId(box);
+  const draft = practiceDraft('note', pid);
+  ta.value = draft ?? ((it && it.note) || '');
   const cnt = ed.querySelector('.cnt');
-  const sync = () => { cnt.textContent = ta.value.length + ' / ' + NOTE_MAX; };
+  const sync = () => { cnt.textContent = ta.value.length + ' / ' + NOTE_MAX
+    + (practiceDraft('note', pid) !== null ? ' · 草稿已暂存' : ''); };
   sync();
-  ta.oninput = sync;
+  ta.oninput = () => { savePracticeDraft('note', pid, ta.value); sync(); };
   view.hidden = true;
   ed.hidden = false;
   ta.focus();
@@ -2956,6 +3134,7 @@ function wbOpenEditor(box, it){
 }
 
 function wbCloseEditor(box){
+  try { localStorage.removeItem('pta.practice.note.' + noteDraftId(box)); } catch(e){}
   const ed = box.querySelector('.wbEditor');
   ed.hidden = true;
   delete ed.dataset.open;
@@ -3144,7 +3323,7 @@ function noteChipFor(p){
   const slug = noteSlugForProblem(p);
   if (!slug) return '';
   return '<a class="pill p-note" href="#/notes/' + slug
-    + '" title="打开这一讲的笔记">📖 看本讲笔记</a>';
+    + '" title="打开这一讲的笔记">看本讲笔记</a>';
 }
 
 function searchBoxHtml(id, ph){
@@ -3157,6 +3336,7 @@ function searchBoxHtml(id, ph){
 function escRe(s){ return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 
 function searchSnippet(text, term){
+  text=String(text).replace(/:::callout[^\n]*/g,' ').replace(/[#*`>|]/g,' ').replace(/\s+/g,' ').trim();
   const i = text.toLowerCase().indexOf(term.toLowerCase());
   if (i < 0) return esc(text.slice(0, 90)) + '…';
   const from = Math.max(0, i - 45);
@@ -3182,63 +3362,81 @@ function runNoteSearch(q){
     hit.push({ s: it.s, t: it.t, b: it.b, score, snip: searchSnippet(it.x || '', terms[0]) });
   }
   hit.sort((a, b) => b.score - a.score);
-  return hit.slice(0, 40);
+  return hit;
 }
 
-function renderNoteSearch(outId, q){
+function renderNoteSearch(outId, q, limit=40){
   const out = document.getElementById(outId);
   if (!out) return;
   const kw = q.trim();
   if (!kw){ out.innerHTML = ''; out.style.display = 'none'; return; }
   if (!NOTES_SEARCH){
-    out.style.display = '';
+    out.style.display = 'block';
     out.innerHTML = '<div class="nsHint">正在加载搜索索引…</div>';
     loadNotesSearch().then(() => {
-      if (document.getElementById(outId)) renderNoteSearch(outId, q);
+      const input = document.getElementById(outId.replace(/Out$/, ''));
+      if (input && input.value.trim() === kw) renderNoteSearch(outId, input.value);
     }).catch(e => {
       out.innerHTML = '<div class="nsHint">搜索索引加载失败：' + esc(String(e.message || e)) + '</div>';
     });
     return;
   }
   const hits = runNoteSearch(kw);
-  out.style.display = '';
+  out.style.display = 'block';
   if (!hits.length){
     out.innerHTML = '<div class="nsHint">没搜到「' + esc(kw) + '」</div>';
     return;
   }
-  out.innerHTML = '<div class="nsCnt">命中 ' + hits.length + ' 篇</div>' + hits.map(h =>
+  out.dataset.query=q; out.dataset.limit=String(limit);
+  out.innerHTML = '<div class="nsCnt">共 ' + hits.length + ' 篇，展示 ' + Math.min(limit,hits.length) + ' 篇</div>' + hits.slice(0,limit).map(h =>
     '<a class="nsItem" href="#/notes/' + h.s + '">'
     + '<div class="nsTitle">' + esc(h.t) + '</div>'
     + '<div class="nsCrumb">' + esc(h.b) + '</div>'
-    + '<div class="nsSnip">' + h.snip + '</div></a>').join('');
+    + '<div class="nsSnip">' + h.snip + '</div></a>').join('') + (hits.length>limit ? '<button type="button" class="btn ghost" onclick="moreNoteSearch(this)">加载更多</button>' : '');
 }
 
+function moreNoteSearch(button){const out=button.parentElement;const scroll=out.scrollTop;renderNoteSearch(out.id,out.dataset.query,Number(out.dataset.limit)+40);out.style.display='block';out.scrollTop=scroll;out.querySelectorAll('.nsItem')[Number(out.dataset.limit)-40]?.focus();}
 function bindNoteSearch(inputId){
   const el = document.getElementById(inputId);
   if (!el) return;
+  const out = document.getElementById(inputId + 'Out');
   el.addEventListener('input', () => {
     clearTimeout(SEARCH_TIMER);
     SEARCH_TIMER = setTimeout(() => renderNoteSearch(inputId + 'Out', el.value), 140);
   });
-  el.addEventListener('keydown', e => {
-    if (e.key !== 'Enter') return;
-    const first = document.querySelector('#' + inputId + 'Out .nsItem');
-    if (first) location.hash = first.getAttribute('href');
+  el.addEventListener('focus', () => { if (el.value.trim()) renderNoteSearch(inputId + 'Out', el.value); });
+  el.parentElement.addEventListener('keydown', e => {
+    if (e.isComposing) return;
+    if (e.key === 'Escape') { clearTimeout(SEARCH_TIMER); out.style.display='none'; el.focus(); out.style.display='none'; return; }
+    const hits = [...out.querySelectorAll('.nsItem')];
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      out.style.display='block';
+      const i=hits.indexOf(document.activeElement), delta=e.key==='ArrowDown' ? 1 : -1;
+      if (hits.length) hits[(i + delta + hits.length) % hits.length].focus();
+    } else if (e.key === 'Enter' && document.activeElement === el && hits.length && out.style.display !== 'none') {
+      e.preventDefault(); location.hash=hits[0].getAttribute('href');
+    }
+  });
+  el.parentElement.addEventListener('focusout', e => {
+    if (!el.parentElement.contains(e.relatedTarget)) { clearTimeout(SEARCH_TIMER); out.style.display='none'; }
   });
 }
 
 /* ---- 笔记首页：三条线 + 讲次网格 + 搜索 ---- */
 async function viewNotes(){
+  const version = routeVersion;
   const app = document.getElementById('app');
   app.innerHTML = '<div class="loading">正在加载笔记目录…</div>';
   let idx;
   try { idx = await loadNotesIndex(); }
   catch(e){
+    if (version !== routeVersion) return;
     app.innerHTML = '<div class="empty">笔记目录加载失败：' + esc(String(e.message || e))
       + '<br><span style="color:var(--muted)">（笔记还没导出？跑 <code>python tools/export_notes.py</code>）</span></div>';
     return;
   }
-  if (SET.view !== 'notes') return;
+  if (version !== routeVersion || SET.view !== 'notes') return;
 
   let html = '<div class="notesHero">'
     + '<div class="notesHeroL"><div class="notesHeroT">学习笔记</div>'
@@ -3248,7 +3446,7 @@ async function viewNotes(){
     + '<div class="notesLines">';
 
   for (const ln of idx.lines){
-    html += '<section class="noteLineCard">'
+    html += '<section class="noteLineCard" data-course="' + escAttr(ln.key || ln.line || '') + '">'
       + '<div class="noteLineHead"><span class="noteLineName">' + esc(ln.name) + '</span>'
       + '<span class="cnt">' + ln.lectures.length + ' 讲 · ' + ln.pages + ' 节</span></div>'
       + '<div class="noteLecGrid">'
@@ -3308,7 +3506,16 @@ function findHeading(a){
 }
 
 /* ---- 单篇 ---- */
+function displayNoteTitle(title){
+  return String(title || '').replace(/^00\s*第(\d+)讲[_\s]*(.*?)\s*分节索引$/, '第 $1 讲 · $2').replace(/_/g,' ');
+}
+function polishNoteLabels(){
+  document.querySelectorAll('.noteSide a,.notePager a,.nsTitle').forEach(el=>{
+    for(const node of el.childNodes) if(node.nodeType===Node.TEXT_NODE) node.textContent=displayNoteTitle(node.textContent);
+  });
+}
 async function viewNote(slug, anchor){
+  const version = routeVersion;
   const app = document.getElementById('app');
   app.innerHTML = '<div class="loading">正在加载笔记…</div>';
   let page, idx, render;
@@ -3317,12 +3524,13 @@ async function viewNote(slug, anchor){
     idx = await loadNotesIndex();
     render = await notesRender();
   } catch(e){
+    if (version !== routeVersion) return;
     app.innerHTML = '<div class="empty">这篇笔记没打开：' + esc(slug)
       + '<br><span style="color:var(--muted)">' + esc(String(e.message || e)) + '</span>'
       + '<br><br><a href="#/notes">← 回笔记目录</a></div>';
     return;
   }
-  if (SET.view !== 'note' || SET.slug !== slug) return;   // 期间用户切走了
+  if (version !== routeVersion || SET.view !== 'note' || SET.slug !== slug) return;   // 期间用户切走了
 
   const body = render(page.md || '');
   const fmKeys = Object.keys(page.fm || {});
@@ -3336,7 +3544,7 @@ async function viewNote(slug, anchor){
         ? '<a href="#/notes/' + page.lectureIndex + '">' + esc(page.crumb[page.crumb.length - 1]) + '</a>'
         : esc(page.crumb[page.crumb.length - 1]))
     + '</div>'
-    + '<h1 class="noteTitle">' + esc(page.title) + '</h1>';
+    + '<h1 class="noteTitle">' + esc(displayNoteTitle(page.title)) + '</h1>';
 
   if (fmKeys.length){
     html += '<div class="noteMeta">'
@@ -3363,10 +3571,11 @@ async function viewNote(slug, anchor){
       const done = list.filter(p => (bestOf(p) || 0) > 0).length;
       pb.innerHTML = '<div class="notePbar">本讲配了 <b>' + list.length + '</b> 道题'
         + (done ? '（已做 ' + done + '）' : '') + ' · '
-        + '<a href="#/set/' + (LINE_SUBJECT[page.line] || 'python') + '">去题集练手 →</a></div>';
+        + '<a href="#/set/' + (LINE_SUBJECT[page.line] || 'python') + '/lecture/' + encodeURIComponent(page.lecture) + '/from/' + encodeURIComponent(slug) + '">练习本讲题目 →</a></div>';
     }
   }
 
+  polishNoteLabels();
   if (anchor){
     const el = findHeading(anchor);
     if (el){
@@ -3380,41 +3589,40 @@ async function viewNote(slug, anchor){
 /* =========================================================================
    11. 设置弹层
    ========================================================================= */
-function openSettings(){
-  const base = apiBase();
-  const host = document.getElementById('modalHost');
-  host.innerHTML = '<div class="mask" onclick="if(event.target===this)closeModal()"><div class="modal">'
-    + '<div class="modalHead">设置<button class="x" onclick="closeModal()">✕</button></div>'
-    + '<div class="modalBody">'
-    + '<div class="field"><div class="lb">昵称（只给你自己看）</div>'
-    +   '<input id="setNick" value="' + escAttr(nickname()) + '" placeholder="例如 cosy">'
-    +   '<div class="desc">给这份进度起个名字。判题进度跟着下面的「通行证」走，不跟昵称走。</div></div>'
-    + '<div class="field"><div class="lb">判题后端地址</div>'
-    +   '<input id="setApi" value="' + escAttr(base) + '" placeholder="例如 https://my-pta.onrender.com">'
-    +   '<div class="desc">留空 = 同源（本地 <span class="codeInline">run.bat</span> 起的就是同源）。'
-    +   '浏览器判理论题、Python 和 C/C++ 题无需填写；需要跨设备后端进度时可填写。也可以用网址参数 <span class="codeInline">?api=https://…</span> 一步配好。</div></div>'
-    + '<div class="field"><div class="lb">我的通行证</div>'
-    +   '<input value="' + escAttr(TOKEN) + '" readonly onclick="this.select()">'
-    +   '<div class="desc">这是你的身份（本机随机生成，没有账号密码）。'
-    +   '<b>换设备时把这一串复制过去</b>，进度就能接续。</div></div>'
-    + '<div class="field"><div class="lb">进度备份</div>'
-    +   '<div class="btnrow" style="margin:0">'
-    +     '<button class="btn ghost" onclick="exportProgress()">导出进度</button>'
-    +     '<button class="btn ghost" onclick="document.getElementById(\'impFile\').click()">导入进度</button>'
-    +     '<input id="impFile" type="file" accept=".json,application/json" style="display:none"'
-    +       ' onchange="importProgress(event)">'
-    +   '</div>'
-    +   '<div class="desc">导出一个 JSON（离线进度 + 草稿 + 通行证）。'
-    +   '<b>换电脑 / 换浏览器 / 清缓存之前先导出</b>；导入按「取最高分」合并，'
-    +   '不会把已经拿到的高分冲掉。离线判题的进度只存在这台设备的浏览器里，'
-    +   '没有别的地方替你存着。</div></div>'
-    + '<div class="btnrow"><button class="btn" onclick="saveSettings()">保存</button>'
-    +   '<button class="btn ghost" onclick="closeModal()">取消</button>'
-    +   '<button class="btn ghost" style="margin-left:auto" onclick="refreshAll().then(()=>{closeModal();route();toast(\'已重新连接\',\'ok\')})">重新连接</button>'
-    + '</div>'
-    + '</div></div></div>';
+let modalReturnFocus = null;
+function appearancePrefs(){try{return JSON.parse(localStorage.getItem('pta.appearance') || '{}')}catch(e){return {}}}
+function setAppearance(key,value){
+  const a={...appearancePrefs(),[key]:value};
+  try{localStorage.setItem('pta.appearance',JSON.stringify(a))}catch(e){}
+  document.documentElement.dataset.theme=a.theme || 'system';
+  document.documentElement.dataset.density=a.density || 'comfortable';
+  document.documentElement.style.setProperty('--reading-size',([15,16,18].includes(Number(a.size))?a.size:16)+'px');
 }
-function closeModal(){ document.getElementById('modalHost').innerHTML = ''; }
+function openSettings(){
+  modalReturnFocus=document.activeElement;
+  const a=appearancePrefs(), opts=(values,current)=>values.map(([v,t])=>'<option value="'+v+'"'+(String(current)===String(v)?' selected':'')+'>'+t+'</option>').join('');
+  document.getElementById('modalHost').innerHTML='<div class="mask" onclick="if(event.target===this)closeModal()"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="settingsTitle">'
+    + '<div class="modalHead" id="settingsTitle">让学习更合心意<button aria-label="关闭设置" class="x" onclick="closeModal()">✕</button></div><div class="modalBody">'
+    + '<fieldset class="settingsGroup"><legend>外观与阅读 · 即时保存</legend><div class="settingsRow">'
+    + '<div class="field"><label class="lb" for="appearanceTheme">主题</label><select id="appearanceTheme" onchange="setAppearance(\'theme\',this.value)">'+opts([['system','跟随系统'],['light','浅色 · 纸页'],['dark','深色 · 夜读']],a.theme || 'system')+'</select></div>'
+    + '<div class="field"><label class="lb" for="appearanceSize">正文字号</label><select id="appearanceSize" onchange="setAppearance(\'size\',this.value)">'+opts([[15,'15 px'],[16,'16 px · 推荐'],[18,'18 px']],a.size || 16)+'</select></div>'
+    + '<div class="field"><label class="lb" for="appearanceDensity">列表密度</label><select id="appearanceDensity" onchange="setAppearance(\'density\',this.value)">'+opts([['comfortable','舒适'],['compact','紧凑']],a.density || 'comfortable')+'</select></div>'
+    + '<div class="field"><label class="lb" for="setNick">昵称</label><input id="setNick" value="'+escAttr(nickname())+'" placeholder="如何称呼你"></div></div></fieldset>'
+    + '<fieldset class="settingsGroup"><legend>学习资料</legend><div class="btnrow" style="margin:0"><button class="btn ghost" onclick="exportProgress()">导出进度</button><button class="btn ghost" onclick="document.getElementById(\'impFile\').click()">导入进度</button><input id="impFile" type="file" hidden accept=".json,application/json" onchange="importProgress(event)"></div>'
+    + '<p class="hintline">换设备或清理浏览器前，记得留一份备份。</p><details class="settingsHelp"><summary>备份范围与合并规则</summary><p>包含成绩、提交记录、收藏、错因、自评与草稿。合并保留最高分，同一提交不会重复累计；备注冲突优先保留本机版本。</p></details></fieldset>'
+    + '<details class="settingsAdvanced"><summary>高级设置 · 后端连接与通行证</summary><div class="field"><label class="lb" for="setApi">判题后端地址</label><input id="setApi" value="'+escAttr(apiBase())+'" placeholder="例如 https://example.com"><div class="desc">浏览器判题无需配置；连接后端后可同步学习资料。</div></div>'
+    + '<div class="field"><label class="lb" for="setToken">我的通行证</label><input id="setToken" readonly value="'+escAttr(TOKEN)+'" onclick="this.select()"><div class="desc">通行证用于识别你的后端进度，换设备时随备份恢复。</div></div><button class="btn ghost" style="margin-top:14px" onclick="refreshAll().then(()=>{closeModal();route()})">重新连接</button></details>'
+    + '<div class="modalFooter"><button class="btn" onclick="saveSettings()">保存</button><button class="btn ghost" onclick="closeModal()">取消</button></div></div></div></div>';
+  document.getElementById('setNick').focus();
+}
+
+function closeModal(){
+  const host = document.getElementById('modalHost');
+  if (!host.firstElementChild) return;
+  host.innerHTML = '';
+  if (modalReturnFocus && modalReturnFocus.isConnected) modalReturnFocus.focus();
+  modalReturnFocus = null;
+}
 function saveSettings(){
   const n = document.getElementById('setNick').value.trim();
   const a = document.getElementById('setApi').value.trim().replace(/\/+$/,'');
@@ -3434,7 +3642,7 @@ function progressBundle(){
   try {
     for (let i = 0; i < localStorage.length; i++){
       const k = localStorage.key(i);
-      if (k && k.indexOf('pta.draft.') === 0){
+      if (k && (/^pta\.draft\.\d+$/.test(k) || /^pta\.practice\.(note|stdin)\.\d+$/.test(k))){
         const v = localStorage.getItem(k);
         if (v) drafts[k] = v;
       }
@@ -3443,7 +3651,7 @@ function progressBundle(){
   return {
     kind: 'my-pta-progress', version: 1, exported_at: nowStamp(),
     token: TOKEN, nickname: nickname(), apiBase: apiBase(),
-    local: localProgress(), drafts: drafts,
+    local: localProgress(), drafts: drafts, submissions: localSubmissions(), mastery: masteryAll(),
   };
 }
 
@@ -3458,7 +3666,7 @@ function exportProgress(){
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
   setTimeout(() => URL.revokeObjectURL(url), 5000);
   toast('已导出：' + Object.keys(b.local).length + ' 道题 + '
-        + Object.keys(b.drafts).length + ' 份草稿', 'ok');
+        + Object.keys(b.drafts).length + ' 份草稿 + ' + Object.keys(b.mastery).length + ' 条复习标注', 'ok');
 }
 
 function importProgress(ev){
@@ -3474,7 +3682,7 @@ function importProgress(ev){
       if (input) input.value = '';
       return;
     }
-    /* ★ 合并规则：分数取 max、作答次数累加。
+    /* ★ 合并规则：分数取 max、次数取保守最大值，提交记录另去重。
        绝不能直接覆盖 —— 导一份旧备份不该把现在的高分抹掉。 */
     const m = localProgress();
     let improved = 0;
@@ -3486,15 +3694,46 @@ function importProgress(ev){
       if (nb > ob) improved++;
       m[pid] = {
         best_score: nb, total_score: nt,
-        attempts: (parseInt(ov.attempts || 0, 10) || 0) + (parseInt(nv.attempts || 0, 10) || 0),
+        attempts: Math.max(parseInt(ov.attempts || 0, 10) || 0, parseInt(nv.attempts || 0, 10) || 0),
         solved_at: (nt > 0 && nb >= nt) ? (ov.solved_at || nv.solved_at || nowStamp()) : '',
       };
     });
     try { localStorage.setItem(LS.local, JSON.stringify(m)); } catch(e){}
+    if (Array.isArray(b.submissions)) {
+      const incoming = b.submissions.filter(x => x && Number.isFinite(x.problem_id) && typeof x.created_at === 'string' && typeof x.verdict === 'string').map(x => ({
+        problem_id:x.problem_id, created_at:x.created_at, verdict:x.verdict, source:'local', code:String(x.code || ''), lang:String(x.lang || ''),
+        score:Number(x.score)||0, max_score:Number(x.max_score)||0, passed:Number(x.passed)||0, total:Number(x.total)||0
+      }));
+      const merged = new Map();
+      [...localSubmissions(), ...incoming].forEach(x => merged.set(JSON.stringify([x.problem_id,x.created_at,x.code,x.verdict]), x));
+      const counts = {};
+      for (const item of merged.values()) counts[item.problem_id] = (counts[item.problem_id] || 0) + 1;
+      Object.keys(counts).forEach(pid => { if (m[pid]) m[pid].attempts = Math.max(m[pid].attempts, counts[pid]); });
+      try { localStorage.setItem(LS.local, JSON.stringify(m)); } catch(e){}
+      try { localStorage.setItem(LOCAL_SUBMISSIONS, JSON.stringify([...merged.values()].sort((a,b) => new Date(b.created_at) - new Date(a.created_at)))); } catch(e){ toast('提交历史未能恢复，请检查浏览器存储空间','err'); }
+    }
+    let noteConflicts = 0;
+    if (b.mastery && typeof b.mastery === 'object' && !Array.isArray(b.mastery)) {
+      const all = masteryAll();
+      Object.keys(b.mastery).filter(pid => /^\d+$/.test(pid)).forEach(pid => {
+        const incoming = b.mastery[pid];
+        if (!incoming || typeof incoming !== 'object') return;
+        const current = all[pid] || {};
+        const note = typeof incoming.note === 'string' ? incoming.note.slice(0, NOTE_MAX) : '';
+        if (current.note && note && current.note !== note) noteConflicts++;
+        all[pid] = {...current, _dirty:true,
+          _remoteNote:current._remoteNote || (typeof incoming._remoteNote === 'string' ? incoming._remoteNote.slice(0,NOTE_MAX) : ''),
+          is_starred: current.is_starred || incoming.is_starred ? 1 : 0,
+          note: current.note || note,
+          level: [0,1,2].includes(current.level) ? current.level : ([0,1,2].includes(incoming.level) ? incoming.level : 0)};
+      });
+      _masteryWrite(all);
+    }
     /* 草稿：只在本地还没有时补，不覆盖正在写的内容 */
     let sk = 0;
     if (b.drafts) Object.keys(b.drafts).forEach(k => {
-      try { if (!localStorage.getItem(k)){ localStorage.setItem(k, b.drafts[k]); sk++; } } catch(e){}
+      if (!/^pta\.draft\.\d+$/.test(k) && !/^pta\.practice\.(note|stdin)\.\d+$/.test(k)) return;
+      try { if (localStorage.getItem(k) === null && typeof b.drafts[k] === 'string'){ localStorage.setItem(k, b.drafts[k]); sk++; } } catch(e){}
     });
     /* 通行证：这份文件本来就是为了「把这台设备变成那台设备」才导出的，
        所以文件里带着合法通行证、且与当前不同时，就采用它（后端进度才跟得回来）。 */
@@ -3508,6 +3747,7 @@ function importProgress(ev){
     if (input) input.value = '';
     toast('已导入：' + improved + ' 道题分数变高'
           + (sk ? '，补了 ' + sk + ' 份草稿' : '')
+          + (noteConflicts ? '；' + noteConflicts + ' 处备注冲突保留本机版本，备份原文仍在文件中' : '')
           + (switched ? '；通行证已切回 ' + TOKEN.slice(0, 8) + '…' : ''), 'ok');
     closeModal();
     refreshAll().then(() => { route(); });
@@ -3537,9 +3777,20 @@ async function boot(isReload){
 }
 
 /* 快捷键：Esc 关弹层 */
-document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+document.addEventListener('keydown', e => {
+  const dialog = document.querySelector('#modalHost [role="dialog"]');
+  if (!dialog) return;
+  if (e.key === 'Escape') { e.preventDefault(); closeModal(); return; }
+  if (e.key !== 'Tab') return;
+  const controls = [...dialog.querySelectorAll('button,input,select,textarea,a[href]')].filter(x => !x.disabled && x.getClientRects().length);
+  const first = controls[0], last = controls[controls.length - 1];
+  if (e.shiftKey && (document.activeElement === first || !dialog.contains(document.activeElement))) { e.preventDefault(); last.focus(); }
+  else if (!e.shiftKey && (document.activeElement === last || !dialog.contains(document.activeElement))) { e.preventDefault(); first.focus(); }
+});
 
-boot(false);
+</script>
+<script src="learning.js"></script>
+<script>boot(false);
 </script>
 </body>
 </html>

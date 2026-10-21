@@ -159,7 +159,23 @@ function addHeadingIds(html) {
 
 /** markdown → HTML（笔记正文） */
 export function renderNotes(md) {
-  return addHeadingIds(marked.parse(md || ''));
+  // Older exports may place custom blocks directly after a paragraph or
+  // before a setext separator. Keep block boundaries explicit outside fences.
+  const lines = String(md || '').split('\n'), normalized = [];
+  let fence = null;
+  for (const line of lines) {
+    const marker = /^\s*(`{3,}|~{3,})/.exec(line);
+    if (marker) {
+      if (!fence) fence = marker[1];
+      else if (marker[1][0] === fence[0] && marker[1].length >= fence.length) fence = null;
+      normalized.push(line);
+      continue;
+    }
+    if (!fence && /^:::callout\s/.test(line)) normalized.push('');
+    normalized.push(line);
+    if (!fence && /^:::\s*$/.test(line)) normalized.push('');
+  }
+  return addHeadingIds(marked.parse(normalized.join('\n')));
 }
 
 /** 目录树里显示的一行纯文本（去掉标记，给搜索/悬浮用） */

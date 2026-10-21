@@ -315,9 +315,11 @@ class Preprocessor:
                 # 去掉尾部空行，免得 ::: 前面一堆空白
                 while inner and not inner[-1].strip():
                     inner.pop()
+                out.append("")
                 out.append(f":::callout {typ} {fold} {title}".rstrip())
                 out.extend(inner)
                 out.append(":::")
+                out.append("")
                 continue
 
             fm = FENCE_RE.match(line)
