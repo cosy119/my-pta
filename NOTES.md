@@ -257,13 +257,13 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（1137 题 / 14114 分 / 2325 测试点）
+## 题库（1440 题 / 17890 分 / 4143 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
 | `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(78 = 53 编程 + ext2 14 + bits 11) + `problems_bank_py_prog.py`(10) + `problems_bank_py_tricks.py`(30) + 理论 `problems_bank_py_theory.py`(66) + `problems_bank_py_theory2.py`(68 = 49 + 进制转换 14 + 异或 2 + 进制解析 3) | **255** | **3160** | python | Python |
 | `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(39) | **240** | **3486** | cpp | **C 或 C++ 任选** |
-| `cpp` | `problems_bank_cpp_theory.py`(111) + `problems_bank_cpp_theory2.py`(112) + `problems_bank_cpp_prog.py`(17) + `problems_bank_cpp_tricks.py`(20) | **260** | **2957** | text / cpp | **C++ 基础线（12 讲各 20 题 + 技巧特训 20 题）** |
+| `cpp` | `problems_bank_cpp_theory.py`(111) + `problems_bank_cpp_theory2.py`(112) + `problems_bank_cpp_prog.py`(17) + `problems_bank_cpp_tricks.py`(20) + **`problems_bank_cpp_basic1..8.py`(303)** | **563** | **6733** | text / cpp | **C++ 基础线（12 讲各 20 题 + 技巧特训 20 + 基础编程题册 303）** |
 | `linux` | `problems_bank_linux.py` | **382** | **4511** | text | 理论题（单选 / 多选 / 判断 / 填空）+ **实操题 203**（写命令） |
 
 - ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
@@ -389,6 +389,72 @@ DS 线让你手写二分，本章让你写 `upper_bound(...) - lower_bound(...)`
   `export_static.py --with-cases` → `docs/problems.json` **1137 题 / 14114 分 / 2325 点**；
   `check_title_unique.py` → 1137 条标题、25 组重复**全是 `problems_bank` ↔ `py_bits`/`ext2` 的历史遗留**，
   本章 20 个标题零撞车。
+
+### ★ C++ 基础编程题册（2026-10-21 建，`cpp` 线编程强化，303 题 / 1818 点 / 3776 分）
+
+把 **C 语言那套基础知识点用 C++ 的写法重练一遍**：输入输出、运算、分支、循环、一维/二维数组、
+函数、递归、指针引用、字符串、结构体共用体、链表、排序查找、贪心、动态规划、综合模拟与数学。
+全部是**编程题**（`line = "cpp"`，不需要写 `question_type`，`infer()` 按 `line != "text"` 自动盖成 `programming`）。
+
+**共用框架 `tools/cpp_basic_kit.py`**（305 行，第七册起所有册都复用它）：
+
+| 面 | 说明 |
+|---|---|
+| `stmt(desc, points, sample)` / `cases(*blocks)` | 拼题干、拼 6 组输入（自动补行尾换行） |
+| `build(problems)` | 填 `subject / line / checker / cases / total_score / reference_solution / alt_solution` |
+| `sanity(probs)` | 结构自检：分节 ≥6 题、6 个点、orf 非空、`expected_stdout` 不许空 |
+| `verify(probs)` | **真编真跑**，`ThreadPoolExecutor` 并行把 solution / alt 各跑 6 个点，逐字节比对 |
+| `cli(probs, out_rel, doc, var)` | `--check` 只对拍不落盘；不带参数则写 `app/problems_bank_*.py` |
+
+- **固定 6 个测试点**，前 2 个是公开样例（`is_sample=True`）；分值 `SCORE_OF = {1:10, 2:12, 3:14, 4:16}`，按难度取。
+- ★★ **oracle 必须独立算**：贪心/DP 题的 oracle 一律是「小规模暴力枚举最优」（全排列、子集、DP、
+  带 `lru_cache` 的朴素递归），**绝不拿同一条贪心去校另一条贪心**。约束因此刻意压小（贪心题 n ≤ 8、DP 题 n ≤ 20）。
+- ★★ **solution 与 alt 必须是两条不同的实现路径**（一维滚动 vs 二维表、迭代 vs 记忆化、
+  手写二分 vs `lower_bound`、`vector` vs 指针链表），两条都要 6 点全过才算过。
+- ★★ `source_section` 用 `C++ 编程 · XXX` 这种**自由命名**（不是「第 NN 讲」），前端 `lecOf()` 正则取不到讲次
+  会返回 0，这些分节就排在各讲之前、彼此按名字排 —— 它们自带分节名，不影响可读性。
+
+| 册 | 生成器 | 分节 | 题 | 点 | 分 | 难度 1/2/3/4 |
+|---|---|---|---|---|---|---|
+| 1 | `gen_cpp_basic1.py` | 输入输出与格式化 12 / 运算符与表达式 11 / 分支结构 12 | 35 | 210 | 388 | 17/17/1/0 |
+| 2 | `gen_cpp_basic2.py` | 循环结构 16 / 嵌套循环与图形 12 | 28 | 168 | 346 | 5/14/8/1 |
+| 3 | `gen_cpp_basic3.py` | 一维数组 25 / 二维数组与矩阵 15 | 40 | 240 | 498 | 10/17/7/6 |
+| 4 | `gen_cpp_basic4.py` | 函数与参数传递 20 / 递归与递推 20 | 40 | 240 | 472 | 11/22/7/0 |
+| 5 | `gen_cpp_basic5.py` | 指针与引用 20 / 字符数组与字符串 20 | 40 | 240 | 482 | 12/16/11/1 |
+| 6 | `gen_cpp_basic6.py` | 结构体与共用体 20 / 链表 20 | 40 | 240 | 506 | 7/18/10/5 |
+| 7 | `gen_cpp_basic7.py` | 排序与查找 20 / 贪心 20 | 40 | 240 | 546 | 1/15/14/10 |
+| 8 | `gen_cpp_basic8.py` | 动态规划 20 / 综合模拟与数学 20 | 40 | 240 | 538 | 3/15/12/10 |
+| — | **合计** | **17 个分节** | **303** | **1818** | **3776** | **66/134/70/33** |
+
+**每个知识点都不少于 11 道题**（最少的是「运算符与表达式」11 道），满足「每点 ≥6」的要求。
+
+- 挂载点是**五处**：`seed.py`（import + `SEED_PROBLEMS`）、`verify_bank.py`（`LINES` 的 cpp 那行）、
+  `check_title_unique.py`（`MODULES`）、`smoke_cloud.py`（`ref_of` 的搜索列表）、`api/problems.py` / `web/index.html`
+  **不用动**（`cpp` 学科早就注册过）。
+  - ★ 册子是可选的：`verify_bank.py` / `smoke_cloud.py` 里用 `for n in range(1,9): try: __import__(...)` 动态收，
+    **单册缺失不该拖垮整条 cpp 线**（别学早期那种 `try: import 全部 except: 全变 []` 的写法，缺一册就全哑）。
+- ★ 踩过的坑（都真挂过测试点）：
+  1. **oracle 返回 int 而不是 str** → 框架报 `oracle 返回 int（应为 str）`，`"%d\n" % (...)` 包一层。
+  2. **stdout 的「行/空格」形态与 C++ 不一致**（稳定排序那题 oracle 用 `out()` 空格拼，题目要求每行一个）→ 逐字节必挂。
+  3. **区间开闭没对齐**（会议室那题 oracle 用闭区间 `l<=p<=r`，C++ 双指针用半开 `L[i]<R[j]`）→ 端点相接的用例直接对不上。
+     题干必须把「结束时刻能否复用」写死。
+  4. **「按序折叠」冒充贪心**（数列极差：`hi = hi*a[i]+1` 顺序折一遍在**等值输入**上给出错误结果，
+     因为真正的贪心是「每轮重排取最小两个」）→ 改成每轮 `std::sort` 后取，并用**121 组小规模穷举**
+     验证过「取最小两个=最大 / 取最大两个=最小」与暴力枚举 100% 一致。
+  5. `std::sort(s, s+n, cmp)` 作用在 `char[105][60]` 上编不过（迭代器是 `char(*)[60]`）→ 排下标数组 + `strcmp`。
+  6. `atoll` 要 `<cstdlib>`；漏 `<iostream>` 在 `-fsyntax-only` 阶段就能筛出来。
+  7. 常数表写错一个字符就静默出错：成绩等级表 `"FFFFFFDCBA"` 按 `s/10` 取，`s=100` 越界拿到 `'\x00'` → 补成 `"FFFFFFDCBAA"`。
+  8. **用例本身的 `n` 与数据条数不一致**（`n=4` 却只给 3 个数）→ C++ 读到越界垃圾，对拍表现为
+     「solution 和 alt 都错、且错得不一样」。看到两边同时挂先数一遍用例里的元素个数。
+  9. `rows()` 把**整行当一个 token**（`"3 3\n...\n.*.\n..."` → `[["3","3"],["..."],...]`）。
+     网格题别再套一层 `[c for c in row]`，要 `g = [ln[0] for ln in r[1:1+n]]` 然后按下标取字符。
+  10. **编辑距离的 oracle 不能用普通 BFS**：字符相同是 **0 权边**，全按 1 算会让 `"abc"→"abc"` 得 3。
+     要么 0-1 BFS（0 权 `appendleft`），要么干脆 DP。
+  11. 求 3×3 邻域和的二维前缀和，区间起点是 `i-1`（夹到 0）而不是 `i` —— 差一位的典型症状是
+     「中间格子对、右边界那列全少 1」。
+  12. 框架的 `verify()` 有 5 秒超时。**指数级实现会被逮出来**：曾有一道递推题的 alt 写成朴素递归
+     `go(n)=go(n-1)+go(n-2)+go(n-3)`，`n=40` 要 ~2.4e10 次调用，本机勉强过、`verify_bank` 直接 TLE。
+     alt 要么记忆化、要么迭代。
 
 ### ★ 技巧特训章（2026-10-18 晚建章，两线各 20 题；2026-10-19 各 +10 进阶；2026-10-19 晚 DS +4 插入维护；2026-10-20 DS +5 整行反转）
 

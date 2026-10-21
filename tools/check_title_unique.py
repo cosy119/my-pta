@@ -38,6 +38,14 @@ MODULES = [
     ("problems_bank_cpp_theory2", "CPP_THEORY2_PROBLEMS"),
     ("problems_bank_cpp_prog", "CPP_PROG_PROBLEMS"),
     ("problems_bank_cpp_tricks", "CPP_TRICKS_PROBLEMS"),
+    ("problems_bank_cpp_basic1", "CPP_BASIC1_PROBLEMS"),
+    ("problems_bank_cpp_basic2", "CPP_BASIC2_PROBLEMS"),
+    ("problems_bank_cpp_basic3", "CPP_BASIC3_PROBLEMS"),
+    ("problems_bank_cpp_basic4", "CPP_BASIC4_PROBLEMS"),
+    ("problems_bank_cpp_basic5", "CPP_BASIC5_PROBLEMS"),
+    ("problems_bank_cpp_basic6", "CPP_BASIC6_PROBLEMS"),
+    ("problems_bank_cpp_basic7", "CPP_BASIC7_PROBLEMS"),
+    ("problems_bank_cpp_basic8", "CPP_BASIC8_PROBLEMS"),
 ]
 
 

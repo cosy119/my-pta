@@ -93,6 +93,16 @@ except ImportError:                                          # pragma: no cover
     CPP_PROG_PROBLEMS = []
     CPP_TRICKS_PROBLEMS = []
 
+# C++ 基础编程题册（2026-10-21，按册生成，逐册可选 —— 单册缺失不该拖垮整线）
+CPP_BASIC_BANKS: list[list[dict]] = []
+for _n in range(1, 9):
+    try:
+        _mod = __import__("app.problems_bank_cpp_basic%d" % _n, fromlist=["x"])
+        CPP_BASIC_BANKS.append(getattr(_mod, "CPP_BASIC%d_PROBLEMS" % _n))
+    except Exception:                                        # pragma: no cover
+        pass
+CPP_BASIC_PROBLEMS = [p for b in CPP_BASIC_BANKS for p in b]
+
 # ★ CORE 必须并进来。它住在 `app/seed.py` 而不是 `problems_bank.py`，
 #   曾经因此完全落在对拍范围之外 —— SEED_PROBLEMS = CORE + BANK + DS + LINUX，
 #   而这里只验了 BANK，于是 CORE 那几道题**连单撞都没有**（2026-10-13 发现）。
@@ -103,7 +113,8 @@ LINES = (
     ("ds", "数据结构线（C/C++）", DS_PROBLEMS + DS_TRICKS_PROBLEMS
                                   + DS_THEORY_PROBLEMS + DS_PROG_PROBLEMS),
     ("cpp", "C++ 基础线", CPP_TRICKS_PROBLEMS + CPP_THEORY_PROBLEMS
-                          + CPP_THEORY2_PROBLEMS + CPP_PROG_PROBLEMS),
+                          + CPP_THEORY2_PROBLEMS + CPP_PROG_PROBLEMS
+                          + CPP_BASIC_PROBLEMS),
     ("linux", "Linux 线（理论题）", LINUX_PROBLEMS),
 )
 

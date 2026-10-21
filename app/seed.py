@@ -13,6 +13,14 @@ from __future__ import annotations
 from . import db, scoring
 from .question_types import infer as infer_question_type
 from .problems_bank import BANK_PROBLEMS
+from .problems_bank_cpp_basic1 import CPP_BASIC1_PROBLEMS
+from .problems_bank_cpp_basic2 import CPP_BASIC2_PROBLEMS
+from .problems_bank_cpp_basic3 import CPP_BASIC3_PROBLEMS
+from .problems_bank_cpp_basic4 import CPP_BASIC4_PROBLEMS
+from .problems_bank_cpp_basic5 import CPP_BASIC5_PROBLEMS
+from .problems_bank_cpp_basic6 import CPP_BASIC6_PROBLEMS
+from .problems_bank_cpp_basic7 import CPP_BASIC7_PROBLEMS
+from .problems_bank_cpp_basic8 import CPP_BASIC8_PROBLEMS
 from .problems_bank_cpp_prog import CPP_PROG_PROBLEMS
 from .problems_bank_cpp_theory import CPP_THEORY_PROBLEMS
 from .problems_bank_cpp_theory2 import CPP_THEORY2_PROBLEMS
@@ -216,6 +224,10 @@ SEED_PROBLEMS: list[dict] = (CORE_PROBLEMS + BANK_PROBLEMS
                              + DS_PROG_PROBLEMS
                              + CPP_TRICKS_PROBLEMS
                              + CPP_THEORY_PROBLEMS + CPP_THEORY2_PROBLEMS + CPP_PROG_PROBLEMS
+                             # C++ 基础编程题：把 C 语言知识点用 C++ 写法重练一遍
+                             + CPP_BASIC1_PROBLEMS + CPP_BASIC2_PROBLEMS + CPP_BASIC3_PROBLEMS
+                             + CPP_BASIC4_PROBLEMS + CPP_BASIC5_PROBLEMS + CPP_BASIC6_PROBLEMS
+                             + CPP_BASIC7_PROBLEMS + CPP_BASIC8_PROBLEMS
                              + LINUX_PROBLEMS)
 
 

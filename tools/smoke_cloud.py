@@ -238,11 +238,21 @@ def main() -> int:
     from app.problems_bank_cpp_theory2 import CPP_THEORY2_PROBLEMS  # noqa: E402
     from app.seed import CORE_PROBLEMS                          # noqa: E402
 
+    # C++ 基础编程题册（按册生成，逐册可选，单册缺失不拖垮冒烟）
+    CPP_BASIC_PROBLEMS: list[dict] = []
+    for _n in range(1, 9):
+        try:
+            _m = __import__("app.problems_bank_cpp_basic%d" % _n, fromlist=["x"])
+            CPP_BASIC_PROBLEMS += list(getattr(_m, "CPP_BASIC%d_PROBLEMS" % _n))
+        except Exception:
+            pass
+
     def ref_of(title: str) -> str:
         # ★ 技巧特训 / 理论题 / 编程精练章的题按分节名排在前头，会被「第一道 xx 题」选中——
         #   所以这里必须把各条附加库都搜进来（2026-10-18、10-19、10-21 各踩过一次）
         for p in (list(CPP_TRICKS_PROBLEMS) + list(CPP_PROG_PROBLEMS)
                   + list(CPP_THEORY_PROBLEMS) + list(CPP_THEORY2_PROBLEMS)
+                  + list(CPP_BASIC_PROBLEMS)
                   + list(DS_TRICKS_PROBLEMS) + list(PY_TRICKS_PROBLEMS)
                   + list(DS_THEORY_PROBLEMS) + list(PY_THEORY_PROBLEMS)
                   + list(DS_PROG_PROBLEMS) + list(PY_PROG_PROBLEMS)
