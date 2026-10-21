@@ -1491,15 +1491,22 @@ function langsOf(p){
    4. 数据装载
    ========================================================================= */
 async function loadMeta(){
-  try { META = await api('/api/meta'); }
+  try {
+    META = await api('/api/meta');
+    /* 在线：分节教学路径序号（与静态站同一份源 app/section_order.py） */
+    if (META && META.section_ranks) applySectionRanks(META.section_ranks);
+  }
   catch(e){ META = null; }
 }
 
+/* 题型顺序 = **作答难度顺序**（由易到难）：判断 → 单选 → 多选 → 填空 → 简答 → 实操 → 编程。
+   ★ 必须与后端 `app/question_types.py::LABELS` 的 dict 顺序一致
+     （`tools/check_question_type_order.py` 会校验前后端是否对齐）。 */
 const QUESTION_TYPES = [
-  {k:'single_choice', label:'单选题'}, {k:'multiple_choice', label:'多选题'},
-  {k:'true_false', label:'判断题'}, {k:'fill_blank', label:'填空题'},
-  {k:'short_answer', label:'简答题'}, {k:'programming', label:'编程题'},
-  {k:'practical', label:'实操题'}
+  {k:'true_false', label:'判断题'}, {k:'single_choice', label:'单选题'},
+  {k:'multiple_choice', label:'多选题'}, {k:'fill_blank', label:'填空题'},
+  {k:'short_answer', label:'简答题'}, {k:'practical', label:'实操题'},
+  {k:'programming', label:'编程题'}
 ];
 function questionTypeKey(p){
   if (QUESTION_TYPES.some(t => t.k === p.question_type)) return p.question_type;
@@ -1524,6 +1531,13 @@ function stars(n){
   return '<span class="stars">' + s + '</span>';
 }
 function pct(got, max){ return max > 0 ? Math.round(got * 100 / max) : 0; }
+/* 一组题的平均难度（分节标题上的「均难」标签） */
+function avgDifficulty(list){
+  if (!list || !list.length) return 0;
+  let s = 0;
+  for (const p of list) s += (parseInt(p.difficulty || 1, 10) || 1);
+  return s / list.length;
+}
 function stamp(s){
   const raw = String(s || '');
   if (/(Z|[+-]\d{2}:\d{2})$/.test(raw)) {
@@ -1558,7 +1572,9 @@ function buildLocalCatalog(){
   });
   const list = Object.keys(subs).map(k => {
     const s = subs[k];
-    s.sections = Object.keys(s.sections).map(n => s.sections[n]).sort((a,b) => lecOf(a.name) - lecOf(b.name) || a.name.localeCompare(b.name,'zh'));
+    /* 分组顺序：教学路径序号（不是讲次号 —— 见 rankOf 的注释） */
+    s.sections = Object.keys(s.sections).map(n => s.sections[n])
+      .sort((a,b) => rankOf(k, a.name) - rankOf(k, b.name));
     return s;
   }).sort((a,b) => orderOf(a.key) - orderOf(b.key));
   return { subjects: list,
@@ -1583,6 +1599,41 @@ function buildSubjSeq() {
 const SUBJECT_ORDER = { python:0, ds:1, cpp:2, linux:3 };
 const orderOf = k => (k in SUBJECT_ORDER ? SUBJECT_ORDER[k] : 9);
 function lecOf(name){ const m = /第\s*(\d+)\s*讲/.exec(String(name||'')); return m ? parseInt(m[1],10) : 0; }
+
+/* --- 分节教学路径序号 ---------------------------------------------------
+   ★ 为什么不直接用 `lecOf()` 排分组：
+     没有讲次号的分组（C++ 线的「C++ 编程 · X」、Linux 线的「命令特训 · X」）
+     一律返回 0，会被挤到所有讲次**前面**，彼此再按拼音排 —— 学习路径全乱。
+   ★ 序号表由后端 `app/section_order.py` 算好：
+     在线走 /api/meta 的 section_ranks，离线走 problems.json 的 section_ranks。
+     两边是同一份源（app/section_order.py），所以静态站和在线站顺序一致。
+*/
+let SECTION_RANKS = {};        // { 科目: { 分节名: 序号 } }
+function applySectionRanks(map){
+  if (!map || typeof map !== 'object') return;
+  SECTION_RANKS = map;
+}
+function rankOf(subject, section){
+  const m = SECTION_RANKS[String(subject || 'python')];
+  const v = m ? m[String(section || '')] : undefined;
+  /* 未登记的分节：垫底，但仍按讲次号排（比纯拼音好） */
+  return (v === undefined) ? 100000 + lecOf(section) : v;
+}
+/* 题目排序键：科目 → 分节教学路径 → 难度 → 录入序 */
+function problemOrderKey(p){
+  const diff = parseInt(p.difficulty || 1, 10) || 1;
+  return [ orderOf(p.subject || 'python'),
+           rankOf(p.subject, p.source_section),
+           diff,
+           parseInt(p.id || 0, 10) ];
+}
+function cmpProblem(a, b){
+  const ka = problemOrderKey(a), kb = problemOrderKey(b);
+  for (let i = 0; i < ka.length; i++){
+    if (ka[i] !== kb[i]) return ka[i] - kb[i];
+  }
+  return 0;
+}
 
 /* 进度字段统一：在线看 best_score/solved_at，离线看本地标记 */
 function bestOf(p){
@@ -1630,11 +1681,14 @@ async function loadProblems(){
         is_choice: !!(p.choices && p.choices.length),
         best_score: undefined, attempts: undefined, solved: undefined,
       }));
+      /* 离线：分节教学路径序号也在这份快照里（与在线同一份源） */
+      if (j.section_ranks) applySectionRanks(j.section_ranks);
     } catch(e2){ PROBLEMS = []; }
     OFFLINE = true;
   }
-  PROBLEMS.sort((a,b) => orderOf(a.subject||'python') - orderOf(b.subject||'python')
-    || lecOf(a.source_section) - lecOf(b.source_section) || a.id - b.id);
+  /* ★ 排序：科目 → 分节教学路径 → 难度 → 录入序
+     （后端 /api/problems 已经排好，这里再排一次是为了离线兜底时也一致） */
+  PROBLEMS.sort(cmpProblem);
   buildSubjSeq();
 }
 
@@ -1845,7 +1899,9 @@ function viewSet(subject){
     const k = p.source_section || '未分组';
     (groups[k] = groups[k] || []).push(p);
   });
-  const gnames = Object.keys(groups).sort((a,b) => lecOf(a) - lecOf(b) || a.localeCompare(b,'zh'));
+  /* ★ 分组顺序：教学路径序号；组内题目：难度升序（同难度按录入序） */
+  const gnames = Object.keys(groups).sort((a,b) => rankOf(subject, a) - rankOf(subject, b));
+  Object.keys(groups).forEach(k => groups[k].sort(cmpProblem));
   GNAMES = gnames;
 
   /* 筛选计数 */
@@ -1903,10 +1959,12 @@ function viewSet(subject){
     const gGot = groups[g].reduce((a,p) => a + bestOf(p), 0);
     const gMax = groups[g].reduce((a,p) => a + parseInt(p.total_score||0,10), 0);
     const gSolved = groups[g].filter(solvedOf).length;
+    const gAvg = avgDifficulty(groups[g]);
     const closed = CLOSED[g] === true;
     html += '<section class="grpbox' + (closed ? ' closed' : '') + '" data-g="' + escAttr(g) + '">'
       + '<div class="grpHead" role="button" tabindex="0" aria-expanded="' + !closed + '" onkeydown="if(event.key===\'Enter\'||event.key===\' \'){event.preventDefault();toggleGroup(' + gi + ')}" onclick="toggleGroup(' + gi + ')">'
       +   '<span class="tri">▼</span><span class="grpName">' + esc(g) + '</span>'
+      +   '<span class="pill" title="本组平均难度 ' + gAvg.toFixed(2) + '">均难 ' + gAvg.toFixed(1) + '</span>'
       +   '<span class="pill' + (gSolved === groups[g].length ? ' p-ok' : '') + '">'
       +     gSolved + ' / ' + groups[g].length + ' 已解决</span>'
       +   '<div class="grow">'

@@ -10,14 +10,18 @@ import re
 from typing import Any, Mapping
 
 
+#: 题型标签。**dict 的插入顺序 = 前端展示顺序 = 作答难度顺序**（由易到难）：
+#: 判断 → 单选 → 多选 → 填空 → 简答 → 实操 → 编程。
+#: 前端 `web/index.html` 的 `QUESTION_TYPES` 必须与本处保持一致
+#: （`tools/check_question_type_order.py` 会校验）。
 LABELS = {
+    "true_false": "判断题",
     "single_choice": "单选题",
     "multiple_choice": "多选题",
-    "true_false": "判断题",
     "fill_blank": "填空题",
     "short_answer": "简答题",
-    "programming": "编程题",
     "practical": "实操题",
+    "programming": "编程题",
 }
 
 

@@ -33,6 +33,8 @@ sys.path.insert(0, str(ROOT))
 
 import _console                                                   # noqa: E402
 from app import db, scoring, seed                             # noqa: E402
+from app.question_types import LABELS as QUESTION_TYPE_LABELS   # noqa: E402
+from app.section_order import ranks_from_db                    # noqa: E402
 
 WEB = ROOT / "web"
 DEFAULT_OUT = ROOT / "docs"
@@ -108,6 +110,11 @@ def build_bank(with_cases: bool = False) -> dict:
         "count": len(items),
         "total_score": sum(int(p["total_score"] or 0) for p in items),
         "total_testcases": sum(p["testcase_count"] for p in items),
+        # ★ 分节教学路径序号：静态站没有后端，前端要靠它排分组顺序
+        #   （与 /api/meta 返回的是同一份，源在 app/section_order.py）
+        "section_ranks": ranks_from_db(),
+        # ★ 题型展示顺序（由易到难）：静态站没有 /api/meta 也得知道顺序
+        "question_types": [{"key": k, "label": v} for k, v in QUESTION_TYPE_LABELS.items()],
         "items": items,
     }
 

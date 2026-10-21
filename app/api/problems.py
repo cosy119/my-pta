@@ -5,20 +5,16 @@
 """
 from __future__ import annotations
 
-import re
-
 from fastapi import APIRouter, Depends, HTTPException, Request
 
 from .. import config, db, users
 from ..question_types import LABELS as QUESTION_TYPE_LABELS
+from ..section_order import build_ranks, rank_of, ranks_from_db
 from ..seed import SUBJECT_LABELS
 
 router = APIRouter(prefix="/api", tags=["problems"])
 
-# 「第 03 讲 · 流程控制语句」→ 3；匹配不到就是 0（排在该科目的最前面）
-_LECTURE_RE = re.compile(r"第\s*(\d+)\s*讲")
-
-# 科目展示顺序：Python → 数据结构 → Linux
+# 科目展示顺序：Python → 数据结构 → C++ → Linux
 SUBJECT_ORDER = {"python": 0, "ds": 1, "cpp": 2, "linux": 3}
 
 # 题目的语言选项：由 `line` 推导出「这道题能用哪些语言提交」
@@ -48,16 +44,101 @@ def _subject_key(subject) -> int:
     return SUBJECT_ORDER.get(str(subject or "python"), 9)
 
 
-def _order_key(row: dict) -> tuple:
-    """学习顺序：先按**科目**，再按讲义讲次，最后按录入顺序。
+# 分节教学序号的缓存：{ (subject, section) -> rank }
+# 题目表变动不频繁，但 /api/problems 每次请求都要排序，所以缓存一份。
+_RANKS_CACHE: dict[tuple[str, str], int] | None = None
+_RANKS_STAMP: tuple | None = None
 
-    ★ 最后用 `id` 而不是 `difficulty`：题库是按「由易到难」的编排顺序录进去的，
-      再按难度排一次反而会把精心设计的顺序打乱
-      （而且 Linux 线里「基础命令 / 实验 N」这两组没有讲次号，本来就得靠 id 定序）。
+
+class _FastRanks:
+    """进程级快取：给「只想要序号表、不关心戳」的调用方用。
+
+    ★ `_section_ranks()` 每次调用都要打两次库（算戳 + 重建），
+      在排序这种「逐题调用」的场景里就是 1440 倍开销。
+      这里只缓存结果本身、不做失效检测 —— 题目表变动不频繁，
+      真变了重启后端即可（Render 每次部署本来就是新进程）。
     """
-    m = _LECTURE_RE.search(str(row.get("source_section") or ""))
-    lec = int(m.group(1)) if m else 0
-    return (_subject_key(row.get("subject")), lec, row["id"])
+
+    _data: dict | None = None
+
+    @classmethod
+    def get(cls) -> dict:
+        if cls._data is None:
+            cls._data = _section_ranks()
+        return cls._data
+
+    @classmethod
+    def reset(cls) -> None:
+        cls._data = None
+
+
+_RANKS_FAST = _FastRanks
+
+
+def _section_ranks() -> dict[tuple[str, str], int]:
+    """算出每个分节的「教学路径序号」。
+
+    ★ 为什么不用 `lecOf()`（从分节名抠「第 N 讲」）：
+      没有讲次号的分组（C++ 线的「C++ 编程 · X」、Linux 线的「命令特训 · X」）
+      一律返回 0，会被挤到所有讲次**前面**，彼此再按拼音排 —— 学习路径全乱。
+      详见 `app/section_order.py`。
+    """
+    global _RANKS_CACHE, _RANKS_STAMP
+    # ★ 戳用**轻量查询**：只取「已发布题数 + 最大 id + 难度总和」。
+    #   早先用 GROUP BY 算戳（题数/均难/最小 id），每次调用 74ms ——
+    #   而排序时会逐题调用，等于把接口从 0.4 秒拖到 64 秒。
+    light = db.query("""
+        SELECT COUNT(*) AS n, COALESCE(MAX(id), 0) AS mx,
+               COALESCE(SUM(COALESCE(difficulty, 0)), 0) AS ds
+        FROM problems WHERE status='published'
+    """)[0]
+    stamp = (light["n"], light["mx"], light["ds"])
+    if _RANKS_CACHE is not None and _RANKS_STAMP == stamp:
+        return _RANKS_CACHE
+
+    rows = db.query("""
+        SELECT subject, source_section AS sec, COUNT(*) AS n,
+               AVG(difficulty) AS av, MIN(id) AS mn
+        FROM problems WHERE status='published'
+        GROUP BY subject, source_section
+    """)
+    pairs = {(r["subject"] or "python", r["sec"] or "") for r in rows}
+    stats = {(r["subject"] or "python", r["sec"] or ""): float(r["av"] or 0) for r in rows}
+    _RANKS_CACHE = build_ranks(pairs, stats)
+    _RANKS_STAMP = stamp
+    return _RANKS_CACHE
+
+
+def section_ranks_payload() -> dict[str, dict[str, int]]:
+    """把分节序号摊成 ``{科目: {分节名: 序号}}``，方便前端直接 JSON 化。"""
+    out: dict[str, dict[str, int]] = {}
+    for (subject, section), rank in sorted(_section_ranks().items(), key=lambda kv: kv[1]):
+        out.setdefault(subject, {})[section] = int(rank)
+    return out
+
+
+def _order_key(row: dict, ranks: dict | None = None) -> tuple:
+    """学习顺序：科目 → 分节教学路径 → **难度** → 录入顺序。
+
+    ★ 为什么组内用 `difficulty` 而不是 `id`：
+      用户要「按难易程度排」，同一分节内就该从易到难。
+      同难度时用 `id` 兜底，保证顺序稳定（不会因为难度的细微调整而抖动）。
+
+    ★ `ranks` **强烈建议提前算好传进来**：
+      不传时走下面的进程级快取（几乎零成本）；
+      但如果每次都现查库（`_section_ranks()` 里那两次 SQL），
+      逐题调用 1440 次就是 **60 秒** —— 早期版本真踩过这个坑。
+    """
+    subject = str(row.get("subject") or "python")
+    section = str(row.get("source_section") or "")
+    if ranks is None:
+        ranks = _RANKS_FAST.get()
+    rank = rank_of(ranks, subject, section)
+    try:
+        diff = int(row.get("difficulty") or 1)
+    except (TypeError, ValueError):
+        diff = 1
+    return (_subject_key(subject), rank, diff, row["id"])
 
 
 @router.get("/me")
@@ -133,6 +214,8 @@ def meta():
         "langs": langs,
         "question_types": [{"key": k, "label": v} for k, v in QUESTION_TYPE_LABELS.items()],
         "subjects": [{"key": k, "label": v} for k, v in SUBJECT_LABELS.items()],
+        # ★ 分节教学路径序号：前端按它排分组顺序，静态站从 problems.json 取同一份
+        "section_ranks": section_ranks_payload(),
         "port": cfg.port,
         "db": str(cfg.db_path),
         "paths": {
@@ -201,13 +284,11 @@ def catalog(user: dict = Depends(current_user)):
             g["solved"] += 1
 
     out = []
+    ranks = _section_ranks()
     for key, s in subs.items():
         secs = list(s.pop("sections").values())
-        # 组内顺序：跟题库录入顺序一致（讲次号在前、其余按名字）
-        secs.sort(key=lambda x: (
-            int(_LECTURE_RE.search(x["name"]).group(1))
-            if _LECTURE_RE.search(x["name"]) else 0,
-            x["name"]))
+        # 组内顺序：按**分节教学路径**（讲次线 → 编程册 → 技巧特训 …）
+        secs.sort(key=lambda x: rank_of(ranks, key, x["name"]))
         s["sections"] = secs
         out.append(s)
     out.sort(key=lambda x: _subject_key(x["key"]))
@@ -259,6 +340,7 @@ def list_problems(line: str | None = None, status: str | None = None,
     sql += " ORDER BY p.id ASC"
 
     rows = db.query(sql, params)
+    ranks = _section_ranks()          # ★ 只算一次：逐题调用会打 1440 次库
     for r in rows:
         r["tags"] = db.jloads(r["tags"], [])
         r["choices"] = db.jloads(r["choices"], [])
@@ -266,7 +348,7 @@ def list_problems(line: str | None = None, status: str | None = None,
         r["score_label"] = "%d/%d" % (r["best_score"] or 0, r["total_score"] or 0)
         r["solved"] = bool(r["solved_at"])
         r["langs"] = lang_options_for(r["line"])
-    rows.sort(key=_order_key)          # ★ 按讲义讲次排序，循序渐进
+    rows.sort(key=lambda r: _order_key(r, ranks))   # ★ 科目 → 分节教学路径 → 难度 → 录入序
     return {"items": rows, "total": len(rows)}
 
 
