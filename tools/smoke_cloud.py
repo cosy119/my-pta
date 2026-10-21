@@ -220,7 +220,7 @@ def main() -> int:
         count, score = expected.get(subject, (0, 0))
         expected[subject] = (count + 1, score + int(p.get("total_score") or 100))
     check("目录与当前种子题库的题数及总分一致",
-          got == expected and set(got) == {"python", "ds", "linux"},
+          got == expected and set(got) == set(expected),
           "实际=%s 预期=%s" % (got, expected))
 
     # ---------- 5. ★ 真编真跑：C++ 与 Python 各来一发 ----------
@@ -231,13 +231,19 @@ def main() -> int:
     from app.problems_bank_py_theory import PY_THEORY_PROBLEMS  # noqa: E402
     from app.problems_bank_py_tricks import PY_TRICKS_PROBLEMS  # noqa: E402
     from app.problems_bank_py_prog import PY_PROG_PROBLEMS      # noqa: E402
-    from app.problems_bank_ds_prog import DS_PROG_PROBLEMS      # noqa: E402
+    from app.problems_bank_ds_prog import DS_PROG_PROBLEMS     # noqa: E402
+    from app.problems_bank_cpp_tricks import CPP_TRICKS_PROBLEMS  # noqa: E402
+    from app.problems_bank_cpp_prog import CPP_PROG_PROBLEMS   # noqa: E402
+    from app.problems_bank_cpp_theory import CPP_THEORY_PROBLEMS  # noqa: E402
+    from app.problems_bank_cpp_theory2 import CPP_THEORY2_PROBLEMS  # noqa: E402
     from app.seed import CORE_PROBLEMS                          # noqa: E402
 
     def ref_of(title: str) -> str:
         # ★ 技巧特训 / 理论题 / 编程精练章的题按分节名排在前头，会被「第一道 xx 题」选中——
-        #   所以这里必须把六本附加库也搜进来（2026-10-18、10-19 各踩过一次）
-        for p in (list(DS_TRICKS_PROBLEMS) + list(PY_TRICKS_PROBLEMS)
+        #   所以这里必须把各条附加库都搜进来（2026-10-18、10-19、10-21 各踩过一次）
+        for p in (list(CPP_TRICKS_PROBLEMS) + list(CPP_PROG_PROBLEMS)
+                  + list(CPP_THEORY_PROBLEMS) + list(CPP_THEORY2_PROBLEMS)
+                  + list(DS_TRICKS_PROBLEMS) + list(PY_TRICKS_PROBLEMS)
                   + list(DS_THEORY_PROBLEMS) + list(PY_THEORY_PROBLEMS)
                   + list(DS_PROG_PROBLEMS) + list(PY_PROG_PROBLEMS)
                   + list(DS_PROBLEMS) + list(CORE_PROBLEMS) + list(BANK_PROBLEMS)):

@@ -16,6 +16,7 @@ from .problems_bank import BANK_PROBLEMS
 from .problems_bank_cpp_prog import CPP_PROG_PROBLEMS
 from .problems_bank_cpp_theory import CPP_THEORY_PROBLEMS
 from .problems_bank_cpp_theory2 import CPP_THEORY2_PROBLEMS
+from .problems_bank_cpp_tricks import CPP_TRICKS_PROBLEMS
 from .problems_bank_ds import DS_PROBLEMS
 from .problems_bank_ds_prog import DS_PROG_PROBLEMS
 from .problems_bank_ds_theory import DS_THEORY_PROBLEMS
@@ -213,6 +214,7 @@ SEED_PROBLEMS: list[dict] = (CORE_PROBLEMS + BANK_PROBLEMS
                              + PY_PROG_PROBLEMS
                              + DS_PROBLEMS + DS_TRICKS_PROBLEMS + DS_THEORY_PROBLEMS
                              + DS_PROG_PROBLEMS
+                             + CPP_TRICKS_PROBLEMS
                              + CPP_THEORY_PROBLEMS + CPP_THEORY2_PROBLEMS + CPP_PROG_PROBLEMS
                              + LINUX_PROBLEMS)
 

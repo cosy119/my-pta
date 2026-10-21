@@ -257,13 +257,13 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（1117 题 / 13762 分 / 2205 测试点）
+## 题库（1137 题 / 14114 分 / 2325 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
 | `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(78 = 53 编程 + ext2 14 + bits 11) + `problems_bank_py_prog.py`(10) + `problems_bank_py_tricks.py`(30) + 理论 `problems_bank_py_theory.py`(66) + `problems_bank_py_theory2.py`(68 = 49 + 进制转换 14 + 异或 2 + 进制解析 3) | **255** | **3160** | python | Python |
 | `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(39) | **240** | **3486** | cpp | **C 或 C++ 任选** |
-| `cpp` | `problems_bank_cpp_theory.py`(111) + `problems_bank_cpp_theory2.py`(112) + `problems_bank_cpp_prog.py`(17) | **240** | **2605** | text / cpp | **C++ 基础线（12 讲，每讲 20 题）** |
+| `cpp` | `problems_bank_cpp_theory.py`(111) + `problems_bank_cpp_theory2.py`(112) + `problems_bank_cpp_prog.py`(17) + `problems_bank_cpp_tricks.py`(20) | **260** | **2957** | text / cpp | **C++ 基础线（12 讲各 20 题 + 技巧特训 20 题）** |
 | `linux` | `problems_bank_linux.py` | **382** | **4511** | text | 理论题（单选 / 多选 / 判断 / 填空）+ **实操题 203**（写命令） |
 
 - ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
@@ -279,12 +279,12 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   - **2026-10-19 晚大改**：实操题从「跑验收命令 → 填输出」改成「**给场景 → 写命令**」，
     并且从 15 道扩到 **203 道**（`tools/linux_cmd_bank.py`，见下面「★ 命令题」一节）。
     原因见那节开头 —— 旧形态考的是「会不会抄屏幕」，不是「会不会用命令」。
-- **题型分布（全库）**：编程 289 / 单选 355 / 实操 203 / 判断 114 / 填空 91 / 多选 47 / 简答 18。
+- **题型分布（全库）**：编程 309 / 单选 355 / 实操 203 / 判断 114 / 填空 91 / 多选 47 / 简答 18。
   Linux 线单独一份：单选 115 / 多选 8 / 判断 31 / 填空 25 / **实操 203** = 382 题。
-  C++ 基础线单独一份：单选 153 / 判断 29 / 编程 17 / 填空 20 / 多选 13 / 简答 8 = 240 题。
+  C++ 基础线单独一份：单选 153 / 编程 37 / 判断 29 / 填空 20 / 多选 13 / 简答 8 = 260 题。
   （这行跟着题库涨，别当常量用 —— 要准数就 `SELECT question_type, COUNT(*) FROM problems GROUP BY 1`。）
 
-### ★ C++ 基础线（2026-10-21 建线，240 题 / 2605 分）
+### ★ C++ 基础线（2026-10-21 建线，260 题 / 2957 分）
 
 第四条学科线，对应 Obsidian 的 `C++基础` 线（郑莉《C++语言程序设计》第5版，544 页 12 讲）。
 `subject = "cpp"`、`line = "text"`（理论）/ `"cpp"`（编程），前端题号前缀 **CP**。
@@ -329,6 +329,8 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `verify_bank.py --cpp` → **240 题 / 326 测试点 / 参考解 326 全过，alt 也全过**；
   `selftest_theory.py` → 732 道理论题、15 项全过（含 41 道多选穷举子集）；
   `export_static.py --with-cases` → `docs/problems.json` 1117 题 / 2205 测试点，四科齐全。
+  （★ 2026-10-21 晚加完「技巧特训 · C++」20 题后复验：**260 题 / 446 点 / 参考解 446 全过**，
+  全库 1137 题 / 14114 分 / 2325 点 —— 上面这组是建章当时的快照，别当现值。）
 
 - **笔记区也接进来了**（2026-10-21）：`tools/export_notes.py` 的 `LINES` 加 `("C++基础", "cpp", "C++ 基础")`、
   `TOP_DOCS` 加 `C++基础总览`；`LECTURE_DIR_RE` / `SECTION_RE` 都加了**可选 `Cpp` 前缀**
@@ -349,6 +351,44 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   ②从零重建库会再变一次字母，任何笔记里写死的字母会失效。
   想拉平只能重 seed；**别用 `sync_bank_cases.py` 单刷**——它只 `UPDATE testcases`（expected_stdout/explanation/is_sample），
   **不同步 `problems.choices`**，单独刷会把「字母」和「选项正文」拆开，直接变错题。
+
+### ★ 技巧特训 · C++（2026-10-21 建章，20 题 / 352 分）
+
+C++ 线的第二个附加章，与 DS 线那 39 道**刻意分工**：
+`gen_ds_tricks.py` 考的是**算法怎么实现**（背包 / 单调栈 / 二分答案 / LIS / 树状数组），
+本章考的是**用哪个 STL 设施、写哪一行** —— 同样是「有序数组里数个数」，
+DS 线让你手写二分，本章让你写 `upper_bound(...) - lower_bound(...)`。
+
+生成器 `tools/gen_cpp_tricks.py` → `app/problems_bank_cpp_tricks.py`（自动生成，不要手改）。
+难度 **1~4 各 5 题**，每题 6 个测试点（前 2 个是公开样例），合计 120 点 / 352 分。
+
+| 难度 | 主题 | 五道题 |
+|---|---|---|
+| 1 | 算法库一行流 | `count_if` 三问 / `lower_bound`+`upper_bound` 的差 / `rotate` 左旋 / `accumulate` 初值 `0LL` / `find` 切分逗号串 |
+| 2 | 排序三件事 | `stable_sort` 稳定性 / 严格弱序比较器 / `merge` 归并 / `priority_queue<greater>` 合并果子 / `stable_partition` |
+| 3 | 容器语义 | `set::insert` 的 bool / `map::emplace` 不覆盖 / `nth_element` 次序统计 / `copy_if`+`back_inserter` / `tuple` 字典序 |
+| 4 | 竞赛组合套路 | 双指针夹逼三数之和 / 扫描线并集长度 / `a+b<b+a` 拼最小数 / `partial_sum` 前缀和 / 大顶堆最少迟到任务 |
+
+- 每道题都写成「**先给正确的那几行，再点名错法**」：`>=` 破坏严格弱序、
+  `accumulate(…, 0)` 溢出、`abs(INT_MIN)`、`x % 2 == 1` 漏负奇数、
+  `middle` 不取模越界、`c.reserve` 与 `back_inserter` 的配合、`endl` 刷缓冲。
+- ★ 20 题**全部真编真跑**：40 份源码（参考解 + alt）先 `g++ -std=c++17 -O2 -fsyntax-only` 快速筛语法
+  （第一轮正好逮到 `string::find` 那题漏 `#include <iostream>`），再真编译，
+  120 点 × 2 套解**逐字节全等**（一次性对拍脚本 2 分 18 秒）。
+- ★ `alt` 全部换实现路径而不是改名：三次 `reverse` 换 `rotate`、手写二分换 `lower_bound`、
+  插入排序换 `stable_sort`、`multiset` 换 `priority_queue`、哈希换双指针、
+  事件扫描换区间合并、手写归并排序换 `std::sort`。
+- 挂载四处：`seed.py`（import + `SEED_PROBLEMS`，放 cpp 组最前、与 Python/DS 线一致）、
+  `verify_bank.py`（import + `LINES`）、`check_title_unique.py::MODULES`、
+  `smoke_cloud.py::ref_of`（**技巧章排前面，不加进去「第一道 cpp 题」会取不到参考解**）。
+  顺手修了 smoke_cloud 里一条**早就过时的断言** `set(got) == {"python","ds","linux"}` ——
+  加 cpp 线之后必挂，改成 `set(got) == set(expected)`。
+- 章名「技巧特训 · C++」与 DS 的「技巧特训 · C/C++」只差两个字符，前端按 `source_section` 精确匹配所以不会串，
+  但 `grep` 时两个都要带上。
+- 验收：`verify_bank.py --cpp` → **260 题 / 446 点 / 参考解 446 全过、alt 全过**；
+  `export_static.py --with-cases` → `docs/problems.json` **1137 题 / 14114 分 / 2325 点**；
+  `check_title_unique.py` → 1137 条标题、25 组重复**全是 `problems_bank` ↔ `py_bits`/`ext2` 的历史遗留**，
+  本章 20 个标题零撞车。
 
 ### ★ 技巧特训章（2026-10-18 晚建章，两线各 20 题；2026-10-19 各 +10 进阶；2026-10-19 晚 DS +4 插入维护；2026-10-20 DS +5 整行反转）
 

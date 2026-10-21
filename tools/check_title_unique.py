@@ -37,6 +37,7 @@ MODULES = [
     ("problems_bank_cpp_theory", "CPP_THEORY_PROBLEMS"),
     ("problems_bank_cpp_theory2", "CPP_THEORY2_PROBLEMS"),
     ("problems_bank_cpp_prog", "CPP_PROG_PROBLEMS"),
+    ("problems_bank_cpp_tricks", "CPP_TRICKS_PROBLEMS"),
 ]
 
 

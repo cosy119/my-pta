@@ -86,10 +86,12 @@ try:                                                         # C++ 基础线（2
     from app.problems_bank_cpp_theory import CPP_THEORY_PROBLEMS
     from app.problems_bank_cpp_theory2 import CPP_THEORY2_PROBLEMS
     from app.problems_bank_cpp_prog import CPP_PROG_PROBLEMS
+    from app.problems_bank_cpp_tricks import CPP_TRICKS_PROBLEMS
 except ImportError:                                          # pragma: no cover
     CPP_THEORY_PROBLEMS = []
     CPP_THEORY2_PROBLEMS = []
     CPP_PROG_PROBLEMS = []
+    CPP_TRICKS_PROBLEMS = []
 
 # ★ CORE 必须并进来。它住在 `app/seed.py` 而不是 `problems_bank.py`，
 #   曾经因此完全落在对拍范围之外 —— SEED_PROBLEMS = CORE + BANK + DS + LINUX，
@@ -100,8 +102,8 @@ LINES = (
                         + PY_BITS_PROBLEMS),
     ("ds", "数据结构线（C/C++）", DS_PROBLEMS + DS_TRICKS_PROBLEMS
                                   + DS_THEORY_PROBLEMS + DS_PROG_PROBLEMS),
-    ("cpp", "C++ 基础线", CPP_THEORY_PROBLEMS + CPP_THEORY2_PROBLEMS
-                          + CPP_PROG_PROBLEMS),
+    ("cpp", "C++ 基础线", CPP_TRICKS_PROBLEMS + CPP_THEORY_PROBLEMS
+                          + CPP_THEORY2_PROBLEMS + CPP_PROG_PROBLEMS),
     ("linux", "Linux 线（理论题）", LINUX_PROBLEMS),
 )
 
