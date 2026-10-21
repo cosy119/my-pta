@@ -346,6 +346,7 @@ C++ 线 17 个「C++ 编程 · X」和 Linux 线 12 个「命令特训 · X」�
 | `tools/selftest_sort_order.py` | 排序正确性（分组连续 / 组内难度升序 / 科目顺序）+ **性能预算** |
 | `tools/check_question_type_order.py` | 前后端题型顺序一致 |
 | `tools/ui_test_sort_order.mjs` | **真 Chrome** 验排序（离/在线两模式，各 18 项） |
+| `tools/ui_live_sort.mjs` | **真 Chrome 验线上部署结果**（直接打 `cosy119.github.io/my-pta/`，四个科目各验分组序号 / 组内难度 / 题号 / 均难标签） |
 
 ### ★ C++ 基础线（2026-10-21 建线，260 题 / 2957 分）
 
