@@ -34,7 +34,7 @@ sys.path.insert(0, str(ROOT))
 import _console                                                   # noqa: E402
 from app import db, scoring, seed                             # noqa: E402
 from app.question_types import LABELS as QUESTION_TYPE_LABELS   # noqa: E402
-from app.section_order import ranks_from_db                    # noqa: E402
+from app.section_order import SUBJECT_ORDER, ranks_from_db        # noqa: E402
 
 WEB = ROOT / "web"
 DEFAULT_OUT = ROOT / "docs"
@@ -104,6 +104,26 @@ def build_bank(with_cases: bool = False) -> dict:
         p["points_sum"] = sum(p["case_points"])
 
         items.append(p)
+
+    # ★ 导出时就按「科目 → 分节教学路径 → 难度 → 录入序」排好：
+    #   静态站没有后端，前端要自己排一遍才一致 —— 快照里直接排好，
+    #   前端拿到的顺序就与后端 /api/problems **逐条一致**（省掉前端那次重排）。
+    #   序号与后端用的是同一份表（app/section_order.py）。
+    section_ranks = ranks_from_db()
+
+    def _sort_key(p: dict) -> tuple:
+        subject = str(p.get("subject") or "python")
+        section = str(p.get("source_section") or "")
+        rank = (section_ranks.get(subject) or {}).get(section)
+        if rank is None:
+            rank = 100000
+        try:
+            diff = int(p.get("difficulty") or 1)
+        except (TypeError, ValueError):
+            diff = 1
+        return (SUBJECT_ORDER.get(subject, 9), int(rank), diff, int(p.get("id") or 0))
+
+    items.sort(key=_sort_key)
 
     return {
         "generated_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
