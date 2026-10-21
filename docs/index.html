@@ -1565,11 +1565,11 @@ function buildLocalCatalog(){
            user_score: list.reduce((x,s) => x + s.gained, 0),
            user_max_score: list.reduce((x,s) => x + s.max_score, 0) };
 }
-const SUBJECT_LABELS = { python:'Python 快乐编程基础入门', ds:'数据结构（C 语言版）', linux:'Linux 系统应用与开发' };
+const SUBJECT_LABELS = { python:'Python 快乐编程基础入门', ds:'数据结构（C 语言版）', cpp:'C++ 基础（语言程序设计）', linux:'Linux 系统应用与开发' };
 
 /* 各科目题号相互独立（2026-10-18）：按展示顺序（科目 → 讲次 → id）在科内从 1 编号，
    显示成 DS-01 / PY-01 / LX-01；全局 id 只作链接与进度键，不再当题号展示。 */
-const SUBJ_PREFIX = { python: 'PY', ds: 'DS', linux: 'LX' };
+const SUBJ_PREFIX = { python: 'PY', ds: 'DS', cpp: 'CP', linux: 'LX' };
 let SUBJ_SEQ = {};
 function buildSubjSeq() {
   SUBJ_SEQ = {};
@@ -1580,7 +1580,7 @@ function buildSubjSeq() {
     SUBJ_SEQ[p.id] = (SUBJ_PREFIX[s] || s.toUpperCase()) + '-' + String(cnt[s]).padStart(2, '0');
   });
 }
-const SUBJECT_ORDER = { python:0, ds:1, linux:2 };
+const SUBJECT_ORDER = { python:0, ds:1, cpp:2, linux:3 };
 const orderOf = k => (k in SUBJECT_ORDER ? SUBJECT_ORDER[k] : 9);
 function lecOf(name){ const m = /第\s*(\d+)\s*讲/.exec(String(name||'')); return m ? parseInt(m[1],10) : 0; }
 

@@ -13,6 +13,9 @@ from __future__ import annotations
 from . import db, scoring
 from .question_types import infer as infer_question_type
 from .problems_bank import BANK_PROBLEMS
+from .problems_bank_cpp_prog import CPP_PROG_PROBLEMS
+from .problems_bank_cpp_theory import CPP_THEORY_PROBLEMS
+from .problems_bank_cpp_theory2 import CPP_THEORY2_PROBLEMS
 from .problems_bank_ds import DS_PROBLEMS
 from .problems_bank_ds_prog import DS_PROG_PROBLEMS
 from .problems_bank_ds_theory import DS_THEORY_PROBLEMS
@@ -23,13 +26,15 @@ from .problems_bank_py_theory import PY_THEORY_PROBLEMS
 from .problems_bank_py_theory2 import PY_THEORY2_PROBLEMS
 from .problems_bank_py_tricks import PY_TRICKS_PROBLEMS
 
-# 三条件学线。`subject` 是**学科维度**（不是语言）：
+# 四条学习线。`subject` 是**学科维度**（不是语言）：
 #   python → Python 线（解释执行）
 #   ds     → 数据结构线（C / C++ 编译执行，教材是 C 语言版）
+#   cpp    → C++ 基础线（郑莉《C++语言程序设计》第5版，12 讲）
 #   linux  → Linux 线（理论题：选择 / 判断 / 命令填空）
 SUBJECT_LABELS = {
     "python": "Python 快乐编程基础入门",
     "ds": "数据结构（C 语言版）",
+    "cpp": "C++ 基础（语言程序设计）",
     "linux": "Linux 系统应用与开发",
 }
 
@@ -201,13 +206,14 @@ CORE_PROBLEMS: list[dict] = [
 ]
 
 
-# 全部种子题 = 核心题 + 三条线的题库（含各线的技巧特训章与理论题章）
-# 顺序就是前端默认展示顺序：Python → 数据结构 → Linux
+# 全部种子题 = 核心题 + 四条线的题库（含各线的技巧特训章与理论题章）
+# 顺序就是前端默认展示顺序：Python → 数据结构 → C++ 基础 → Linux
 SEED_PROBLEMS: list[dict] = (CORE_PROBLEMS + BANK_PROBLEMS
                              + PY_TRICKS_PROBLEMS + PY_THEORY_PROBLEMS + PY_THEORY2_PROBLEMS
                              + PY_PROG_PROBLEMS
                              + DS_PROBLEMS + DS_TRICKS_PROBLEMS + DS_THEORY_PROBLEMS
                              + DS_PROG_PROBLEMS
+                             + CPP_THEORY_PROBLEMS + CPP_THEORY2_PROBLEMS + CPP_PROG_PROBLEMS
                              + LINUX_PROBLEMS)
 
 

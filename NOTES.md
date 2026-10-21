@@ -257,12 +257,13 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（861 题 / 10985 分 / 1819 测试点）
+## 题库（1117 题 / 13762 分 / 2205 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
 | `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(78 = 53 编程 + ext2 14 + bits 11) + `problems_bank_py_prog.py`(10) + `problems_bank_py_tricks.py`(30) + 理论 `problems_bank_py_theory.py`(66) + `problems_bank_py_theory2.py`(68 = 49 + 进制转换 14 + 异或 2 + 进制解析 3) | **255** | **3160** | python | Python |
 | `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(39) | **240** | **3486** | cpp | **C 或 C++ 任选** |
+| `cpp` | `problems_bank_cpp_theory.py`(111) + `problems_bank_cpp_theory2.py`(112) + `problems_bank_cpp_prog.py`(17) | **240** | **2605** | text / cpp | **C++ 基础线（12 讲，每讲 20 题）** |
 | `linux` | `problems_bank_linux.py` | **382** | **4511** | text | 理论题（单选 / 多选 / 判断 / 填空）+ **实操题 203**（写命令） |
 
 - ★★ **CORE 住在 `seed.py` 而不是 `problems_bank.py`** —— `verify_bank` 曾经因此只验了 `BANK_PROBLEMS`，
@@ -278,9 +279,61 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   - **2026-10-19 晚大改**：实操题从「跑验收命令 → 填输出」改成「**给场景 → 写命令**」，
     并且从 15 道扩到 **203 道**（`tools/linux_cmd_bank.py`，见下面「★ 命令题」一节）。
     原因见那节开头 —— 旧形态考的是「会不会抄屏幕」，不是「会不会用命令」。
-- **题型分布（全库）**：编程 261 / 单选 200 / 多选 34 / 判断 84 / 填空 69 / 简答 10 / **实操 203**。
+- **题型分布（全库）**：编程 289 / 单选 355 / 实操 203 / 判断 114 / 填空 91 / 多选 47 / 简答 18。
   Linux 线单独一份：单选 115 / 多选 8 / 判断 31 / 填空 25 / **实操 203** = 382 题。
+  C++ 基础线单独一份：单选 153 / 判断 29 / 编程 17 / 填空 20 / 多选 13 / 简答 8 = 240 题。
   （这行跟着题库涨，别当常量用 —— 要准数就 `SELECT question_type, COUNT(*) FROM problems GROUP BY 1`。）
+
+### ★ C++ 基础线（2026-10-21 建线，240 题 / 2605 分）
+
+第四条学科线，对应 Obsidian 的 `C++基础` 线（郑莉《C++语言程序设计》第5版，544 页 12 讲）。
+`subject = "cpp"`、`line = "text"`（理论）/ `"cpp"`（编程），前端题号前缀 **CP**。
+
+**每讲固定 20 题**（二轮扩题后拉齐，循序渐进：讲内 difficulty 1→4，全库 1:22 / 2:72 / 3:97 / 4:49）：
+
+| 讲 | 题数 | | 讲 | 题数 | | 讲 | 题数 |
+|---|---|---|---|---|---|---|---|
+| 01 绪论 | 20 | | 05 数据的共享与保护 | 20 | | 09 模板与群体数据 | 20 |
+| 02 简单程序设计 | 20 | | 06 数组指针与字符串 | 20 | | 10 泛型程序设计与 STL | 20 |
+| 03 函数 | 20 | | 07 类的继承 | 20 | | 11 流类库与输入输出 | 20 |
+| 04 类与对象 | 20 | | 08 多态性 | 20 | | 12 异常处理 | 20 |
+
+- 二轮扩题（2026-10-21 下午）：理论 119 → 223（`_theory.py` 111 + `_theory2.py` 112），编程 17 不变；
+  新增 104 道里 **63 道答案由 `run_cpp()` 真跑反推**，其余为纯概念（生成器里逐题标「无计算」）。
+- ★★ **答案字母必须打散**：二轮扩题时 `_theory2` 出现过「80 道单选答案全在 A」——等于闭眼选 A 就满分。
+  已改为**按标题 sha256 取模的确定性轮转**（先转选项、再用值找位置），分布 A33 / B40 / C45 / D35，
+  并加两条 `_sanity()` 断言：任一字母占比 >40% 直接报错、解析里出现「选 X / 选项 X」字母引用直接报错。
+  **多选题**同步轮转，答案组合落在 ABC/ABD/ACD/BCD 多种。
+- 模块与生成器（都是「自动生成，不要手改」）：
+  `tools/gen_cpp_theory.py` → `app/problems_bank_cpp_theory.py`（01~06 讲 111 题）
+  `tools/gen_cpp_theory2.py` → `app/problems_bank_cpp_theory2.py`（07~12 讲 112 题）
+  `tools/gen_cpp_prog.py` → `app/problems_bank_cpp_prog.py`（17 道编程题）
+- **答案可信度**：生成阶段共调用 `run_cpp()` **118 次**（`gen_cpp_theory.py` 76 次 / `gen_cpp_theory2.py` 42 次，实测计数，
+  不是估的）——凡「这段代码输出什么 / sizeof 多少 / 构造析构顺序 / 字节数」的题，答案都是真编译真运行取回输出，
+  再拿输出到选项里反推字母（命中 0 次或多次直接中断生成）。纯概念题在生成器里逐题标「无计算」。
+  编程题 17 道全部「Python oracle 独立算期望 + solution/alt 双撞」，103 个测试点逐字节对拍。
+- 挂载点（**加新科目线要动五处，漏一处就有一半人看不到**）：
+  1. `app/seed.py`：三个 import + `SUBJECT_LABELS["cpp"]` + `SEED_PROBLEMS`（顺序 = 前端展示顺序）；
+  2. `tools/verify_bank.py`：import 三模块 + `LINES` 加 `("cpp", "C++ 基础线", ...)`；
+  3. `app/api/problems.py::SUBJECT_ORDER`：`cpp: 2`（linux 顺延到 3）；
+  4. `web/index.html`：`SUBJECT_LABELS` + `SUBJ_PREFIX`（`cpp: 'CP'`）+ `SUBJECT_ORDER` 三处；
+  5. `tools/selftest_theory.py::ALL_THEORY` 要并进新理论题，否则多选的「漏选必须判错」没人守。
+- 两个新工装（全线通用）：
+  - `tools/cpp_eval.py`：`run_cpp(src, stdin_text="")` 编译并运行一段 C++，返回 stdout（带 sha1 编译缓存）。
+    ★ `std_flags` 是**单个字符串整体传给 g++**，写 `-std=c++17 -fno-elide-constructors` 会被当成一个参数报错；
+    只想关拷贝消除时只传 `-fno-elide-constructors`。★ 不支持指定工作目录，需要落盘的实验自己写临时文件并清理。
+  - `tools/check_title_unique.py`：全模块标题查重（`seed.ensure()` 按标题判重且**静默跳过**，撞名不报错）。
+    ★ `--new` 后面的标题**必须逐个加引号**，否则按空格被拆成多个词，报「撞车 0 条」是假绿。
+    它报出的 25 组「已有重复」是 `problems_bank` / `py_bits` / `ext2` 之间的历史遗留，不是新引入的。
+- 验收（2026-10-21 实跑，扩题后复验）：
+  `verify_bank.py --cpp` → **240 题 / 326 测试点 / 参考解 326 全过，alt 也全过**；
+  `selftest_theory.py` → 732 道理论题、15 项全过（含 41 道多选穷举子集）；
+  `export_static.py --with-cases` → `docs/problems.json` 1117 题 / 2205 测试点，四科齐全。
+
+- **笔记区也接进来了**（2026-10-21）：`tools/export_notes.py` 的 `LINES` 加 `("C++基础", "cpp", "C++ 基础")`、
+  `TOP_DOCS` 加 `C++基础总览`；`LECTURE_DIR_RE` / `SECTION_RE` 都加了**可选 `Cpp` 前缀**
+  （`^(?:Cpp)?(\d{1,2})讲…`）—— 不加的话每条分节都会掉进「命名不规范 → sec=99」兜底分支。
+  现在笔记 639 篇 / 8.3 MB，四线：Linux 192 / Python 180 / 数据结构 108 / **C++ 159**（146 分节 + 12 索引 + 总览）。
 
 ### ★ 技巧特训章（2026-10-18 晚建章，两线各 20 题；2026-10-19 各 +10 进阶；2026-10-19 晚 DS +4 插入维护；2026-10-20 DS +5 整行反转）
 
@@ -945,12 +998,13 @@ editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_
 
 ## 2026-10-16 · 笔记区：Obsidian 480 篇讲义搬上静态站
 
-**目标**：把 `D:\work\Obsidian` 三条学习线的全部笔记（含习题、实验题库、代码解释）部署到
+**目标**：把 `D:\work\Obsidian` 四条学习线的全部笔记（含习题、实验题库、代码解释）部署到
 Pages，并且和题库双向互跳。
 
 **产出**：`tools/export_notes.py`（vault → 静态数据）+ `notes-src/index.js`（渲染器，
 esbuild 打包 **124.8 KB**）+ 前端 `#/notes` 路由 + `tools/ui_e2e_notes.mjs`（**29/29** 真浏览器）。
-480 篇 / 248.6 万字，`docs/notes` 共 **8.4 MB**（`search.json` 3.2 MB 是最大头，懒加载）。
+**2026-10-21 起 639 篇 / 283.5 万字**（加 C++ 基础线 159 篇），`docs/notes` 约 **8.3 MB**
+（`search.json` 3.6 MB 是最大头，懒加载）。
 
 ### ★ 三个坑（都真踩了）
 

@@ -47,11 +47,14 @@ from app.judge.runner_text import TextRunner, normalize_answer  # noqa: E402
 from app.problems_bank_linux import LINUX_PROBLEMS           # noqa: E402
 from app.problems_bank_py_theory import PY_THEORY_PROBLEMS    # noqa: E402
 from app.problems_bank_ds_theory import DS_THEORY_PROBLEMS    # noqa: E402
+from app.problems_bank_cpp_theory import CPP_THEORY_PROBLEMS  # noqa: E402
+from app.problems_bank_cpp_theory2 import CPP_THEORY2_PROBLEMS  # noqa: E402
 
 # ★ 2026-10-19：理论题不再只有 Linux 一条线。
 #   Python / 数据结构两线补了 127 道理论题，如果这里还只扫 LINUX_PROBLEMS，
 #   那批新题的「错答案必须判错」就完全没人守 —— 而单选题最危险的方向恰恰是判太宽。
-ALL_THEORY = LINUX_PROBLEMS + PY_THEORY_PROBLEMS + DS_THEORY_PROBLEMS
+ALL_THEORY = (LINUX_PROBLEMS + PY_THEORY_PROBLEMS + DS_THEORY_PROBLEMS
+              + CPP_THEORY_PROBLEMS + CPP_THEORY2_PROBLEMS)   # 2026-10-21 加 C++ 基础线
 
 PASSED: list[str] = []
 FAILED: list[str] = []
@@ -84,9 +87,10 @@ def find(keyword: str) -> dict | None:
 def main() -> int:
     print("=" * 78)
     print("理论题自测：正确答案判过 + 错误答案判错")
-    print("题目库：三线理论题 %d 题（Linux %d / Python %d / 数据结构 %d）"
+    print("题目库：四线理论题 %d 题（Linux %d / Python %d / 数据结构 %d / C++ 基础 %d）"
           % (len(ALL_THEORY), len(LINUX_PROBLEMS),
-             len(PY_THEORY_PROBLEMS), len(DS_THEORY_PROBLEMS)))
+             len(PY_THEORY_PROBLEMS), len(DS_THEORY_PROBLEMS),
+             len(CPP_THEORY_PROBLEMS) + len(CPP_THEORY2_PROBLEMS)))
     print("=" * 78)
 
     # ---------- 1 · 单选题：其余选项必须判错 ----------

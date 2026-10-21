@@ -51,10 +51,13 @@ def default_vault() -> Path:
     return Path(os.environ.get("PTA_NOTES_VAULT") or r"D:\work\Obsidian")
 
 # 三条学习线：目录名 → (线 key, 展示名)
+# ★ C++ 基础线（2026-10-21 加）：分节文件名带 `Cpp` 前缀（拆分工装 PREFIX_HUBS 的产物），
+#   下面两条正则都放了可选前缀，否则每个文件都会掉进「命名不规范 → sec=99」的兜底分支。
 LINES = [
     ("Linux学习", "linux", "Linux 学习"),
     ("Python学习", "py", "Python 学习"),
     ("数据结构学习", "ds", "数据结构学习"),
+    ("C++基础", "cpp", "C++ 基础"),
 ]
 
 # 顶层文档（不在任何「NN讲_XXX」目录里的那些）→ (线 key, slug 别名, 展示名)
@@ -66,6 +69,7 @@ TOP_DOCS = {
     "习题工具箱": ("py", "toolbox", "习题工具箱"),
     "数据结构学习总览": ("ds", "overview", "总览"),
     "代码解释": ("ds", "codeindex", "代码解释"),
+    "C++基础总览": ("cpp", "overview", "总览"),
 }
 
 CALLOUT_RE = re.compile(r"^>\s*\[!(\w+)\]\s*([+-]?)\s*(.*)$")
@@ -75,8 +79,8 @@ CALLOUT_RE = re.compile(r"^>\s*\[!(\w+)\]\s*([+-]?)\s*(.*)$")
 #   末尾可选多吃的那个 `]` 是源文件里多打的（`]]]`），一并收掉免得页面上冒出孤零零一个 `]`。
 WIKILINK_RE = re.compile(r"\[\[((?:[^\[\]]|\[[^\[\]]*\])+?)\]\]\]?")
 FENCE_RE = re.compile(r"^(\s*)(`{3,}|~{3,})\s*([^\s`]*)")
-LECTURE_DIR_RE = re.compile(r"^(\d{1,2})讲[_\s]*(.*)$")
-SECTION_RE = re.compile(r"^(\d{1,2})-(\d{1,2})")
+LECTURE_DIR_RE = re.compile(r"^(?:Cpp)?(\d{1,2})讲[_\s]*(.*)$")
+SECTION_RE = re.compile(r"^(?:Cpp)?(\d{1,2})-(\d{1,2})")
 
 # 前端折叠 callout 用的标记
 FOLD_MARKS = {"-": "fold", "+": "open", "": "open"}

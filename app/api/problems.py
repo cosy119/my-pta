@@ -19,7 +19,7 @@ router = APIRouter(prefix="/api", tags=["problems"])
 _LECTURE_RE = re.compile(r"第\s*(\d+)\s*讲")
 
 # 科目展示顺序：Python → 数据结构 → Linux
-SUBJECT_ORDER = {"python": 0, "ds": 1, "linux": 2}
+SUBJECT_ORDER = {"python": 0, "ds": 1, "cpp": 2, "linux": 3}
 
 # 题目的语言选项：由 `line` 推导出「这道题能用哪些语言提交」
 # ★ 数据结构线是重点：`cpp` 表示**编译型**，学生可以用 C **或** C++ 交，
