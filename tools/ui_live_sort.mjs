@@ -120,6 +120,65 @@ for (const s of SUBJ) {
   console.log(`   题号 ${r.codeFirst} → ${r.codeLast}（共 ${r.total} 题，递增 ${r.codeInc}）| 均难标签 ${r.avgLabels}/${r.groups}`);
 }
 
+/* ---- 排序方式：在线上切一次「难度」档，确认部署产物真的带这个功能 ---- */
+console.log('\n--- 排序方式（线上实测，cpp 线）---');
+await gotoWithRetry(`${SITE}#/set/cpp`);
+await page.waitForSelector('.grpbox');
+const sortCheck = await page.evaluate(async () => {
+  const snap = () => [...document.querySelectorAll('.grpbox')].map(b => ({
+    name: b.dataset.g,
+    codes: [...b.querySelectorAll('tbody tr td.c-no')].map(t => t.textContent.trim()),
+    diffs: [...b.querySelectorAll('tbody tr td.c-df')].map(td =>
+      [...td.querySelectorAll('.stars > *')].filter(e => !e.classList.contains('off')).length),
+  }));
+  const wait = ms => new Promise(r => setTimeout(r, ms));
+  const sel = document.getElementById('sortSelect');
+  if (!sel) return { error: '线上没有 #sortSelect（Pages 还没重建完？）' };
+
+  const opts = [...sel.options].map(o => o.textContent.trim());
+  const chapter = snap();
+  sel.value = 'difficulty'; sel.dispatchEvent(new Event('change')); await wait(500);
+  const up = snap();
+  sel.value = 'difficulty_desc'; sel.dispatchEvent(new Event('change')); await wait(500);
+  const dn = snap();
+  sel.value = 'chapter'; sel.dispatchEvent(new Event('change')); await wait(500);
+  const back = snap();
+
+  const asc = a => a.every((v, i) => i === 0 || v >= a[i - 1]);
+  const desc = a => a.every((v, i) => i === 0 || v <= a[i - 1]);
+  const chapterCodes = chapter.flatMap(g => g.codes).slice().sort();
+  const c2 = up[0] ? up[0].codes.slice().sort() : [];
+  return {
+    opts,
+    chapterGroups: chapter.length,
+    upGroups: up.length, upMono: up[0] ? asc(up[0].diffs) : false, upName: up[0]?.name || '',
+    dnGroups: dn.length, dnMono: dn[0] ? desc(dn[0].diffs) : false,
+    sameSet: JSON.stringify(chapterCodes) === JSON.stringify(c2),
+    backGroups: back.length,
+    backSame: back.map(g => g.name).join('|') === chapter.map(g => g.name).join('|'),
+  };
+});
+
+if (sortCheck.error) {
+  console.log('  [FAIL] ' + sortCheck.error);
+  fail++;
+} else {
+  const rows = [
+    ['排序下拉三档齐全', JSON.stringify(sortCheck.opts) === JSON.stringify(['按章节', '难度 易→难', '难度 难→易']), sortCheck.opts.join(' | ')],
+    ['按章节仍分组显示', sortCheck.chapterGroups > 1, sortCheck.chapterGroups + ' 组'],
+    ['难度 易→难 合并为单组', sortCheck.upGroups === 1, sortCheck.upGroups + ' 组｜' + sortCheck.upName],
+    ['难度 易→难 组内单调不减', sortCheck.upMono === true, ''],
+    ['难度 难→易 组内单调不增', sortCheck.dnMono === true, ''],
+    ['难度档题目集合与章节档一致', sortCheck.sameSet === true, ''],
+    ['切回按章节分组数复原', sortCheck.backGroups === sortCheck.chapterGroups, sortCheck.backGroups + ' vs ' + sortCheck.chapterGroups],
+    ['切回按章节顺序不变', sortCheck.backSame === true, ''],
+  ];
+  for (const [name, ok, extra] of rows) {
+    if (!ok) fail++;
+    console.log(`  [${ok ? 'PASS' : 'FAIL'}] ${name}${extra ? '  -- ' + extra : ''}`);
+  }
+}
+
 // Pages 静态站没有后端，/api/* 必然 404（前端自动降级），不算失败
 const apiMiss = notFound.filter(u => /\/api\//.test(u));
 const realMiss = notFound.filter(u => !/\/api\//.test(u));
