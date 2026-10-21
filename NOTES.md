@@ -327,6 +327,43 @@ C++ 线 17 个「C++ 编程 · X」和 Linux 线 12 个「命令特训 · X」�
 1. 在 `app/section_order.py` 的 `TRACKS` 里登记（漏登记会被 `check_section_order.py` 指出来）；
 2. 跑 `python tools/check_section_order.py`（覆盖检查）+ `python tools/selftest_sort_order.py`（排序与性能自检）。
 
+### ★ 排序方式（2026-10-21 晚加：按章节 / 按难度）
+
+顶栏「排序方式」下拉，三档，选择记在 `localStorage['pta.sortMode']`：
+
+| key | 文案 | 行为 |
+|---|---|---|
+| `chapter`（默认） | 按章节 | **分组**显示；组按教学路径序号、组内难度升序 |
+| `difficulty` | 难度 易→难 | **单条列表**，全科最容易的在前 |
+| `difficulty_desc` | 难度 难→易 | 单条列表，最难的在前 |
+
+- 后端：`GET /api/problems?sort=chapter|difficulty|difficulty_desc`（默认 `chapter`，未知值 **400**）。
+  键：`chapter` = `_order_key()`；难度档 = `_difficulty_key()` = 科目 → **难度** → 分节序号 → id。
+- 前端：`SORT_MODES`（`web/index.html`）、`cmpList()`、`setSortMode()`；难度档在 `viewSet()` 里合成单分组
+  （组名「全部题目 · 难度 易→难」，带 `SET.lecture` 时是「第 N 讲题目 · …」）。
+
+**★★ 三条必须守住的设计**
+
+1. **题号（CP-01 等）永远按章节序编，且不随排序方式变。** 它是稳定标识 —— 换排序就跳号的话，
+   收藏、错题本、分享链接、前后端对账全都对不上。`SUBJ_SEQ` 在 `PROBLEMS.sort(cmpProblem)` 之后
+   一次性建好，之后任何视图排序都只动副本（`filter()` / `slice()`），不前移 `PROBLEMS`。
+2. **难度档同难度内仍按章节序升序**（不是按录入序、也不是镜像倒序）。所以「易→难」与「难→易」
+   **只有难度序列互为镜像**，整表不是严格倒序 —— e2e 里就是按这个断言的，别再写错。
+3. **默认 `chapter` 的行为一字未改**：`check_sort_modes.py` 会逐条比对「改造后 `_sort_key` 默认档」
+   与「改造前 `_order_key`」，1440 条全等才算过。
+
+**校验脚本**
+
+| 脚本 | 作用 |
+|---|---|
+| `tools/check_section_order.py` | 分节表覆盖检查（库里有表里没有 / 表里有库里没有）+ 打印各科学习路径 |
+| `tools/selftest_sort_order.py` | 排序正确性（分组连续 / 组内难度升序 / 科目顺序）+ **性能预算** |
+| `tools/check_question_type_order.py` | 前后端题型顺序一致 |
+| `tools/check_sort_modes.py` | 排序方式：前后端 key 对齐 / 默认档不变 / 难度单调 / 同难度回落章节序 / 不丢不重 |
+| `tools/ui_test_sort_order.mjs` | **真 Chrome** 验排序（离/在线两模式，各 18 项） |
+| `tools/ui_test_sort_modes.mjs` | **真 Chrome** 验排序方式切换（离/在线各 23 项，含题号恒定性、刷新记忆） |
+| `tools/ui_live_sort.mjs` | **真 Chrome 验线上部署结果**（直接打 `cosy119.github.io/my-pta/`，四个科目各验分组序号 / 组内难度 / 题号 / 均难标签） |
+
 **★★ 一个坑：逐题调用排序键会打爆数据库**
 
 早期 `_order_key()` 内部调 `_section_ranks()`，而后者**每次调用都要打两次库**（算缓存戳 + 重建）。
@@ -337,16 +374,6 @@ C++ 线 17 个「C++ 编程 · X」和 Linux 线 12 个「命令特训 · X」�
 
 ★ **逻辑完全正确的代码也能慢 160 倍。排查性能问题第一步是计时，不是读代码。**
 ★ **缓存的戳计算不该比缓存的内容还贵。**
-
-**校验脚本**
-
-| 脚本 | 作用 |
-|---|---|
-| `tools/check_section_order.py` | 分节表覆盖检查（库里有表里没有 / 表里有库里没有）+ 打印各科学习路径 |
-| `tools/selftest_sort_order.py` | 排序正确性（分组连续 / 组内难度升序 / 科目顺序）+ **性能预算** |
-| `tools/check_question_type_order.py` | 前后端题型顺序一致 |
-| `tools/ui_test_sort_order.mjs` | **真 Chrome** 验排序（离/在线两模式，各 18 项） |
-| `tools/ui_live_sort.mjs` | **真 Chrome 验线上部署结果**（直接打 `cosy119.github.io/my-pta/`，四个科目各验分组序号 / 组内难度 / 题号 / 均难标签） |
 
 ### ★ C++ 基础线（2026-10-21 建线，260 题 / 2957 分）
 
@@ -900,6 +927,7 @@ C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
 | `check_section_order.py` | **覆盖 94/94** | 分节顺序表 `app/section_order.py` 的覆盖检查（库里有表里没有 / 表里有库里没有）+ 打印各科学习路径 |
 | `selftest_sort_order.py` | **8/8** | 排序正确性（科目顺序 / 分组连续 / 组内难度升序 / 序号表一致）+ **性能预算**（逐题 2 秒 / 整库 8 秒，见上面那个 64 秒的坑） |
 | `check_question_type_order.py` | **前后端一致** | 题型顺序（作答难度序）前后端逐字对齐 |
+| `check_sort_modes.py` | **全过** | 排序方式：前后端 key 对齐、**默认档与改造前逐条一致（1440/1440）**、难度档分科目单调、同难度回落章节序、三档不丢不重、未知档回落默认。库空时自动跳过语义检查（不因没 seed 红） |
 | `smoke_cloud.py` | **13/13** | **云端启动路径**：真起 `python run.py`（`PTA_CLOUD=1` + `$PORT`）、绑 0.0.0.0、三科目齐、**真编 C++ / 真跑 Python 各 AC 一次** |
 | `e2e_ui.py` | **33/33** | 端到端过 HTTP（**需先起服务**）。期望值（总分 / 题数 / 分组数 / 列表顺序 / 目标题 id）全部**从题库定义现算**，不写死。2026-10-16 修好，见文末 |
 | `ui_smoke.mjs` | **41/41** | jsdom 真渲染前端（离线 + 假后端两遍） |
@@ -912,6 +940,8 @@ C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
 | `httptest_mastery.py` | **39/39** | 收藏 / 掌握度 / 备注：增量更新不互相冲掉、**收藏不冒充做过（attempts 仍 0）**、错题由「做过但没满分」算出、多用户隔离、参数越界全 400、老接口不回归。自带起服务（测试库）+ 随机 token，可重复跑 |
 | `ui_e2e_wrongbook.mjs` | **23/23** | ★ **真 Chrome 测错题本**，两轮：① 在线（真 uvicorn + `/api` 反代）——点星、写备注、**刷新后备注还在**（= 真进库）、掌握度、题面收藏与备注、删备注归零；② 离线（只服务 `docs/`）——收藏与备注靠 localStorage，刷新不丢。零 JS 报错 |
 | `ui_test_sort_order.mjs` | **18/18 × 2 模式** | ★ **真 Chrome 测排序**：分组顺序 = 教学路径序号、编程册排在讲次之后、组内难度升序、题号随新顺序重编且严格递增、分组标题带「均难」、题型下拉按难度序、四条线都验。**离/在线各跑一遍**（在线用 `PTA_API_PORT` 把 `/api/` 反代到 uvicorn = 真实部署形态） |
+| `ui_test_sort_modes.mjs` | **23/23 × 2 模式** | ★ **真 Chrome 测排序方式切换**：默认按章节、切难度后单分组且难度单调、组名标方向、**题号在任何排序下恒定**（稳定标识）、切回章节顺序复原、**刷新后记住选择**、难度 + 题型筛选可叠加 |
+| `ui_live_sort.mjs` | **4/4 科目** | ★ **真 Chrome 验线上部署结果**（直打 `cosy119.github.io/my-pta/`）：四科分组序号递增 / 组内难度升序 / 题号递增 / 均难标签齐全 / 零真 JS 异常。静态站 `/api/*` 的 404 属预期，已与真异常分开统计 |
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
 | `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
 | `verify_bank.py` | **333 题 / 791 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |

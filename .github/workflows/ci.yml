@@ -37,6 +37,13 @@ jobs:
       - name: 题型分类与旧库补标自检
         run: python tools/test_question_types.py
 
+      # ★ 这两条都**不依赖题库状态**：前者纯静态比前后端题型顺序，
+      #   后者比前后端排序方式，库空时自动跳过排序语义检查（不会因没 seed 红掉）。
+      - name: 排序方式自检（前后端对齐 / 默认章节序不变）
+        run: |
+          python tools/check_question_type_order.py
+          python tools/check_sort_modes.py
+
       - name: 装 C/C++ 工具链（数据结构线用，ubuntu 自带 gcc/g++，这里只确认版本）
         run: gcc --version && g++ --version
 
@@ -77,6 +84,11 @@ jobs:
 
       - name: 题型分类与旧库补标自检
         run: python tools/test_question_types.py
+
+      - name: 排序方式自检（前后端对齐 / 默认章节序不变）
+        run: |
+          python tools/check_question_type_order.py
+          python tools/check_sort_modes.py
 
       - name: 沙箱自检（Windows 分支：Job Object）
         run: python tools/selftest_sandbox.py

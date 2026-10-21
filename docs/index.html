@@ -1009,6 +1009,7 @@ const LS = {
   draft:  p => 'pta.draft.' + p,
   local:  'pta.localProgress',
   seen:   'pta.lastProblem',
+  sort:   'pta.sortMode',
   /* 收藏 / 掌握度 / 备注的本地副本。★ 后端 mastery 表是权威，但写操作永远
      **先落本地**：静态站（GitHub Pages）根本没有后端，离线也得能收藏、能写备注。
      后端连上时再异步同步过去，同步失败只提示、不回滚 —— 用户刚写的东西不能消失。 */
@@ -1635,6 +1636,52 @@ function cmpProblem(a, b){
   return 0;
 }
 
+/* --- 排序方式 ---------------------------------------------------------
+   chapter         按章节（默认）：分组显示，组按教学路径、组内由易到难
+   difficulty      按难度（易 → 难）：不分章节，全科最容易的排前面
+   difficulty_desc 按难度（难 → 易）
+
+   ★ key 必须与后端 `app/api/problems.py::SORT_MODES` 对齐，
+     `tools/check_sort_modes.py` 守这条。
+   ★ 题号（CP-01 等）始终按**章节序**编好且不随排序方式变 ——
+     它得是稳定标识，否则换个排序题号就跳，收藏和记录全对不上。
+*/
+const SORT_MODES = [
+  { k: 'chapter',         label: '按章节' },
+  { k: 'difficulty',      label: '难度 易→难' },
+  { k: 'difficulty_desc', label: '难度 难→易' },
+];
+const SORT_KEYS = SORT_MODES.map(m => m.k);
+let SORT_MODE = 'chapter';
+try { const v = localStorage.getItem(LS.sort); if (SORT_KEYS.indexOf(v) >= 0) SORT_MODE = v; } catch(e){}
+
+function setSortMode(k){
+  if (SORT_KEYS.indexOf(k) < 0) return;
+  SORT_MODE = k;
+  try { localStorage.setItem(LS.sort, k); } catch(e){}
+  viewSet(SET.subject);
+}
+
+/* 难度序键：科目 → 难度 → 分节教学路径 → 录入序
+   （与后端 `_difficulty_key` 同一套规则，同难度回落教学路径） */
+function difficultyOrderKey(p, desc){
+  const diff = parseInt(p.difficulty || 1, 10) || 1;
+  return [ orderOf(p.subject || 'python'),
+           desc ? -diff : diff,
+           rankOf(p.subject, p.source_section),
+           parseInt(p.id || 0, 10) ];
+}
+function cmpList(a, b){
+  const k = (SORT_MODE === 'chapter') ? problemOrderKey(a)
+          : difficultyOrderKey(a, SORT_MODE === 'difficulty_desc');
+  const k2 = (SORT_MODE === 'chapter') ? problemOrderKey(b)
+          : difficultyOrderKey(b, SORT_MODE === 'difficulty_desc');
+  for (let i = 0; i < k.length; i++){
+    if (k[i] !== k2[i]) return k[i] - k2[i];
+  }
+  return 0;
+}
+
 /* 进度字段统一：在线看 best_score/solved_at，离线看本地标记 */
 function bestOf(p){
   if (p.best_score !== undefined && p.best_score !== null) return parseInt(p.best_score || 0, 10);
@@ -1893,15 +1940,27 @@ function viewSet(subject){
   const solved = all.filter(solvedOf).length;
   const att = all.filter(p => attemptsOf(p) > 0).length;
 
-  /* 分组 */
-  const groups = {};
-  all.forEach(p => {
-    const k = p.source_section || '未分组';
-    (groups[k] = groups[k] || []).push(p);
-  });
-  /* ★ 分组顺序：教学路径序号；组内题目：难度升序（同难度按录入序） */
-  const gnames = Object.keys(groups).sort((a,b) => rankOf(subject, a) - rankOf(subject, b));
-  Object.keys(groups).forEach(k => groups[k].sort(cmpProblem));
+  /* 分组 + 排序
+     ★ chapter：分组显示，组按教学路径序号、组内难度升序（同难度按录入序）
+     ★ 难度模式：分组就没意义了（同一难度会横跨所有章节）→ 整科一条列表
+  */
+  let groups, gnames;
+  if (SORT_MODE === 'chapter'){
+    groups = {};
+    all.forEach(p => {
+      const k = p.source_section || '未分组';
+      (groups[k] = groups[k] || []).push(p);
+    });
+    gnames = Object.keys(groups).sort((a,b) => rankOf(subject, a) - rankOf(subject, b));
+    Object.keys(groups).forEach(k => groups[k].sort(cmpProblem));
+  } else {
+    const arrow = (SORT_MODE === 'difficulty') ? '易→难' : '难→易';
+    const scope = SET.lecture ? ('第 ' + SET.lecture + ' 讲题目') : '全部题目';
+    const name = scope + ' · 难度 ' + arrow;
+    groups = {};
+    groups[name] = all.slice().sort(cmpList);
+    gnames = [name];
+  }
   GNAMES = gnames;
 
   /* 筛选计数 */
@@ -1940,11 +1999,15 @@ function viewSet(subject){
   html += '<div class="toolbar">'
     + FILTERS.map(f => '<button class="fbtn' + (FILTER === f.k ? ' on' : '') + '" onclick="setFilter(\'' + f.k + '\')">'
         + f.label + '<span class="n">' + cnt[f.k] + '</span></button>').join('')
-    + '<select class="typeSelect" aria-label="按题型筛选" onchange="setTypeFilter(this.value)">'
+    + '<select class="typeSelect" id="typeSelect" aria-label="按题型筛选" onchange="setTypeFilter(this.value)">'
     + '<option value="all">全部题型（' + all.length + '）</option>'
     + QUESTION_TYPES.map(t => { const n = all.filter(p => questionTypeKey(p) === t.k).length;
         return '<option value="' + t.k + '"' + (TYPE_FILTER === t.k ? ' selected' : '')
           + (n ? '' : ' disabled') + '>' + t.label + '（' + n + '）</option>'; }).join('')
+    + '</select>'
+    + '<select class="typeSelect" id="sortSelect" aria-label="排序方式" title="题目排列方式" onchange="setSortMode(this.value)">'
+    + SORT_MODES.map(m => '<option value="' + m.k + '"' + (SORT_MODE === m.k ? ' selected' : '') + '>'
+        + m.label + '</option>').join('')
     + '</select>'
     + '<div class="searchBox"><span aria-hidden="true">搜索</span>'
     + '<input id="qbox" placeholder="搜索题目标题 / 标签" value="' + escAttr(QUERY) + '" oninput="onQuery(this.value)"></div>'

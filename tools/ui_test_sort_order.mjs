@@ -156,10 +156,12 @@ try {
       n2.slice(0, 2).join(','));
   }
 
-  /* ---- 6. 题型下拉按难度顺序（判断 → 单选 → 多选 → 填空 → 简答 → 实操 → 编程）---- */
+  /* ---- 6. 题型下拉按难度顺序（判断 → 单选 → 多选 → 填空 → 简答 → 实操 → 编程）----
+     ★ 必须按 id 精确取：工具栏里现在有两个 .typeSelect（题型 + 排序方式），
+       用 class 取会把排序方式的选项也捞进来，断言就假失败。 */
   await page.goto(base + '#/set/cpp');
-  await page.waitForSelector('.typeSelect');
-  const typeOpts = await page.$$eval('.typeSelect option', os =>
+  await page.waitForSelector('#typeSelect');
+  const typeOpts = await page.$$eval('#typeSelect option', os =>
     os.map(o => o.textContent.replace(/（.*$/, '')).filter(t => t && t !== '全部题型'));
   const expectTypes = ['判断题', '单选题', '多选题', '填空题', '简答题', '实操题', '编程题'];
   check('题型下拉按作答难度排序',

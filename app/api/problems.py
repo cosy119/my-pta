@@ -44,6 +44,24 @@ def _subject_key(subject) -> int:
     return SUBJECT_ORDER.get(str(subject or "python"), 9)
 
 
+#: `/api/problems` 支持的排序方式。
+#:   chapter         —— 按章节（教学路径：科目 → 分节序号 → 组内难度 → 录入序），**默认**
+#:   difficulty      —— 按难度（易 → 难）：科目 → 难度 → 分节序号 → 录入序
+#:   difficulty_desc —— 按难度（难 → 易）：科目 → 难度倒序 → 分节序号 → 录入序
+#: ★ 前端 `web/index.html::SORT_MODES` 的 key 必须是这里的子集，
+#:   `tools/check_sort_modes.py` 守这条。
+SORT_MODES = ("chapter", "difficulty", "difficulty_desc")
+DEFAULT_SORT = "chapter"
+
+
+def _difficulty_of(row: dict) -> int:
+    """难度取值，脏数据一律当 1（最易），避免排序时 TypeError。"""
+    try:
+        return int(row.get("difficulty") or 1)
+    except (TypeError, ValueError):
+        return 1
+
+
 # 分节教学序号的缓存：{ (subject, section) -> rank }
 # 题目表变动不频繁，但 /api/problems 每次请求都要排序，所以缓存一份。
 _RANKS_CACHE: dict[tuple[str, str], int] | None = None
@@ -134,11 +152,36 @@ def _order_key(row: dict, ranks: dict | None = None) -> tuple:
     if ranks is None:
         ranks = _RANKS_FAST.get()
     rank = rank_of(ranks, subject, section)
-    try:
-        diff = int(row.get("difficulty") or 1)
-    except (TypeError, ValueError):
-        diff = 1
-    return (_subject_key(subject), rank, diff, row["id"])
+    return (_subject_key(subject), rank, _difficulty_of(row), row["id"])
+
+
+def _difficulty_key(row: dict, ranks: dict | None = None, desc: bool = False) -> tuple:
+    """难度序：科目 → 难度 → 分节教学路径 → 录入序。
+
+    ★ 与 `_order_key` 的差别只在**难度提到分节之前**：
+      章节序是「跟着教材走」（同一节内由易到难），
+      难度序是「横着刷题」（全科最容易的先做，同难度再按教材顺序）。
+
+    ★ 同难度为什么还要回落 `rank` + `id`：
+      只按难度排，同难度内顺序由 Python 的稳定排序决定 —— 取决于 SQL 出来的
+      原始顺序（`ORDER BY p.id`），结果是「按录入序」。这能跑，但一旦将来改了
+      上游查询的顺序，同难度内的排列就会悄悄变。显式写死 `rank, id` 才稳。
+    """
+    subject = str(row.get("subject") or "python")
+    if ranks is None:
+        ranks = _RANKS_FAST.get()
+    diff = _difficulty_of(row)
+    rank = rank_of(ranks, subject, row.get("source_section"))
+    return (_subject_key(subject), -diff if desc else diff, rank, row["id"])
+
+
+def _sort_key(row: dict, ranks: dict | None = None, mode: str = DEFAULT_SORT) -> tuple:
+    """统一入口：按 mode 选排序键。默认 `chapter` = 原来的行为，一字不改。"""
+    if mode == "difficulty":
+        return _difficulty_key(row, ranks, desc=False)
+    if mode == "difficulty_desc":
+        return _difficulty_key(row, ranks, desc=True)
+    return _order_key(row, ranks)
 
 
 @router.get("/me")
@@ -300,7 +343,14 @@ def catalog(user: dict = Depends(current_user)):
 def list_problems(line: str | None = None, status: str | None = None,
                   subject: str | None = None, q: str | None = None,
                   question_type: str | None = None,
+                  sort: str | None = None,
                   user: dict = Depends(current_user)):
+    # 排序方式：默认按章节，可选按难度（易→难 / 难→易）
+    mode = (sort or DEFAULT_SORT).strip().lower()
+    if mode not in SORT_MODES:
+        raise HTTPException(
+            status_code=400,
+            detail="未知排序方式：%s（可选：%s）" % (sort, " / ".join(SORT_MODES)))
     uid = int(user.get("id") or 0)
     sql = """
         SELECT p.id, p.subject, p.line, p.question_type, p.title, p.difficulty, p.tags,
@@ -348,8 +398,8 @@ def list_problems(line: str | None = None, status: str | None = None,
         r["score_label"] = "%d/%d" % (r["best_score"] or 0, r["total_score"] or 0)
         r["solved"] = bool(r["solved_at"])
         r["langs"] = lang_options_for(r["line"])
-    rows.sort(key=lambda r: _order_key(r, ranks))   # ★ 科目 → 分节教学路径 → 难度 → 录入序
-    return {"items": rows, "total": len(rows)}
+    rows.sort(key=lambda r: _sort_key(r, ranks, mode))   # 默认章节序，可按难度
+    return {"items": rows, "total": len(rows), "sort": mode}
 
 
 @router.get("/problems/{pid}")
