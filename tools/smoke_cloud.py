@@ -286,9 +286,10 @@ def main() -> int:
 
     st, plist = http("/api/problems?subject=python", base=base)
     items = (plist or {}).get("items") if isinstance(plist, dict) else None
-    py_item = (items or [None])[0]
+    # 科目列表包含理论题；按执行通道选编程题，不依赖章节排序。
+    py_item = next((x for x in (items or []) if str(x.get("line")) == "python"), None)
     if not py_item:
-        check("找到一道 Python 题用来试跑", False, str(plist)[:200])
+        check("找到一道 Python 编程题用来试跑", False, str(plist)[:200])
     else:
         code = ref_of(py_item["title"])
         if not code:
