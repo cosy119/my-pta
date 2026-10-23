@@ -21,8 +21,11 @@
 ----
     python tools/verify_bank.py              # 验全部题（三条线）
     python tools/verify_bank.py 素数          # 只验标题含「素数」的题
-    python tools/verify_bank.py --ds         # 只验数据结构线
     python tools/verify_bank.py --py         # 只验 Python 线
+    python tools/verify_bank.py --py --only 二进制统计
+                                             # 增量模式：标题/分节/标签任一命中才验
+                                             # （本地迭代用，全量留给 CI 兜底）
+    python tools/verify_bank.py --ds         # 只验数据结构线
     python tools/verify_bank.py --linux      # 只验 Linux 线
     python tools/verify_bank.py --quiet      # 只打印汇总和失败项
 """
@@ -224,6 +227,19 @@ def _lang_tag(p: dict) -> str:
     return _LANG_TAG.get(str(p.get("line") or "python").lower(), "?  ")
 
 
+def _match_only(p: dict, key: str) -> bool:
+    """--only 的命中规则：标题 / 分节 / 标签任一包含即命中。
+
+    比老的位置参数（只匹配标题）宽 —— 出题时一族题共用一个标签或分节，
+    一个词就能把整族捞出来做增量对拍。
+    """
+    if key in p["title"]:
+        return True
+    if key in str(p.get("section") or ""):
+        return True
+    return any(key in str(t) for t in (p.get("tags") or []))
+
+
 def pick_lines() -> list[tuple[str, str, list[dict]]]:
     """按命令行开关挑要验的线（都不写就全验）。"""
     want = [t for t, _n, _p in LINES if ("--" + t) in sys.argv]
@@ -236,12 +252,27 @@ def main() -> int:
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     quiet = "--quiet" in sys.argv
     key = args[0] if args else ""
+    # --only 增量模式：与位置参数等价，但匹配面更宽（标题/分节/标签）。
+    # 两者都给时取 --only（它是有意写的增量意图）。
+    only = None
+    if "--only" in sys.argv:
+        i = sys.argv.index("--only")
+        if i + 1 < len(sys.argv):
+            only = sys.argv[i + 1]
+    if only:
+        key = only
 
     lines = pick_lines()
     probs: list[tuple[int, dict]] = []
     for _tag, _name, bank in lines:
         for p in bank:
-            if not key or key in p["title"]:
+            if key and only:
+                hit = _match_only(p, key)
+            elif key:
+                hit = key in p["title"]
+            else:
+                hit = True
+            if hit:
                 probs.append((len(probs) + 1, p))
     if not probs:
         print("没有匹配的题目（检查一下筛选参数）")

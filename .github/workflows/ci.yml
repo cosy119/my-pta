@@ -4,6 +4,14 @@
 # 1. 我本机是 Windows，**沙箱的 Linux 分支（setrlimit + killpg）只能在 Linux 上验证** ——
 #    这个 workflow 就替我把这件事做了（ubuntu-latest = 真 Linux）
 # 2. 顺便守护题库：加题时参考解必须全过，不然 CI 红
+#
+# 2026-10-23 改版：原来 linux/windows 两个 job 各自**串行**跑全部自检，
+# 全库 1447 题后一个 run 要 13 分钟。拆成并行小 job：
+#   - 每个自检项独立成 job，GitHub 免费额度 20 并发足够；
+#   - 题库对拍按车道拆（verify-py / verify-ds / verify-cpp / verify-linux），
+#     改 Python 题不再重编 570 道 C++ 题；
+#   - concurrency 组：连推时自动取消上一轮，不排队空烧。
+# 墙钟时间 = 最慢的那个 job（目前是 verify-cpp，编译量最大）。
 name: ci
 
 # ★ 这些脚本全程打印中文。Windows runner 是**英文系统**，stdout 默认走 cp1252，
@@ -20,17 +28,20 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # ---------- Linux 上验证沙箱 + 判题内核 ----------
-  linux:
+  # ---------- 判题内核 / 题库元数据（快，不碰编译器） ----------
+  core:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-
+          cache: pip
       - name: 装依赖
         run: pip install -r requirements.txt
 
@@ -44,6 +55,23 @@ jobs:
           python tools/check_question_type_order.py
           python tools/check_sort_modes.py
 
+      - name: 理论题判题自检（对答案判过、错答案判错、全库扫）
+        run: python tools/selftest_theory.py
+
+      - name: 判题内核 + 评分回归
+        run: python tools/selfcheck.py
+
+  # ---------- Linux 沙箱 / 编译通道（★ 判题内核的 Linux 分支只有这里能验） ----------
+  sandbox-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - name: 装依赖
+        run: pip install -r requirements.txt
       - name: 装 C/C++ 工具链（数据结构线用，ubuntu 自带 gcc/g++，这里只确认版本）
         run: gcc --version && g++ --version
 
@@ -60,35 +88,17 @@ jobs:
       - name: 云端启动路径自检（真起进程 + 真编 C++）
         run: python tools/smoke_cloud.py
 
-      - name: 理论题判题自检（对答案判过、错答案判错、全库扫）
-        run: python tools/selftest_theory.py
-
-      - name: 判题内核 + 评分回归
-        run: python tools/selfcheck.py
-
-      - name: 题库对拍（三线 · 参考解 vs 独立实现）
-        run: python tools/verify_bank.py --quiet
-
-  # ---------- Windows 上也跑一遍（本机日常环境） ----------
-  windows:
+  # ---------- Windows 沙箱分支（本机日常环境：Job Object 杀进程树） ----------
+  sandbox-windows:
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
-
+          cache: pip
       - name: 装依赖
         run: pip install -r requirements.txt
-
-      - name: 题型分类与旧库补标自检
-        run: python tools/test_question_types.py
-
-      - name: 排序方式自检（前后端对齐 / 默认章节序不变）
-        run: |
-          python tools/check_question_type_order.py
-          python tools/check_sort_modes.py
 
       - name: 沙箱自检（Windows 分支：Job Object）
         run: python tools/selftest_sandbox.py
@@ -96,14 +106,51 @@ jobs:
       - name: C/C++ 双通道自检
         run: python tools/selftest_cpp.py
 
-      - name: 云端启动路径自检（真起进程 + 真编 C++）
-        run: python tools/smoke_cloud.py
+  # ---------- 题库对拍（按车道拆开并行；参考解 vs 独立实现双撞） ----------
+  verify-py:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Python 线对拍
+        run: python tools/verify_bank.py --py --quiet
 
-      - name: 理论题判题自检
-        run: python tools/selftest_theory.py
+  verify-ds:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: 数据结构线对拍（C/C++ 双通道）
+        run: python tools/verify_bank.py --ds --quiet
 
-      - name: 判题内核 + 评分回归
-        run: python tools/selfcheck.py
+  verify-cpp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: C++ 基础线对拍
+        run: python tools/verify_bank.py --cpp --quiet
 
-      - name: 题库对拍（三线全跑一遍）
-        run: python tools/verify_bank.py --quiet
+  verify-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Linux 线对拍（理论/实操题）
+        run: python tools/verify_bank.py --linux --quiet

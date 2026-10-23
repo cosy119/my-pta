@@ -52,11 +52,20 @@ node tools\ui_e2e_editor.mjs                &rem 真 Chrome 复验 63 项（必�
 
 ## CI（`.github/workflows/ci.yml`）
 
-两个 job：`linux`（ubuntu-latest）、`windows`（windows-latest），都跑 sandbox → cpp → theory → selfcheck → verify_bank。
+**2026-10-23 改版：拆成 7 个并行 job**（原来 linux/windows 各自串行跑全部，全库 1400+ 题后一个 run 13 分钟）：
 
+| job | 内容 |
+|---|---|
+| `core` | 题型分类 / 排序方式 / 理论判题 / 判题内核评分回归 |
+| `sandbox-linux` | 沙箱 Linux 分支（setrlimit+killpg，本机验不了）/ C++ 双通道 / smoke_cloud |
+| `sandbox-windows` | 沙箱 Job Object 分支 / C++ 双通道 |
+| `verify-py` / `verify-ds` / `verify-cpp` / `verify-linux` | 题库对拍按车道并行 |
+
+- 墙钟时间 = 最慢 job（verify-cpp 编译量最大）；`concurrency` 组连推自动取消上一轮。
 - ★ **顶层钉了 `PYTHONUTF8: "1"` + `PYTHONIOENCODING: utf-8`**。
   没有这两行时，Windows job 在**第一步就崩**（打印中文撞 cp1252），后面全部 skip —— 等于所有自检白加。
 - 查 CI 结果：本机 **`gh` 不可用**（报 `mise-shim: failed to execute mise`）→ 走 GitHub API + token 的 curl。
+  - token 取法：**`git credential fill`**（`.git-credentials` 里那个 gho_ 已 401）
   - job 列表：`GET /repos/{o}/{r}/actions/runs/{id}/jobs`
   - 某个 job 的日志：`GET /repos/{o}/{r}/actions/jobs/{job_id}/logs`，**用 `curl -sL`**：该接口 302 到 blob 存储，curl 在跨主机重定向时**会自动丢掉 Authorization**，正好是需要的；用 Python urllib 会因为把 token 带过去而 401。
 - 本机测不到的只有 **Linux 沙箱分支**（本机是 Windows；`/proc` 是模拟的；Docker 未装）→ 靠这个 workflow 验证。
@@ -1149,6 +1158,20 @@ editor-src/index.js  ──esbuild──▶  web/editor/editor.js  ──export_
 
 ## 数据工具
 
+- **出题提速三件套（2026-10-23 建，全库 1447 题后的效率改版）**：
+  - `tools/family_kit.py`：编程题 `expected_stdout` 写 `None` 占位 →
+    `python tools/family_kit.py derive app/problems_bank_py_xxx.py` 跑**参考解 vs alt_solution 对撞**，
+    逐字节一致才自动回填进源文件。替代了「每族手写 node oracle」的固定开销。
+    守门：ref 与 alt 源码相同直接拒绝（抄懒）；两套不一致拒绝且**一个字不改**；
+    `--var` 子集没覆盖文件里全部占位也拒绝（回填按文件占位顺序对齐，子集会错位）。
+    回填值归一成 `\n`（与判题端 compare 同款；Windows 管道会把 `\n` 翻成 `\r\n`，第一次实测就抓到）。
+    `check` 子命令只复核已有 expected 不改文件。自测样板：`data/_family_kit_selftest.py`（不进仓库）。
+  - `tools/verify_bank.py --only <词>`：增量对拍 —— 标题/分节/标签任一命中才验。
+    本地迭代一族题 5 分钟 → 8 秒；全量留给 CI 兜底。
+  - `tools/ship_batch.py`：一键出货 `--only <词> --add 路径... --msg "..." [--push]`。
+    串起 verify(--only) → 播种 → selftest_theory → test_question_types → export_static → add/commit。
+    ★ **绝不 `git add -A`**（两窗口共用仓库，另一窗口的 WIP 不能被卷进来）；
+    `--push` 走凭据管理器 token + openssl 后端，推完 `git ls-remote` 复核防假成功。
 - `tools/export_static.py`：导出 `docs/`（题库快照 + 前端 + `.nojekyll`；`web/editor/` 也会一起拷过去，2026-10-15 加）。
   **`--with-cases`**（2026-10-14 加）会把**完整测试点**一并写进 `problems.json`，
   前端本地判题就靠它。★ 不开这个开关时**不加 `cases` 键**，默认导出与历史产物**字节级一致**
