@@ -158,12 +158,15 @@ def main() -> int:
                            capture_output=True, text=True)
         if r.returncode != 0:
             print("  代理推不动，试直连 …")
-            r = subprocess.run(base + ["push", url, "main"],
+            # ★ 直连必须 -c http.proxy= 显式清空 —— 仓库 .git/config 里钉过代理时，
+            #   不清空的话「直连重试」其实还在走死代理（2026-10-23 实测踩到）。
+            r = subprocess.run(base + ["-c", "http.proxy=", "push", url, "main"],
                                capture_output=True, text=True)
         if r.returncode != 0:
             print(r.stdout[-400:], r.stderr[-400:])
             return die("推送失败（提交已在本地，修好网络后手动推）")
-        ls = subprocess.run(["git", "ls-remote", "origin", "main"],
+        ls = subprocess.run(["git", "-c", "http.proxy=", "ls-remote",
+                             "origin", "main"],
                             capture_output=True, text=True).stdout.split()[0]
         head = subprocess.run(["git", "rev-parse", "HEAD"],
                               capture_output=True, text=True).stdout.strip()
