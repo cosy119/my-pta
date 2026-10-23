@@ -24,7 +24,7 @@
   }
   function status(){const label=document.querySelector('.mobileKeyStatus');if(!label)return;const v=typeof smartEditor!=='undefined'?smartEditor?.view:null;const r=v?.state.selection.main;label.textContent=r?(r.empty?'光标：第 '+v.state.doc.lineAt(r.head).number+' 行':'已选 '+v.state.sliceDoc(r.from,r.to).length+' 个字符'):'符号可直接插入当前光标位置';}
   function keyboard(){
-    const box=document.getElementById('codeBox');if(!box||document.querySelector('.mobileKeyboard'))return;
+    const box=document.getElementById('codeBox');if(!box||!document.getElementById('codeEditor')||document.querySelector('.mobileKeyboard'))return;
     const panel=document.createElement('section');panel.className='mobileKeyboard compact';panel.setAttribute('aria-label','编程辅助键盘');
     const head=document.createElement('div');head.className='mobileKeyHead';const title=document.createElement('span');title.textContent='编程辅助键盘';head.append(title);
     const more=makeButton('更多',()=>{expanded=!expanded;panel.classList.toggle('compact',!expanded);more.textContent=expanded?'精简':'更多';more.setAttribute('aria-expanded',String(expanded));});more.setAttribute('aria-expanded','false');
