@@ -1,13 +1,18 @@
 # -*- coding: utf-8 -*-
-"""题库扩展（第四批）：二进制统计族（bincount）。
+"""题库扩展（第四批起）：用户点题的编程练习族合集。
+
+已收录族：
+- 二进制统计族（bincount）：数 1/0、补零、最多 1、汉明距离、位运算三兄弟、
+  只出现一次的数、2 的幂
+- 进制解析族（baseparse）：十六进制提取/剔除、二进制串解析、自动识别进制
+- 字符码点族（charcode）：大写/小写镜像、凯撒加密、大小写互换
 
 与 `problems_bank_ext2.py` 同一套约定：
 
-1. **顺序跟讲义走** —— 挂在「第 02 讲 · 编程基础」（bin()/位运算 5.5 节），
-   是 2026-10-20 用户点名的题型：「读一个数 → 转二进制去前缀 → 统计 1 和 0」
+1. **顺序跟讲义走** —— 各题挂在对应讲次分节
 2. **期望输出独立算** —— 全部 `expected_stdout` 由 **node 独立实现**预先算出
-   （`data/_oracle_py_bits.js`，手写除 2 取余，不走 toString(2)），
-   参考解只负责「撞」它，对不上就不入库
+   （`data/_oracle_py_*.js`，与 Python 参考解不同算法），参考解只负责「撞」它，
+   对不上就不入库
 3. **每题带 `alt_solution`** —— 参考解与第二套实现都要通过全部测试点
 """
 from __future__ import annotations
@@ -583,6 +588,233 @@ PY_BITS_PROBLEMS: list[dict] = [
              "explanation": "八进制 377 = 255，三行殊途同归"},
             {"stdin": "0\n", "expected_stdout": "0 0 0 0\n", "kind": "manual",
              "explanation": "单个 0：四种进制都是 0"},
+        ],
+    },
+    # ================================================================== #
+    # 字符码点族（charcode）：chr/ord 与字母表算术（第 04 讲 · 字符串）
+    # ================================================================== #
+    {
+        "title": "大写字母镜像",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": ["字符串", "chr", "ord", "码点算术"],
+        "source_section": "第 04 讲 · 字符串",
+        "statement_md": (
+            "读入一行字符串，把其中**大写字母**替换成字母表里「镜像位置」的字母"
+            "（A↔Z、B↔Y、C↔X……M↔N），其余字符原样保留，输出变换后的字符串。\n\n"
+            "核心一行：`chr(155 - ord(ch))`。`ord` 取码点、`chr` 变回字符，"
+            "155 = `ord('A') + ord('Z')` = 65 + 90——大写字母的码点关于 77.5 对称，"
+            "所以 155 减自己就是镜像位。这也顺手练了链式比较 `'A' <= ch <= 'Z'`。"
+        ),
+        "input_format": "一行字符串（长度 ≤ 100，可能含空格与符号）。",
+        "output_format": "一行：变换后的字符串。",
+        "constraints_md": "- 输入长度 ≤ 100",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "s = input()\n"
+            "ans = \"\"\n"
+            "for ch in s:\n"
+            "    if 'A' <= ch <= 'Z':\n"
+            "        ans += chr(155 - ord(ch))    # 155 = ord('A') + ord('Z')\n"
+            "    else:\n"
+            "        ans += ch\n"
+            "print(ans)\n"
+        ),
+        "alt_solution": (
+            "# 第二套：字母表查表，不算码点\n"
+            "s = input()\n"
+            "UPP = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n"
+            "ans = \"\"\n"
+            "for ch in s:\n"
+            "    i = UPP.find(ch)\n"
+            "    ans += UPP[25 - i] if i >= 0 else ch\n"
+            "print(ans)\n"
+        ),
+        "cases": [
+            {"stdin": "Hello, World!\n", "expected_stdout": "Sello, Dorld!\n",
+             "is_sample": 1, "kind": "sample",
+             "explanation": "H→S、W→D，小写与标点不动"},
+            {"stdin": "ABC\n", "expected_stdout": "ZYX\n", "kind": "manual",
+             "explanation": "A↔Z、B↔Y、C↔X"},
+            {"stdin": "az AZ 09\n", "expected_stdout": "az ZA 09\n", "kind": "manual",
+             "explanation": "小写 a~z 不参与，数字符号不动"},
+            {"stdin": "Zebra\n", "expected_stdout": "Aebra\n", "kind": "manual",
+             "explanation": "Z→A（镜像的另一端）"},
+            {"stdin": "MN\n", "expected_stdout": "NM\n", "kind": "manual",
+             "explanation": "正中间的两个字母互换：M↔N"},
+        ],
+    },
+    {
+        "title": "小写字母镜像",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": ["字符串", "chr", "ord", "码点算术"],
+        "source_section": "第 04 讲 · 字符串",
+        "statement_md": (
+            "读入一行字符串，把其中**小写字母**替换成字母表里「镜像位置」的字母"
+            "（a↔z、b↔y……m↔n），其余字符原样保留，输出变换后的字符串。\n\n"
+            "和大写镜像同一个戏法换张表：小写字母码点 97~122，对称和是 "
+            "`219 = ord('a') + ord('z')`，所以核心一行是 `chr(219 - ord(ch))`。"
+            "别把 155 抄过来——那是大写的和。"
+        ),
+        "input_format": "一行字符串（长度 ≤ 100）。",
+        "output_format": "一行：变换后的字符串。",
+        "constraints_md": "- 输入长度 ≤ 100",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "s = input()\n"
+            "ans = \"\"\n"
+            "for ch in s:\n"
+            "    if 'a' <= ch <= 'z':\n"
+            "        ans += chr(219 - ord(ch))    # 219 = ord('a') + ord('z')\n"
+            "    else:\n"
+            "        ans += ch\n"
+            "print(ans)\n"
+        ),
+        "alt_solution": (
+            "# 第二套：字母表查表\n"
+            "s = input()\n"
+            "LOW = \"abcdefghijklmnopqrstuvwxyz\"\n"
+            "ans = \"\"\n"
+            "for ch in s:\n"
+            "    i = LOW.find(ch)\n"
+            "    ans += LOW[25 - i] if i >= 0 else ch\n"
+            "print(ans)\n"
+        ),
+        "cases": [
+            {"stdin": "abc\n", "expected_stdout": "zyx\n", "is_sample": 1,
+             "kind": "sample", "explanation": "a↔z、b↔y、c↔x"},
+            {"stdin": "Hello\n", "expected_stdout": "Hvool\n", "kind": "manual",
+             "explanation": "H 大写不动，e→v、l→o、o→l"},
+            {"stdin": "Python 3\n", "expected_stdout": "Pbgslm 3\n", "kind": "manual",
+             "explanation": "P 不动，ython→bgslm，数字与空格照旧"},
+            {"stdin": "mn\n", "expected_stdout": "nm\n", "kind": "manual",
+             "explanation": "正中间互换：m↔n"},
+            {"stdin": "no digits: 123!\n", "expected_stdout": "ml wrtrgh: 123!\n",
+             "kind": "manual", "explanation": "d→w、i→r、g→t、t→g、s→h，标点数字不动"},
+        ],
+    },
+    {
+        "title": "凯撒加密",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 3,
+        "total_score": 12,
+        "tags": ["字符串", "chr", "ord", "取模回绕"],
+        "source_section": "第 04 讲 · 字符串",
+        "statement_md": (
+            "第一行读入位移量 `k`（1 ≤ k ≤ 25），第二行读入一行文本。"
+            "把文本里的字母**循环后移 k 位**（大小写各自内部循环：Z 后面绕回 A），"
+            "其余字符原样保留，输出加密结果。\n\n"
+            "镜像变换是「减法对称」，凯撒是「加法 + 取模回绕」：\n\n"
+            "`chr((ord(ch) - 65 + k) % 26 + 65)`\n\n"
+            "先减 `ord('A')` 变成 0~25 的序号，加 k 后对 26 取模——这就是「越界绕回」"
+            "的标准写法，竞赛里换字符的题全靠这个骨架。"
+        ),
+        "input_format": "第一行一个整数 `k`（1 ≤ k ≤ 25）；第二行一行文本（长度 ≤ 100）。",
+        "output_format": "一行：加密后的字符串。",
+        "constraints_md": "- 1 ≤ k ≤ 25，文本长度 ≤ 100",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "k = int(input())\n"
+            "s = input()\n"
+            "ans = \"\"\n"
+            "for ch in s:\n"
+            "    if 'A' <= ch <= 'Z':\n"
+            "        ans += chr((ord(ch) - 65 + k) % 26 + 65)\n"
+            "    elif 'a' <= ch <= 'z':\n"
+            "        ans += chr((ord(ch) - 97 + k) % 26 + 97)\n"
+            "    else:\n"
+            "        ans += ch\n"
+            "print(ans)\n"
+        ),
+        "alt_solution": (
+            "# 第二套：字母表查表 + 下标取模\n"
+            "k = int(input())\n"
+            "s = input()\n"
+            "UPP = \"ABCDEFGHIJKLMNOPQRSTUVWXYZ\"\n"
+            "LOW = \"abcdefghijklmnopqrstuvwxyz\"\n"
+            "ans = \"\"\n"
+            "for ch in s:\n"
+            "    i = UPP.find(ch)\n"
+            "    if i >= 0:\n"
+            "        ans += UPP[(i + k) % 26]\n"
+            "    else:\n"
+            "        j = LOW.find(ch)\n"
+            "        ans += LOW[(j + k) % 26] if j >= 0 else ch\n"
+            "print(ans)\n"
+        ),
+        "cases": [
+            {"stdin": "3\nabc xyz\n", "expected_stdout": "def abc\n", "is_sample": 1,
+             "kind": "sample", "explanation": "a→d、x→a（绕回）"},
+            {"stdin": "1\nZebra\n", "expected_stdout": "Afcsb\n", "kind": "manual",
+             "explanation": "Z 后移一位绕回 A"},
+            {"stdin": "25\nAttack at dawn\n", "expected_stdout": "Zsszbj zs czvm\n",
+             "kind": "manual", "explanation": "k=25 等价于整体前移一位，A→Z 反向绕回"},
+            {"stdin": "5\nHello, World!\n", "expected_stdout": "Mjqqt, Btwqi!\n",
+             "kind": "manual", "explanation": "大小写各自内部循环，标点不动"},
+            {"stdin": "13\nURYYB\n", "expected_stdout": "HELLO\n", "kind": "manual",
+             "explanation": "k=13 就是 ROT13——把 URYYB 解回 HELLO，密码学老朋友"},
+        ],
+    },
+    {
+        "title": "大小写互换字符版",
+        "line": "python",
+        "question_type": "programming",
+        "difficulty": 2,
+        "total_score": 10,
+        "tags": ["字符串", "chr", "ord", "大小写"],
+        "source_section": "第 04 讲 · 字符串",
+        "statement_md": (
+            "读入一行字符串，把**大写换小写、小写换大写**，其余字符不动，"
+            "输出结果（也就是 `str.swapcase()` 的手写版）。\n\n"
+            "同一段 ASCII 常识再练一遍：大小写码点正好差 32——"
+            "大写变小写 `chr(ord(ch) + 32)`，小写变大写 `chr(ord(ch) - 32)`。"
+            "手写一遍才知道 `swapcase()` 一行替你干了什么。"
+        ),
+        "input_format": "一行字符串（长度 ≤ 100）。",
+        "output_format": "一行：大小写互换后的字符串。",
+        "constraints_md": "- 输入长度 ≤ 100",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 256,
+        "checker": "standard",
+        "reference_solution": (
+            "s = input()\n"
+            "ans = \"\"\n"
+            "for ch in s:\n"
+            "    if 'A' <= ch <= 'Z':\n"
+            "        ans += chr(ord(ch) + 32)\n"
+            "    elif 'a' <= ch <= 'z':\n"
+            "        ans += chr(ord(ch) - 32)\n"
+            "    else:\n"
+            "        ans += ch\n"
+            "print(ans)\n"
+        ),
+        "alt_solution": (
+            "# 第二套：内置 swapcase 一行——手写完再体会它替你干了什么\n"
+            "print(input().swapcase())\n"
+        ),
+        "cases": [
+            {"stdin": "Hello, World!\n", "expected_stdout": "hELLO, wORLD!\n",
+             "is_sample": 1, "kind": "sample", "explanation": "字母互换，标点不动"},
+            {"stdin": "PyThOn3\n", "expected_stdout": "pYtHoN3\n", "kind": "manual",
+             "explanation": "交错大小写也照换"},
+            {"stdin": "123 !@\n", "expected_stdout": "123 !@\n", "kind": "manual",
+             "explanation": "没有字母，原样输出"},
+            {"stdin": "aBcDeF\n", "expected_stdout": "AbCdEf\n", "kind": "manual",
+             "explanation": "逐个互换"},
+            {"stdin": "ABC def\n", "expected_stdout": "abc DEF\n", "kind": "manual",
+             "explanation": "整段大写换小写、整段小写换大写"},
         ],
     },
 ]

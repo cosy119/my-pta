@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-10-21 20:11:16",
- "count": 1440,
- "total_score": 17890,
- "total_testcases": 4143,
+ "generated_at": "2026-10-23 15:10:03",
+ "count": 1447,
+ "total_score": 17962,
+ "total_testcases": 4166,
  "section_ranks": {
   "python": {
    "第 01 讲 · Python 开发入门": 0,
@@ -3465,6 +3465,49 @@
    "points_sum": 8
   },
   {
+   "id": 1461,
+   "subject": "python",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "ord 的返回值",
+   "difficulty": 1,
+   "total_score": 12,
+   "tags": [
+    "字符串",
+    "ord"
+   ],
+   "choices": [],
+   "statement_md": "表达式 `ord('a')` 的值是多少？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|97\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
    "id": 9,
    "subject": "python",
    "line": "python",
@@ -4361,6 +4404,311 @@
    "points_sum": 10
   },
   {
+   "id": 1456,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "大写字母镜像",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "字符串",
+    "chr",
+    "ord",
+    "码点算术"
+   ],
+   "choices": [],
+   "statement_md": "读入一行字符串，把其中**大写字母**替换成字母表里「镜像位置」的字母（A↔Z、B↔Y、C↔X……M↔N），其余字符原样保留，输出变换后的字符串。\n\n核心一行：`chr(155 - ord(ch))`。`ord` 取码点、`chr` 变回字符，155 = `ord('A') + ord('Z')` = 65 + 90——大写字母的码点关于 77.5 对称，所以 155 减自己就是镜像位。这也顺手练了链式比较 `'A' <= ch <= 'Z'`。",
+   "input_format": "一行字符串（长度 ≤ 100，可能含空格与符号）。",
+   "output_format": "一行：变换后的字符串。",
+   "constraints_md": "- 输入长度 ≤ 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 4169,
+     "ord": 0,
+     "stdin": "Hello, World!\n",
+     "expected_stdout": "Sello, Dorld!\n",
+     "explanation": "H→S、W→D，小写与标点不动"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "Hello, World!\n",
+     "expected_stdout": "Sello, Dorld!\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "ABC\n",
+     "expected_stdout": "ZYX\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "az AZ 09\n",
+     "expected_stdout": "az ZA 09\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "Zebra\n",
+     "expected_stdout": "Aebra\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "MN\n",
+     "expected_stdout": "NM\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 1457,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "小写字母镜像",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "字符串",
+    "chr",
+    "ord",
+    "码点算术"
+   ],
+   "choices": [],
+   "statement_md": "读入一行字符串，把其中**小写字母**替换成字母表里「镜像位置」的字母（a↔z、b↔y……m↔n），其余字符原样保留，输出变换后的字符串。\n\n和大写镜像同一个戏法换张表：小写字母码点 97~122，对称和是 `219 = ord('a') + ord('z')`，所以核心一行是 `chr(219 - ord(ch))`。别把 155 抄过来——那是大写的和。",
+   "input_format": "一行字符串（长度 ≤ 100）。",
+   "output_format": "一行：变换后的字符串。",
+   "constraints_md": "- 输入长度 ≤ 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 4174,
+     "ord": 0,
+     "stdin": "abc\n",
+     "expected_stdout": "zyx\n",
+     "explanation": "a↔z、b↔y、c↔x"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "abc\n",
+     "expected_stdout": "zyx\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "Hello\n",
+     "expected_stdout": "Hvool\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "Python 3\n",
+     "expected_stdout": "Pbgslm 3\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "mn\n",
+     "expected_stdout": "nm\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "no digits: 123!\n",
+     "expected_stdout": "ml wrtrgh: 123!\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 1459,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "大小写互换字符版",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "字符串",
+    "chr",
+    "ord",
+    "大小写"
+   ],
+   "choices": [],
+   "statement_md": "读入一行字符串，把**大写换小写、小写换大写**，其余字符不动，输出结果（也就是 `str.swapcase()` 的手写版）。\n\n同一段 ASCII 常识再练一遍：大小写码点正好差 32——大写变小写 `chr(ord(ch) + 32)`，小写变大写 `chr(ord(ch) - 32)`。手写一遍才知道 `swapcase()` 一行替你干了什么。",
+   "input_format": "一行字符串（长度 ≤ 100）。",
+   "output_format": "一行：大小写互换后的字符串。",
+   "constraints_md": "- 输入长度 ≤ 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 4184,
+     "ord": 0,
+     "stdin": "Hello, World!\n",
+     "expected_stdout": "hELLO, wORLD!\n",
+     "explanation": "字母互换，标点不动"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "Hello, World!\n",
+     "expected_stdout": "hELLO, wORLD!\n",
+     "points": 2
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "PyThOn3\n",
+     "expected_stdout": "pYtHoN3\n",
+     "points": 2
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "123 !@\n",
+     "expected_stdout": "123 !@\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "aBcDeF\n",
+     "expected_stdout": "AbCdEf\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "ABC def\n",
+     "expected_stdout": "abc DEF\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    2,
+    2,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 10
+  },
+  {
+   "id": 1460,
+   "subject": "python",
+   "line": "text",
+   "question_type": "single_choice",
+   "title": "码点镜像求值",
+   "difficulty": 2,
+   "total_score": 10,
+   "tags": [
+    "字符串",
+    "chr",
+    "ord",
+    "码点算术"
+   ],
+   "choices": [
+    "'X'",
+    "'W'",
+    "'C'",
+    "抛 ValueError"
+   ],
+   "statement_md": "表达式 `chr(155 - ord('C'))` 的值是多少？",
+   "input_format": "",
+   "output_format": "一个选项字母（`A`~`D`）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|A\n",
+     "points": 10
+    }
+   ],
+   "case_points": [
+    10
+   ],
+   "points_sum": 10
+  },
+  {
    "id": 650,
    "subject": "python",
    "line": "text",
@@ -4447,6 +4795,139 @@
     12
    ],
    "points_sum": 12
+  },
+  {
+   "id": 1458,
+   "subject": "python",
+   "line": "python",
+   "question_type": "programming",
+   "title": "凯撒加密",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "字符串",
+    "chr",
+    "ord",
+    "取模回绕"
+   ],
+   "choices": [],
+   "statement_md": "第一行读入位移量 `k`（1 ≤ k ≤ 25），第二行读入一行文本。把文本里的字母**循环后移 k 位**（大小写各自内部循环：Z 后面绕回 A），其余字符原样保留，输出加密结果。\n\n镜像变换是「减法对称」，凯撒是「加法 + 取模回绕」：\n\n`chr((ord(ch) - 65 + k) % 26 + 65)`\n\n先减 `ord('A')` 变成 0~25 的序号，加 k 后对 26 取模——这就是「越界绕回」的标准写法，竞赛里换字符的题全靠这个骨架。",
+   "input_format": "第一行一个整数 `k`（1 ≤ k ≤ 25）；第二行一行文本（长度 ≤ 100）。",
+   "output_format": "一行：加密后的字符串。",
+   "constraints_md": "- 1 ≤ k ≤ 25，文本长度 ≤ 100",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 256,
+   "checker": "standard",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 5,
+   "samples": [
+    {
+     "id": 4179,
+     "ord": 0,
+     "stdin": "3\nabc xyz\n",
+     "expected_stdout": "def abc\n",
+     "explanation": "a→d、x→a（绕回）"
+    }
+   ],
+   "hidden_count": 4,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": true,
+     "stdin": "3\nabc xyz\n",
+     "expected_stdout": "def abc\n",
+     "points": 3
+    },
+    {
+     "ord": 1,
+     "is_sample": false,
+     "stdin": "1\nZebra\n",
+     "expected_stdout": "Afcsb\n",
+     "points": 3
+    },
+    {
+     "ord": 2,
+     "is_sample": false,
+     "stdin": "25\nAttack at dawn\n",
+     "expected_stdout": "Zsszbj zs czvm\n",
+     "points": 2
+    },
+    {
+     "ord": 3,
+     "is_sample": false,
+     "stdin": "5\nHello, World!\n",
+     "expected_stdout": "Mjqqt, Btwqi!\n",
+     "points": 2
+    },
+    {
+     "ord": 4,
+     "is_sample": false,
+     "stdin": "13\nURYYB\n",
+     "expected_stdout": "HELLO\n",
+     "points": 2
+    }
+   ],
+   "case_points": [
+    3,
+    3,
+    2,
+    2,
+    2
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1462,
+   "subject": "python",
+   "line": "text",
+   "question_type": "true_false",
+   "title": "镜像变换做两次等于没做",
+   "difficulty": 3,
+   "total_score": 8,
+   "tags": [
+    "字符串",
+    "chr",
+    "ord",
+    "对合"
+   ],
+   "choices": [
+    "对",
+    "错"
+   ],
+   "statement_md": "对大写字母连续做两次 `chr(155 - ord(ch))`，结果恢复成原字符——镜像加密自己做自己的解密。",
+   "input_format": "",
+   "output_format": "`对` 或 `错`（写 `正确`/`√`/`T` 也认）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "第 04 讲 · 字符串",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": true,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|对\n|正确\n|√\n|T\n",
+     "points": 8
+    }
+   ],
+   "case_points": [
+    8
+   ],
+   "points_sum": 8
   },
   {
    "id": 3,
