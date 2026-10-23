@@ -1,6 +1,7 @@
-import { EditorState, Compartment, Prec } from '@codemirror/state';
+import { EditorState, EditorSelection, Compartment, Prec } from '@codemirror/state';
 import { EditorView, keymap, lineNumbers, highlightActiveLine, highlightActiveLineGutter, drawSelection } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap, indentMore, indentLess } from '@codemirror/commands';
+import { isolateHistory, undo, redo, cursorCharLeft, cursorCharRight, cursorLineUp, cursorLineDown, cursorLineStart, cursorLineEnd, selectCharLeft, selectCharRight, selectLineUp, selectLineDown, selectLineStart, selectLineEnd, insertNewlineAndIndent, deleteCharBackward } from '@codemirror/commands';
 import { indentOnInput, bracketMatching, defaultHighlightStyle, syntaxHighlighting, indentUnit } from '@codemirror/language';
 import { python } from '@codemirror/lang-python';
 import { cpp } from '@codemirror/lang-cpp';
@@ -86,6 +87,26 @@ export function mountEditor({ parent, doc, lang, onChange }) {
   });
   return {
     getValue: () => view.state.doc.toString(),
+    mobileEdit(action, value, selecting = false) {
+      if (!['undo','redo'].includes(action)) view.dispatch({annotations:isolateHistory.of('full')});
+      const moves = selecting
+        ? {left:selectCharLeft,right:selectCharRight,up:selectLineUp,down:selectLineDown,home:selectLineStart,end:selectLineEnd}
+        : {left:cursorCharLeft,right:cursorCharRight,up:cursorLineUp,down:cursorLineDown,home:cursorLineStart,end:cursorLineEnd};
+      const command = moves[action] || {indent:indentMore,outdent:indentLess,undo,redo,newline:insertNewlineAndIndent,backspace:deleteCharBackward}[action];
+      if (command) command(view);
+      else if (action === 'insert') {
+        const pairs = {'(' : ')', '[' : ']', '{' : '}', '"' : '"', "'" : "'"};
+        const close = pairs[value];
+        view.dispatch({ ...view.state.changeByRange(range => {
+          const selected = view.state.sliceDoc(range.from, range.to);
+          const insert = value + (close ? selected + close : '');
+          return {changes:{from:range.from,to:range.to,insert}, range:close
+            ? EditorSelection.range(range.from + value.length, range.from + value.length + selected.length)
+            : EditorSelection.cursor(range.from + insert.length)};
+        }), userEvent:'input.mobile', scrollIntoView:true });
+      }
+      view.focus();
+    },
     setLanguage(next) {
       if (next === currentLang) return;
       currentLang = next;
