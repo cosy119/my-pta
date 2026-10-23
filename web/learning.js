@@ -25,6 +25,7 @@ const Learning = (() => {
  const session=()=>state.session&&!state.session.done?state.session:null;
  const btn=(t,js)=>'<button class="btn ghost" onclick="'+js+'">'+t+'</button>';
  function home(){
+  if(window.CodeLab?.route())return;
   if(window.Snippets?.route())return;
   if(window.LearnTools?.route())return;
   const resultId=location.hash.split('/results/')[1];
@@ -41,7 +42,7 @@ const Learning = (() => {
    <div class="eyebrow">YOUR STUDY ROUTINE</div><h1>学习中心</h1>
    <div class="learnToday"><div><h2>${count?'今日待复习 '+count+' 题':'今日复习已完成'}</h2><p class="hintline">${count?'每轮最多'+(state.plan?.dailyLimit||20)+'题，答对后按下次日期安排回顾。':'可以开始一组新题，或回顾之前的练习。'}</p></div>
    <div class="btnrow">${count?btn('开始今日复习','Learning.start(true)'):btn('练一组新题',"document.getElementById('learnSetup').scrollIntoView({behavior:'smooth'})")}${ss?btn('继续上次练习','Learning.resume()')+btn('结束本轮并查看总结','Learning.finish()'):''}</div></div>
-   <nav class="learnLinks"><a href="#/learn/stats">学习周报</a><a href="#/learn/calendar">复习日历</a><a href="#/learn/print">打印复习单</a><a href="#/learn/tasks">评测任务</a><a href="#/learn/snippets">代码片段库</a></nav><section id="learnSetup"><h2>组一份练习</h2><div class="learnFields">
+   <nav class="learnLinks"><a href="#/learn/stats">学习周报</a><a href="#/learn/calendar">复习日历</a><a href="#/learn/print">打印复习单</a><a href="#/learn/tasks">评测任务</a><a href="#/learn/snippets">代码片段库</a><a href="#/learn/lab">代码实验室</a></nav><section id="learnSetup"><h2>组一份练习</h2><div class="learnFields">
    <label>科目<select id="lSubject">${subjectOptions()}</select></label>
    <label>章节<select id="lChapter"></select></label><label>题数<input id="lCount" type="number" min="1" max="100" value="10"></label>
    <label>模式<select id="lMode"><option value="practice">连续练习</option><option value="exam">模拟考试（逐题提交）</option><option value="batch">考试（统一交卷评测）</option></select></label>
@@ -75,7 +76,7 @@ const Learning = (() => {
  }
  function fingerprint(){
   const b=oldBundle(),notes=Object.fromEntries(Object.entries(state.notes||{}).map(([k,n])=>[k,n]));
-  const text=JSON.stringify({local:b.local,drafts:b.drafts,mastery:b.mastery,submissions:b.submissions,review:state.review,tags:state.tags,notes,session:state.session,history:state.history,plan:state.plan,cases:state.testCases,jobs:state.jobs,snippets:state.snippets});
+  const text=JSON.stringify({local:b.local,drafts:b.drafts,mastery:b.mastery,submissions:b.submissions,review:state.review,tags:state.tags,notes,session:state.session,history:state.history,plan:state.plan,cases:state.testCases,jobs:state.jobs,snippets:state.snippets,labDraft:state.labDraft,labExperiments:state.labExperiments});
   let hash=2166136261;for(let i=0;i<text.length;i++){hash^=text.charCodeAt(i);hash=Math.imul(hash,16777619);}return (hash>>>0).toString(16);
  }
  function backupText(){return '最近导出：'+(state.backup?new Date(state.backup).toLocaleString():'尚未导出')+' · '+(state.backupHash===fingerprint()?'当前学习数据已备份':'有新学习数据待备份（含成绩、草稿和标注）');}
