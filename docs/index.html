@@ -932,6 +932,7 @@ button,input,select,textarea{font-family:inherit}button,a,input,select,summary{t
 :root[data-theme="dark"] .notesView{--codeBg:#202a2e;--hl-key:#d2ade8;--hl-str:#aad3ad;--hl-com:#9aaca7;--hl-num:#e1bd8c;--hl-fn:#a6c5ed;--hl-bi:#e1d19f;--hl-var:#ecb3b8}
 </style>
 <link rel="stylesheet" href="mobile.css?v=20261023-1">
+<link rel="stylesheet" href="snippets.css?v=20261023-1">
 </head>
 <body>
 
@@ -986,7 +987,7 @@ async function initSmartEditor(problemId){
           光把变量清空、再 import 同一个地址，它连请求都不发。
        所以失败时既清缓存，也换个 URL 再试（?retry=N）。成功后就固定在没后缀的那个。 */
     if (!smartEditorLoad) {
-      const url = './editor/editor.js?v=20261023-1' + (smartEditorTry ? '&retry=' + smartEditorTry : '');
+      const url = './editor/editor.js?v=20261023-snippets1' + (smartEditorTry ? '&retry=' + smartEditorTry : '');
       smartEditorLoad = import(url).catch(err => { smartEditorLoad = null; smartEditorTry++; throw err; });
     }
     const { mountEditor } = await smartEditorLoad;
@@ -3920,9 +3921,10 @@ document.addEventListener('keydown', e => {
 });
 
 </script>
-<script src="learning.js?v=20261021-tools1"></script>
-<script src="learning-tools.js?v=20261023-mobile1"></script>
+<script src="learning.js?v=20261023-snippets1"></script>
+<script src="learning-tools.js?v=20261023-snippets1"></script>
 <script src="mobile.js?v=20261023-2"></script>
+<script src="snippets.js?v=20261023-1"></script>
 <script>boot(false);
 </script>
 </body>

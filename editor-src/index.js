@@ -87,6 +87,10 @@ export function mountEditor({ parent, doc, lang, onChange }) {
   });
   return {
     getValue: () => view.state.doc.toString(),
+    insertSnippet(text) {
+      view.dispatch({...view.state.replaceSelection(text),annotations:isolateHistory.of('full'),userEvent:'input.snippet',scrollIntoView:true});
+      view.focus();
+    },
     mobileEdit(action, value, selecting = false) {
       if (!['undo','redo'].includes(action)) view.dispatch({annotations:isolateHistory.of('full')});
       const moves = selecting
