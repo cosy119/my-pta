@@ -116,7 +116,7 @@ const LearnTools = (() => {
     const host=document.getElementById('caseResults');host.textContent='正在运行 '+cases.length+' 组用例…';let html='';
     for(let i=0;i<cases.length;i++){
       try{let r;if(!OFFLINE)r=await api('/api/run',{method:'POST',body:{code,lang,stdin:cases[i].input,interpreter:lang==='python'?'py313':lang==='c'?'gcc':'gpp'}});else r=p.line==='python'?await PythonLocal.run(code,cases[i].input):await CppLocal.run(code,lang,cases[i].input);
-        const actual=String(r.stdout??''),ok=!r.stderr&&actual.replace(/\r\n/g,'\n').trimEnd()===cases[i].expected.replace(/\r\n/g,'\n').trimEnd();html+='<details open><summary>用例 '+(i+1)+' · '+(ok?'通过':'输出不同或运行失败')+'</summary>'+Learning.diff(cases[i].expected,actual)+(r.stderr?'<pre>'+E(r.stderr)+'</pre>':'')+'</details>';
+        const actual=String(r.stdout??''),success=(r.verdict==='OK'||(!r.verdict&&r.ok===true))&&r.ok!==false,ok=success&&actual.replace(/\r\n/g,'\n').trimEnd()===cases[i].expected.replace(/\r\n/g,'\n').trimEnd();html+='<details open><summary>用例 '+(i+1)+' · '+(ok?(actual===cases[i].expected?'通过':'通过（末尾空白或换行格式有差异）'):success?'输出不同':'运行失败：'+E(r.verdict||'IE'))+'</summary>'+(window.RunCheck?RunCheck.pair(actual,cases[i].expected,'预期输出（用例 '+(i+1)+'）',true):Learning.diff(cases[i].expected,actual))+(r.compile_output?'<pre>'+E(r.compile_output)+'</pre>':'')+(r.detail||r.message?'<p>'+E(r.detail||r.message)+'</p>':'')+(r.stderr?'<pre>'+E(r.stderr)+'</pre>':'')+'</details>';
       }catch(e){html+='<p>用例 '+(i+1)+' · '+E(e.message||e)+'</p>';}
       if(SET.view==='p'&&CUR?.id===p.id&&host.isConnected)host.innerHTML=html;
     }

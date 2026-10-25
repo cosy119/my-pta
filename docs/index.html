@@ -934,6 +934,7 @@ button,input,select,textarea{font-family:inherit}button,a,input,select,summary{t
 <link rel="stylesheet" href="mobile.css?v=20261023-1">
 <link rel="stylesheet" href="snippets.css?v=20261023-1">
 <link rel="stylesheet" href="lab.css?v=20261023-1">
+<link rel="stylesheet" href="run-check.css?v=20261025-1">
 </head>
 <body>
 
@@ -3775,7 +3776,7 @@ function progressBundle(){
   try {
     for (let i = 0; i < localStorage.length; i++){
       const k = localStorage.key(i);
-      if (k && (/^pta\.draft\.\d+$/.test(k) || /^pta\.practice\.(note|stdin)\.\d+$/.test(k))){
+      if (k && (/^pta\.draft\.\d+$/.test(k) || /^pta\.practice\.(note|stdin|expected|expectedMode)\.\d+$/.test(k))){
         const v = localStorage.getItem(k);
         if (v) drafts[k] = v;
       }
@@ -3865,7 +3866,7 @@ function importProgress(ev){
     /* 草稿：只在本地还没有时补，不覆盖正在写的内容 */
     let sk = 0;
     if (b.drafts) Object.keys(b.drafts).forEach(k => {
-      if (!/^pta\.draft\.\d+$/.test(k) && !/^pta\.practice\.(note|stdin)\.\d+$/.test(k)) return;
+      if (!/^pta\.draft\.\d+$/.test(k) && !/^pta\.practice\.(note|stdin|expected|expectedMode)\.\d+$/.test(k)) return;
       try { if (localStorage.getItem(k) === null && typeof b.drafts[k] === 'string'){ localStorage.setItem(k, b.drafts[k]); sk++; } } catch(e){}
     });
     /* 通行证：这份文件本来就是为了「把这台设备变成那台设备」才导出的，
@@ -3923,10 +3924,11 @@ document.addEventListener('keydown', e => {
 
 </script>
 <script src="learning.js?v=20261023-lab1"></script>
-<script src="learning-tools.js?v=20261023-lab1"></script>
+<script src="learning-tools.js?v=20261025-run1"></script>
 <script src="mobile.js?v=20261023-2"></script>
 <script src="snippets.js?v=20261023-1"></script>
 <script src="lab.js?v=20261023-1"></script>
+<script src="run-check.js?v=20261025-1"></script>
 <script>boot(false);
 </script>
 </body>
