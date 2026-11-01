@@ -80,6 +80,11 @@ except ImportError:                                          # pragma: no cover
     PY_PROG_PROBLEMS = []
     DS_PROG_PROBLEMS = []
 
+try:                                                         # 链表专题（PTA 经典，2026-11-01）
+    from app.problems_bank_ds_list import DS_LIST_PROBLEMS
+except ImportError:                                          # pragma: no cover
+    DS_LIST_PROBLEMS = []
+
 try:                                                         # 二进制统计族（Python 线，2026-10-20）
     from app.problems_bank_py_bits import PY_BITS_PROBLEMS
 except ImportError:                                          # pragma: no cover
@@ -114,7 +119,8 @@ LINES = (
                         + PY_THEORY_PROBLEMS + PY_THEORY2_PROBLEMS + PY_PROG_PROBLEMS
                         + PY_BITS_PROBLEMS),
     ("ds", "数据结构线（C/C++）", DS_PROBLEMS + DS_TRICKS_PROBLEMS
-                                  + DS_THEORY_PROBLEMS + DS_PROG_PROBLEMS),
+                                  + DS_THEORY_PROBLEMS + DS_PROG_PROBLEMS
+                                  + DS_LIST_PROBLEMS),
     ("cpp", "C++ 基础线", CPP_TRICKS_PROBLEMS + CPP_THEORY_PROBLEMS
                           + CPP_THEORY2_PROBLEMS + CPP_PROG_PROBLEMS
                           + CPP_BASIC_PROBLEMS),

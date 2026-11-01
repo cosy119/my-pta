@@ -266,12 +266,12 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   `backfill_points()` 对种子题强制同步 满分/分值/讲次（⚠️ ADD COLUMN 的默认值会给所有老行填同一个值）；`backfill_legacy_scores()` 换算旧口径。
 - ★ `worker.py` 的 `flush_cases()` **必须在写最终结论之前调用**，否则前端会出现「结论出来了但逐测试点明细还没落库」的空窗。
 
-## 题库（1440 题 / 17890 分 / 4143 测试点）
+## 题库（1453 题 / 18077 分 / 4196 测试点）
 
 | subject | 题库文件 | 题数 | 分 | line | 语言 |
 |---|---|---|---|---|---|
 | `python` | `seed.py::CORE_PROBLEMS`(3) + `problems_bank.py`(82 = 53 编程 + ext2 14 + bits 15) + `problems_bank_py_prog.py`(10) + `problems_bank_py_tricks.py`(30) + 理论 `problems_bank_py_theory.py`(66) + `problems_bank_py_theory2.py`(71 = 49 + 进制转换 14 + 异或 2 + 进制解析 3 + 码点 3) | **262** | **3232** | python | Python |
-| `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(39) | **240** | **3486** | cpp | **C 或 C++ 任选** |
+| `ds` | `problems_bank_ds.py` + `problems_bank_ds_prog.py` + `problems_bank_ds_theory.py` + `problems_bank_ds_tricks.py`(39) + **`problems_bank_ds_list.py`(6)** | **246** | **3601** | cpp | **C 或 C++ 任选** |
 | `cpp` | `problems_bank_cpp_theory.py`(111) + `problems_bank_cpp_theory2.py`(112) + `problems_bank_cpp_prog.py`(17) + `problems_bank_cpp_tricks.py`(20) + **`problems_bank_cpp_basic1..8.py`(303)** | **563** | **6733** | text / cpp | **C++ 基础线（12 讲各 20 题 + 技巧特训 20 + 基础编程题册 303）** |
 | `linux` | `problems_bank_linux.py` | **382** | **4511** | text | 理论题（单选 / 多选 / 判断 / 填空）+ **实操题 203**（写命令） |
 
@@ -598,6 +598,31 @@ DS 线让你手写二分，本章让你写 `upper_bound(...) - lower_bound(...)`
 - 踩坑：oracle 里别写 O(maxH) 线性扫（10⁹ 的伐木用例直接卡死 198s）——oracle 也要用与约束匹配的复杂度。
   树状数组题的 oracle 用 √n 分块（独立实现），30000 组操作 ~2s；用暴力会 TLE 在生成阶段。
 
+### ★ 链表专题 · PTA 经典（2026-11-01 建，6 题 / 115 分 / 30 点）
+
+cosy 从 PTA 抄来 6 道浙大 DS 课程组原题，按**原题的输入输出约定**单独成一节。
+它和「第 02 讲 · 线性表」那批教材简化题（输入 `n` + 数组）**不是一回事**：
+
+- `-1` 当序列结束标志，**不给长度**；
+- 「地址-数据-地址」式**静态链表**（5 位地址，NULL = `-1`），输入行序是乱的、还可能混进孤立结点；
+- 空结果输出 `NULL`，不是空行。
+
+| 原题 | 标题 | 难度/分 | 题眼 |
+|---|---|---|---|
+| 7-1 | 两个有序链表序列的合并（PTA 原题 · NULL 约定） | 2 / 20 | `-1` 收尾；哑结点归并；两条都空 → `NULL` |
+| 7-2 | 两个有序链表序列的交集（PTA 原题） | 2 / 20 | 小的先跳过；相等要**新建结点**（跟合并相反）；多重集按 `min(次数)` |
+| 7-3 | 重排链表（PTA 原题 · 地址链表） | 3 / 20 | 静态链表按地址走；两头交替取；`N` 可能大于链长（孤立结点） |
+| 7-4 | 约瑟夫环（链表模拟 · PTA 原题） | 2 / 20 | 走 `p-1` 步；双向循环链表删结点；`N = 1` 不用特判 |
+| 7-6 | 链表去重（PTA 原题 · 分离被删结点） | 3 / 20 | 按**绝对值**判重；被删链表为空则整段不输出 |
+| 7-7 | 单链表就地逆置（PTA 原题 · 多组输入） | 2 / 15 | 三指针四步；先读 `T`；空组合法（输出空行） |
+
+- 生成器 `tools/gen_ds_list.py` → `app/problems_bank_ds_list.py`，独立文件，不动 `gen_ds_bank`。
+- 分节「链表专题 · PTA 经典」在 `section_order.py` 里排在**讲次之后、技巧特训之前**（讲完线性表就读）。
+- 挂载四处：`seed.py` / `verify_bank.py::LINES` / `smoke_cloud.py::ref_of` / `section_order.py`。
+- 样例与 PTA 官方样例**逐字节一致**（6 题各 1~2 组，已人工比对）。
+- ★ 静态链表题一律「地址 → (数据, next)」建表再顺 `next` 走，**绝不按输入行序**——
+  这是 7-3 / 7-6 唯一的真正难点。
+
 ### ★ DS 经典题型编程题（2026-10-18 补，_oracle_44~56）
 
 按三张经典题型图举一反三，难度 easy→medium 递进，全部「参考解 + alt 双撞」：
@@ -609,7 +634,7 @@ DS 线让你手写二分，本章让你写 `upper_bound(...) - lower_bound(...)`
 
 - ★ 约瑟夫环参考解曾因 **0 基 idx 与 1 基数组混用**死循环（`%n` 只走 0..n-1、数组填 1..n）→ 已改纯 0 基；ref+alt 均加 `m % 剩余人数` 折算（约束 m ≤ 10⁹，逐个报数必 TLE）。
 - ★ 「单词逆置」「两表全空合并」的期望输出是**合法的 `"\n"` 空行**——`gen_ds_bank` 的空输出警示已放行 `"\n"`，仍拦截真空串。
-- ★ 尚未覆盖的题型（下轮「举一反三」候选）：链表去重、两有序链表交集、重排链表、双向循环链表、猴子选大王、表达式转换（中缀转后缀）、后缀式求值、堆栈模拟队列、银行业务队列、全排列、直方图最大矩形、一元多项式乘加。
+- ★ 尚未覆盖的题型（下轮「举一反三」候选）：~~链表去重~~ / ~~两有序链表交集~~ / ~~重排链表~~（2026-11-01 已按 PTA 原题收进「链表专题 · PTA 经典」）、双向循环链表、猴子选大王、表达式转换（中缀转后缀）、后缀式求值、堆栈模拟队列、银行业务队列、全排列、直方图最大矩形、一元多项式乘加。
 - `seed.py`：`SEED_PROBLEMS = CORE + BANK + DS + LINUX`；`SUBJECT_LABELS` 给三科目中文名；
   `_seed_specs()` 返回四元组 `(total, pts, section, subject)`，`backfill_points()` 同步 `subject`。
 

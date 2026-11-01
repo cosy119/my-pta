@@ -232,6 +232,7 @@ def main() -> int:
     from app.problems_bank_py_tricks import PY_TRICKS_PROBLEMS  # noqa: E402
     from app.problems_bank_py_prog import PY_PROG_PROBLEMS      # noqa: E402
     from app.problems_bank_ds_prog import DS_PROG_PROBLEMS     # noqa: E402
+    from app.problems_bank_ds_list import DS_LIST_PROBLEMS     # noqa: E402
     from app.problems_bank_cpp_tricks import CPP_TRICKS_PROBLEMS  # noqa: E402
     from app.problems_bank_cpp_prog import CPP_PROG_PROBLEMS   # noqa: E402
     from app.problems_bank_cpp_theory import CPP_THEORY_PROBLEMS  # noqa: E402
@@ -256,6 +257,7 @@ def main() -> int:
                   + list(DS_TRICKS_PROBLEMS) + list(PY_TRICKS_PROBLEMS)
                   + list(DS_THEORY_PROBLEMS) + list(PY_THEORY_PROBLEMS)
                   + list(DS_PROG_PROBLEMS) + list(PY_PROG_PROBLEMS)
+                  + list(DS_LIST_PROBLEMS)
                   + list(DS_PROBLEMS) + list(CORE_PROBLEMS) + list(BANK_PROBLEMS)):
             if p.get("title") == title:
                 return p.get("reference_solution") or ""
