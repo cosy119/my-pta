@@ -160,7 +160,7 @@
      2. compare.py —— 输出比对
      --------------------------------------------------------------- */
 
-  const CHECKERS = ['standard', 'ignore_trailing', 'token', 'float', 'oneof'];
+  const CHECKERS = ['standard', 'ignore_trailing', 'token', 'float', 'oneof', 'oneof_strict'];
   const ALT_PREFIX = '|';
 
   function toText(x) { return x == null ? '' : String(x); }
@@ -179,8 +179,12 @@
      ★★ 刻意**不含** ASCII 的 `. ' " ( ) [ ]` —— 见文件头注释。 */
   const EDGE_PUNCT = ' \t\r\n。，、；：（）【】《》〈〉「」『』“”‘’…！？';
 
+  /* 以 if/while/until 开头的整行：这类行里的 `&&` 是 shell 语法的一部分，
+     不是「命令连接符」，折成 `;` 会得到一段根本不存在的代码。 */
+  const IF_LIKE_RE = /^\s*(if|elif|while|until)\b/;
+
   /* 同一个答案的「宽容形式」集合（从严格到宽松），对应 compare.answer_forms */
-  function answerForms(text) {
+  function answerForms(text, foldAnd) {
     const t = pyStrip(normalizeNewlines(toText(text)));
     /* 多步命令题：学生敲完一条按回车，和答案里写 `;` 完全等价。
        派生一个「换行 → ; 」的种子，顺便盖住「一半换行一半分号」的混写。
@@ -191,6 +195,12 @@
       const lines = t.split('\n').map(function (x) { return pyStrip(x); })
         .filter(function (x) { return x !== ''; });
       seeds.push(lines.join(' ; '));
+    }
+    /* `A && B` ≡ `A; B`（`foldAnd` 关掉时为严格模式，见 oneof_strict）。
+       题目答案常写成 `cd /etc && ls -d *pass*`，而学生按步骤一行一条敲出来是
+       换行 —— 换行折成 `;` 后两边差在 `&&` 与 `;` 上，明明对却判错。 */
+    if (foldAnd !== false && t.indexOf(' && ') >= 0 && !IF_LIKE_RE.test(t)) {
+      seeds.push(t.split(' && ').join('; '));
     }
 
     const forms = new Set();
@@ -294,7 +304,8 @@
        一份空的备选清单 —— 那等于把所有答案都判错，比按 standard 比还糟。 */
   function usesOneof(checker, expected) {
     if (!oneofAlternatives(expected).length) return false;
-    return checker === 'oneof' || pyStripLeft(String(expected)).indexOf(ALT_PREFIX) === 0;
+    return checker === 'oneof' || checker === 'oneof_strict'
+      || pyStripLeft(String(expected)).indexOf(ALT_PREFIX) === 0;
   }
 
   function diffHint(expected, actual, maxLines) {
@@ -384,9 +395,10 @@
        ★ 必须放在最前面 —— 这种题的期望值形如 "|B"，跟实际输出 "B" 永远不相等 */
     if (usesOneof(ck, e)) {
       const alts = oneofAlternatives(e);
-      const aForms = answerForms(a);
+      const foldAnd = ck !== 'oneof_strict';
+      const aForms = answerForms(a, foldAnd);
       for (let i = 0; i < alts.length; i++) {
-        const af = answerForms(alts[i]);
+        const af = answerForms(alts[i], foldAnd);
         let hit = false;
         af.forEach(function (x) { if (aForms.has(x)) hit = true; });
         if (hit) return { ok: true, kind: 'ok', detail: '' };

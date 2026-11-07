@@ -5196,8 +5196,9 @@ def _sanity(probs: list[dict]) -> list[str]:
             bad.append("[%d] %s 没写 question_type" % (i, t))
         elif qt not in TYPE_LABELS:
             bad.append("[%d] %s 的题型 %r 不在 %s 里" % (i, t, qt, list(TYPE_LABELS)))
-        if p["checker"] != "oneof":
-            bad.append("[%d] %s 的 checker 不是 oneof" % (i, t))
+        if p["checker"] not in ("oneof", "oneof_strict"):
+            bad.append("[%d] %s 的 checker 是 %r，命令题只能是 oneof / oneof_strict"
+                       % (i, t, p["checker"]))
         for c in p["cases"]:
             if c.get("is_sample"):
                 bad.append("[%d] %s 有样例点 —— 理论题的样例会把答案公开" % (i, t))

@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-07 18:20:31",
+ "generated_at": "2026-11-07 20:04:33",
  "count": 1524,
  "total_score": 19129,
  "total_testcases": 4267,
@@ -99730,7 +99730,7 @@
    "constraints_md": "",
    "time_limit_ms": 1000,
    "memory_limit_mb": 64,
-   "checker": "oneof",
+   "checker": "oneof_strict",
    "float_eps": 1e-06,
    "source_section": "命令特训 · Shell 与管道",
    "source_anchor": "",

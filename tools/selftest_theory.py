@@ -255,6 +255,25 @@ def main() -> int:
         check("`&&` 与 `;` 必须区分开（第 855 题考的就是这个区别）",
               ok7, "" if ok7 else "把 `;` 写法判成了 `&&` 题的正确答")
 
+        # ★ 反过来：**不考** `&&` 语义的题，学生按步骤一行一条敲（换行）必须判过。
+        #   真实反馈（2026-11-07）：题面「切换到 /etc 后列出含 pass 的文件」，
+        #   学生写 `cd /etc` 换行 `ls -d *pass*`，答案里只有 `cd /etc && ls -d *pass*`
+        #   —— 判题把换行折成 `;` 后两边差在 && 与 ; 上，明明对却判错。
+        p_pass = find("仅列出 /etc 下名字含 pass 的文件")
+        ok8 = (p_pass is not None
+               and judge(p_pass, "cd /etc\nls -d *pass*")
+               and judge(p_pass, "cd /etc; ls -d *pass*")
+               and judge(p_pass, "cd /etc && ls -d *pass*")
+               and not judge(p_pass, "cd /etc\nls -d pass*"))
+        check("不考 `&&` 的题：`cd X` 换行写 / 分号写 / && 写都判过，写错仍判错",
+              ok8, "" if ok8 else "换行版或分号版被判错（检查 answer_forms 的 fold_and）")
+
+        # 严格题不能因为新加的折叠而漏判
+        ok9 = (p_and is not None
+               and not judge(p_and, "mkdir -p /tmp/x\ncd /tmp/x"))
+        check("oneof_strict 题：连换行写法也不放行", ok9,
+              "" if ok9 else "严格题被换行折叠绕过了")
+
         # ★ 运算符归一化必须排在短选项合并**之前**，否则 `ls -l; ls -ld` 里的
         #   `-l` 和 `-ld`（分属两条命令）会被并成 `-dl`，答案就永远判不过自己。
         p_perm = find("实验 5-3")

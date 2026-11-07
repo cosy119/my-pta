@@ -41,13 +41,19 @@ SCORE_BY_DIFF = {1: SCORE_COMMAND - 2, 2: SCORE_COMMAND,
 
 def C(title: str, statement_md: str, answers: list[str], *,
       sec: str, exp: str, tags: list[str], diff: int = 2,
-      hint: str = "") -> dict:
-    """出一道命令题。"""
+      hint: str = "", checker: str = "oneof") -> dict:
+    """出一道命令题。
+
+    `checker="oneof_strict"` 用于**专考 `&&` 语义**的题：判题默认把 `A && B`
+    与 `A; B` 视为同义（学生按步骤一行一条敲时换行会被折成 `;`），
+    这类题必须关掉那层折叠，否则写 `;` 也算对。
+    """
     return practical(
         title, statement_md, answers,
         subject=SUBJ, section=sec,
         explanation=exp, tags=tags,
-        difficulty=diff, total_score=SCORE_BY_DIFF[diff], hint=hint)
+        difficulty=diff, total_score=SCORE_BY_DIFF[diff], hint=hint,
+        checker=checker)
 
 
 # ===================================================================== #
@@ -4213,6 +4219,7 @@ def part_shell() -> list[dict]:
         "写出这条命令（以 `mkdir -p /tmp/x` 和 `cd /tmp/x` 为例）。",
         ["mkdir -p /tmp/x && cd /tmp/x"],
         sec=sec, diff=1,
+        checker="oneof_strict",
         exp=(
             "`mkdir -p /tmp/x && cd /tmp/x`。\n\n"
             "★ shell 的三种连接符语义完全不同：\n"

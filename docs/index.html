@@ -1780,29 +1780,166 @@ async function loadCatalog(){
   }
 }
 
+/* =========================================================================
+   题库加载（静态站）
+   ---------------------------------------------------------------------------
+   线上没有后端，题库是静态 JSON。首屏只拉**轻索引** `bank/index.json`
+   （约 0.5 MB），题面与测试点按科目懒加载 `bank/<科目>.json`。
+
+   ★ 为什么必须拆：全量快照 8.7 MB，其中 `cases` 占 81%，而**数据结构一科
+     就占 5.5 MB**。国内直连 GitHub Pages 只有 20~30 KB/s —— 整包要下两三分钟，
+     而老代码既没有进度也没有重试，中途一断就只剩一句「先跑 python
+     tools\export_static.py」，学生只会以为站点坏了。
+   ========================================================================= */
+let BANK_SPLIT = false;      // 分片模式（老部署没有 bank/ 目录 → 自动退回整包）
+let BANK_VERSION = '';       // 题库版本，用来给科目包做长期缓存
+const PART_LOADED = {};      // { 科目: true }
+const PART_LOADING = {};     // { 科目: Promise }
+const PART_ITEMS = {};       // { 科目: Map(id → 完整条目) } —— 重载索引后要能再合回去
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+/* 更新「正在加载…」那一行；页面还没渲染出来就存着，渲染时用 */
+let LOAD_HINT = '';
+function loadingHint(text){
+  LOAD_HINT = text;
+  const el = document.getElementById('bootLoading');
+  if (el && el.isConnected) el.textContent = text;
+}
+
+/* 读流取 JSON：边下边报进度（拿不到 content-length 就只报已下载多少 MB）。
+   慢网下最常见的是「连上了但中途断」，所以外面再套一层重试。 */
+async function fetchJsonOnce(url, label){
+  const res = await fetch(url, { cache: 'default' });
+  if (!res.ok){
+    const err = new Error('HTTP ' + res.status);
+    err.httpStatus = res.status;
+    throw err;
+  }
+  if (!res.body || !res.body.getReader) return res.json();
+  const reader = res.body.getReader();
+  const chunks = [];
+  let got = 0, lastPaint = 0;
+  for (;;){
+    const { done, value } = await reader.read();
+    if (done) break;
+    chunks.push(value);
+    got += value.length;
+    const now = Date.now();
+    if (now - lastPaint > 200){          // 别每收一块就动 DOM
+      lastPaint = now;
+      loadingHint('正在加载' + label + ' ' + (got / 1048576).toFixed(1) + ' MB…');
+    }
+  }
+  loadingHint('正在加载' + label + ' ' + (got / 1048576).toFixed(1) + ' MB…');
+  /* 分块拼成一个 buffer 再解码 —— 多字节汉字可能跨块，逐块 decode 会乱码 */
+  const buf = new Uint8Array(got);
+  let off = 0;
+  for (const c of chunks){ buf.set(c, off); off += c.length; }
+  return JSON.parse(new TextDecoder('utf-8').decode(buf));
+}
+
+async function fetchJson(url, label){
+  let last = null;
+  for (let i = 0; i < 3; i++){
+    try { return await fetchJsonOnce(url, label); }
+    catch(e){
+      last = e;
+      /* 4xx 是「这文件本来就不存在」（比如老部署没有 bank/ 目录），
+         重试三次只是白白多等 1.5 秒 —— 直接往下走，让调用方换方案 */
+      if (e && e.httpStatus >= 400 && e.httpStatus < 500) break;
+      if (i < 2){
+        loadingHint(label + ' 没下完，重试中（' + (i + 1) + '/2）…');
+        await sleep(500 * (i + 1));
+      }
+    }
+  }
+  throw last;
+}
+
+/* 把已经拉到的科目包再合回 PROBLEMS。
+   ★ 为什么需要：判完一次题会走 `refreshAll()` → `loadProblems()`，PROBLEMS 会被
+     轻索引重建一遍（题面/测试点全没了）。不补这一步，从别的科目转回来时
+     题目页会因为「没有题面」而拒绝渲染 —— 而 `PART_LOADED` 已经置位，
+     `ensureSubject` 不会再拉，于是永远空着。 */
+function applyLoadedParts(){
+  const groups = Object.keys(PART_ITEMS);
+  if (!groups.length) return;
+  PROBLEMS = PROBLEMS.map(p => {
+    const m = PART_ITEMS[p.subject || 'python'];
+    return (m && m.has(p.id)) ? Object.assign({}, p, m.get(p.id)) : p;
+  });
+}
+
+/* 进题前把这一科的完整条目拉下来（题面 / 样例 / 测试点）并合并进 PROBLEMS。
+   合并而不是替换：轻索引里已经有排序、编号、统计要用的字段。 */
+async function ensureSubject(sub){
+  if (!OFFLINE || !BANK_SPLIT) return;
+  sub = sub || 'python';
+  if (PART_LOADED[sub]) return;
+  if (PART_LOADING[sub]) return PART_LOADING[sub];
+  PART_LOADING[sub] = (async () => {
+    const url = 'bank/' + encodeURIComponent(sub) + '.json'
+              + (BANK_VERSION ? '?v=' + BANK_VERSION : '');
+    const part = await fetchJson(url, '「' + (SUBJECT_LABELS[sub] || sub) + '」题库');
+    const byId = new Map();
+    (part.items || []).forEach(p => byId.set(p.id, p));
+    PART_ITEMS[sub] = byId;
+    applyLoadedParts();
+    PART_LOADED[sub] = true;
+    delete PART_LOADING[sub];
+  })();
+  PART_LOADING[sub].catch(() => { delete PART_LOADING[sub]; });
+  return PART_LOADING[sub];
+}
+
 async function loadProblems(){
   try {
     const r = await api('/api/problems?status=published');
     PROBLEMS = r.items || [];
     OFFLINE = false;
+    BANK_SPLIT = false;
   } catch(e){
-    /* 静态站兜底：读同目录的 problems.json */
+    OFFLINE = true;
+    PROBLEMS = [];
+    /* 优先轻索引；没有 bank/（旧部署）或索引坏了再退回整包 */
     try {
-      const res = await fetch('problems.json', { cache:'no-store' });
-      const j = await res.json();
-      PROBLEMS = (j.items || []).map(p => Object.assign({}, p, {
-        is_choice: !!(p.choices && p.choices.length),
+      const idx = await fetchJson('bank/index.json', '题库索引');
+      BANK_SPLIT = true;
+      BANK_VERSION = idx.asset_version || '';
+      PROBLEMS = (idx.items || []).map(p => Object.assign({}, p, {
+        is_choice: !!p.is_choice,
         best_score: undefined, attempts: undefined, solved: undefined,
       }));
-      /* 离线：分节教学路径序号也在这份快照里（与在线同一份源） */
-      if (j.section_ranks) applySectionRanks(j.section_ranks);
-    } catch(e2){ PROBLEMS = []; }
-    OFFLINE = true;
+      if (idx.section_ranks) applySectionRanks(idx.section_ranks);
+    } catch(e1){
+      try {
+        const j = await fetchJson('problems.json', '题库');
+        BANK_SPLIT = false;
+        PROBLEMS = (j.items || []).map(p => Object.assign({}, p, {
+          is_choice: !!(p.choices && p.choices.length),
+          best_score: undefined, attempts: undefined, solved: undefined,
+        }));
+        /* 离线：分节教学路径序号也在这份快照里（与在线同一份源） */
+        if (j.section_ranks) applySectionRanks(j.section_ranks);
+      } catch(e2){ PROBLEMS = []; }
+    }
   }
   /* ★ 排序：科目 → 分节教学路径 → 难度 → 录入序
      （后端 /api/problems 已经排好，这里再排一次是为了离线兜底时也一致） */
+  applyLoadedParts();      // 已经下过的科目包要接回来（见函数注释）
   PROBLEMS.sort(cmpProblem);
   buildSubjSeq();
+}
+
+/* 题库没加载成功时的「再试一次」—— 不该逼用户按 F5 */
+async function retryBank(){
+  const app = document.getElementById('app');
+  if (app) app.innerHTML = '<div class="loading" id="bootLoading">正在重新加载题库…</div>';
+  await loadProblems();
+  await loadCatalog();
+  route();
+  if (!PROBLEMS.length) toast('还是没成功 —— 检查网络后重试，或换个网络环境', 'err');
 }
 
 /* 让页面上的进度数字始终是本地的「最新真相」 */
@@ -1939,7 +2076,17 @@ function viewHome(){
 
   html += '<h2 class="secTitle" id="courseList">题集 <span class="cnt">共 ' + subj.length + ' 个题集</span></h2>';
   if (!subj.length){
-    html += '<div class="empty">题库还没导进来。先跑 <span class="codeInline">python tools\\export_static.py</span> 或启动本地服务。</div>';
+    /* 本地开发（file:// 或 localhost）才提示去跑导出脚本；
+       线上这么写等于让学生去开终端跑 python —— 他们只会以为站点坏了。 */
+    const isLocalDev = location.protocol === 'file:'
+      || /^(localhost|127\.0\.0\.1|\[::1\])$/.test(location.hostname);
+    html += '<div class="empty">' + (isLocalDev
+      ? '题库还没导进来。先跑 <span class="codeInline">python tools\\export_static.py</span> 或启动本地服务。'
+      : '题库没加载成功（网络中断或太慢）。<br><br>'
+        + '<button class="btn" onclick="retryBank()">重新加载</button>'
+        + '<div style="margin-top:10px;color:var(--muted);font-size:13px">'
+        + '首次打开需要下载约 0.5 MB 题库索引；如果反复失败，换个网络再试。</div>')
+      + '</div>';
   } else {
     html += '<div class="cards">' + subj.map(cardHtml).join('') + '</div>';
   }
@@ -2315,16 +2462,31 @@ function localProblem(id){
 async function viewProblem(id){
   const version = routeVersion;
   const app = document.getElementById('app');
-  app.innerHTML = '<div class="loading">正在打开题目…</div>';
+  app.innerHTML = '<div class="loading" id="bootLoading">正在打开题目…</div>';
   let p = null;
   let offline = false;
   try { p = await api('/api/problems/' + id); }
-  catch(e){ p = localProblem(id); offline = true; }
+  catch(e){
+    offline = true;
+    /* 分片模式：题面与测试点不在轻索引里，先把这一科整包拉下来再取 */
+    const light = PROBLEMS.find(x => x.id === id);
+    if (BANK_SPLIT && light){
+      try { await ensureSubject(light.subject || 'python'); } catch(e1){}
+    }
+    p = localProblem(id);
+  }
   if (version !== routeVersion || SET.view !== 'p' || SET.id !== id) return;
   OFFLINE = offline;
   renderNav();
   if (!p){
     app.innerHTML = '<div class="empty">找不到这道题（id=' + id + '）。<br><br><a href="#/">← 回题集广场</a></div>';
+    return;
+  }
+  /* 科目包没拉到（断网/超时）→ 题面是空的，别硬渲染成一道「没有题干」的题 */
+  if (offline && BANK_SPLIT && !p.statement_md){
+    app.innerHTML = '<div class="empty">这道题的题面没加载下来（网络中断）。<br><br>'
+      + '<button class="btn" onclick="viewProblem(' + id + ')">重试</button>'
+      + ' &nbsp; <a href="#/">← 回题集广场</a></div>';
     return;
   }
   CUR = p; RESULT = null;
@@ -3998,6 +4160,9 @@ async function boot(isReload){
   document.getElementById('navUser').textContent = nickname();
   wbBind();            // 错题本的交互委托（#app 一直存在，绑一次就够）
   wbRestoreState();    // 上次的筛选条件读回来
+  /* 加载期给个带进度的占位 —— 慢网下「一直白屏」和「在下 2.3 MB」是两种体验 */
+  const app0 = document.getElementById('app');
+  if (app0) app0.innerHTML = '<div class="loading" id="bootLoading">正在加载题库…</div>';
   /* ★ 顺序不能换：离线兜底的科目目录是**从题库现聚合出来的**，
      题库还没到手就去聚合，主页会渲染出「0 个题集」的空壳。 */
   await loadMeta();

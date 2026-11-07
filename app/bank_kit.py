@@ -65,7 +65,8 @@ def _theory(*, title: str, subject: str, section: str, statement_md: str,
             difficulty: int, total_score: int, choices: list[str] | None = None,
             input_format: str = "", output_format: str = "",
             constraints_md: str = "", tip: str = "",
-            question_type: str = "fill_blank") -> dict:
+            question_type: str = "fill_blank",
+            checker: str = "oneof") -> dict:
     """理论题的公共骨架。"""
     expected, ref = _oneof(answers)
     stmt = statement_md
@@ -87,7 +88,7 @@ def _theory(*, title: str, subject: str, section: str, statement_md: str,
         "constraints_md": constraints_md,
         "time_limit_ms": 1000,
         "memory_limit_mb": 64,
-        "checker": "oneof",
+        "checker": checker,
         "reference_solution": ref,
         # 一个测试点 = 整个答案；is_sample 恒为 0（见模块 docstring）
         "cases": [{
@@ -142,7 +143,8 @@ def tf(title: str, statement_md: str, answer: bool, *,
 def fill(title: str, statement_md: str, answers: list[str], *,
          subject: str, section: str, explanation: str, tags: list[str],
          difficulty: int = 2, total_score: int = SCORE_FILL,
-         hint: str = "", input_format: str = "") -> dict:
+         hint: str = "", input_format: str = "",
+         checker: str = "oneof") -> dict:
     """填空题 / 命令题。
 
     `answers` 列出**全部可接受写法** —— 只收语义等价、形式也固定的那些
@@ -155,6 +157,7 @@ def fill(title: str, statement_md: str, answers: list[str], *,
         explanation=explanation, tags=tags, difficulty=difficulty,
         total_score=total_score, input_format=input_format,
         output_format="一行答案（不要写解释、不要写命令提示符）",
+        checker=checker,
         tip=hint)
 
 
@@ -252,7 +255,8 @@ def _one_line(text: str) -> str:
 def practical(title: str, statement_md: str, answers: list[str], *,
               subject: str, section: str, explanation: str, tags: list[str],
               difficulty: int = 3, total_score: int = SCORE_COMMAND,
-              hint: str = "", input_format: str = "") -> dict:
+              hint: str = "", input_format: str = "",
+              checker: str = "oneof") -> dict:
     """实操题 / 命令题：**给场景，写出命令本身**。
 
     形态为什么改过（2026-10-19）
@@ -294,4 +298,5 @@ def practical(title: str, statement_md: str, answers: list[str], *,
         input_format=input_format or
         "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
         output_format="一整条命令",
+        checker=checker,
         tip=hint)

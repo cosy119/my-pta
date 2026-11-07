@@ -7695,7 +7695,7 @@ LINUX_PROBLEMS: list[dict] = [
         "constraints_md": "",
         "time_limit_ms": 1000,
         "memory_limit_mb": 64,
-        "checker": "oneof",
+        "checker": "oneof_strict",
         "reference_solution": "mkdir -p /tmp/x && cd /tmp/x",
         "cases": [
             {

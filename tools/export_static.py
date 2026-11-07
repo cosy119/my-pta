@@ -42,6 +42,16 @@ DEFAULT_OUT = ROOT / "docs"
 # 这些字段是「内部资料」，绝不外传
 _STRIP_FIELDS = ("reference_solution", "ref_interpreter", "ai_meta", "ai_model")
 
+# 轻索引里留哪些字段（`bank/index.json`）。
+# 判据只有一条：**列表页要不要用**。题面、样例、测试点、输入输出格式都在进题时才用，
+# 一律不放 —— 它们占了整包的 87%，放进来就等于没拆。
+# `choices` 不放：列表只显示「单选题」这个标签，选项在进题时才渲染。
+_LIGHT_FIELDS = (
+    "id", "subject", "line", "title", "question_type", "difficulty", "total_score",
+    "tags", "source_section", "testcase_count", "hidden_count", "points_sum",
+    "status", "is_choice",
+)
+
 
 def build_bank(with_cases: bool = False) -> dict:
     """把库里的题目拼成前端能直接吃的结构。
@@ -139,6 +149,57 @@ def build_bank(with_cases: bool = False) -> dict:
     }
 
 
+def write_split(bank: dict, out_dir: Path) -> dict:
+    """把题库拆成「轻索引 + 按科目整包」，解决首屏要下 8.7 MB 的问题。
+
+    为什么要拆
+    ----------
+    全量快照里 `cases`（测试点）占 81%，而其中**数据结构一科就占 5.5 MB**。
+    静态站用 GitHub Pages，国内直连只有 20~30 KB/s —— 首屏等一个 8.7 MB
+    的 JSON 要两三分钟，中途一断（fetch 没有重试）页面就只剩空白。
+    列表页真正需要的只有 id/标题/分节/题型/难度/分值这些轻字段。
+
+    产物
+    ----
+    - `bank/index.json`  轻索引：列表、统计、进度、错题本、收藏全靠它（约 0.5 MB）
+    - `bank/<科目>.json` 该科目的**完整**条目（题面 + 样例 + 测试点），进题时才拉。
+      带 `?v=<asset_version>` 可以长期缓存 —— 题库不变就不用重下。
+
+    兼容
+    ----
+    `problems.json` 照旧导出（老前端 / 兜底），新前端优先读 `bank/index.json`。
+    """
+    ver = datetime.now().strftime("%Y%m%d%H%M%S")
+    subjects = sorted({str(p.get("subject") or "python") for p in bank["items"]})
+
+    index = {k: v for k, v in bank.items() if k != "items"}
+    index["asset_version"] = ver
+    index["split"] = True
+    index["subjects"] = subjects
+    index["items"] = []
+    for p in bank["items"]:
+        q = {k: p[k] for k in _LIGHT_FIELDS if k in p}
+        # 前端要知道「这题有没有测试点」（决定能不能本地判题），但不该为此
+        # 把测试点本身也拉下来 —— 给个布尔就行。
+        q["has_cases"] = bool(p.get("cases"))
+        index["items"].append(q)
+
+    bank_dir = out_dir / "bank"
+    bank_dir.mkdir(parents=True, exist_ok=True)
+    # separators 用最紧凑的写法：这些文件是给机器读的，缩进纯粹浪费流量
+    dump = lambda obj: json.dumps(obj, ensure_ascii=False, separators=(",", ":"))  # noqa: E731
+    (bank_dir / "index.json").write_text(dump(index), encoding="utf-8")
+
+    for sub in subjects:
+        part = {"subject": sub, "asset_version": ver,
+                "items": [p for p in bank["items"] if str(p.get("subject") or "python") == sub]}
+        (bank_dir / ("%s.json" % sub)).write_text(dump(part), encoding="utf-8")
+
+    return {"version": ver, "subjects": subjects,
+            "index_bytes": (bank_dir / "index.json").stat().st_size,
+            "parts": {sub: (bank_dir / ("%s.json" % sub)).stat().st_size for sub in subjects}}
+
+
 def export(out_dir: Path, with_cases: bool = False) -> None:
     db.init_db()
     seed.sync_question_types()
@@ -155,6 +216,12 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
     print("题目 %d 道 / %d 分 / %d 个测试点 %s → %s"
           % (bank["count"], bank["total_score"], bank["total_testcases"], extra,
              out_dir / "problems.json"))
+
+    # 1.5) 分片：轻索引 + 按科目整包（首屏不再需要下 8.7 MB）
+    sp = write_split(bank, out_dir)
+    print("分片 → %s  （索引 %.0f KB / %s）"
+          % (out_dir / "bank", sp["index_bytes"] / 1024,
+             "  ".join("%s %.0f KB" % (k, v / 1024) for k, v in sp["parts"].items())))
 
     # 2) 前端
     if WEB.exists():

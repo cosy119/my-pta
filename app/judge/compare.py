@@ -20,7 +20,7 @@ from __future__ import annotations
 import re
 from dataclasses import dataclass
 
-CHECKERS = ("standard", "ignore_trailing", "token", "float", "oneof")
+CHECKERS = ("standard", "ignore_trailing", "token", "float", "oneof", "oneof_strict")
 
 # oneof 口径下，期望值里每一行可接受答案的前缀
 _ALT_PREFIX = "|"
@@ -66,10 +66,12 @@ def _squeeze_ws(text: str) -> str:
 #    `cd ../..`、`echo -n "hello"`、`dnf provides '*/ls'`。
 #    早期版本把它们也当成「顺手标的标点」剥掉，结果是**答案的最后一个字符被吃掉**：
 #    `cd ../..` 变成 `cd ../`，三条填空题的参考答案永远判不过自己。
+_IF_LIKE_RE = re.compile(r"^\s*(if|elif|while|until)\b")
+
 _EDGE_PUNCT = " \t\r\n。，、；：（）【】《》〈〉「」『』“”‘’…！？"
 
 
-def answer_forms(text: bytes | str | None) -> set[str]:
+def answer_forms(text: bytes | str | None, *, fold_and: bool = True) -> set[str]:
     """同一个答案的「宽容形式」集合（从严格到宽松）。
 
     只往里**加**等价写法，绝不删掉原样 —— 这样任何原本判得过的答案
@@ -86,6 +88,15 @@ def answer_forms(text: bytes | str | None) -> set[str]:
       每条可接受答案都是单行（按行解析），本身不含换行。
       所以这一层做的事情是「学生把多步命令一行一条地敲」也能判过 ——
       这正是多步命令题最常见的输入方式。
+
+    ★ 第 6 层 `fold_and`：把 `A && B` 当作 `A; B`。
+      绝大多数题的答案写成 `cd /etc && ls -d *pass*`，而学生按实验步骤
+      「一行一条」写出来是 `cd /etc` + 换行 + `ls -d *pass*` —— 判题会把换行
+      折成 `; `，于是两边差在 `&&` 与 `;` 上，明明对却判错（2026-11-07 反馈）。
+      两边的 `&&` 都折成 `;` 再比，就都通了。
+      **例外**：专考 `&&` 语义的题（「前一条成功才执行后一条」）用
+      `checker = "oneof_strict"` 关掉这一层 —— 否则写 `;` 也算对，
+      那道题就白出了。
     """
     t = normalize_newlines(to_text(text)).strip()
     seeds = [t]
@@ -96,6 +107,11 @@ def answer_forms(text: bytes | str | None) -> set[str]:
     if "\n" in t:
         lines = [ln.strip() for ln in t.split("\n") if ln.strip()]
         seeds.append(" ; ".join(lines))
+    # `A && B` ≡ `A; B`（除非题目明说考 && 的语义，见 fold_and 的说明）。
+    # 只折命令分隔符位置上的 `&&`：`if [ x ] && [ y ]; then` 里的 `&&`
+    # 是 shell 语法的一部分，折掉就成了一段不存在的代码。
+    if fold_and and " && " in t and not _IF_LIKE_RE.match(t):
+        seeds.append(t.replace(" && ", "; "))
 
     forms: set[str] = set()
     for s in seeds:
@@ -251,9 +267,10 @@ def compare(expected: bytes | str, actual: bytes | str, checker: str = "standard
     # 注意要放在最前面 —— 这种题的期望值形如 "|B"，跟实际输出 "B" 永远不可能相等
     if _uses_oneof(checker, e):
         alts = oneof_alternatives(e)
-        a_forms = answer_forms(a)
+        fold = checker != "oneof_strict"
+        a_forms = answer_forms(a, fold_and=fold)
         for alt in alts:
-            if answer_forms(alt) & a_forms:
+            if answer_forms(alt, fold_and=fold) & a_forms:
                 return CompareResult(True, "ok", "")
         shown = " / ".join(repr(x) for x in alts[:4])
         if len(alts) > 4:
@@ -307,7 +324,7 @@ def _uses_oneof(checker: str, expected: str) -> bool:
     """
     if not oneof_alternatives(expected):
         return False
-    return checker == "oneof" or expected.lstrip().startswith(_ALT_PREFIX)
+    return checker in ("oneof", "oneof_strict") or expected.lstrip().startswith(_ALT_PREFIX)
 
 
 def _compare_float(e: str, a: str, eps: float) -> CompareResult:
