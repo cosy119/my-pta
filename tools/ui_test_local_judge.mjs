@@ -137,6 +137,18 @@ async function newDom(mode, bank, port) {
       win.URL.createObjectURL = () => 'blob:stub';
       win.URL.revokeObjectURL = () => {};
       win.HTMLAnchorElement.prototype.click = function () {};
+      /* ★ jsdom 不实现 matchMedia，而 `web/mobile.js` 一上来就
+         `matchMedia('(max-width:1080px)')`。真浏览器里它是 window 上的方法，
+         在 jsdom 里就是 ReferenceError —— 这是测试环境的缺口，不是页面 bug，
+         所以在这里补一个「永远不匹配」的替身。 */
+      if (!win.matchMedia) {
+        win.matchMedia = q => ({
+          matches: false, media: String(q), onchange: null,
+          addListener() {}, removeListener() {},
+          addEventListener() {}, removeEventListener() {},
+          dispatchEvent() { return false; },
+        });
+      }
       win.addEventListener('error', e => errors.push('uncaught: ' + (e.message || e.error)));
     },
   });
@@ -268,18 +280,31 @@ async function run() {
   {
     const doc = dom.window.document;
 
+    /* ★ 模拟**真人点选项**：真人点的是 `<label class="choice">` 里的 radio，
+       浏览器会把它 checked 上并触发 `onchange="pickChoice(this.parentElement)"`。
+       直接调 pickChoice(el) 是不行的 —— 它只是拿 input.checked 去同步 `.on` 样式，
+       自己不勾选。早期版本就是这样写的，于是 readTheoryAnswer() 永远读到「没选」，
+       三条选择题断言全红 —— 不是判题坏了，是测试没点中。 */
+    const pick = (el) => {
+      const inp = el.querySelector('input');
+      doc.querySelectorAll('.choiceInput').forEach(x => { if (x !== inp) x.checked = false; });
+      inp.checked = true;
+      inp.dispatchEvent(new dom.window.Event('change', { bubbles: true }));
+      dom.window.pickChoice(el);
+    };
+
     await goto(dom, '#/p/' + mc.id);
     const letter = dom.window.TextJudge.normalizeAnswer(goodAnswer(dom.window, mc));
     const idx = letter.charCodeAt(0) - 65;
     check('单选题参考答案确实是一个选项字母', /^[A-Z]$/.test(letter) && idx >= 0 && idx < mc.choices.length, letter);
     check('离线单选题也是「提交并判题」', txt(doc, 'btnRow').includes('提交并判题'));
 
-    dom.window.pickChoice(doc.querySelectorAll('.choice')[(idx + 1) % mc.choices.length]);   /* 先点错的 */
+    pick(doc.querySelectorAll('.choice')[(idx + 1) % mc.choices.length]);   /* 先点错的 */
     dom.window.doSubmitLocal();
     await sleep(80);
     check('单选题点错选项判 WA', txt(doc, 'resultBox').includes('答案错误'), txt(doc, 'resultBox').slice(0, 60));
 
-    dom.window.pickChoice(doc.querySelectorAll('.choice')[idx]);
+    pick(doc.querySelectorAll('.choice')[idx]);
     dom.window.doSubmitLocal();
     await sleep(80);
     check('单选题点对选项判 AC', txt(doc, 'resultBox').includes('答案正确'), txt(doc, 'resultBox').slice(0, 60));
@@ -292,7 +317,7 @@ async function run() {
       c => c.getAttribute('data-v') === tfAns);
     check('判断题里能找到对应选项', !!target);
     if (target) {
-      dom.window.pickChoice(target);
+      pick(target);
       dom.window.doSubmitLocal();
       await sleep(80);
       check('判断题选对判 AC', txt(doc, 'resultBox').includes('答案正确'), txt(doc, 'resultBox').slice(0, 60));
@@ -312,12 +337,28 @@ async function run() {
     try { dom.window.exportProgress(); } catch (e) { threw = String(e && e.message || e); }
     check('导出进度不抛异常（真的会下载一个 JSON）', threw === null, threw || '');
 
-    /* 清空 → 导入 → 应该回来 */
+    /* 点预览框里的「确认合并」（真人也是点这个按钮，不是直接调函数） */
+    const clickApply = () => {
+      const btn = Array.from(doc.querySelectorAll('#modalHost button'))
+        .find(x => (x.getAttribute('onclick') || '').includes('applyImport'));
+      check('预览框里有「确认合并」按钮', !!btn);
+      if (btn) btn.click();
+    };
+
+    /* 清空 → 导入 → 应该回来
+       ★ 导入是**两步**：`web/learning-tools.js` 把全局 `importProgress` 换成了
+         `previewImport`（先弹「导入前预览」，列出各项数量与冲突），
+         点「确认合并」才走 `applyImport()` → 原来的合并逻辑。
+         所以测试必须走完这两步 —— 只调 importProgress 只会看到预览框。 */
     resetProg(dom.window);
     check('清空后本地进度为空', Object.keys(dom.window.localProgress()).length === 0);
     const f1 = new dom.window.File([JSON.stringify(b)], 'p.json', { type: 'application/json' });
     dom.window.importProgress({ target: { files: [f1], value: '' } });
     await sleep(250);
+    check('导入前先弹「导入前预览」', !!doc.getElementById('importTitle'),
+      txt(doc, 'modalHost').slice(0, 40));
+    clickApply();
+    await sleep(300);
     check('导入后进度恢复（含满分）',
       (dom.window.localProgress()[fill.id] || {}).best_score === fill.total_score,
       JSON.stringify(dom.window.localProgress()[fill.id]));
@@ -328,17 +369,19 @@ async function run() {
     const f2 = new dom.window.File([JSON.stringify(low)], 'p2.json', { type: 'application/json' });
     dom.window.importProgress({ target: { files: [f2], value: '' } });
     await sleep(250);
+    clickApply();
+    await sleep(300);
     check('★ 导入低分备份不会冲掉已有的高分',
       dom.window.localProgress()[fill.id].best_score === fill.total_score,
       JSON.stringify(dom.window.localProgress()[fill.id]));
 
-    /* 垃圾文件 → 拒绝 */
+    /* 垃圾文件 → 预览阶段就拒掉，连「确认合并」都不给 */
     const f3 = new dom.window.File(['{"hello":1}'], 'x.json', { type: 'application/json' });
     dom.window.importProgress({ target: { files: [f3], value: '' } });
-    await sleep(200);
+    await sleep(250);
     check('导入不相干的 JSON 被拒绝，进度不变',
       dom.window.localProgress()[fill.id].best_score === fill.total_score);
-    check('拒绝时给了提示', txt(doc, 'toast').includes('不是本平台'), txt(doc, 'toast').slice(0, 40));
+    check('拒绝时给了提示', txt(doc, 'toast').includes('不是有效的进度备份'), txt(doc, 'toast').slice(0, 40));
 
     const errs = realErrors(errors);
     check('[2][3][4] 全程没有 JS 异常', errs.length === 0, errs.slice(0, 3).join(' | '));

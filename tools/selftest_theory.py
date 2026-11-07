@@ -216,6 +216,54 @@ def main() -> int:
     check("填命令：%d 个形近错误答案全部判错" % len(wrong_cases),
           not bad_wrong, "; ".join(bad_wrong[:3]))
 
+    # ---------- 4b · 多步命令题：同一条命令序列的各种写法必须互认 ----------
+    #   ★ 这是学生最真实的写法差异：回车换行、分号、分号不带空格、&&。
+    #     `compare._norm_oper` 负责把引号外的 `;` `&&` `||` `|` 两边对齐，
+    #     `answer_forms` 负责把换行派生成 `;`。
+    #     两者缺一，实验 2~5 的 41 道多步题里就有 30 道会被「分号不带空格」误判。
+    p_step = find("实验 3-2")
+    if p_step is None:
+        check("多步命令题：各种等价写法都判过", False, "题库里找不到「实验 3-2」")
+    else:
+        ok4 = all(judge(p_step, w) for w in (
+            "cd /tmp; mkdir aa; mkdir -p a1/a2/a3/a4; ls -R a1",          # 分号 + 空格
+            "cd /tmp;mkdir aa;mkdir -p a1/a2/a3/a4;ls -R a1",             # 分号不带空格
+            "cd /tmp ;  mkdir aa ;  mkdir -p a1/a2/a3/a4 ;  ls -R a1",    # 分号两边都留空格
+            "cd /tmp\nmkdir aa\nmkdir -p a1/a2/a3/a4\nls -R a1",          # 一行一条
+            "cd /tmp\n\nmkdir aa\nmkdir -p a1/a2/a3/a4\n\nls -R a1",      # 中间还空一行
+            "cd /tmp\nmkdir aa; mkdir -p a1/a2/a3/a4\nls -R a1",          # 换行与分号混写
+        ))
+        check("多步命令题：分号 / 不带空格 / 两边空格 / 换行 / 空行 / 混写 六种写法都判过",
+              ok4, "" if ok4 else "有一种等价写法被判错")
+
+        bad5 = [w for w in (
+            "cd /tmp mkdir aa mkdir -p a1/a2/a3/a4 ls -R a1",              # 缺分隔符
+            "cd /tmp; mkdir aa; mkdir -p a1/a2/a3/a5; ls -R a1",           # 参数写错
+            "cd /tmp; mkdir aa; mkdir -p a1/a2/a3/a4",                     # 少一步
+            "cd /tmp; mkdir aa; mkdir -p a1/a2/a3/a4; ls -R a1; rm -r a1",  # 多一步
+        ) if judge(p_step, w)]
+        check("多步命令题：缺分隔符 / 参数错 / 少一步 / 多一步 全部判错",
+              not bad5, ("把 %r 判成了对" % bad5[0]) if bad5 else "")
+
+        # ★ `&&` 与 `;` **不能**归一成同一个东西：题库第 855 题
+        #   「前一条命令成功才执行后一条」考的就是这个区别。
+        #   所以 `&&` 只在答案里**明确列了**的题上才算对。
+        p_and = find("前一条命令成功才执行后一条")
+        ok7 = (p_and is not None
+               and judge(p_and, "mkdir -p /tmp/x && cd /tmp/x")
+               and not judge(p_and, "mkdir -p /tmp/x; cd /tmp/x"))
+        check("`&&` 与 `;` 必须区分开（第 855 题考的就是这个区别）",
+              ok7, "" if ok7 else "把 `;` 写法判成了 `&&` 题的正确答")
+
+        # ★ 运算符归一化必须排在短选项合并**之前**，否则 `ls -l; ls -ld` 里的
+        #   `-l` 和 `-ld`（分属两条命令）会被并成 `-dl`，答案就永远判不过自己。
+        p_perm = find("实验 5-3")
+        ok6 = (p_perm is not None
+               and judge(p_perm, "ls -l 11.txt;ls -ld abc")
+               and judge(p_perm, "ls -l 11.txt\nls -ld abc"))
+        check("多步命令题：分号两边的短选项各归各的（-l 与 -ld 不被并成一条）",
+              ok6, "" if ok6 else "跨分号的选项被错误合并（检查 _norm_cmd 的顺序）")
+
     # ---------- 5 · 空答案 / 乱写 ----------
     sample = mc_probs[0]
     check("空答案判错（且不崩）",

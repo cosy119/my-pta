@@ -1662,7 +1662,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|grep ^VERSION_ID= /etc/os-release\n|grep VERSION_ID= /etc/os-release\n|grep '^VERSION_ID=' /etc/os-release\n|grep ^VERSION_ID= /etc/os-release\n|grep \"^VERSION_ID=\" /etc/os-release\n",
+                "expected_stdout": "|grep ^VERSION_ID= /etc/os-release\n|grep VERSION_ID= /etc/os-release\n|grep '^VERSION_ID=' /etc/os-release\n|grep \"^VERSION_ID=\" /etc/os-release\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`grep ^VERSION_ID= /etc/os-release`。\n\n`/etc/os-release` 是 systemd 定下的**跨发行版标准文件**（Fedora 上它是指向 `/usr/lib/os-release` 的软链，`grep` 会顺着链读）。`^` 锚定行首，只捞出 `VERSION_ID=` 开头的那一行。\n\n★ 为什么不用 `cat /etc/fedora-release` —— 那行写的是 `Fedora release 44 (Forty Four)`，代号随版本变；`VERSION_ID` 永远是纯数字，拿来当判据最稳。\n\n★ **迁移**：任何发行版先 `grep VERSION_ID /etc/os-release`，比 `lsb_release -a` 靠谱 —— 后者在最小化安装里经常没装。"
@@ -3143,7 +3143,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|grep -c ERROR access.log\n|grep -c 'ERROR' access.log\n|grep -c ERROR access.log\n|grep -c \"ERROR\" access.log\n",
+                "expected_stdout": "|grep -c ERROR access.log\n|grep -c 'ERROR' access.log\n|grep -c \"ERROR\" access.log\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`grep -c ERROR access.log`。\n\n`-c`（`--count`）只输出**匹配的行数**，不是匹配次数 —— 一行里出现 10 次 `ERROR` 也只算 1。要真数「次数」得 `grep -o ERROR f | wc -l`。\n\n★ 大小写：`-i` 忽略大小写，`grep -ci error f` 会把 `Error`/`ERROR` 都算上。日志里两种写法混用是常态，别漏了 `-i`。\n\n★ `-c` 与 `grep ... | wc -l` 结果一般相同，但 `-c` **快得多**（不用把每一行都传给下一个进程）。\n\n★ **迁移**：`grep -c` 返回 0 匹配时退出码是 **1**，脚本里 `set -e` 会因此中断；用 `grep -c pattern f || true` 兜一下。"
@@ -3175,7 +3175,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|find /etc -name '*.conf'\n|find /etc -name *.conf\n|find /etc -name \"*.conf\"\n|find /etc -name \"*.conf\"\n|find /etc -name *.conf\n|find /etc -name '*.conf'\n|find /etc -name *.conf\n",
+                "expected_stdout": "|find /etc -name '*.conf'\n|find /etc -name *.conf\n|find /etc -name \"*.conf\"\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`find /etc -name '*.conf'`。\n\n★ **引号是必须的**（判题会宽容没加引号的写法，但真实 shell 里不宽容）：不加引号时 `*` 会被 shell **先展开**成当前目录下已存在的 `.conf` 文件，然后 `find` 拿到的是一个个具体文件名，语义就变成「找这几个文件」了。当前目录恰好没有 `.conf` 时 shell 会把 `*.conf` 原样传过去，于是「有时对有时错」—— 这类 bug 最难查。\n\n★ `-name` 只匹配**文件名本身**（不含路径），所以 `*.conf` 能命中 `/etc/a/b/c.conf`；要匹配整条路径得用 `-path`。\n\n★ **迁移**：找完想批量处理，别用管道接 `xargs` 带空格的文件名会断——用 `find ... -print0 | xargs -0 cmd` 或 `find ... -exec cmd {} +`。"
@@ -3207,7 +3207,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|find . -iname 'readme*'\n|find . -iname readme*\n|find . -iname \"readme*\"\n|find . -iname \"readme*\"\n|find . -iname readme*\n|find . -iname 'readme*'\n|find . -iname readme*\n",
+                "expected_stdout": "|find . -iname 'readme*'\n|find . -iname readme*\n|find . -iname \"readme*\"\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`find . -iname 'readme*'`。\n\n`-iname` 就是 `-name` 的**不分大小写**版（i = insensitive）。其余行为完全一样。\n\n★ 这是 Linux 上最常见的挫败来源之一：`find . -name 'readme*'` 找不到 `README.md`，因为 `-name` 用的是 **shell glob 语义，区分大小写**。\n\n★ 注意：`-iname` 是 GNU find 的扩展，POSIX 标准里没有，某些精简系统（busybox）不认。\n\n★ **迁移**：`grep -ri pattern .` 是「在文件**内容**里不分大小写地搜」，和 `-iname` 是两件事 —— 一个是按**名字**找文件，一个是按**内容**找行。"
@@ -3691,7 +3691,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|grep timeout app.log\n|grep 'timeout' app.log\n|grep timeout app.log\n|grep \"timeout\" app.log\n|grep \"timeout\" app.log\n|grep timeout app.log\n|grep 'timeout' app.log\n",
+                "expected_stdout": "|grep timeout app.log\n|grep 'timeout' app.log\n|grep \"timeout\" app.log\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`grep timeout app.log`。\n\n`grep 模式 文件`：**模式在前，文件在后**。写成 `grep app.log timeout` 会去一个叫 `timeout` 的目录里找 `app.log`，报 `No such file or directory`。\n\n★ 默认输出是**整行**，不是只输出匹配到的片段。只要片段得加 `-o`。\n\n★ 默认是**正则**（BRE）。`timeout` 里没有特殊字符所以没事，但搜 `.`、`*`、`[` 这些字符时必须转义或加 `-F`（固定字符串）。\n\n★ **迁移**：`grep -F 'a.b' f` 把模式当**纯文本**，搜代码/配置里的符号时最省心（`grep -F '[INFO]' log`）。"
@@ -3723,7 +3723,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|grep -i error app.log\n|grep -i 'error' app.log\n|grep -i error app.log\n|grep -i \"error\" app.log\n|grep --ignore-case error app.log\n",
+                "expected_stdout": "|grep -i error app.log\n|grep -i 'error' app.log\n|grep -i \"error\" app.log\n|grep --ignore-case error app.log\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`grep -i error app.log`。\n\n`-i`（`--ignore-case`）让匹配不分大小写。\n\n★ 与 `-i` 容易混的两个：\n- `-w`（word）只匹配**完整单词**：`grep -w error` 不会命中 `errors`\n- `-v`（invert）**反选**：输出不匹配的行\n\n★ 组合使用非常常见：`grep -iv 'debug' app.log` = 排除掉所有 debug 行。注意 `-iv` 也能写成 `-vi`，判题与 shell 都认。\n\n★ **迁移**：日志分析的三板斧是 `-i`（不分大小写）、`-v`（排除噪声）、`-c`（只数条数）。`grep -ic error f` 一行就给出「有多少行报 error」。"
@@ -3821,7 +3821,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|grep -r TODO src/\n|grep -rn TODO src/\n|grep -r 'TODO' src/\n|grep -r TODO src/\n|grep -r \"TODO\" src/\n",
+                "expected_stdout": "|grep -r TODO src/\n|grep -rn TODO src/\n|grep -r 'TODO' src/\n|grep -r \"TODO\" src/\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`grep -r TODO src/`。\n\n`-r`（recursive）递归整棵目录树。**多文件/递归时 grep 会自动加文件名前缀**，所以你能看出是哪个文件。\n\n★ 只给一个文件时**不会**加前缀 —— 这与 `head` 多文件加标题的逻辑正好相反，脚本里解析时要注意。\n\n★ `-r` 与 `-R` 的差别：`-r` **不跟随**符号链接，`-R` **跟随**。跟了软链可能死循环（软链指回上级），所以默认用 `-r`。\n\n★ 加 `-n` 带行号（`grep -rn`），这是日常最常用的组合 —— 能直接 `vim +行号 文件` 跳过去。\n\n★ **迁移**：想排除 `.git`、`node_modules` 用 `grep -rn --exclude-dir={.git,node_modules} TODO .`。"
@@ -3853,7 +3853,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|grep -n error app.log\n|grep -n 'error' app.log\n|grep -n error app.log\n|grep -n \"error\" app.log\n|grep --line-number error app.log\n",
+                "expected_stdout": "|grep -n error app.log\n|grep -n 'error' app.log\n|grep -n \"error\" app.log\n|grep --line-number error app.log\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`grep -n error app.log`。\n\n输出形如 `42:2026-10-19 connect error`——**行号 + 冒号 + 行内容**。冒号是关键分隔符，`cut -d: -f1` 就能把行号单独取出来。\n\n★ `-n` 与 `-c`、`-l` 的区分：\n- `-n` 显示**每行的行号**\n- `-c` 只给**匹配行数**\n- `-l` 只给**匹配的文件名**\n三个都是「少输出点东西」，但输出的是什么完全不同。\n\n★ **迁移**：`grep -rn` 是搜索代码的起手式；配 `--color=auto` 让命中处高亮，大多数发行版默认就是 `alias grep='grep --color=auto'`。"
@@ -4535,7 +4535,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|stat -c '%a' secret.key\n|stat -c %a secret.key\n|stat -c \"%a\" secret.key\n|stat -c %a secret.key\n|stat -c '%a %n' secret.key\n",
+                "expected_stdout": "|stat -c '%a' secret.key\n|stat -c %a secret.key\n|stat -c \"%a\" secret.key\n|stat -c '%a %n' secret.key\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`stat -c '%a' secret.key`。\n\n`stat` 的 `-c`（`--format`）可以自定义输出格式，`%a` = **八进制权限**。输出形如 `600`（不带前导 0，所以别拿它直接和 `0600` 字符串比较）。\n\n★ 其他常用占位符：\n- `%A` 符号位（`-rw-------`）\n- `%U` 属主名、`%G` 属组名\n- `%s` 字节大小、`%n` 文件名\n- `%i` inode 号\n\n★ 想要 `0600` 带前导零的格式用 `%04a`。\n\n★ **迁移**：`find . -perm 600` 是按权限查文件；`stat -c '%a'` 是**看某一个**文件。批量审计时用前者，单点确认用后者。"
@@ -7798,7 +7798,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|DIR=/var/log && ls $DIR\n|DIR=/var/log; ls \"$DIR\"\n|DIR=/var/log; ls $DIR\n|DIR=/var/log; ls '$DIR'\n|DIR=/var/log ls $DIR\n",
+                "expected_stdout": "|DIR=/var/log && ls $DIR\n|DIR=/var/log; ls \"$DIR\"\n|DIR=/var/log; ls $DIR\n|DIR=/var/log; ls '$DIR'\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`DIR=/var/log` 然后 `ls \"$DIR\"`。\n\n★ **`=` 两边不能有空格**！`DIR = /var/log` 会被解释成「执行一个叫 `DIR` 的命令，参数是 `=` 和 `/var/log`」，报 `DIR: command not found`。这是 shell 变量赋值的第一条铁律。\n\n★ 使用时要加 **`$`**，赋值时**不加**。`$DIR` 展开成值，`${DIR}` 是同一件事但边界更清楚（`${DIR}_log` 才不会把 `_log` 当成变量名的一部分）。\n\n★ **永远给变量加双引号**：`\"$DIR\"`。不加引号时值里有空格会被拆成多个参数，`ls $DIR` 遇到 `/my docs` 就变成 `ls /my docs`（两个参数）。\n\n★ **迁移**：`export DIR=...` 让子进程也能看到；`readonly DIR=...` 防误改；`unset DIR` 删除。"
@@ -8059,7 +8059,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|history | grep rsync\n|history | grep 'rsync'\n|history | grep rsync\n|history | grep \"rsync\"\n",
+                "expected_stdout": "|history | grep rsync\n|history | grep 'rsync'\n|history | grep \"rsync\"\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`history | grep rsync`。\n\n★ `history` 输出的是**带行号的历史列表**，想重新执行某条用 `!123`（行号）或 `!!`（上一条）。\n\n★ **交互式更快的方式**是 `Ctrl+R`：进入反向增量搜索，敲几个字母就定位到最近匹配的命令，再按 `Ctrl+R` 继续往前找，`Enter` 执行、`Esc` 退出编辑。\n\n★ **历史默认不被立即写入**：一个终端里的命令要**退出后**才进历史文件，所以在另一个窗口 `history | grep` 找不到刚敲的。想让历史实时写入：`shopt -s histappend` + `PROMPT_COMMAND='history -a'`。\n\n★ **历史里有敏感信息**（密码、token）的风险：命令行带密码会被记进 `~/.bash_history`。脚本里用环境变量或 stdin 传密码，别写在命令行。\n\n★ **迁移**：`history -c` 清空当前会话；`history -w` 立即写盘；`HISTTIMEFORMAT='%F %T '` 让历史带上时间。"
@@ -8155,7 +8155,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|printf 'line1\\nline2\\n' | grep pattern\n|printf line1\\nline2\\n | grep pattern\n|printf \"line1\\nline2\\n\" | grep pattern\n|printf \"line1\\nline2\\n\" | grep pattern\n|printf line1\\nline2\\n | grep pattern\n|printf 'line1\\nline2\\n' | grep pattern\n|echo -e 'line1\\nline2' | grep pattern\n|echo -e line1\\nline2 | grep pattern\n|echo -e \"line1\\nline2\" | grep pattern\n",
+                "expected_stdout": "|printf 'line1\\nline2\\n' | grep pattern\n|printf line1\\nline2\\n | grep pattern\n|printf \"line1\\nline2\\n\" | grep pattern\n|echo -e 'line1\\nline2' | grep pattern\n|echo -e line1\\nline2 | grep pattern\n|echo -e \"line1\\nline2\" | grep pattern\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "`printf 'line1\\nline2\\n' | grep pattern`。\n\n★ **为什么用 `printf` 不用 `echo`**：`echo` 对转义序列的处理**因 shell 而异** —— bash 内建的 `echo` 默认**不解释** `\\n`（要 `-e`），而 `sh` 的 `echo` 常常解释。`printf` 是 POSIX 标准工具，行为**确定**，所以脚本里输出/造数据一律优先 `printf`。\n\n★ 末尾那个 `\\n` 别漏：不写的话最后一行**没有换行符**，接 `grep`/`wc -l` 时会少算一行 —— 这是「造的数据看起来少一行」的常见原因。\n\n★ 真正的**多行文本**用 heredoc：\n```bash\ngrep pattern <<'EOF'\nline1\nline2\nEOF\n```\n`'EOF'` 加引号表示内容原样传（`$VAR` 不展开）—— 生成配置文件时**必须**加引号。\n\n★ **迁移**：`printf '%s\\n' a b c` 一次造三行；`<<<` 是 herestring（bash 特性）：`grep x <<< \"$VAR\"`。"
@@ -8897,6 +8897,2345 @@ LINUX_PROBLEMS: list[dict] = [
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "**`dnf provides '*/ls'`**（拿 `ls` 举例）。\n\n`command not found` 之后想「它到底属于哪个包」，这条是最靠谱的路 —— 因为它查的是**真实的文件归属关系**，不是猜。\n\n★ **为什么要写 `*/命令名` 这种带通配符的样子**：\n- `dnf provides ls` 会匹配**所有**名字里带 `ls` 的包（`alsa`、`lsblk` 一大堆噪音）\n- `dnf provides '*/ls'` 精确表示「**某个路径下名为 ls 的文件**」\n- 通配符**必须用单引号包起来**，否则 shell 会抢先展开它\n\n**为什么这条特别值得记**：本机实测过，很多时候**站内搜不到某工具**并不等于它不存在 —— 用 `dnf provides` 查文件归属才是权威答案。\n\n配套命令：\n```bash\nrpm -qf /usr/bin/ls          # 反过来：这个文件属于哪个已装的包\ndnf search 关键词            # 按描述搜包\ndnf repoquery -l 包名        # 看这个包里都有哪些文件\n```"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-1 绝对路径进目录，再用相对路径回两级",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "cd",
+            "相对路径",
+            "..",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 1 题。**\n\n用 `cd` 以**绝对路径**进入 `/usr/local/bin` 并查看该目录内容；然后用**相对路径**回到 `/usr` 并查看该目录内容。\n\n（把这两步写出来。不要写 `pwd` —— 题目没有要求打印路径。）",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd /usr/local/bin; ls; cd ../..; ls",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd /usr/local/bin; ls; cd ../..; ls\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cd /usr/local/bin` → `ls` → `cd ../..` → `ls`。\n\n★ 关键在 `../..`：`bin` 的上一级是 `local`，再上一级才是 `usr`，所以是**两级**。写成 `cd ..` 会停在 `/usr/local`。\n\n★ `..` 是「上一级目录」的硬链接，每个目录都有，由内核维护，不是谁建出来的。`cd ../..` 等价于 `cd /usr`，但题目要的是**相对路径**，所以不能写绝对路径。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-2 连隐藏文件一起看根目录",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 12,
+        "tags": [
+            "ls",
+            "-a",
+            "隐藏文件",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 2 题。**\n\n使用 `ls` 查看根目录下的**所有**文件（包含隐藏文件）。",
+        "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ls -a /",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ls -a /\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`ls -a /`。\n\n`-a` = all，把以 `.` 开头的隐藏文件也列出来。\n\n★ 这题**不要**写 `-l`：题目只说「查看所有文件」，没要长格式。`ls -la /` 能跑，但多答了不是题目要求的东西 —— 实验报告里对齐题目要求是习惯，题库判分时也把 `ls -la /` 算作等价（见 `compare._norm_cmd` 的短选项簇处理）。\n\n★ 根目录下的隐藏项很少：`/` 通常是 `.`、`..`、`.autorelabel`（装过 SELinux 重打标签）这几个，真正的大头在 `/etc` 和各家目录里。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-3 主目录有什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 16,
+        "tags": [
+            "cd",
+            "~",
+            "ls",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 3 题。**\n\n切换到普通用户的主目录，并查看主目录下有哪些文件。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd ~; ls -a",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd ~; ls -a\n|ls -a ~\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cd ~` 然后 `ls -a`；或者一步 `ls -a ~`。\n\n★ `~` 是 shell 的**波浪号展开**：在命令交给程序之前，bash 会把它换成 `$HOME`。所以 `ls ~` 和 `ls /home/你的名字` 是一回事 —— 题库判分把这两种写法折成同一个（`compare._norm_home`）。\n\n★ 主目录下那几个点开头的目录（`.config`、`.cache`、`.local`）是桌面环境自己建的，删了会丢应用配置，别当垃圾清。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-4 连下三级，再一级一级往回走",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "cd",
+            "相对路径",
+            "陷阱",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 4 题。**\n\n先切到 `/usr/local/share/applications` 并查看内容；用相对路径切到 `local` 并查看；再用相对路径切到 `share` 并查看。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd /usr/local/share/applications; ls; cd ../..; ls; cd share; ls",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd /usr/local/share/applications; ls; cd ../..; ls; cd share; ls\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cd /usr/local/share/applications` → `ls` → `cd ../..` → `ls` → `cd share` → `ls`。\n\n★★ 这题的机关在最后一步：`share` 就在 `/usr/local` **下面**，所以是 `cd share`。\n如果顺着前面 `cd ../..` 的惯性写 `cd ../share`，你会到 `/usr/share` —— **那个目录真实存在，不会报错**，所以特别容易蒙混过关。\n\n★ 自查办法：`pwd`。题目没要求打印路径，所以答案里不写它，但你自己做实验时该敲一下确认。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-5 日志目录的长格式全清单",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": [
+            "ls",
+            "-l",
+            "-a",
+            "var/log",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 5 题。**\n\n查看 `/var/log` 下的所有文件（含隐藏文件），**以长格式**显示。",
+        "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ls -la /var/log",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ls -la /var/log\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`ls -la /var/log`。\n\n`-l` 长格式（权限、属主、大小、时间、名字），`-a` 含隐藏文件，两个一起写就是这题的最小答案。\n\n★ 长格式里第一列那串 `-rw-r--r--.` 末尾的**点**是 SELinux 安全上下文标记，Fedora 默认开着 SELinux 才有；`+` 表示带 ACL。\n\n★ Fedora 的 `/var/log` 里持久化日志没几条 —— 大头被 `journald` 收进了二进制日志（`journalctl` 查看），不再往文本文件里写。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-6 用重定向把目录清单存成文件，再带行号看",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "重定向",
+            "cat -n",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 6 题。**\n\n把 `/usr/local` 目录下的文件名**重定向**到主目录的 `test1.txt`；然后用 `cat` 查看 `test1.txt` 的内容并**显示行号**。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ls /usr/local > ~/test1.txt; cat -n ~/test1.txt",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ls /usr/local > ~/test1.txt; cat -n ~/test1.txt\n|ls /usr/local > test1.txt; cat -n test1.txt\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`ls /usr/local > ~/test1.txt` → `cat -n ~/test1.txt`。\n\n★ `>` 是**覆盖**重定向（先截断再写），`>>` 是追加。写错成 `>>` 多做几次实验，文件里就会堆出几份重复清单。\n\n★ `cat -n` 显示行号；`cat -b` 只给非空行编号，这两个别混。\n\n★ 行数对得上不对得上可以自查：`ls /usr/local | wc -l` 的数应当和 `cat -n` 打印的最后一行的编号一致。这一步属于自查，不写进答案。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-7 系统认哪些登录 shell",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 12,
+        "tags": [
+            "cat",
+            "/etc/shells",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 7 题。**\n\n查看当前系统支持哪些 shell 类型。",
+        "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cat /etc/shells",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cat /etc/shells\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cat /etc/shells`。\n\n`/etc/shells` 是「合法登录 shell」白名单：`chsh` 改 shell 时会对照它，不在名单里的会被拒绝。Fedora 44 上一般是 sh、bash、tmux（有的版本还有 zsh）。\n\n★ `chsh -l` 也能列，效果一样，但题目问的是「系统支持哪些」，`cat /etc/shells` 是最直接的答案。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-8 我现在的默认 shell 是哪个",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 12,
+        "tags": [
+            "echo",
+            "SHELL",
+            "环境变量",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 8 题。**\n\n查看终端当前默认使用的 shell。",
+        "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "echo $SHELL",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|echo $SHELL\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`echo $SHELL`。\n\n`$SHELL` 是**登录时**写进环境变量的那个 shell 路径，Fedora Workstation 上是 `/bin/bash`。\n\n★ 想验证还可以看 `echo $0`（当前这个 shell 进程的名字，显示 `-bash`）或者 `ps -p $$ -o comm=`。三者的区别：`$SHELL` 是「登记的默认值」，`$0` 是「现在跑着的这个」。题目问「当前默认」，`$SHELL` 最贴题。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-9 分页看配置文件：more 与 less 各来一遍",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "more",
+            "less",
+            "分页",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 9 题。**\n\n分别用 `more` 和 `less` 查看 `/etc/ssh/ssh_config` 的内容（截取部分即可）。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "more /etc/ssh/ssh_config; less /etc/ssh/ssh_config",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|more /etc/ssh/ssh_config; less /etc/ssh/ssh_config\n|less /etc/ssh/ssh_config\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`more /etc/ssh/ssh_config` → `less /etc/ssh/ssh_config`。\n\n★ 操作差别：`more` 只能往下翻（空格一页、回车一行、`q` 退出）；`less` 能往回翻（`↑`/`↓`、`b` 上一页、`/关键词` 向下搜、`n` 下一个匹配、`q` 退出）。`less` 是 `more` 的超集，日常都用 `less`。\n\n★ 退出 `less` 会**清屏**：要截「翻页中的画面」，得按 `q` 之前截。"
+            }
+        ]
+    },
+    {
+        "title": "实验 2-10 su 的那个减号：root 与普通用户的家目录分别是哪",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "su",
+            "pwd",
+            "root",
+            "实验2"
+        ],
+        "choices": [],
+        "source_section": "实验 2 · 基本命令",
+        "statement_md": "**实验 2 第 10 题。**\n\n切到 root，查看 root 主目录下有哪些文件并打印它的**绝对路径**；退回普通用户，切到自己的主目录并打印其绝对路径。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "su -; pwd; ls -a; exit; cd ~; pwd",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|su -; pwd; ls -a; exit; cd ~; pwd\n|su -; pwd; ls -a; exit; cd; pwd\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`su -` → `pwd` → `ls -a` → `exit` → `cd ~` → `pwd`。\n\n★★ **这题的全部机关就是 `su` 后面那个减号：**\n- `su -`（完整登录）：环境变量整套换掉，`$HOME` 变成 `/root`，落点也在 `/root`，所以 `pwd` 打 `/root`。\n- `su`（不带减号）：只换身份**不换环境**，`$HOME` 还是 `/home/你`，`pwd` 停在原来的目录 —— 打印出来的「root 主目录」彻底是错的。\n\n★ 这题要「打印绝对路径」，所以此处 `pwd` 是题目要求的，不算多余命令。\n\n★ Fedora Workstation 装机时默认**不设 root 密码**（走 `sudo`），真机上要 `su -` 得先 `sudo passwd root` 给 root 设个密码。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-1 根目录清单落到 sdut1.txt",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "重定向",
+            "ls",
+            "cat",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 1 题。**\n\n查看根目录下有哪些文件，把输出重定向到主目录的 `sdut1.txt`，然后查看这个文件的内容。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ls / > ~/sdut1.txt; cat ~/sdut1.txt",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ls / > ~/sdut1.txt; cat ~/sdut1.txt\n|ls / > sdut1.txt; cat sdut1.txt\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`ls / > ~/sdut1.txt` → `cat ~/sdut1.txt`。\n\n跟实验 2 第 6 题同一套路，只是这次源目录是 `/`、少了个 `-n`。\n\n★ 一条命令里 `>` 后面的路径**由 shell 展开**，所以 `~/sdut1.txt` 会先变成 `/home/你/sdut1.txt` 再交给 `ls`。\n\n★ 重定向的坏习惯要早改：`ls / > /etc/xxx` 这种写错路径的操作，普通用户因为没有写权限会被挡住 —— 这正是权限体系在保护你。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-2 在 /tmp 下建目录，还要一次建出四层",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "mkdir",
+            "-p",
+            "ls -R",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 2 题。**\n\n切到 `/tmp`，在那里建目录 `aa`；再建多级目录 `a1/a2/a3/a4`；最后查看目录是否建好（要能看到层层嵌套）。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd /tmp; mkdir aa; mkdir -p a1/a2/a3/a4; ls -R a1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd /tmp; mkdir aa; mkdir -p a1/a2/a3/a4; ls -R a1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cd /tmp` → `mkdir aa` → `mkdir -p a1/a2/a3/a4` → `ls -R a1`。\n\n★★ `mkdir` **不带 `-p` 建不了多级目录**：`mkdir a1/a2` 会报 `No such file or directory`，因为 `a1` 还不存在。`-p`（parents）会把整条路径缺的父目录一起建出来，而且**目录已存在也不报错**。\n\n★ `ls -R` 递归列出，能一眼看到 `a1/a2/a3/a4` 四层。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-3 把 /tmp/a1 整棵子树复制到 /usr",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "cp",
+            "-r",
+            "sudo",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 3 题。**\n\n把 `/tmp/a1` 目录及其子目录用 `cp` 复制到 `/usr` 下，然后切到 `/usr` 查看是否复制成功。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo cp -r /tmp/a1 /usr/; cd /usr; ls -R a1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo cp -r /tmp/a1 /usr/; cd /usr; ls -R a1\n|sudo cp -r /tmp/a1 /usr/; cd /usr; ls a1\n|cp -r /tmp/a1 /usr/; cd /usr; ls -R a1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo cp -r /tmp/a1 /usr/` → `cd /usr` → `ls -R a1`。\n\n★★ 两个点必须都在：\n- `-r`：复制目录**必须**递归，不加会报 `omitting directory`。\n- `sudo`：`/usr` 是 root 的目录（755），普通用户写不进去。\n\n★ 目标写成 `/usr/`（带斜杠）和 `/usr`（不带）在 `cp` 这里结果一样 —— 都是「把 a1 放进 /usr 里」。真正会咬人的是 `rsync`，它对末尾斜杠非常敏感。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-4 在 /etc 里只挑名字含 pass 的",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "ls",
+            "通配符",
+            "grep",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 4 题。**\n\n切到 `/etc`，**仅显示**名字里包含 `pass` 的文件。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd /etc; ls -d *pass*",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd /etc; ls -d *pass*\n|ls -d /etc/*pass*\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cd /etc` → `ls -d *pass*`。\n\n★ 这里的 `*pass*` 是 **shell 通配符**，不是 `ls` 的功能：bash 先把 `*pass*` 展开成 `passwd passwd-` 这些真实文件名，再交给 `ls`。\n如果没有任何文件匹配，bash 会把 `*pass*` **原样**传给 `ls`，于是报 `No such file or directory` —— 这是通配符的经典坑。\n\n★ `-d` 让 `ls` 把目录本身列出来、而不是列它的内容。这题匹配到的都是文件，但养成 `ls -d */` 的习惯能少踩很多坑。\n\n★ 也可以 `ls | grep pass`（管道过滤），但题目说「显示文件」，`ls -d *pass*` 是最贴题的一条。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-5 在 /usr/local/games 里建 game1 并打印它的绝对路径",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "mkdir",
+            "pwd",
+            "sudo",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 5 题。**\n\n切到 `/usr/local/games`，在那里建新目录 `game1`，切进 `game1`，并**打印当前所在目录的绝对路径**。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd /usr/local/games; sudo mkdir game1; cd game1; pwd",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd /usr/local/games; sudo mkdir game1; cd game1; pwd\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cd /usr/local/games` → `sudo mkdir game1` → `cd game1` → `pwd`。\n\n★ 系统目录下建东西要 `sudo`：`/usr/local/games` 是 root:root 755，普通用户没有写权限。\n\n★ 这里 `pwd` 是**题目要求**的（要打印绝对路径），所以必须写 —— 跟「题目没要求就删掉 pwd」的规矩不冲突。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-6 按通配符把 /boot 的内核文件拷进 ~/abc",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "cp",
+            "通配符",
+            "sudo",
+            "boot",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 6 题。**\n\n用 `cp` 把 `/boot` 下所有以 `vmlinuz` 开头的文件拷到主目录的 `abc` 目录（不存在就先建），然后进去查看是否已复制。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/; cd ~/abc; ls -lh",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/; cd ~/abc; ls -lh\n|mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/; cd ~/abc; ls -lh\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`mkdir -p ~/abc` → `sudo cp /boot/vmlinuz* ~/abc/` → `cd ~/abc` → `ls -lh`。\n\n★ `mkdir -p` 的 `-p` 让「目录已存在」不报错，这样重复做实验也不会中断。\n\n★ `/boot` 下的文件大多 **600 root**，普通用户连读都不行，所以必须 `sudo cp`。这一条没有 sudo 会报 `Permission denied`，是本题最常见的错法。\n\n★ 通配符 `vmlinuz*` 由 shell 展开成 `vmlinuz-7.1.12-...` 这类真实文件名；`/boot` 里通常只有一个版本。\n\n★ `ls -lh` 的 `-h` 把大小显示成人能读的 `13M` 这种。内核映像动辄十几兆，不换算单位看不出「拷成功了但只拷了一半」。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-7 建个空文件，交给 vi 改内容",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "touch",
+            "vi",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 7 题。**\n\n用 `touch` 在主目录建空文件 `hello`，然后用 `vi` 把它改成 `this is a file of sdut`，再查看内容。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "touch ~/hello; vi ~/hello",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|touch ~/hello; vi ~/hello\n|touch hello; vi hello\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`touch ~/hello` → `vi ~/hello`。\n\n★ `touch` **已存在的文件不会清空**，只更新修改时间；这是它和 `> file`（会截断）最大的差别。\n\n★ `vi` 的三步是**模式**而不是菜单：\n1. `i` 进插入模式（左下角出现 `-- INSERT --`），把 `this is a file of sdut` 打进去\n2. `Esc` 回命令模式\n3. `:wq` 保存退出（`:w` 只存不退，`:q!` 不存硬退）\n\n★ `vi` 是交互式程序，题库不执行它，只比对命令 —— 但实验报告里的截图必须是「`cat` 出来是那句话」，所以真机上这一步别省。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-8 echo 写文件，再用分页器看",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "echo",
+            "重定向",
+            "less",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 8 题。**\n\n在主目录用 `echo` 把 `this is my new file` 重定向到文件 `mysdutfile`，再用 `less`（或 `more`）查看它。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "echo \"this is my new file\" > ~/mysdutfile; less ~/mysdutfile",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|echo \"this is my new file\" > ~/mysdutfile; less ~/mysdutfile\n|echo \"this is my new file\" > ~/mysdutfile; more ~/mysdutfile\n|echo 'this is my new file' > ~/mysdutfile; less ~/mysdutfile\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`echo \"this is my new file\" > ~/mysdutfile` → `less ~/mysdutfile`。\n\n★ 这句话里有**空格**，所以必须加引号：不加的话 `echo` 会把五个词都吞下、但 `>` 重定向只属于最后那个词所在的命令 —— 实际上不加引号 `echo this is my new file > f` 结果也正确（echo 接受多个参数），真正会翻车的是 `var=this is my new file` 这种赋值。\n\n★ 引号加单还是加双：单引号里的一切都按字面，双引号里 `$` 和 `\\` 仍会被解释。所以带 `$` 的字符串想原样输出用单引号。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-9 建了挪到根目录再改名",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "mv",
+            "重命名",
+            "sudo",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 9 题。**\n\n在 `/usr/local` 下建 `test7`，把它**移动到根目录**；再把根目录下的 `test7` **改名**为 `test8`；最后查看根目录内容。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo mkdir /usr/local/test7; sudo mv /usr/local/test7 /; sudo mv /test7 /test8; ls /",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo mkdir /usr/local/test7; sudo mv /usr/local/test7 /; sudo mv /test7 /test8; ls /\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo mkdir /usr/local/test7` → `sudo mv /usr/local/test7 /` → `sudo mv /test7 /test8` → `ls /`。\n\n★★ **`mv` 同时是「移动」和「改名」**：目标路径不存在时就是改名，存在且是目录就是往里移。这题两次 `mv` 刚好各演一次。\n\n★ 每步都要 `sudo`：`/usr/local` 和 `/` 都只有 root 能写。\n\n★ `mv /usr/local/test7 /` 后面那个 `/` 是目标目录；写成 `mv /usr/local/test7 /test8` 一步就能到终点，但题目要的是「先移动、再改名」两个动作，实验报告里要能看到两次操作。"
+            }
+        ]
+    },
+    {
+        "title": "实验 3-10 删掉 /test8 并确认删干净",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "rm",
+            "-r",
+            "grep",
+            "实验3"
+        ],
+        "choices": [],
+        "source_section": "实验 3 · 常用命令",
+        "statement_md": "**实验 3 第 10 题。**\n\n删除根目录下的 `test8` 目录，并查看是否已经删除。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo rm -r /test8; ls / | grep test8",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo rm -r /test8; ls / | grep test8\n|sudo rm -rf /test8; ls / | grep test8\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo rm -r /test8` → `ls / | grep test8`。\n\n★★ 删目录必须 `-r`：`rm /test8` 会报 `Is a directory`。`rm -rf` 的 `-f` 是「不存在的也不报错」，题目没要求，`-r` 就够。\n\n★ 第二句用 `grep` 过滤：**没有任何输出**才代表删干净了。空输出在 shell 里是正常现象，不是命令失败 —— 别把「什么都没有」当报错。\n\n★ 危险动作提醒：`rm -rf` 一旦手滑写成 `rm -rf / test8`（多一个空格），就是删全盘。真机上删系统目录前先 `ls -ld` 确认一遍。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-1 建目录、打包备份、再解到别处",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 16,
+        "tags": [
+            "tar",
+            "czvf",
+            "xzvf",
+            "-C",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 1 题。**\n\n在 `/usr` 下建目录 `test5`，用 `tar` 压缩备份到主目录的 `test5.tar.gz` 并确认；再把它解压到 `/usr/local` 并确认。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo mkdir /usr/test5; sudo tar czvf ~/test5.tar.gz /usr/test5; ls -lh ~/test5.tar.gz; sudo tar xzvf ~/test5.tar.gz -C /usr/local; ls -l /usr/local/test5",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo mkdir /usr/test5; sudo tar czvf ~/test5.tar.gz /usr/test5; ls -lh ~/test5.tar.gz; sudo tar xzvf ~/test5.tar.gz -C /usr/local; ls -l /usr/local/test5\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo mkdir /usr/test5` → `sudo tar czvf ~/test5.tar.gz /usr/test5` → `ls -lh ~/test5.tar.gz` → `sudo tar xzvf ~/test5.tar.gz -C /usr/local` → `ls -l /usr/local/test5`。\n\n★ 四个字母各管一件事：`c` 创建、`z` gzip 压缩、`v` 显示过程、`f` 指定文件名。解压时把 `c` 换成 `x`。\n\n★★ `-C` 必须紧挨着**目标目录**，且要放在包名**后面**：`tar xzvf 包 -C 目录`。写成 `tar -C 目录 xzvf 包` 在某些实现里会被当成另一回事。\n\n★ 解压出来的路径是 `usr/test5` 还是 `/usr/local/test5`，取决于打包时用的路径写法。本题打包用的是绝对路径 `/usr/test5`，解压时 GNU tar 会剥掉前导 `/` 并提示 `Removing leading / from member names`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-2 确认 vim 装没装，再用它写个文件",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "rpm",
+            "dnf",
+            "vim",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 2 题。**\n\n先确认 `vim` 是否已安装（没装就用 `dnf` 装）；然后到 `/usr/local` 下用 `vim` 新建 `sdutfile`，内容为 `hellosdut`。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "rpm -q vim-enhanced; sudo dnf install -y vim; cd /usr/local; sudo vim sdutfile",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|rpm -q vim-enhanced; sudo dnf install -y vim; cd /usr/local; sudo vim sdutfile\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`rpm -q vim-enhanced` → `sudo dnf install -y vim` → `cd /usr/local` → `sudo vim sdutfile`。\n\n★ `rpm -q 包名` 才是「查本地装没装」的正确姿势，`rpm -qa` 是列全部（再 `| grep vim`）。已装时 `dnf install` 只会提示 `Nothing to do`，不会坏事。\n\n★ `dnf install` 的包名是 `vim`（元包），实际装的是 `vim-enhanced`。用 `rpm -q` 查的时候要查**真实的包名** `vim-enhanced`。\n\n★ `/usr/local` 普通用户写不进去，所以 `vim` 前面要 `sudo`。（不想提权就把文件建在自己家目录，这也是实验报告里更省事的做法。）"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-3 在根目录挂一个符号链接",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 16,
+        "tags": [
+            "ln",
+            "-s",
+            "符号链接",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 3 题。**\n\n在 `/usr/local` 下建目录 `sdutshare`，在**根目录**建一个名为 `myshare` 的**符号链接**指向它，然后在根目录查看链接是否建好。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo mkdir /usr/local/sdutshare; sudo ln -s /usr/local/sdutshare /myshare; ls -l / | grep myshare",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo mkdir /usr/local/sdutshare; sudo ln -s /usr/local/sdutshare /myshare; ls -l / | grep myshare\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo mkdir /usr/local/sdutshare` → `sudo ln -s /usr/local/sdutshare /myshare` → `ls -l / | grep myshare`。\n\n★★ `ln -s` 的参数顺序是 **`ln -s <真实目标> <链接名>`** —— 跟 `cp 源 目标` 一致，但跟中文语序刚好相反，是这题最常写反的地方。写反了会得到一个「指向自己」的死链。\n\n★ 查链接要看 `ls -l`：软链的第一列是 `l`，最后有 `myshare -> /usr/local/sdutshare` 的箭头。\n\n★ 软链 vs 硬链：软链是**另一个文件**，存的是目标路径；硬链是**同一个 inode 的第二个名字**，`ls -l` 里看不出来（只能靠 `ls -i` 的 inode 号相同来认）。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-4 按字典逆序排四行字",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": [
+            "sort",
+            "-r",
+            "逆序",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 4 题。**\n\n主目录下有一个 `mysort1` 文件，四行分别是 `is`、`this`、`excellent`、`my`。把它按**字典逆序**排序显示。",
+        "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sort -r ~/mysort1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sort -r ~/mysort1\n|sort -r mysort1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sort -r ~/mysort1`。\n\n★ `-r` = reverse，倒序；不加是升序（`excellent`、`is`、`my`、`this`）。\n\n★ 逆序结果：`this`、`my`、`is`、`excellent`。\n\n★ 别和 `sort -n` 混：`-n` 按**数值**排，非数字行会被当成 0 全堆在最前面。这题全是单词，只能用默认的字典序。\n\n★ 想**原地**改文件内容要写 `sort -r mysort1 -o mysort1`（或重定向到临时文件再搬回去），直接 `sort -r f > f` 会把文件清空 —— 重定向在命令执行**之前**就把文件截断了。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-5 输出一句话但不换行",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": [
+            "echo",
+            "-n",
+            "不换行",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 5 题。**\n\n用 `echo` 输出 `hello everyone!`，要求输出之后**不换行**。",
+        "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "echo -n \"hello everyone!\"",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|echo -n \"hello everyone!\"\n|echo -n 'hello everyone!'\n|printf \"hello everyone!\"\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`echo -n \"hello everyone!\"`。\n\n★ `-n` 就是不输出行尾换行。验证办法：`echo -n hi; echo -n there` 会挤在同一行 `hithere`，而 `echo hi; echo there` 是两行。\n\n★ `echo -e` 是另一回事：它让 `\\n`、`\\t` 这类**转义**生效，`echo -e \"a\\nb\"` 会打印两行。两个开关别混。\n\n★ 更可控的替代是 `printf`（不带 `\\n` 就不换行）。脚本里推荐 `printf`，因为不同 shell 的 `echo` 对 `-e` 的处理历史上并不统一。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-6 查 grep 的手册页",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 12,
+        "tags": [
+            "man",
+            "grep",
+            "手册",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 6 题。**\n\n用 `man` 查看 `grep` 命令的使用方法。",
+        "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "man grep",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|man grep\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`man grep`。\n\n★ 手册页的分区：1 用户命令、5 文件格式、8 系统管理。`man 5 passwd` 看的是**文件格式**，`man 1 passwd` 看的才是**命令** —— 同名不同区时用数字指定。\n\n★ 常用操作跟 `less` 一样（`man` 就是拿 `less` 当分页器）：空格翻页、`/关键词` 搜索、`q` 退出。\n\n★ 只想看某个选项：`man grep | grep -A3 -- -E`，或者直接用 `grep --help`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-7 解压 Eclipse 并启动它",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "tar",
+            "eclipse",
+            "./",
+            "PATH",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 7 题。**\n\n把下载好的 `eclipse-java-*-linux-gtk-x86_64.tar.gz` 放在 `~/下载` 里。解压它、进入解压出的 `eclipse` 目录、启动 `./eclipse`。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd ~/下载; tar xzvf eclipse-java-2026-09-R-linux-gtk-x86_64.tar.gz; cd eclipse; ./eclipse",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd ~/下载; tar xzvf eclipse-java-2026-09-R-linux-gtk-x86_64.tar.gz; cd eclipse; ./eclipse\n|cd ~/Downloads; tar xzvf eclipse-java-2026-09-R-linux-gtk-x86_64.tar.gz; cd eclipse; ./eclipse\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cd ~/下载` → `tar xzvf eclipse-java-....tar.gz` → `cd eclipse` → `./eclipse`。\n\n★ `./eclipse` 前面那个 `./` **不能省**：Linux 默认不把当前目录放进 `PATH`，直接敲 `eclipse` 会报 `command not found`。这是新手最常卡住的一步。\n\n★ `tar xzvf` 不写 `-C` 就解到当前目录，包里自带顶层的 `eclipse/` 目录，所以解完就能 `cd eclipse`。\n\n★ 想以后随时能启动，加个软链：`sudo ln -s ~/下载/eclipse/eclipse /usr/local/bin/eclipse`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-8 两个文件拼成第三个，再一起搬进目录",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "cat",
+            "重定向",
+            "mv",
+            "多文件",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 8 题（四小问一次做完）。**\n\n(a) 主目录建 `file11`、`file12`，内容分别是 `sdut11`、`sdut12`；\n(b) 建目录 `dir1`；\n(c) 用 `cat` 让 `dir1/file13` 同时含这两个文件的内容，并查看；\n(d) 把 `file11`、`file12` 移进 `dir1` 并查看结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd ~; echo \"sdut11\" > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd ~; echo \"sdut11\" > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|cd ~; echo sdut11 > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|cd ~; echo 'sdut11' > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|cd ~; echo \"sdut11\" > file11; echo sdut12 > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|cd ~; echo \"sdut11\" > file11; echo 'sdut12' > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|echo \"sdut11\" > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n|echo sdut11 > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n|echo 'sdut11' > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n|echo \"sdut11\" > file11; echo sdut12 > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n|echo \"sdut11\" > file11; echo 'sdut12' > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`echo \"sdut11\" > file11` → `echo \"sdut12\" > file12` → `mkdir dir1` → `cat file11 file12 > dir1/file13` → `cat dir1/file13` → `mv file11 file12 dir1/` → `ls -l dir1`。\n\n★ `cat a b > c` 是**按顺序拼接**：`file13` 里第一行是 `sdut11`、第二行是 `sdut12`。顺序写反了内容顺序就反了。\n\n★★ `mv` 可以**一次搬多个**：最后一个参数必须是**目录**，前面几个是要搬的东西。`mv file11 file12 dir1/` 合法，`mv file11 file12` 会被当成「file11 改名成 file12」。\n\n★ 目标末尾那个 `/` 是提示「这是目录」，写不写都行，写了更不容易看错。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-9 Fedora 装 MySQL 的正确包名",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 16,
+        "tags": [
+            "dnf",
+            "mysql-server",
+            "systemctl",
+            "mysqld",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 9 题。**\n\n用 `dnf` 在 Fedora 上安装 MySQL，启动服务。（写出安装与启动这两步的命令即可，登录进去看库是后续操作。）",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo dnf install -y mysql-server; sudo systemctl start mysqld",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo dnf install -y mysql-server; sudo systemctl start mysqld\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo dnf install -y mysql-server` → `sudo systemctl start mysqld`。\n\n★★ 两处名字不一样，这是本题唯一但最容易丢分的地方：\n- **包名**是 `mysql-server`（Fedora 里没有叫 `mysql` 的包）\n- **服务名**是 `mysqld`（不是 `mysql-server`，也不是 `mysql`）\n\n★ 在 Debian/Ubuntu 上包名是 `mysql-server`、服务名是 `mysql` —— 教程混着抄就翻车。\n\n★ Fedora 装完 MySQL 8 会生成一个**临时 root 密码**，在日志里：`sudo grep 'temporary password' /var/log/mysqld.log`。第一次登录要用它，登录后必须立刻改密码，否则什么都不能做。\n\n★ 顺手把服务设成开机自启：`sudo systemctl enable mysqld`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 4-10 以 root 身份建目录建文件，再用 ll 看权限",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "su",
+            "ll",
+            "alias",
+            "touch",
+            "实验4"
+        ],
+        "choices": [],
+        "source_section": "实验 4 · 综合命令",
+        "statement_md": "**实验 4 第 10 题。**\n\n切到 root，在 `/usr/local` 下建目录 `perm`，在 `perm` 里建文件 `newfile`，用 `ll` 查看该文件的详细信息，然后退回普通用户。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "su -; mkdir /usr/local/perm; touch /usr/local/perm/newfile; ll /usr/local/perm/newfile; exit",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|su -; mkdir /usr/local/perm; touch /usr/local/perm/newfile; ll /usr/local/perm/newfile; exit\n|su -; mkdir /usr/local/perm; touch /usr/local/perm/newfile; ls -l /usr/local/perm/newfile; exit\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`su -` → `mkdir /usr/local/perm` → `touch /usr/local/perm/newfile` → `ll /usr/local/perm/newfile` → `exit`。\n\n★ 切到 root 之后**不用再写 sudo** —— 已经是 root 了。\n\n★ `ll` 是 Fedora 里预先定义好的**别名**（`alias ll='ls -l'`），在 `~/.bashrc` 或 `/etc/profile.d/` 里。换一个 shell 或换台机器可能就没有，所以脚本里一律写 `ls -l`，交互时才用 `ll`。\n\n★ 看到 `-rw-r--r--. 1 root root` 就说明文件属主属组都是 root —— 普通用户之后改不了它，除非 sudo。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-1 连建两个用户，切到第一个",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "useradd",
+            "-m",
+            "sudo -iu",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 1 题。**\n\n新建 `user01` 和 `user02` 两个用户，并切换到 `user01`。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo useradd -m user01; sudo useradd -m user02; sudo -iu user01",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo useradd -m user01; sudo useradd -m user02; sudo -iu user01\n|sudo useradd -m user01; sudo useradd -m user02; su - user01\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo useradd -m user01` → `sudo useradd -m user02` → `sudo -iu user01`。\n\n★ `-m` 让 `useradd` 建家目录（`/home/user01`）。Fedora 的 `/etc/login.defs` 里 `CREATE_HOME yes` 其实已经默认建，但实验报告要求显式写，写上是好习惯。\n\n★ 新建用户**默认没有密码**（`passwd` 那一列是 `!!`），所以 `su - user01` 用不了；`sudo -iu user01` 靠 sudo 提权过去，不需要密码 —— 实验里推荐这个。\n\n★ `-iu` = `-i`（模拟完整登录，环境变量整套换）+ `-u 用户`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-2 在 user01 家目录里建文件与目录",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 16,
+        "tags": [
+            "touch",
+            "mkdir",
+            "umask",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 2 题。**\n\n（当前身份是 `user01`，在家目录里。）\n\n新建文件 `11.txt` 和目录 `abc`。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "touch 11.txt; mkdir abc",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|touch 11.txt; mkdir abc\n|touch ~/11.txt; mkdir ~/abc\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`touch 11.txt` → `mkdir abc`。\n\n★ `touch` 建空文件（0 字节）；`mkdir` 建目录。两者创建出来的东西在 `ls -l` 里第一列分别是 `-` 和 `d`。\n\n★ 家目录下新建的文件默认权限受 **umask** 影响：Fedora 的 umask 是 `002`，所以文件是 `664`、目录是 `775`（组内可写）。这也是为什么实验报告里看到的权限是 `-rw-rw-r--` 而不是 `-rw-r--r--`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-3 一个文件一个目录的权限分别怎么看",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "ls",
+            "-d",
+            "权限",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 3 题。**\n\n查看 `11.txt` 文件和 `abc` 目录的权限。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "ls -l 11.txt; ls -ld abc",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|ls -l 11.txt; ls -ld abc\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`ls -l 11.txt` → `ls -ld abc`。\n\n★★ 查目录本身要 `-d`：不加 `-d` 的 `ls -l abc` 列的是 **abc 里面**的东西，永远看不到 abc 自己的权限。这是本题唯一的考点。\n\n★ 目录的 `x` 位含义跟文件不同：对目录来说 `x` 是**能进去**（`cd`）的权限，`r` 是「能列出里面有什么」，`w` 是「能在里面增删文件」。所以 `r--` 的目录能看名字但进不去。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-4 把 11.txt 设成 rwxr-x--x（字符法）",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "字符法",
+            "751",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 4 题（第 1 问）。**\n\n用**字符表示法**把 `11.txt` 的权限改成 `-rwxr-x--x`，并查看结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod u=rwx,g=rx,o=x 11.txt; ls -l 11.txt",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod u=rwx,g=rx,o=x 11.txt; ls -l 11.txt\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod u=rwx,g=rx,o=x 11.txt` → `ls -l 11.txt`。\n\n★ 目标权限 `-rwxr-x--x` 拆开看：属主 `rwx`(7)、属组 `r-x`(5)、其他 `--x`(1) → 八进制 **751**。所以 `chmod 751 11.txt` 也对 —— 两种写法题库都认。\n\n★★ `=` 是**赋值**，`+`/`-` 是增减。`chmod g=rx` 会把组权限**压成** `r-x`，哪怕原来有 `w` 也一并去掉；`chmod g+w` 只加不减。实验报告这题要的是 `=`。\n\n★ 一次写完三段（`u=,g=,o=` 用逗号连）比敲三次清爽，也不会中间态残留。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-4b 给其他人加写权限",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "o+w",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 4 题（第 2 问）。**\n\n用**字符表示法**为**其他用户**增加**可写**权限（文件 `11.txt`），并查看结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod o+w 11.txt; ls -l 11.txt",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod o+w 11.txt; ls -l 11.txt\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod o+w 11.txt` → `ls -l 11.txt`。\n\n★ `o` = other（其他用户），`+w` = 加写。`a+w` 是三段全加，跟这题要的不一样。\n\n★ 加完之后 `--x` 会变成 `-wx`。注意：**给文件加 `w` 不等于对方能删它** —— 删文件看的是**父目录**的 `w` 权限。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-4c 把属组的权限设成只有写",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "g=w",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 4 题（第 3 问）。**\n\n用**字符表示法**把 `11.txt` 的**所属用户组**权限设为 `-w-`，并查看结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod g=w 11.txt; ls -l 11.txt",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod g=w 11.txt; ls -l 11.txt\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod g=w 11.txt` → `ls -l 11.txt`。\n\n★ `g=w` 是**赋值**：组权限只剩 `w`，原来的 `r`、`x` 全部清掉。如果想「只去掉读」，应该写 `chmod g-r`。\n\n★ 只有 `w`（`-w-`）的目录是个特例：能往里写文件，但**列不出**里面有什么，因为列目录需要 `r`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-4d 让属主和属组都不能执行",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "u-x",
+            "g-x",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 4 题（第 4 问）。**\n\n用字符表示法为文件 `11.txt` 的**拥有者和用户组**取消可执行权限，并查看结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod u-x,g-x 11.txt; ls -l 11.txt",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod u-x,g-x 11.txt; ls -l 11.txt\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod u-x,g-x 11.txt` → `ls -l 11.txt`。\n\n★ 两段用逗号连起来一次做完。\n\n★ `-x` 只去掉**执行**位，读写不动。看结果时盯住第 4 位和第 7 位：`rwx` 变 `rw-`、`r-x` 变 `r--`。\n\n★ 补一个 `chmod a-x` 就是三段一起去执行位，这里不能这么写 —— 题目只说拥有者和组，其他用户的 `x` 要留着。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-5 目录连里面的文件一起改属主",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 16,
+        "tags": [
+            "chown",
+            "-R",
+            "user:group",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 5 题。**\n\n在 `abc` 目录里建文件 `22.txt`，然后把 `abc` 及其内部文件的**所属用户和用户组**都改成 `user02`，并核对。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "cd abc; touch 22.txt; cd ..; sudo chown -R user02:user02 abc; ls -ld abc",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|cd abc; touch 22.txt; cd ..; sudo chown -R user02:user02 abc; ls -ld abc\n|touch abc/22.txt; sudo chown -R user02:user02 abc; ls -ld abc\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`cd abc` → `touch 22.txt` → `cd ..` → `sudo chown -R user02:user02 abc` → `ls -ld abc`。\n\n★★ 三个要点：\n- `-R` 递归：不加只改 `abc` 这一层，里面的 `22.txt` 还是 user01 的。\n- `用户:组` 一次写两组，中间是**冒号**（老写法是点，`chown user02.user02`，现在也认）。\n- `sudo` 必须有：把自己的文件送给别人，只有 root 干得成。\n\n★ 改完之后 `ls -ld abc` 显示 `drwxrwxr-x. 2 user02 user02`；里面那个 `22.txt` 要用 `ls -l abc` 另外看 —— `-d` 只看目录本身。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-6 换 user02 身份在新家目录里建目录建文件",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "sudo -iu",
+            "mkdir",
+            "touch",
+            "ls -l",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 6 题。**\n\n切到 `user02`，在其主目录建目录 `sdutjsj`，进目录建空文件 `sdutfile1`，用**长格式**查看该文件的信息（权限、属主、属组）。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo -iu user02; mkdir sdutjsj; cd sdutjsj; touch sdutfile1; ls -l sdutfile1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo -iu user02; mkdir sdutjsj; cd sdutjsj; touch sdutfile1; ls -l sdutfile1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo -iu user02` → `mkdir sdutjsj` → `cd sdutjsj` → `touch sdutfile1` → `ls -l sdutfile1`。\n\n★ `sudo -iu` 是**完整登录**：`$HOME` 会变成 `/home/user02`，所以接着的 `mkdir` 落在 user02 的家目录里。\n\n★ 建出来的文件属主是 user02、属组是 user02 的**主组**。Fedora 的 `useradd` 默认会建一个同名用户组（UPG，user private group），所以 `user02:user02`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-7 放开其他人的写权限",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "o+w",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 7 题。**\n\n让**其他用户**可以对 `sdutfile1` 进行**写**操作，并查看更改后的结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod o+w sdutfile1; ls -l sdutfile1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod o+w sdutfile1; ls -l sdutfile1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod o+w sdutfile1` → `ls -l sdutfile1`。\n\n★ 结果从 `-rw-rw-r--` 变成 `-rw-rw-rw-`，最后三位 `r--` → `rw-`。\n\n★ 想让「所有人都能写」用 `chmod a+w`（等于 `u+w,g+w,o+w`）。这题只要求 other，写 `a+w` 就多做了一半。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-8 收回同组的读权限",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "g-r",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 8 题。**\n\n取消**同组用户**对 `sdutfile1` 的**读**权限，并查看更改后的结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod g-r sdutfile1; ls -l sdutfile1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod g-r sdutfile1; ls -l sdutfile1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod g-r sdutfile1` → `ls -l sdutfile1`。\n\n★ 结果从 `-rw-rw-rw-` 变成 `-rw--w-rw-`：第 5 位 `r` 被去掉。\n\n★★ 注意这里用的是 `-` 而不是 `=`：`chmod g-r` 只删读位、写位留着；`chmod g=r` 会把组权限**重置**成只有读。这两条命令差一个字符，结果完全不同。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-9 八进制 744",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "八进制",
+            "744",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 9 题。**\n\n用**八进制表示法**设置 `sdutfile1`：属主可读可写可执行，组和其他只有可读。设置完查看结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod 744 sdutfile1; ls -l sdutfile1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod 744 sdutfile1; ls -l sdutfile1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod 744 sdutfile1` → `ls -l sdutfile1`。\n\n★ 三位数字各管一段：`7`=rwx（属主）、`4`=r--（组）、`4`=r--（其他），对应权限串 `-rwxr--r--`。\n\n★ 数字怎么来的：r=4、w=2、x=1，相加。所以 `rwx`=7、`r-x`=5、`r--`=4、`---`=0。\n\n★ 第四位（如 `4755`）是特殊位：setuid。实验里不要求，但 `ls -l` 里看到 `-rwsr-xr-x` 那个 `s` 就是它。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-10 八进制 400：只有属主能读",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "400",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 10 题。**\n\n用八进制把 `sdutfile1` 改成：属主**只读**，组和其他**没有任何权限**。设置完查看结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod 400 sdutfile1; ls -l sdutfile1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod 400 sdutfile1; ls -l sdutfile1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod 400 sdutfile1` → `ls -l sdutfile1`。\n\n★ 结果是 `-r--------`。连属主自己都不能写 —— 想改内容得先 `chmod u+w` 回来。\n\n★ 400 是 SSH 私钥的标准权限。私钥权限放宽到 644 时 `ssh` 会直接拒绝使用，就是这个原因。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-11 八进制 402：只给其他人写",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "chmod",
+            "402",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 11 题。**\n\n用八进制给 `sdutfile1` 的**其他用户**加上**写**权限（属主仍只读、组无权限），设置完查看结果。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "chmod 402 sdutfile1; ls -l sdutfile1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|chmod 402 sdutfile1; ls -l sdutfile1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`chmod 402 sdutfile1` → `ls -l sdutfile1`。\n\n★ 结果是 `-r-----w-`：属主 `r--`(4)、组 `---`(0)、其他 `-w-`(2)。\n\n★ 这题是在上一题 `400` 的基础上把最后一位从 0 改成 2 —— 所以也可以写 `chmod o+w sdutfile1`，效果完全一样。两种写法都对。\n\n★ 注意：只有「写」没有「读」其他人是**读不到内容**的，但能改（比如 `echo x >> f`）。这种权限组合在实际里很少见，实验专门考它是为了让你分清 r 和 w。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-12 建用户 zhangsan 并设密码，最后看 passwd 尾巴",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "useradd",
+            "chpasswd",
+            "tail",
+            "passwd",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 12 题。**\n\n新建用户 `zhangsan`，把密码设成 `123`，然后用 `tail` 查看 `/etc/passwd` 的最后 10 行。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo useradd -m zhangsan; echo 'zhangsan:123' | sudo chpasswd; tail -n 10 /etc/passwd",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo useradd -m zhangsan; echo 'zhangsan:123' | sudo chpasswd; tail -n 10 /etc/passwd\n|sudo useradd -m zhangsan; echo zhangsan:123 | sudo chpasswd; tail -n 10 /etc/passwd\n|sudo useradd -m zhangsan; echo \"zhangsan:123\" | sudo chpasswd; tail -n 10 /etc/passwd\n|sudo useradd -m zhangsan; echo 'zhangsan:123' | sudo chpasswd; tail -10 /etc/passwd\n|sudo useradd -m zhangsan; echo zhangsan:123 | sudo chpasswd; tail -10 /etc/passwd\n|sudo useradd -m zhangsan; echo \"zhangsan:123\" | sudo chpasswd; tail -10 /etc/passwd\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo useradd -m zhangsan` → `echo 'zhangsan:123' | sudo chpasswd` → `tail -n 10 /etc/passwd`。\n\n★ `passwd zhangsan` 是交互式的（要敲两遍密码），脚本/实验报告里用 `echo '用户:密码' | chpasswd` 更省事，**记得加 sudo**。\n\n★ `tail -n 10` 和 `tail -10` 等价。默认就是 10 行，所以 `tail /etc/passwd` 也行，但题目写了「最后 10 行」，显式写出来更贴题。\n\n★ `/etc/passwd` 每行 7 段：`用户名:x:UID:GID:描述:家目录:登录shell`。第二段的 `x` 表示真密码在 `/etc/shadow`（普通用户读不到那个文件）。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-13 建组 sdutstuff，看 group 尾巴",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "groupadd",
+            "group",
+            "tail",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 13 题。**\n\n新建用户组 `sdutstuff`，然后查看 `/etc/group` 的最后 5 行。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo groupadd sdutstuff; tail -n 5 /etc/group",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo groupadd sdutstuff; tail -n 5 /etc/group\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo groupadd sdutstuff` → `tail -n 5 /etc/group`。\n\n★ `/etc/group` 每行 4 段：`组名:x:GID:成员列表`。新建的组在文件末尾，所以 `tail` 一定看得到。\n\n★ 成员列表是逗号分隔的**附加成员**；主组不写在这里（主组在 `/etc/passwd` 的第 4 段）。\n\n★ `groupadd` 不指定 `-g` 时会自动取一个没用过的 GID（从 `GID_MIN` 往上找）。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-14 删组再看 group 尾巴",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 16,
+        "tags": [
+            "groupdel",
+            "group",
+            "tail",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 14 题。**\n\n删除用户组 `sdutstuff`，然后查看 `/etc/group` 的最后 5 行。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo groupdel sdutstuff; tail -n 5 /etc/group",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo groupdel sdutstuff; tail -n 5 /etc/group\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo groupdel sdutstuff` → `tail -n 5 /etc/group`。\n\n★ 删完之后那行就没了，`tail` 里自然看不到 —— 这就是「验证删掉了」的方式。\n\n★ `groupdel` 删不掉「某人的主组」：那样的组在删掉前会报 `cannot remove the primary group of user ...`。得先给那个用户换主组。"
+            }
+        ]
+    },
+    {
+        "title": "实验 5-15 把 zhangsan 家目录里的 temp1 改成 root 的",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 16,
+        "tags": [
+            "mkdir",
+            "chown",
+            "-ld",
+            "root",
+            "实验5"
+        ],
+        "choices": [],
+        "source_section": "实验 5 · 用户与权限",
+        "statement_md": "**实验 5 第 15 题。**\n\n在 `zhangsan` 主目录下建目录 `temp1`，查看它的所属用户与用户组；然后把它的所属用户与用户组都设为 `root`，再看一遍。",
+        "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "sudo mkdir -p /home/zhangsan/temp1; ls -ld /home/zhangsan/temp1; sudo chown root:root /home/zhangsan/temp1; ls -ld /home/zhangsan/temp1",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|sudo mkdir -p /home/zhangsan/temp1; ls -ld /home/zhangsan/temp1; sudo chown root:root /home/zhangsan/temp1; ls -ld /home/zhangsan/temp1\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`sudo mkdir -p /home/zhangsan/temp1` → `ls -ld /home/zhangsan/temp1` → `sudo chown root:root /home/zhangsan/temp1` → `ls -ld /home/zhangsan/temp1`。\n\n★★ 这题有个「本来就已经是 root」的坑：用 `sudo mkdir` 建出来的目录，属主**天然就是 root**。所以第二次 `chown` 看起来什么都没变 —— 但它必须写，实验报告要的是「显式设置」这个动作和两张截图。\n\n★ 如果想让 zhangsan 自己拥有它，那要 `sudo chown zhangsan:zhangsan`。「谁建的归谁」只在使用自己身份时成立，`sudo` 建的一律归 root。\n\n★ `-p` 让父目录缺失时一起建（这里父目录存在，写不写都行，写上更稳）。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-1 until 求和的循环条件怎么写",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "until",
+            "循环",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 1 题。** 从键盘读入 N（N>1），用 `until` 求 1~N 的和。\n\n```bash\n#!/bin/bash\nread -p \"请输入一个大于 1 的整数 N：\" n\nsum=0\ni=1\n______\ndo\n    sum=$((sum + i))\n    i=$((i + 1))\ndone\necho \"1~$n 的和是 $sum\"\n```\n\n把 `______` 那一行写出来。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "until [ $i -gt $n ]",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|until [ $i -gt $n ]\n|[ $i -gt $n ]\n|until [ $i -gt \"$n\" ]\n|until [ $i -gt '$n' ]\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`until [ $i -gt $n ]`。\n\n★★ `until` 的语义跟 `while` **相反**：`until 条件` 是「条件**不成立**时继续循环」，`while 条件` 是「条件成立时继续」。所以求和到 N 为止要写「i 大于 n 就停」→ `until [ $i -gt $n ]`。\n写成 `until [ $i -lt $n ]` 会少加最后一项 —— 而且不报错，只是结果差一个 n。\n\n★ `[ ]` 里面**每个符号两侧都要有空格**：`[$i-gt$n]` 会被当成一个命令名，报 `command not found`。这是 Shell 脚本第一号坑。\n\n★ `-gt` 是「大于」（greater than）。数值比较只能用它，`>` 在 `[ ]` 里是**重定向**，会静默建出一个文件。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-1b 这个脚本输入 5 打印什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "fill_blank",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": [
+            "until",
+            "边界",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 1 题（跑一遍看结果）。**\n\n上面的 `script1.sh` 运行后输入 `5`，脚本最后一行会打印出什么？\n\n（照原样写出那一整行输出）",
+        "input_format": "",
+        "output_format": "一行答案（不要写解释、不要写命令提示符）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "1~5 的和是 15",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|1~5 的和是 15\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`1~5 的和是 15`。\n\n★ 1+2+3+4+5 = 15。循环体最后一次执行时 `i=5`，`until [ 5 -gt 5 ]` 为假 → 停下，所以 5 被加进去了。\n\n★ 如果条件写成 `until [ $i -gt $((n - 1)) ]`，结果会是 10 —— 这就是「边界差一」的典型表现：**脚本不报错，只是答案不对**。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-2 case 里 90~100 分该写哪个模式",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 14,
+        "tags": [
+            "case",
+            "分支",
+            "100分",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 2 题。** 成绩 0~100 分，用 `case` 判等级：90-100→A、80-89→B、……。\n\n脚本里用 `case $((score / 10)) in` 把分数折成了十位数字。\n\n```bash\n    case $((score / 10)) in\n        ______) grade=\"A\" ;;\n        8)    grade=\"B\" ;;\n        7)    grade=\"C\" ;;\n        6)    grade=\"D\" ;;\n        *)    grade=\"E\" ;;\n    esac\n```\n\n把 `______` 补上（要让 90~100 都判成 A）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "10|9) grade=\"A\" ;;",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|10|9) grade=\"A\" ;;\n|10|9) grade=A ;;\n|10|9) grade='A' ;;\n|10|9)\n|9|10)\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`10|9)`。\n\n★★ 这题唯一的坑：**100 分除以 10 得 10**，不是 9。只写 `9)` 的话 100 分会掉进 `*)` 被判成 E —— 而且大多数测试时候都拿不到 100，所以这个 bug 要等真出现满分才暴露。\n\n★ `|` 在 `case` 里是「或」，`10|9)` 就是「匹配 10 或者 9」。\n\n★ 每个分支以 `;;` 结尾（最后一个也建议写）。少写 `;;` 会「贯穿」到下一个分支，是 `case` 的第二号坑。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-3 匹配 B 或 b 的写法",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 14,
+        "tags": [
+            "case",
+            "通配符",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 3 题。** 输入 boy/girl，`B`/`b` 打 `This is a boy`，`G`/`g` 打 `This is a girl`，其他打 `Sorry, I don't know`。\n\n写出 `case` 里匹配「B 或 b」的那一行（分支头 + 动作）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "B|b) echo \"This is a boy\" ;;",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|B|b) echo \"This is a boy\" ;;\n|B|b)\n|b|B) echo \"This is a boy\" ;;\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`B|b) echo \"This is a boy\" ;;`。\n\n★ `case` 的模式就是 **shell 通配符**，不是正则：`|` 表示或、`*` 表示任意、`?` 表示单个字符。想「不区分大小写」也可以写 `[Bb])`。\n\n★ 最后必须有 `*)` 兜底，否则输入别的字符时脚本什么都不打印 —— 「不报错也没输出」是最难查的一类问题。\n\n★ 注意 `don't` 里那个单引号：整句要用**双引号**包，用单引号会把字符串提前截断。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-4 case 里匹配乘号的转义写法",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 14,
+        "tags": [
+            "case",
+            "转义",
+            "乘号",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 4 题。** 用 `case` 实现两个整数的加减乘除：`+ - * /` 四个分支。\n\n写出匹配**乘号**的那一行（分支头 + 动作）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "\\*) echo \"$a * $b = $((a * b))\" ;;",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|\\*) echo \"$a * $b = $((a * b))\" ;;\n|\\*)\n|\\* ) echo \"$a * $b = $((a * b))\" ;;\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`\\*)`。\n\n★★ `*` 在 `case` 模式里是**通配符**，直接写 `*)` 会匹配**任何输入**，把 `+ - /` 全吃掉 —— 四个分支里的乘号分支变成「兜底分支」，整个脚本的加减除全部失效。\n\n★ 转义成 `\\*` 之后才是字面量乘号。同理，要匹配问号写 `\\?`。\n\n★ 顺序也有讲究：`*)` 必须放最后，否则它前面的分支永远轮不到。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-5 求三个整数的最大值：第二句比较怎么写",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "if",
+            "比较",
+            "最大值",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 5 题。** 输入三个整数，用 `if` 求最大值。\n\n```bash\nread -p \"请输入三个整数（空格分隔）：\" a b c\nmax=$a\nif [ \"$b\" -gt \"$max\" ]; then max=$b; fi\n______\necho \"三个数中的最大值是 $max\"\n```\n\n把 `______` 那一行补上。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "if [ \"$c\" -gt \"$max\" ]; then max=$c; fi",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|if [ \"$c\" -gt \"$max\" ]; then max=$c; fi\n|if [ $c -gt \"$max\" ]; then max=$c; fi\n|if [ '$c' -gt \"$max\" ]; then max=$c; fi\n|if [ \"$c\" -gt $max ]; then max=$c; fi\n|if [ \"$c\" -gt '$max' ]; then max=$c; fi\n|if [ $c -gt $max ]; then max=$c; fi\n|if [ \"$c\" -gt \"$max\" ]; then max=\"$c\"; fi\n|if [ '$c' -gt \"$max\" ]; then max='$c'; fi\n|if [ \"$c\" -gt $max ]; then max=\"$c\"; fi\n|if [ \"$c\" -gt '$max' ]; then max=\"$c\"; fi\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`if [ \"$c\" -gt \"$max\" ]; then max=$c; fi`。\n\n★ 思路是「打擂台」：先假设第一个最大，后面每来一个就跟 `max` 比，赢了就换人。所以比较对象始终是 **`$max`**，不是 `$b`。\n\n★ 写 `[ \"$b\" -gt \"$c\" ]` 也能「碰巧对」，但那是错的：两个比较互相独立，三个数的最大值不是两两比较就能定出来的。\n\n★ 变量加双引号是习惯：值里有空格或不空时，不加引号会让 `[ ]` 收到错数量的参数。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-6 用 while 判奇数的那一句",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 14,
+        "tags": [
+            "while",
+            "算术展开",
+            "取余",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 6 题。** 用 `while` 求 [0,50] 区间内所有奇数的和。\n\n```bash\ni=0\nsum=0\nwhile [ $i -le 50 ]\ndo\n    ______\n    then\n        sum=$((sum + i))\n    fi\n    i=$((i + 1))\ndone\necho \"0~50 之间所有奇数的和是 $sum\"\n```\n\n把 `______` 补成「如果 i 是奇数」。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "if [ $((i % 2)) -ne 0 ]",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|if [ $((i % 2)) -ne 0 ]\n|if [ $((i % 2)) -eq 1 ]\n|if [ $((i % 2)) -ne 0 ];\n|if (( i % 2 != 0 ))\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`if [ $((i % 2)) -ne 0 ]`。\n\n★ `$(( ))` 是**算术展开**，`i % 2` 求余数；余数不为 0 就是奇数。\n\n★★ 算术展开里变量**不用加 `$`**：`$((i % 2))` 和 `$(( $i % 2 ))` 都对，但 `$(( $i % 2 ))` 在有的老 shell 里会被当成未定义变量。\n\n★ 也可以写 `if (( i % 2 != 0 ))`（双括号算术判断），但实验报告要求用 `[ ]`，那是 POSIX 的写法，换个 shell 也能跑。\n\n★ 还有个更省事的思路：i 从 1 开始、每次 +2，就不需要判奇偶了 —— 算法上更优，但题目要求 `while` + 判断，所以按题目来。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-6b [0,50] 奇数和的答案是多少",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "fill_blank",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": [
+            "while",
+            "求和",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 6 题（跑一遍看结果）。**\n\n上面的 `script6.sh` 跑完后，最后一行输出里的数字是多少？\n\n（只写数字）",
+        "input_format": "",
+        "output_format": "一行答案（不要写解释、不要写命令提示符）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "625",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|625\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`625`。\n\n★ [0,50] 里的奇数是 1、3、5…49，一共 25 个，和 = 25² = 625（等差数列：首项 1、末项 49、项数 25，(1+49)×25/2 = 625）。\n\n★ 如果算成 650，说明把 0~50 的**所有数**加了一遍（0+1+…+50 = 1275，那是 1275 不是 650）；如果算成 600 就是漏掉了 49 或 1。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-7 菜单脚本里读用户选择的那一行",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 14,
+        "tags": [
+            "read",
+            "-p",
+            "菜单",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 7 题。** 用 `case` 做菜单：(1) 查看日期 (2) 查看主机名 (3) 退出。\n\n写出「读入用户选择到变量 `choice`」的那一行（带提示语 `请选择（1-3）：`）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "read -p \"请选择（1-3）：\" choice",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|read -p \"请选择（1-3）：\" choice\n|read -p 请选择（1-3）： choice\n|read -p '请选择（1-3）：' choice\n|read -p \"请选择(1-3)：\" choice\n|read -p 请选择(1-3)： choice\n|read -p '请选择(1-3)：' choice\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`read -p \"请选择（1-3）：\" choice`。\n\n★ `read -p` 的 `-p` 是提示语，**只在使用终端时有效**（管道里没用）。提示语里有全角括号和冒号，所以要用引号包起来。\n\n★ `read` 会把一行按 `IFS`（默认空格/制表/换行）切成多个词，后面跟几个变量就切几段，多出来的全部塞给最后一个变量。\n\n★ 菜单的值用 `case $choice in 1) ... 2) ... 3) ...` 分支，`3)` 里写 `exit 0` 退出脚本。"
+            }
+        ]
+    },
+    {
+        "title": "实验 6-8 删数组下标 2 的元素并数个数",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 4,
+        "total_score": 14,
+        "tags": [
+            "数组",
+            "unset",
+            "长度",
+            "实验6"
+        ],
+        "choices": [],
+        "source_section": "实验 6 · Shell 脚本基础",
+        "statement_md": "**实验 6 第 8 题。** 数组 `arr=(\"a\" \"b\" \"c\" \"d\")`，删掉**索引为 2** 的元素，再统计剩下几个元素。\n\n写出这两条命令（一行一条）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "unset 'arr[2]'; echo ${#arr[@]}",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|unset 'arr[2]'; echo ${#arr[@]}\n|unset arr[2]; echo ${#arr[@]}\n|unset \"arr[2]\"; echo ${#arr[@]}\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`unset 'arr[2]'` → `echo ${#arr[@]}`。\n\n★★ 删完之后 `arr` 是 `a b d`，但**下标不连续**：剩下的是 `arr[0]`、`arr[1]`、`arr[3]`。`${#arr[@]}` 数的是**元素个数**（3），不是最大下标 +1（那会是 4）。\n\n★ 引号要加：`unset 'arr[2]'` 里的方括号不加引号时，bash 可能先做**通配符展开**（如果当前目录恰好有叫 `arr2` 之类的文件），删错东西。\n\n★ 想让下标重新连续，得重建数组：`arr=(\"${arr[@]}\")`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-1 阶乘脚本的循环体那一句",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 14,
+        "tags": [
+            "for",
+            "阶乘",
+            "累乘",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 1 题。** 计算 n 的阶乘。\n\n```bash\n#!/bin/bash\nread -p \"请输入一个正整数 n：\" n\nfact=1\nfor ((i = 1; i <= n; i++))\ndo\n    ______\ndone\necho \"$n! = $fact\"\n```\n\n把 `______` 补上。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "fact=$((fact * i))",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|fact=$((fact * i))\n|fact=$((fact*i))\n|fact=$(( fact * i ))\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`fact=$((fact * i))`。\n\n★ 累乘的初值必须是 **1**（`fact=1`），写 0 的话乘多少次都是 0。累加的初值才是 0 —— 这两个初值弄混是循环题最常见的错。\n\n★ `$(( ))` 只能算整数。阶乘长得非常快：13! 就超过 32 位了，20! 会溢出 64 位。真要算大数得用 `bc` 或换语言。\n\n★ 脚本本身不校验 `n` 是正整数，传负数或非数字会得到奇怪结果 —— 实验报告里通常要求补一句 `if [ \"$n\" -ge 0 ]` 之类的校验。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-1b 输入 5 时阶乘脚本打印什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "fill_blank",
+        "difficulty": 1,
+        "total_score": 12,
+        "tags": [
+            "for",
+            "阶乘",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 1 题（跑一遍看结果）。**\n\n`jiecheng.sh` 运行后输入 `5`，脚本会打印什么？\n\n（照原样写整行）",
+        "input_format": "",
+        "output_format": "一行答案（不要写解释、不要写命令提示符）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "5! = 120",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|5! = 120\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`5! = 120`。\n\n★ 1×2×3×4×5 = 120。\n\n★ 顺带记几个：10! = 3628800、13! = 6227020800（已经超过 2³² = 4294967296）。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-2 三次机会的循环条件",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "while",
+            "read",
+            "死循环",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 2 题。** 用户名密码最多试 3 次，用 `while` 控制。\n\n```bash\ncount=0\n______\ndo\n    count=$((count + 1))\n    read -p \"第 $count 次，用户名：\" user\n    read -s -p \"第 $count 次，密码：\" pass\n    echo\n    if [ \"$user\" = \"sdut\" ] && [ \"$pass\" = \"sdut\" ]; then\n        echo \"hello sdut!\"\n        exit 0\n    fi\n    echo \"用户名或密码错误，还剩 $((3 - count)) 次机会\"\ndone\necho \"三次机会已用完，程序结束\"\n```\n\n把 `______` 补上（要能循环 3 次）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "while [ $count -lt 3 ]",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|while [ $count -lt 3 ]\n|while [ \"$count\" -lt 3 ]\n|while [ '$count' -lt 3 ]\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`while [ $count -lt 3 ]`。\n\n★★ **一定不要写 `while true`**。那样循环靠 `exit 0` 或 `break` 结束，一旦输入流结束（比如用管道喂数据、或者 `Ctrl+D`），`read` 立刻返回失败，循环体照样往下跑 —— 于是脚本**死循环刷屏**，只能 `Ctrl+C` 掐。\n这是实验课里最常见的「脚本卡住」报错，没有之一。\n\n★ 更稳的写法是让 `read` 失败就退出：`read -p \"...\" user || exit 1`。\n\n★ `count` 在循环体**开头**自增，所以三次分别是 1、2、3，`还剩 $((3 - count))` 依次是 2、1、0 —— 打印出来的提示语刚好对得上。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-3 只输出数组里的正数",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 14,
+        "tags": [
+            "for",
+            "数组",
+            "数值比较",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 3 题。** 数组 `arr=(-1 -3 6 7 2 -6)`，输出其中大于 0 的元素。\n\n写出循环里那个判断条件（`for x in \"${arr[@]}\"` 之后，`if` 那一句）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "if [ \"$x\" -gt 0 ]; then",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|if [ \"$x\" -gt 0 ]; then\n|if [ $x -gt 0 ]; then\n|if [ '$x' -gt 0 ]; then\n|if [ \"$x\" -gt 0 ]\n|if [ $x -gt 0 ]\n|if [ '$x' -gt 0 ]\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`if [ \"$x\" -gt 0 ]; then`。\n\n★ 输出会是 `6`、`7`、`2` 三行，顺序按数组顺序。\n\n★★ 这里是**数值比较**（`-gt`），不能用 `>`：`[ \"$x\" > 0 ]` 在 `[ ]` 里 `>` 被当成**输出重定向**，结果是在当前目录建了个叫 `0` 的文件，判断恒为真。\n\n★ 变量加双引号：负数在数组里是 `-6` 这种带减号的字符串，不加引号在 `[ ]` 里同样可能出岔子。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-4 命令行参数三个数的和",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "位置参数",
+            "$#",
+            "算术",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 4 题。** 从**命令行参数**取 3 个整数求和。\n\n```bash\n#!/bin/bash\nif [ $# -ne 3 ]; then\n    echo \"用法：$0 整数1 整数2 整数3\"\n    exit 1\nfi\n______\n```\n\n把 `______` 补成「打印 `a + b + c = 和`」那一行（用 `$1 $2 $3`）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "echo \"$1 + $2 + $3 = $(($1 + $2 + $3))\"",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|echo \"$1 + $2 + $3 = $(($1 + $2 + $3))\"\n|echo \"$1 + $2 + $3 = $(($1+$2+$3))\"\n|echo \"$1+$2+$3=$(($1+$2+$3))\"\n|echo $1+$2+$3=$(($1+$2+$3))\n|echo '$1+$2+$3=$(($1+$2+$3))'\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`echo \"$1 + $2 + $3 = $(($1 + $2 + $3))\"`。\n\n★ `$1 $2 $3` 是**位置参数**，`$#` 是参数个数，`$0` 是脚本名（不是参数！）。\n\n★★ `$(($1 + $2 + $3))` 里三个变量**不用加 `$`** 也可以（`$((1 + 2))` 同理），但加了更清楚。\n\n★ `[ $# -ne 3 ]` 这一句校验不能省：少了参数时 `$3` 是空字符串，`$(( $1 + $2 + ))` 会报 `syntax error: operand expected`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-5 判断路径是不是目录的那一句",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "if",
+            "-d",
+            "文件测试",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 5 题。** 输入一个路径，判断它存在、并且区分是普通文件还是目录。\n\n写出「如果是**目录**」的判断那一行（`if` 开头，带 `then`）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "if [ -d \"$f\" ]; then",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|if [ -d \"$f\" ]; then\n|if [ -d $f ]; then\n|if [ -d '$f' ]; then\n|if [ -d \"$f\" ]\n|if [ -d $f ]\n|if [ -d '$f' ]\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`if [ -d \"$f\" ]; then`。\n\n★ 文件测试符要背几个常用的：\n- `-e` 存在（不管什么类型）\n- `-f` 存在且是**普通文件**\n- `-d` 存在且是**目录**\n- `-r` / `-w` / `-x` 当前用户能不能读/写/执行\n- `-s` 存在且非空（大小 > 0）\n\n★ **顺序很重要**：必须先判 `-e`（不存在就退出），再判 `-d`、`-f`。直接判 `-f` 的话，「路径不存在」和「路径是目录」都会落到 `else` 里，分不清原因。\n\n★ `[ -d \"$f\" ] && echo 可读 || echo 不可读` 是一种紧凑写法，效果等同 `if ... then ... else ... fi`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-6 数组每个元素占一行：必须加引号的那个写法",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "for",
+            "数组",
+            "@",
+            "引号",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 6 题。** 数组 `arr=(1 2 3 4 5 6)`，用 `for` 每行打印一个元素。\n\n写出 `for` 循环那一行（遍历整个数组）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "for x in \"${arr[@]}\"",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|for x in \"${arr[@]}\"\n|for x in ${arr[@]}\n|for x in '${arr[@]}'\n|for x in \"${arr[@]}\"; do\n|for x in ${arr[@]}; do\n|for x in '${arr[@]}'; do\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`for x in \"${arr[@]}\"`。\n\n★★ 那对**双引号不能省**：`${arr[@]}` 不加引号时，每个元素还会再按空格切一遍。元素里一旦有空格（比如 `arr=(\"hello world\" \"a b\")`），不加引号就会把一个元素拆成两个 —— 程序不报错，只是多循环几次。\n\n★ 对比 `${arr[*]}`：`\"${arr[*]}\"` 会把全部元素**拼成一个字符串**，循环只跑一次。`[@]` 是「每个元素一个词」，`[*]` 是「全部拼一个词」。\n\n★ 这题元素都是单个数字，加不加引号结果一样 —— 所以这个 bug 要到真用上带空格的元素时才爆发。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-7 用户名密码同时匹配的判断",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "if",
+            "字符串比较",
+            "逻辑与",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 7 题。** 用户名 `admin`、密码 `123` 时提示「登录成功」，否则「登录失败」。\n\n写出那个 `if` 判断（两个条件同时成立）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "if [ \"$user\" = \"admin\" ] && [ \"$pass\" = \"123\" ]; then",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|if [ \"$user\" = \"admin\" ] && [ \"$pass\" = \"123\" ]; then\n|if [ $user = \"admin\" ] && [ \"$pass\" = \"123\" ]; then\n|if [ '$user' = \"admin\" ] && [ \"$pass\" = \"123\" ]; then\n|if [ \"$user\" = admin ] && [ \"$pass\" = \"123\" ]; then\n|if [ \"$user\" = 'admin' ] && [ \"$pass\" = \"123\" ]; then\n|if [ \"$user\" = \"admin\" ] && [ $pass = \"123\" ]; then\n|if [ \"$user\" = \"admin\" ] && [ '$pass' = \"123\" ]; then\n|if [ \"$user\" = \"admin\" ] && [ \"$pass\" = 123 ]; then\n|if [ \"$user\" = \"admin\" ] && [ \"$pass\" = '123' ]; then\n|if [ $user = admin ] && [ $pass = 123 ]; then\n|if [ \"$user\" == \"admin\" ] && [ \"$pass\" == \"123\" ]; then\n|if [ $user == \"admin\" ] && [ \"$pass\" == \"123\" ]; then\n|if [ '$user' == \"admin\" ] && [ \"$pass\" == \"123\" ]; then\n|if [ \"$user\" == admin ] && [ \"$pass\" == \"123\" ]; then\n|if [ \"$user\" == 'admin' ] && [ \"$pass\" == \"123\" ]; then\n|if [ \"$user\" == \"admin\" ] && [ $pass == \"123\" ]; then\n|if [ \"$user\" == \"admin\" ] && [ '$pass' == \"123\" ]; then\n|if [ \"$user\" == \"admin\" ] && [ \"$pass\" == 123 ]; then\n|if [ \"$user\" == \"admin\" ] && [ \"$pass\" == '123' ]; then\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`if [ \"$user\" = \"admin\" ] && [ \"$pass\" = \"123\" ]; then`。\n\n★★ 字符串比较用 **`=`**（或 `==`）。用 `-eq` 是**数值**比较，`\"admin\" -eq \"admin\"` 会报 `integer expression expected`。\n反过来，比较数字时用 `=` 只会比字符串 —— `[ 10 = 9 ]` 是假，但 `[ 10 -gt 9 ]` 才对。\n\n★ 两个条件之间用 `&&`（与）。也可以用 `[ \"$user\" = \"admin\" -a \"$pass\" = \"123\" ]`，`-a` 是老写法，可移植但容易看漏。\n\n★ 引号必须加：变量为空时 `[ $user = admin ]` 会变成 `[ = admin ]`，报 `unary operator expected`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-8 打印星号三角：内层不换行的输出写法",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 3,
+        "total_score": 14,
+        "tags": [
+            "printf",
+            "echo -n",
+            "循环",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 8 题。** 打印 n 行星号，第 i 行 i 个 `*`。\n\n写出内层循环里「输出**一个** `*` 且**不换行**」的那一句。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "printf \"*\"",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|printf \"*\"\n|printf *\n|printf '*'\n|echo -n \"*\"\n|echo -n *\n|echo -n '*'\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`printf \"*\"`（或 `echo -n \"*\"`）。\n\n★★ `echo \"*\"` 会**每打一个星就换一行**，结果是竖着一条线而不是三角形。这题考的就是「怎么不换行」。\n\n★ 脚本里优先用 `printf`：`echo` 对 `-n` / `-e` 的处理在不同 shell 里历史上不统一（bash 认，dash 的 `echo` 会把 `-n` 直接打出来）。`printf` 是 POSIX 标准，行为一致。\n\n★ 内层循环结束后要有一次 `echo`（空参）来换行，否则所有行会挤在一行。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-9 编译 circle.c 并运行",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 2,
+        "total_score": 14,
+        "tags": [
+            "gcc",
+            "-o",
+            "./",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 9 题。** 写好 `circle.c` 后，用 `gcc` 编译它，生成可执行文件并运行。\n\n写出这两条命令（一行一条）。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "gcc circle.c -o circle; ./circle",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|gcc circle.c -o circle; ./circle\n|gcc -o circle circle.c; ./circle\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`gcc circle.c -o circle` → `./circle`。\n\n★ `-o` 指定输出文件名。**不写 `-o` 时默认输出 `a.out`**，而且会覆盖上一次的 `a.out` —— 这是新手「编译明明成功了却找不到文件」的原因。\n\n★★ 运行必须写 `./`：Linux 的 `PATH` 里**不含**当前目录，直接敲 `circle` 会报 `command not found`。\n\n★ 编译要链数学库时（用到 `sqrt`、`sin` 这些）得加 `-lm`，且要放在**最后**：`gcc circle.c -o circle -lm`。写在前面的 `-l` 会被链接器忽略。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-10 把 test.c 编译成 mytest",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "practical",
+        "difficulty": 1,
+        "total_score": 14,
+        "tags": [
+            "gcc",
+            "-o",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 10 题。** 把 `test.c`（求 [1,20] 内偶数和的程序）编译成名为 `mytest` 的可执行文件。",
+        "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+        "output_format": "一整条命令",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "gcc test.c -o mytest",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|gcc test.c -o mytest\n|gcc -o mytest test.c\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`gcc test.c -o mytest`。\n\n★ 源文件在前、`-o 名字` 在后（顺序其实无所谓，但这样写最常见）。\n\n★ 编译失败时先看第一条错误：后面几十条往往是第一条引起的连锁反应。中文环境下 `gcc` 的报错是英文，`error:` 是必须改的，`warning:` 可以先放着。\n\n★ 想看编译过程做了什么：`gcc -v test.c -o mytest`。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-11 补全 while 条件，让脚本打印 0~9",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "fill_blank",
+        "difficulty": 3,
+        "total_score": 12,
+        "tags": [
+            "while",
+            "边界",
+            "填空",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 11 题（填空题）。**\n\n```bash\n#!/bin/bash\nnum=0\nwhile ______\ndo\n    echo $num\n    num=$(($num+1))\ndone\n```\n\n要求输出 `0` 到 `9` 共十个数字。下划线处应填什么？\n\n（只写条件，不用写 `while`）",
+        "input_format": "",
+        "output_format": "一行答案（不要写解释、不要写命令提示符）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "[ $num -lt 10 ]",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|[ $num -lt 10 ]\n|[ $num -le 9 ]\n|[$num -lt 10]\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`[ $num -lt 10 ]`。\n\n★ 循环跑 `num = 0..9`，所以条件是「num 小于 10」。等价写法 `[ $num -le 9 ]`。\n\n★★ 最容易错的两个答案：\n- `[ $num -le 10 ]` → 会多打一个 10（11 个数字）\n- `[ $num -lt 9 ]` → 少打 9（只有 0~8）\n\n★ 这类题的通用确认法：把**第一次**和**最后一次**进循环时的值代进去，看边界对不对 —— 比在心里推演整段循环可靠得多。"
+            }
+        ]
+    },
+    {
+        "title": "实验 7-12 ./myscript12.sh 100 200 打印什么",
+        "subject": "linux",
+        "line": "text",
+        "question_type": "fill_blank",
+        "difficulty": 2,
+        "total_score": 12,
+        "tags": [
+            "位置参数",
+            "if",
+            "填空",
+            "实验7"
+        ],
+        "choices": [],
+        "source_section": "实验 7 · 脚本进阶与 C",
+        "statement_md": "**实验 7 第 12 题（填空题）。**\n\n```bash\n#!/bin/bash\nif [ \"$1\" -gt \"$2\" ]; then\n    echo \"$1\"\nelif [ \"$1\" -lt \"$2\" ]; then\n    echo \"$2\"\nelse\n    echo \"equal: $1\"\nfi\n```\n\n执行 `./myscript12.sh 100 200`，输出结果是什么？",
+        "input_format": "",
+        "output_format": "一行答案（不要写解释、不要写命令提示符）",
+        "constraints_md": "",
+        "time_limit_ms": 1000,
+        "memory_limit_mb": 64,
+        "checker": "oneof",
+        "reference_solution": "200",
+        "cases": [
+            {
+                "stdin": "",
+                "expected_stdout": "|200\n",
+                "is_sample": 0,
+                "kind": "manual",
+                "explanation": "`200`。\n\n★ 脚本在做「取两个数里大的那个」：100 > 200 不成立 → 走 `elif`，100 < 200 成立 → 打印 `$2` 也就是 200。\n\n★ 如果执行 `./myscript12.sh 200 100`，走第一个分支打印 `200`；传两个相等的数（`./myscript12.sh 5 5`）才打印 `equal: 5`。\n\n★ 注意 `$1`、`$2` 是**位置参数**，在这里是脚本收到的 100 和 200，跟变量名无关。"
             }
         ]
     },
@@ -11054,7 +13393,7 @@ LINUX_PROBLEMS: list[dict] = [
         "cases": [
             {
                 "stdin": "",
-                "expected_stdout": "|${v:-fallback}\n|${v:-fallback}\n",
+                "expected_stdout": "|${v:-fallback}\n",
                 "is_sample": 0,
                 "kind": "manual",
                 "explanation": "**`${v:-fallback}`** —— 冒号 `:` 的意思是「**为空或未定义**都算」。\n\n| 写法 | 何时替换 |\n|---|---|\n| `${v:-fallback}` | v **未定义** 或 v **为空串** |\n| `${v-fallback}` | 只有 v **未定义**时（为空时不替换）|\n\n**差一个冒号，语义就不一样** —— 这是参数扩展里最常见的记混点。\n\n同一族还有几个必须认识的：\n```bash\n${v:=fallback}    # 为空/未定义时替换，并且把结果写回 v\n${#v}             # v 的长度\n${v%.txt}         # 去掉末尾的 .txt（最短匹配）\n${v%.*}           # 去掉最后一个后缀名\n${v//a/b}         # 把 v 里所有 a 换成 b\n${v:2:5}          # 从第 3 个字符起取 5 个\n```\n\n★ 参数扩展是第 11 讲分量最重的一节（★★★）—— 它能在**不启动任何子进程**的前提下做掉一大堆字符串处理。"

@@ -95,7 +95,9 @@ try {
   check('no page error',errors.length===0);
   const fallbackPage = await browser.newPage();
   await fallbackPage.setRequestInterception(true);
-  fallbackPage.on('request',req=>req.url().endsWith('/editor/editor.js') ? req.abort() : req.continue());
+  /* 按 pathname 判，不能按整串 url —— 真实请求带 `?v=<版本号>` 查询串，
+     用 endsWith('/editor/editor.js') 永远匹配不上，拦截等于没生效。 */
+  fallbackPage.on('request',req=>new URL(req.url()).pathname.endsWith('/editor/editor.js') ? req.abort() : req.continue());
   await fallbackPage.goto(url+'/#/p/1');
   await fallbackPage.waitForSelector('#codeBox');
   await new Promise(r=>setTimeout(r,350));

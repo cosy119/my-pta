@@ -40,6 +40,22 @@ def _oneof(alts: list[str]) -> tuple[str, str]:
     clean = [str(a).strip() for a in alts if str(a).strip()]
     if not clean:
         raise ValueError("题目没有可接受答案")
+    # ★ 硬格式：`oneof` 是「一行一条备选」，答案里带换行会让后面的行
+    #   既不是备选、又混进期望值，判题时静默失效。这里直接拦下来，
+    #   让写题库的人在生成阶段就发现（`practical._one_line` 会先压平）。
+    multi = [a for a in clean if "\n" in a]
+    if multi:
+        raise ValueError("oneof 的每条备选必须是单行，收到含换行的答案：%r"
+                         % multi[0][:60])
+    # 去重（保持原顺序）：自动补出来的变体经常和手写的那条撞车，
+    # 比如多步命令题的「换行版」和「分号版」压平后就是同一条。
+    seen: set[str] = set()
+    uniq: list[str] = []
+    for a in clean:
+        if a not in seen:
+            seen.add(a)
+            uniq.append(a)
+    clean = uniq
     expected = "\n".join("|" + a for a in clean) + "\n"
     return expected, clean[0]
 
@@ -215,6 +231,24 @@ def _quote_forms(ans: str) -> list[str]:
     return uniq
 
 
+def _one_line(text: str) -> str:
+    """把一条备选答案压成**单行**（`oneof` 的硬格式：一行一条备选）。
+
+    ★ 多步命令里的换行是**命令分隔符**，不是可有可无的空白。
+      早期版本用 `" ".join(x.split())` 一把压平，于是
+      `cd /tmp` 换行 `ls` 变成 `cd /tmp ls` —— 一条**根本不存在的命令**。
+      后果有两个，都很糟：
+      1. 这条备选形同虚设（没人会那样敲）；
+      2. 它把「漏写分隔符」这种**错答**也一并判成了对。
+      正确做法是压成 `;`；学生真按回车一条一条敲的版本不用再单列，
+      `compare.answer_forms` 会把换行派生成 `;` 自动覆盖。
+    """
+    s = str(text).strip()
+    if "\n" in s:
+        s = "; ".join(ln.strip() for ln in s.split("\n") if ln.strip())
+    return " ".join(s.split())
+
+
 def practical(title: str, statement_md: str, answers: list[str], *,
               subject: str, section: str, explanation: str, tags: list[str],
               difficulty: int = 3, total_score: int = SCORE_COMMAND,
@@ -241,7 +275,7 @@ def practical(title: str, statement_md: str, answers: list[str], *,
     ★ 一道题仍然只能有**一个测试点**：`runner_text` 把同一份提交
       当作每个测试点的 stdout，两个不同期望值必然只能过一个。
     """
-    flat = [" ".join(str(x).split()) for x in answers]
+    flat = [_one_line(x) for x in answers]
     alts: list[str] = []
     for a in flat:
         alts.extend(_quote_forms(a))

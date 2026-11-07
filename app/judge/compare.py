@@ -75,17 +75,37 @@ def answer_forms(text: bytes | str | None) -> set[str]:
     只往里**加**等价写法，绝不删掉原样 —— 这样任何原本判得过的答案
     在加了宽容之后依然判得过，不会引入回归。
 
-    四层：
+    五层：
     1. 原文（空白折叠）
     2. 剥掉首尾的**排版类**标点（`ls -la /etc。` → `ls -la /etc`）
-    3. 命令口径归一化（`ls -l -a /` → `ls -al /`，见 `_norm_cmd`）
-    4. 「家目录」归一化（`/home/zhangsan/docs` → `~/docs`，见 `_norm_home`）
+    3. 换行当命令分隔符（`cd /tmp\\nmkdir aa` → `cd /tmp ; mkdir aa`）
+    4. 命令口径归一化（`ls -l -a /` → `ls -al /`，见 `_norm_cmd`）
+    5. 「家目录」归一化（`/home/zhangsan/docs` → `~/docs`，见 `_norm_home`）
+
+    ★ 第 3 层只影响**学生交上来的答案**：`oneof_alternatives` 取出来的
+      每条可接受答案都是单行（按行解析），本身不含换行。
+      所以这一层做的事情是「学生把多步命令一行一条地敲」也能判过 ——
+      这正是多步命令题最常见的输入方式。
     """
     t = normalize_newlines(to_text(text)).strip()
-    forms = {_squeeze_ws(t)}
-    core = t.strip(_EDGE_PUNCT).strip()
-    if core and core != t:
-        forms.add(_squeeze_ws(core))
+    seeds = [t]
+    # 多步命令题：学生敲完一条按回车，和答案里写 `;` 完全等价。
+    # 派生一个「换行 → ; 」的种子，顺便把「一半换行一半分号」的混写也覆盖掉。
+    # ★ 空行要**先滤掉**再拼：`cmd1` 空一行 `cmd2` 会拼出 `cmd1 ; ; cmd2`，
+    #   多出来的那个空分隔符会让答案永远对不上。
+    if "\n" in t:
+        lines = [ln.strip() for ln in t.split("\n") if ln.strip()]
+        seeds.append(" ; ".join(lines))
+
+    forms: set[str] = set()
+    for s in seeds:
+        s = s.strip()
+        if not s:
+            continue
+        forms.add(_squeeze_ws(s))
+        core = s.strip(_EDGE_PUNCT).strip()
+        if core and core != s:
+            forms.add(_squeeze_ws(core))
     for f in list(forms):
         forms.add(_squeeze_ws(_norm_cmd(f)))
     for f in list(forms):
@@ -119,9 +139,39 @@ def _norm_home(text: str) -> str:
 # 纯字母的短选项，如 -l / -a / -lah（两个横杠的长选项、带数字的 -9、单独的 - 都不匹配）
 _SHORT_OPT_RE = re.compile(r"^-[A-Za-z]+$")
 
+# 引号包起来的整段（单引号 / 双引号，允许跨行）
+_QUOTED_RE = re.compile(r"'[^']*'|\"[^\"]*\"", re.S)
+
+# shell 里连接多条命令的运算符。`||` `&&` 必须排在 `|` 前面，
+# 否则 `a||b` 会先被 `|` 切成两半。
+_OPER_RE = re.compile(r"\s*(\|\||&&|;|\|)\s*")
+
+
+def _norm_oper(text: str) -> str:
+    """引号外的 shell 运算符，两边统一成一个空格。
+
+    为什么需要
+    ----------
+    多步命令题的标准答案写成 `cd /tmp; mkdir aa`，学生照着敲成
+    `cd /tmp;mkdir aa`（分号后不留空格）或者 `cd /tmp ;  mkdir aa`
+    （两边都留空格）。这三条执行结果一模一样，按字面比却判成三个答案。
+    实测实验 2~5 的 41 道多步题里，有 **30 道**会被这两种写法误判成错。
+
+    引号里的内容**原样不动** —— `grep "a|b" f` 里的 `|` 是字面量，
+    动了它就把「匹配竖线」改成「管道」了。
+    """
+    parts = _QUOTED_RE.split(text)
+    quoted = _QUOTED_RE.findall(text)
+    out: list[str] = []
+    for i, seg in enumerate(parts):
+        out.append(_OPER_RE.sub(r" \1 ", seg))
+        if i < len(quoted):
+            out.append(quoted[i])
+    return "".join(out).strip()
+
 
 def _norm_cmd(text: str) -> str:
-    """命令行的宽容归一化：空白折叠 + 相邻短选项合并 + 簇内字母排序。
+    """命令行的宽容归一化：空白折叠 + 运算符对齐 + 相邻短选项合并 + 簇内字母排序。
 
     为什么需要
     ----------
@@ -130,6 +180,7 @@ def _norm_cmd(text: str) -> str:
 
     处理规则（只动「明显等价」的地方）
     - 空白多少无所谓
+    - 引号外的 `;` `&&` `||` `|` 两边统一成一个空格（见 `_norm_oper`）
     - 相邻的纯字母短选项合并：`-l -a` → `-la`
     - 簇内字母排序并去重：`-lah` → `-ahl`，`-ll` → `-l`
 
@@ -137,9 +188,13 @@ def _norm_cmd(text: str) -> str:
     以及任何后面跟着参数的选项 —— 合并它们会把语义改掉
     （比如 `head -n -10` 里的 `-n` 和 `-10`，合并了就成另一个意思了）。
 
+    ★ 运算符归一化必须**排在短选项合并之前**：`ls -l;ls -a` 先变成
+      `ls -l ; ls -a`，`-l` 和 `-a` 才不会被并成 `-al`
+      （它们是两条命令的选项，合并就把分号语义丢了）。
+
     只在 `oneof` 口径（理论题 / 填空命令题）里使用，编程题的输出比对不受影响。
     """
-    toks = text.split()
+    toks = _norm_oper(text).split()
     out: list[str] = []
     i = 0
     while i < len(toks):

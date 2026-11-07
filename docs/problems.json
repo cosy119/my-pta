@@ -1,8 +1,8 @@
 {
- "generated_at": "2026-11-01 14:07:22",
- "count": 1453,
- "total_score": 18077,
- "total_testcases": 4196,
+ "generated_at": "2026-11-07 18:20:31",
+ "count": 1524,
+ "total_score": 19129,
+ "total_testcases": 4267,
  "section_ranks": {
   "python": {
    "第 01 讲 · Python 开发入门": 0,
@@ -79,33 +79,35 @@
    "实验 3 · 常用命令": 65,
    "实验 4 · 综合命令": 66,
    "实验 5 · 用户与权限": 67,
-   "第 01 讲 · Linux 概述": 68,
-   "第 03 讲 · X Window 的使用": 69,
-   "第 04 讲 · 常用软件": 70,
-   "第 05 讲 · 硬件与软件安装": 71,
-   "第 06 讲 · 网络的基本配置": 72,
-   "第 07 讲 · 常用网络服务": 73,
-   "第 08 讲 · 系统管理与监视": 74,
-   "第 09 讲 · 系统安全管理": 75,
-   "第 10 讲 · Linux 系统的定制": 76,
-   "第 11 讲 · Shell 程序设计": 77,
-   "第 12 讲 · GCC 的使用与开发": 78,
-   "第 13 讲 · GTK 图形界面程序设计": 79,
-   "第 14 讲 · Qt 图形界面程序设计": 80,
-   "第 15 讲 · Python 程序开发环境": 81,
-   "第 16 讲 · 集成开发环境 Eclipse 的使用": 82,
-   "命令特训 · 查看文件内容": 83,
-   "命令特训 · 用户与组": 84,
-   "命令特训 · 网络与远程": 85,
-   "命令特训 · 文件与目录": 86,
-   "命令特训 · 软件包与服务": 87,
-   "命令特训 · 文本处理": 88,
-   "命令特训 · 磁盘与存储": 89,
-   "命令特训 · 进程与作业": 90,
-   "命令特训 · 压缩与打包": 91,
-   "命令特训 · 查找与定位": 92,
-   "命令特训 · Shell 与管道": 93,
-   "命令特训 · 权限与属性": 94
+   "实验 6 · Shell 脚本基础": 68,
+   "实验 7 · 脚本进阶与 C": 69,
+   "第 01 讲 · Linux 概述": 70,
+   "第 03 讲 · X Window 的使用": 71,
+   "第 04 讲 · 常用软件": 72,
+   "第 05 讲 · 硬件与软件安装": 73,
+   "第 06 讲 · 网络的基本配置": 74,
+   "第 07 讲 · 常用网络服务": 75,
+   "第 08 讲 · 系统管理与监视": 76,
+   "第 09 讲 · 系统安全管理": 77,
+   "第 10 讲 · Linux 系统的定制": 78,
+   "第 11 讲 · Shell 程序设计": 79,
+   "第 12 讲 · GCC 的使用与开发": 80,
+   "第 13 讲 · GTK 图形界面程序设计": 81,
+   "第 14 讲 · Qt 图形界面程序设计": 82,
+   "第 15 讲 · Python 程序开发环境": 83,
+   "第 16 讲 · 集成开发环境 Eclipse 的使用": 84,
+   "命令特训 · 查看文件内容": 85,
+   "命令特训 · 用户与组": 86,
+   "命令特训 · 网络与远程": 87,
+   "命令特训 · 文件与目录": 88,
+   "命令特训 · 软件包与服务": 89,
+   "命令特训 · 文本处理": 90,
+   "命令特训 · 磁盘与存储": 91,
+   "命令特训 · 进程与作业": 92,
+   "命令特训 · 压缩与打包": 93,
+   "命令特训 · 查找与定位": 94,
+   "命令特训 · Shell 与管道": 95,
+   "命令特训 · 权限与属性": 96
   }
  },
  "question_types": [
@@ -4700,7 +4702,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|A\n",
+     "expected_stdout": "|A\n|'X'\n",
      "points": 10
     }
    ],
@@ -82413,7 +82415,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|grep ^VERSION_ID= /etc/os-release\n|grep VERSION_ID= /etc/os-release\n|grep '^VERSION_ID=' /etc/os-release\n|grep ^VERSION_ID= /etc/os-release\n|grep \"^VERSION_ID=\" /etc/os-release\n",
+     "expected_stdout": "|grep ^VERSION_ID= /etc/os-release\n|grep VERSION_ID= /etc/os-release\n|grep '^VERSION_ID=' /etc/os-release\n|grep \"^VERSION_ID=\" /etc/os-release\n",
      "points": 12
     }
    ],
@@ -82509,6 +82511,185 @@
     10
    ],
    "points_sum": 10
+  },
+  {
+   "id": 1470,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-2 连隐藏文件一起看根目录",
+   "difficulty": 1,
+   "total_score": 12,
+   "tags": [
+    "ls",
+    "-a",
+    "隐藏文件",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 2 题。**\n\n使用 `ls` 查看根目录下的**所有**文件（包含隐藏文件）。",
+   "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls -a /\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1471,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-3 主目录有什么",
+   "difficulty": 1,
+   "total_score": 16,
+   "tags": [
+    "cd",
+    "~",
+    "ls",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 3 题。**\n\n切换到普通用户的主目录，并查看主目录下有哪些文件。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd ~; ls -a\n|ls -a ~\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1475,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-7 系统认哪些登录 shell",
+   "difficulty": 1,
+   "total_score": 12,
+   "tags": [
+    "cat",
+    "/etc/shells",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 7 题。**\n\n查看当前系统支持哪些 shell 类型。",
+   "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cat /etc/shells\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1476,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-8 我现在的默认 shell 是哪个",
+   "difficulty": 1,
+   "total_score": 12,
+   "tags": [
+    "echo",
+    "SHELL",
+    "环境变量",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 8 题。**\n\n查看终端当前默认使用的 shell。",
+   "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|echo $SHELL\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
   },
   {
    "id": 133,
@@ -82641,6 +82822,186 @@
     12
    ],
    "points_sum": 12
+  },
+  {
+   "id": 1469,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-1 绝对路径进目录，再用相对路径回两级",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "cd",
+    "相对路径",
+    "..",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 1 题。**\n\n用 `cd` 以**绝对路径**进入 `/usr/local/bin` 并查看该目录内容；然后用**相对路径**回到 `/usr` 并查看该目录内容。\n\n（把这两步写出来。不要写 `pwd` —— 题目没有要求打印路径。）",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd /usr/local/bin; ls; cd ../..; ls\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1473,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-5 日志目录的长格式全清单",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "ls",
+    "-l",
+    "-a",
+    "var/log",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 5 题。**\n\n查看 `/var/log` 下的所有文件（含隐藏文件），**以长格式**显示。",
+   "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls -la /var/log\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1474,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-6 用重定向把目录清单存成文件，再带行号看",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "重定向",
+    "cat -n",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 6 题。**\n\n把 `/usr/local` 目录下的文件名**重定向**到主目录的 `test1.txt`；然后用 `cat` 查看 `test1.txt` 的内容并**显示行号**。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls /usr/local > ~/test1.txt; cat -n ~/test1.txt\n|ls /usr/local > test1.txt; cat -n test1.txt\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1477,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-9 分页看配置文件：more 与 less 各来一遍",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "more",
+    "less",
+    "分页",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 9 题。**\n\n分别用 `more` 和 `less` 查看 `/etc/ssh/ssh_config` 的内容（截取部分即可）。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|more /etc/ssh/ssh_config; less /etc/ssh/ssh_config\n|less /etc/ssh/ssh_config\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
   },
   {
    "id": 136,
@@ -82783,6 +83144,96 @@
    "points_sum": 12
   },
   {
+   "id": 1472,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-4 连下三级，再一级一级往回走",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "cd",
+    "相对路径",
+    "陷阱",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 4 题。**\n\n先切到 `/usr/local/share/applications` 并查看内容；用相对路径切到 `local` 并查看；再用相对路径切到 `share` 并查看。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd /usr/local/share/applications; ls; cd ../..; ls; cd share; ls\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1478,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 2-10 su 的那个减号：root 与普通用户的家目录分别是哪",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "su",
+    "pwd",
+    "root",
+    "实验2"
+   ],
+   "choices": [],
+   "statement_md": "**实验 2 第 10 题。**\n\n切到 root，查看 root 主目录下有哪些文件并打印它的**绝对路径**；退回普通用户，切到自己的主目录并打印其绝对路径。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 2 · 基本命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|su -; pwd; ls -a; exit; cd ~; pwd\n|su -; pwd; ls -a; exit; cd; pwd\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
    "id": 673,
    "subject": "linux",
    "line": "text",
@@ -82919,6 +83370,230 @@
     12
    ],
    "points_sum": 12
+  },
+  {
+   "id": 1479,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-1 根目录清单落到 sdut1.txt",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "重定向",
+    "ls",
+    "cat",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 1 题。**\n\n查看根目录下有哪些文件，把输出重定向到主目录的 `sdut1.txt`，然后查看这个文件的内容。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls / > ~/sdut1.txt; cat ~/sdut1.txt\n|ls / > sdut1.txt; cat sdut1.txt\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1480,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-2 在 /tmp 下建目录，还要一次建出四层",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "mkdir",
+    "-p",
+    "ls -R",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 2 题。**\n\n切到 `/tmp`，在那里建目录 `aa`；再建多级目录 `a1/a2/a3/a4`；最后查看目录是否建好（要能看到层层嵌套）。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd /tmp; mkdir aa; mkdir -p a1/a2/a3/a4; ls -R a1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1483,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-5 在 /usr/local/games 里建 game1 并打印它的绝对路径",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "mkdir",
+    "pwd",
+    "sudo",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 5 题。**\n\n切到 `/usr/local/games`，在那里建新目录 `game1`，切进 `game1`，并**打印当前所在目录的绝对路径**。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd /usr/local/games; sudo mkdir game1; cd game1; pwd\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1485,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-7 建个空文件，交给 vi 改内容",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "touch",
+    "vi",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 7 题。**\n\n用 `touch` 在主目录建空文件 `hello`，然后用 `vi` 把它改成 `this is a file of sdut`，再查看内容。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|touch ~/hello; vi ~/hello\n|touch hello; vi hello\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1486,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-8 echo 写文件，再用分页器看",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "echo",
+    "重定向",
+    "less",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 8 题。**\n\n在主目录用 `echo` 把 `this is my new file` 重定向到文件 `mysdutfile`，再用 `less`（或 `more`）查看它。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|echo \"this is my new file\" > ~/mysdutfile; less ~/mysdutfile\n|echo \"this is my new file\" > ~/mysdutfile; more ~/mysdutfile\n|echo 'this is my new file' > ~/mysdutfile; less ~/mysdutfile\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
   },
   {
    "id": 139,
@@ -83114,6 +83789,232 @@
    "points_sum": 15
   },
   {
+   "id": 1481,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-3 把 /tmp/a1 整棵子树复制到 /usr",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "cp",
+    "-r",
+    "sudo",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 3 题。**\n\n把 `/tmp/a1` 目录及其子目录用 `cp` 复制到 `/usr` 下，然后切到 `/usr` 查看是否复制成功。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo cp -r /tmp/a1 /usr/; cd /usr; ls -R a1\n|sudo cp -r /tmp/a1 /usr/; cd /usr; ls a1\n|cp -r /tmp/a1 /usr/; cd /usr; ls -R a1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1482,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-4 在 /etc 里只挑名字含 pass 的",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "ls",
+    "通配符",
+    "grep",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 4 题。**\n\n切到 `/etc`，**仅显示**名字里包含 `pass` 的文件。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd /etc; ls -d *pass*\n|ls -d /etc/*pass*\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1484,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-6 按通配符把 /boot 的内核文件拷进 ~/abc",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "cp",
+    "通配符",
+    "sudo",
+    "boot",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 6 题。**\n\n用 `cp` 把 `/boot` 下所有以 `vmlinuz` 开头的文件拷到主目录的 `abc` 目录（不存在就先建），然后进去查看是否已复制。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|mkdir -p ~/abc; sudo cp /boot/vmlinuz* ~/abc/; cd ~/abc; ls -lh\n|mkdir -p ~/abc; cp /boot/vmlinuz* ~/abc/; cd ~/abc; ls -lh\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1487,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-9 建了挪到根目录再改名",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "mv",
+    "重命名",
+    "sudo",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 9 题。**\n\n在 `/usr/local` 下建 `test7`，把它**移动到根目录**；再把根目录下的 `test7` **改名**为 `test8`；最后查看根目录内容。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo mkdir /usr/local/test7; sudo mv /usr/local/test7 /; sudo mv /test7 /test8; ls /\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1488,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 3-10 删掉 /test8 并确认删干净",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "rm",
+    "-r",
+    "grep",
+    "实验3"
+   ],
+   "choices": [],
+   "statement_md": "**实验 3 第 10 题。**\n\n删除根目录下的 `test8` 目录，并查看是否已经删除。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 3 · 常用命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo rm -r /test8; ls / | grep test8\n|sudo rm -rf /test8; ls / | grep test8\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
    "id": 142,
    "subject": "linux",
    "line": "text",
@@ -83201,6 +84102,51 @@
     10
    ],
    "points_sum": 10
+  },
+  {
+   "id": 1494,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-6 查 grep 的手册页",
+   "difficulty": 1,
+   "total_score": 12,
+   "tags": [
+    "man",
+    "grep",
+    "手册",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 6 题。**\n\n用 `man` 查看 `grep` 命令的使用方法。",
+   "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|man grep\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
   },
   {
    "id": 146,
@@ -83417,6 +84363,96 @@
      "is_sample": false,
      "stdin": "",
      "expected_stdout": "|cat file11 file12 > file13\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1492,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-4 按字典逆序排四行字",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "sort",
+    "-r",
+    "逆序",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 4 题。**\n\n主目录下有一个 `mysort1` 文件，四行分别是 `is`、`this`、`excellent`、`my`。把它按**字典逆序**排序显示。",
+   "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sort -r ~/mysort1\n|sort -r mysort1\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1493,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-5 输出一句话但不换行",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "echo",
+    "-n",
+    "不换行",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 5 题。**\n\n用 `echo` 输出 `hello everyone!`，要求输出之后**不换行**。",
+   "input_format": "写**一条完整的命令**（含命令名与参数）；不要贴 `$` 提示符，不要写解释",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|echo -n \"hello everyone!\"\n|echo -n 'hello everyone!'\n|printf \"hello everyone!\"\n",
      "points": 12
     }
    ],
@@ -83716,6 +84752,189 @@
    "points_sum": 15
   },
   {
+   "id": 1490,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-2 确认 vim 装没装，再用它写个文件",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "rpm",
+    "dnf",
+    "vim",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 2 题。**\n\n先确认 `vim` 是否已安装（没装就用 `dnf` 装）；然后到 `/usr/local` 下用 `vim` 新建 `sdutfile`，内容为 `hellosdut`。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|rpm -q vim-enhanced; sudo dnf install -y vim; cd /usr/local; sudo vim sdutfile\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1495,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-7 解压 Eclipse 并启动它",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "tar",
+    "eclipse",
+    "./",
+    "PATH",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 7 题。**\n\n把下载好的 `eclipse-java-*-linux-gtk-x86_64.tar.gz` 放在 `~/下载` 里。解压它、进入解压出的 `eclipse` 目录、启动 `./eclipse`。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd ~/下载; tar xzvf eclipse-java-2026-09-R-linux-gtk-x86_64.tar.gz; cd eclipse; ./eclipse\n|cd ~/Downloads; tar xzvf eclipse-java-2026-09-R-linux-gtk-x86_64.tar.gz; cd eclipse; ./eclipse\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1496,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-8 两个文件拼成第三个，再一起搬进目录",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "cat",
+    "重定向",
+    "mv",
+    "多文件",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 8 题（四小问一次做完）。**\n\n(a) 主目录建 `file11`、`file12`，内容分别是 `sdut11`、`sdut12`；\n(b) 建目录 `dir1`；\n(c) 用 `cat` 让 `dir1/file13` 同时含这两个文件的内容，并查看；\n(d) 把 `file11`、`file12` 移进 `dir1` 并查看结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd ~; echo \"sdut11\" > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|cd ~; echo sdut11 > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|cd ~; echo 'sdut11' > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|cd ~; echo \"sdut11\" > file11; echo sdut12 > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|cd ~; echo \"sdut11\" > file11; echo 'sdut12' > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l ~/dir1\n|echo \"sdut11\" > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n|echo sdut11 > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n|echo 'sdut11' > file11; echo \"sdut12\" > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n|echo \"sdut11\" > file11; echo sdut12 > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n|echo \"sdut11\" > file11; echo 'sdut12' > file12; mkdir dir1; cat file11 file12 > dir1/file13; cat dir1/file13; mv file11 file12 dir1/; ls -l dir1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1498,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-10 以 root 身份建目录建文件，再用 ll 看权限",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "su",
+    "ll",
+    "alias",
+    "touch",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 10 题。**\n\n切到 root，在 `/usr/local` 下建目录 `perm`，在 `perm` 里建文件 `newfile`，用 `ll` 查看该文件的详细信息，然后退回普通用户。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|su -; mkdir /usr/local/perm; touch /usr/local/perm/newfile; ll /usr/local/perm/newfile; exit\n|su -; mkdir /usr/local/perm; touch /usr/local/perm/newfile; ls -l /usr/local/perm/newfile; exit\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
    "id": 150,
    "subject": "linux",
    "line": "text",
@@ -83811,6 +85030,143 @@
    "points_sum": 12
   },
   {
+   "id": 1489,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-1 建目录、打包备份、再解到别处",
+   "difficulty": 4,
+   "total_score": 16,
+   "tags": [
+    "tar",
+    "czvf",
+    "xzvf",
+    "-C",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 1 题。**\n\n在 `/usr` 下建目录 `test5`，用 `tar` 压缩备份到主目录的 `test5.tar.gz` 并确认；再把它解压到 `/usr/local` 并确认。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo mkdir /usr/test5; sudo tar czvf ~/test5.tar.gz /usr/test5; ls -lh ~/test5.tar.gz; sudo tar xzvf ~/test5.tar.gz -C /usr/local; ls -l /usr/local/test5\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1491,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-3 在根目录挂一个符号链接",
+   "difficulty": 4,
+   "total_score": 16,
+   "tags": [
+    "ln",
+    "-s",
+    "符号链接",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 3 题。**\n\n在 `/usr/local` 下建目录 `sdutshare`，在**根目录**建一个名为 `myshare` 的**符号链接**指向它，然后在根目录查看链接是否建好。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo mkdir /usr/local/sdutshare; sudo ln -s /usr/local/sdutshare /myshare; ls -l / | grep myshare\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1497,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 4-9 Fedora 装 MySQL 的正确包名",
+   "difficulty": 4,
+   "total_score": 16,
+   "tags": [
+    "dnf",
+    "mysql-server",
+    "systemctl",
+    "mysqld",
+    "实验4"
+   ],
+   "choices": [],
+   "statement_md": "**实验 4 第 9 题。**\n\n用 `dnf` 在 Fedora 上安装 MySQL，启动服务。（写出安装与启动这两步的命令即可，登录进去看库是后续操作。）",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 4 · 综合命令",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo dnf install -y mysql-server; sudo systemctl start mysqld\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
    "id": 684,
    "subject": "linux",
    "line": "text",
@@ -83853,6 +85209,51 @@
     10
    ],
    "points_sum": 10
+  },
+  {
+   "id": 1500,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-2 在 user01 家目录里建文件与目录",
+   "difficulty": 1,
+   "total_score": 16,
+   "tags": [
+    "touch",
+    "mkdir",
+    "umask",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 2 题。**\n\n（当前身份是 `user01`，在家目录里。）\n\n新建文件 `11.txt` 和目录 `abc`。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|touch 11.txt; mkdir abc\n|touch ~/11.txt; mkdir ~/abc\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
   },
   {
    "id": 680,
@@ -83989,6 +85390,451 @@
    "points_sum": 12
   },
   {
+   "id": 1501,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-3 一个文件一个目录的权限分别怎么看",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "ls",
+    "-d",
+    "权限",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 3 题。**\n\n查看 `11.txt` 文件和 `abc` 目录的权限。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|ls -l 11.txt; ls -ld abc\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1503,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-4b 给其他人加写权限",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "o+w",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 4 题（第 2 问）。**\n\n用**字符表示法**为**其他用户**增加**可写**权限（文件 `11.txt`），并查看结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod o+w 11.txt; ls -l 11.txt\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1504,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-4c 把属组的权限设成只有写",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "g=w",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 4 题（第 3 问）。**\n\n用**字符表示法**把 `11.txt` 的**所属用户组**权限设为 `-w-`，并查看结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod g=w 11.txt; ls -l 11.txt\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1505,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-4d 让属主和属组都不能执行",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "u-x",
+    "g-x",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 4 题（第 4 问）。**\n\n用字符表示法为文件 `11.txt` 的**拥有者和用户组**取消可执行权限，并查看结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod u-x,g-x 11.txt; ls -l 11.txt\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1508,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-7 放开其他人的写权限",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "o+w",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 7 题。**\n\n让**其他用户**可以对 `sdutfile1` 进行**写**操作，并查看更改后的结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod o+w sdutfile1; ls -l sdutfile1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1509,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-8 收回同组的读权限",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "g-r",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 8 题。**\n\n取消**同组用户**对 `sdutfile1` 的**读**权限，并查看更改后的结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod g-r sdutfile1; ls -l sdutfile1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1510,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-9 八进制 744",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "八进制",
+    "744",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 9 题。**\n\n用**八进制表示法**设置 `sdutfile1`：属主可读可写可执行，组和其他只有可读。设置完查看结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod 744 sdutfile1; ls -l sdutfile1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1511,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-10 八进制 400：只有属主能读",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "400",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 10 题。**\n\n用八进制把 `sdutfile1` 改成：属主**只读**，组和其他**没有任何权限**。设置完查看结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod 400 sdutfile1; ls -l sdutfile1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1514,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-13 建组 sdutstuff，看 group 尾巴",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "groupadd",
+    "group",
+    "tail",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 13 题。**\n\n新建用户组 `sdutstuff`，然后查看 `/etc/group` 的最后 5 行。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo groupadd sdutstuff; tail -n 5 /etc/group\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1515,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-14 删组再看 group 尾巴",
+   "difficulty": 2,
+   "total_score": 16,
+   "tags": [
+    "groupdel",
+    "group",
+    "tail",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 14 题。**\n\n删除用户组 `sdutstuff`，然后查看 `/etc/group` 的最后 5 行。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo groupdel sdutstuff; tail -n 5 /etc/group\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
    "id": 683,
    "subject": "linux",
    "line": "text",
@@ -84031,6 +85877,1353 @@
     15
    ],
    "points_sum": 15
+  },
+  {
+   "id": 1499,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-1 连建两个用户，切到第一个",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "useradd",
+    "-m",
+    "sudo -iu",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 1 题。**\n\n新建 `user01` 和 `user02` 两个用户，并切换到 `user01`。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo useradd -m user01; sudo useradd -m user02; sudo -iu user01\n|sudo useradd -m user01; sudo useradd -m user02; su - user01\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1502,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-4 把 11.txt 设成 rwxr-x--x（字符法）",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "字符法",
+    "751",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 4 题（第 1 问）。**\n\n用**字符表示法**把 `11.txt` 的权限改成 `-rwxr-x--x`，并查看结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod u=rwx,g=rx,o=x 11.txt; ls -l 11.txt\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1507,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-6 换 user02 身份在新家目录里建目录建文件",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "sudo -iu",
+    "mkdir",
+    "touch",
+    "ls -l",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 6 题。**\n\n切到 `user02`，在其主目录建目录 `sdutjsj`，进目录建空文件 `sdutfile1`，用**长格式**查看该文件的信息（权限、属主、属组）。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo -iu user02; mkdir sdutjsj; cd sdutjsj; touch sdutfile1; ls -l sdutfile1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1512,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-11 八进制 402：只给其他人写",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "chmod",
+    "402",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 11 题。**\n\n用八进制给 `sdutfile1` 的**其他用户**加上**写**权限（属主仍只读、组无权限），设置完查看结果。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|chmod 402 sdutfile1; ls -l sdutfile1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1513,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-12 建用户 zhangsan 并设密码，最后看 passwd 尾巴",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "useradd",
+    "chpasswd",
+    "tail",
+    "passwd",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 12 题。**\n\n新建用户 `zhangsan`，把密码设成 `123`，然后用 `tail` 查看 `/etc/passwd` 的最后 10 行。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo useradd -m zhangsan; echo 'zhangsan:123' | sudo chpasswd; tail -n 10 /etc/passwd\n|sudo useradd -m zhangsan; echo zhangsan:123 | sudo chpasswd; tail -n 10 /etc/passwd\n|sudo useradd -m zhangsan; echo \"zhangsan:123\" | sudo chpasswd; tail -n 10 /etc/passwd\n|sudo useradd -m zhangsan; echo 'zhangsan:123' | sudo chpasswd; tail -10 /etc/passwd\n|sudo useradd -m zhangsan; echo zhangsan:123 | sudo chpasswd; tail -10 /etc/passwd\n|sudo useradd -m zhangsan; echo \"zhangsan:123\" | sudo chpasswd; tail -10 /etc/passwd\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1516,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-15 把 zhangsan 家目录里的 temp1 改成 root 的",
+   "difficulty": 3,
+   "total_score": 16,
+   "tags": [
+    "mkdir",
+    "chown",
+    "-ld",
+    "root",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 15 题。**\n\n在 `zhangsan` 主目录下建目录 `temp1`，查看它的所属用户与用户组；然后把它的所属用户与用户组都设为 `root`，再看一遍。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|sudo mkdir -p /home/zhangsan/temp1; ls -ld /home/zhangsan/temp1; sudo chown root:root /home/zhangsan/temp1; ls -ld /home/zhangsan/temp1\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1506,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 5-5 目录连里面的文件一起改属主",
+   "difficulty": 4,
+   "total_score": 16,
+   "tags": [
+    "chown",
+    "-R",
+    "user:group",
+    "实验5"
+   ],
+   "choices": [],
+   "statement_md": "**实验 5 第 5 题。**\n\n在 `abc` 目录里建文件 `22.txt`，然后把 `abc` 及其内部文件的**所属用户和用户组**都改成 `user02`，并核对。",
+   "input_format": "多步任务：一行一条命令，按实验报告的顺序写（Shift+回车 换行）；分号写法也认",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 5 · 用户与权限",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|cd abc; touch 22.txt; cd ..; sudo chown -R user02:user02 abc; ls -ld abc\n|touch abc/22.txt; sudo chown -R user02:user02 abc; ls -ld abc\n",
+     "points": 16
+    }
+   ],
+   "case_points": [
+    16
+   ],
+   "points_sum": 16
+  },
+  {
+   "id": 1518,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "实验 6-1b 这个脚本输入 5 打印什么",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "until",
+    "边界",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 1 题（跑一遍看结果）。**\n\n上面的 `script1.sh` 运行后输入 `5`，脚本最后一行会打印出什么？\n\n（照原样写出那一整行输出）",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|1~5 的和是 15\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1520,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 6-3 匹配 B 或 b 的写法",
+   "difficulty": 2,
+   "total_score": 14,
+   "tags": [
+    "case",
+    "通配符",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 3 题。** 输入 boy/girl，`B`/`b` 打 `This is a boy`，`G`/`g` 打 `This is a girl`，其他打 `Sorry, I don't know`。\n\n写出 `case` 里匹配「B 或 b」的那一行（分支头 + 动作）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|B|b) echo \"This is a boy\" ;;\n|B|b)\n|b|B) echo \"This is a boy\" ;;\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1524,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "实验 6-6b [0,50] 奇数和的答案是多少",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "while",
+    "求和",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 6 题（跑一遍看结果）。**\n\n上面的 `script6.sh` 跑完后，最后一行输出里的数字是多少？\n\n（只写数字）",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|625\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1525,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 6-7 菜单脚本里读用户选择的那一行",
+   "difficulty": 2,
+   "total_score": 14,
+   "tags": [
+    "read",
+    "-p",
+    "菜单",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 7 题。** 用 `case` 做菜单：(1) 查看日期 (2) 查看主机名 (3) 退出。\n\n写出「读入用户选择到变量 `choice`」的那一行（带提示语 `请选择（1-3）：`）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|read -p \"请选择（1-3）：\" choice\n|read -p 请选择（1-3）： choice\n|read -p '请选择（1-3）：' choice\n|read -p \"请选择(1-3)：\" choice\n|read -p 请选择(1-3)： choice\n|read -p '请选择(1-3)：' choice\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1517,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 6-1 until 求和的循环条件怎么写",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "until",
+    "循环",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 1 题。** 从键盘读入 N（N>1），用 `until` 求 1~N 的和。\n\n```bash\n#!/bin/bash\nread -p \"请输入一个大于 1 的整数 N：\" n\nsum=0\ni=1\n______\ndo\n    sum=$((sum + i))\n    i=$((i + 1))\ndone\necho \"1~$n 的和是 $sum\"\n```\n\n把 `______` 那一行写出来。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|until [ $i -gt $n ]\n|[ $i -gt $n ]\n|until [ $i -gt \"$n\" ]\n|until [ $i -gt '$n' ]\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1522,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 6-5 求三个整数的最大值：第二句比较怎么写",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "if",
+    "比较",
+    "最大值",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 5 题。** 输入三个整数，用 `if` 求最大值。\n\n```bash\nread -p \"请输入三个整数（空格分隔）：\" a b c\nmax=$a\nif [ \"$b\" -gt \"$max\" ]; then max=$b; fi\n______\necho \"三个数中的最大值是 $max\"\n```\n\n把 `______` 那一行补上。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|if [ \"$c\" -gt \"$max\" ]; then max=$c; fi\n|if [ $c -gt \"$max\" ]; then max=$c; fi\n|if [ '$c' -gt \"$max\" ]; then max=$c; fi\n|if [ \"$c\" -gt $max ]; then max=$c; fi\n|if [ \"$c\" -gt '$max' ]; then max=$c; fi\n|if [ $c -gt $max ]; then max=$c; fi\n|if [ \"$c\" -gt \"$max\" ]; then max=\"$c\"; fi\n|if [ '$c' -gt \"$max\" ]; then max='$c'; fi\n|if [ \"$c\" -gt $max ]; then max=\"$c\"; fi\n|if [ \"$c\" -gt '$max' ]; then max=\"$c\"; fi\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1519,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 6-2 case 里 90~100 分该写哪个模式",
+   "difficulty": 4,
+   "total_score": 14,
+   "tags": [
+    "case",
+    "分支",
+    "100分",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 2 题。** 成绩 0~100 分，用 `case` 判等级：90-100→A、80-89→B、……。\n\n脚本里用 `case $((score / 10)) in` 把分数折成了十位数字。\n\n```bash\n    case $((score / 10)) in\n        ______) grade=\"A\" ;;\n        8)    grade=\"B\" ;;\n        7)    grade=\"C\" ;;\n        6)    grade=\"D\" ;;\n        *)    grade=\"E\" ;;\n    esac\n```\n\n把 `______` 补上（要让 90~100 都判成 A）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|10|9) grade=\"A\" ;;\n|10|9) grade=A ;;\n|10|9) grade='A' ;;\n|10|9)\n|9|10)\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1521,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 6-4 case 里匹配乘号的转义写法",
+   "difficulty": 4,
+   "total_score": 14,
+   "tags": [
+    "case",
+    "转义",
+    "乘号",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 4 题。** 用 `case` 实现两个整数的加减乘除：`+ - * /` 四个分支。\n\n写出匹配**乘号**的那一行（分支头 + 动作）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|\\*) echo \"$a * $b = $((a * b))\" ;;\n|\\*)\n|\\* ) echo \"$a * $b = $((a * b))\" ;;\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1523,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 6-6 用 while 判奇数的那一句",
+   "difficulty": 4,
+   "total_score": 14,
+   "tags": [
+    "while",
+    "算术展开",
+    "取余",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 6 题。** 用 `while` 求 [0,50] 区间内所有奇数的和。\n\n```bash\ni=0\nsum=0\nwhile [ $i -le 50 ]\ndo\n    ______\n    then\n        sum=$((sum + i))\n    fi\n    i=$((i + 1))\ndone\necho \"0~50 之间所有奇数的和是 $sum\"\n```\n\n把 `______` 补成「如果 i 是奇数」。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|if [ $((i % 2)) -ne 0 ]\n|if [ $((i % 2)) -eq 1 ]\n|if [ $((i % 2)) -ne 0 ];\n|if (( i % 2 != 0 ))\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1526,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 6-8 删数组下标 2 的元素并数个数",
+   "difficulty": 4,
+   "total_score": 14,
+   "tags": [
+    "数组",
+    "unset",
+    "长度",
+    "实验6"
+   ],
+   "choices": [],
+   "statement_md": "**实验 6 第 8 题。** 数组 `arr=(\"a\" \"b\" \"c\" \"d\")`，删掉**索引为 2** 的元素，再统计剩下几个元素。\n\n写出这两条命令（一行一条）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 6 · Shell 脚本基础",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|unset 'arr[2]'; echo ${#arr[@]}\n|unset arr[2]; echo ${#arr[@]}\n|unset \"arr[2]\"; echo ${#arr[@]}\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1528,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "实验 7-1b 输入 5 时阶乘脚本打印什么",
+   "difficulty": 1,
+   "total_score": 12,
+   "tags": [
+    "for",
+    "阶乘",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 1 题（跑一遍看结果）。**\n\n`jiecheng.sh` 运行后输入 `5`，脚本会打印什么？\n\n（照原样写整行）",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|5! = 120\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1537,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-10 把 test.c 编译成 mytest",
+   "difficulty": 1,
+   "total_score": 14,
+   "tags": [
+    "gcc",
+    "-o",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 10 题。** 把 `test.c`（求 [1,20] 内偶数和的程序）编译成名为 `mytest` 的可执行文件。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|gcc test.c -o mytest\n|gcc -o mytest test.c\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1527,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-1 阶乘脚本的循环体那一句",
+   "difficulty": 2,
+   "total_score": 14,
+   "tags": [
+    "for",
+    "阶乘",
+    "累乘",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 1 题。** 计算 n 的阶乘。\n\n```bash\n#!/bin/bash\nread -p \"请输入一个正整数 n：\" n\nfact=1\nfor ((i = 1; i <= n; i++))\ndo\n    ______\ndone\necho \"$n! = $fact\"\n```\n\n把 `______` 补上。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|fact=$((fact * i))\n|fact=$((fact*i))\n|fact=$(( fact * i ))\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1530,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-3 只输出数组里的正数",
+   "difficulty": 2,
+   "total_score": 14,
+   "tags": [
+    "for",
+    "数组",
+    "数值比较",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 3 题。** 数组 `arr=(-1 -3 6 7 2 -6)`，输出其中大于 0 的元素。\n\n写出循环里那个判断条件（`for x in \"${arr[@]}\"` 之后，`if` 那一句）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|if [ \"$x\" -gt 0 ]; then\n|if [ $x -gt 0 ]; then\n|if [ '$x' -gt 0 ]; then\n|if [ \"$x\" -gt 0 ]\n|if [ $x -gt 0 ]\n|if [ '$x' -gt 0 ]\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1536,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-9 编译 circle.c 并运行",
+   "difficulty": 2,
+   "total_score": 14,
+   "tags": [
+    "gcc",
+    "-o",
+    "./",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 9 题。** 写好 `circle.c` 后，用 `gcc` 编译它，生成可执行文件并运行。\n\n写出这两条命令（一行一条）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|gcc circle.c -o circle; ./circle\n|gcc -o circle circle.c; ./circle\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1539,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "实验 7-12 ./myscript12.sh 100 200 打印什么",
+   "difficulty": 2,
+   "total_score": 12,
+   "tags": [
+    "位置参数",
+    "if",
+    "填空",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 12 题（填空题）。**\n\n```bash\n#!/bin/bash\nif [ \"$1\" -gt \"$2\" ]; then\n    echo \"$1\"\nelif [ \"$1\" -lt \"$2\" ]; then\n    echo \"$2\"\nelse\n    echo \"equal: $1\"\nfi\n```\n\n执行 `./myscript12.sh 100 200`，输出结果是什么？",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|200\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
+  },
+  {
+   "id": 1529,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-2 三次机会的循环条件",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "while",
+    "read",
+    "死循环",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 2 题。** 用户名密码最多试 3 次，用 `while` 控制。\n\n```bash\ncount=0\n______\ndo\n    count=$((count + 1))\n    read -p \"第 $count 次，用户名：\" user\n    read -s -p \"第 $count 次，密码：\" pass\n    echo\n    if [ \"$user\" = \"sdut\" ] && [ \"$pass\" = \"sdut\" ]; then\n        echo \"hello sdut!\"\n        exit 0\n    fi\n    echo \"用户名或密码错误，还剩 $((3 - count)) 次机会\"\ndone\necho \"三次机会已用完，程序结束\"\n```\n\n把 `______` 补上（要能循环 3 次）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|while [ $count -lt 3 ]\n|while [ \"$count\" -lt 3 ]\n|while [ '$count' -lt 3 ]\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1531,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-4 命令行参数三个数的和",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "位置参数",
+    "$#",
+    "算术",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 4 题。** 从**命令行参数**取 3 个整数求和。\n\n```bash\n#!/bin/bash\nif [ $# -ne 3 ]; then\n    echo \"用法：$0 整数1 整数2 整数3\"\n    exit 1\nfi\n______\n```\n\n把 `______` 补成「打印 `a + b + c = 和`」那一行（用 `$1 $2 $3`）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|echo \"$1 + $2 + $3 = $(($1 + $2 + $3))\"\n|echo \"$1 + $2 + $3 = $(($1+$2+$3))\"\n|echo \"$1+$2+$3=$(($1+$2+$3))\"\n|echo $1+$2+$3=$(($1+$2+$3))\n|echo '$1+$2+$3=$(($1+$2+$3))'\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1532,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-5 判断路径是不是目录的那一句",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "if",
+    "-d",
+    "文件测试",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 5 题。** 输入一个路径，判断它存在、并且区分是普通文件还是目录。\n\n写出「如果是**目录**」的判断那一行（`if` 开头，带 `then`）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|if [ -d \"$f\" ]; then\n|if [ -d $f ]; then\n|if [ -d '$f' ]; then\n|if [ -d \"$f\" ]\n|if [ -d $f ]\n|if [ -d '$f' ]\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1533,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-6 数组每个元素占一行：必须加引号的那个写法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "for",
+    "数组",
+    "@",
+    "引号",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 6 题。** 数组 `arr=(1 2 3 4 5 6)`，用 `for` 每行打印一个元素。\n\n写出 `for` 循环那一行（遍历整个数组）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|for x in \"${arr[@]}\"\n|for x in ${arr[@]}\n|for x in '${arr[@]}'\n|for x in \"${arr[@]}\"; do\n|for x in ${arr[@]}; do\n|for x in '${arr[@]}'; do\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1534,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-7 用户名密码同时匹配的判断",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "if",
+    "字符串比较",
+    "逻辑与",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 7 题。** 用户名 `admin`、密码 `123` 时提示「登录成功」，否则「登录失败」。\n\n写出那个 `if` 判断（两个条件同时成立）。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|if [ \"$user\" = \"admin\" ] && [ \"$pass\" = \"123\" ]; then\n|if [ $user = \"admin\" ] && [ \"$pass\" = \"123\" ]; then\n|if [ '$user' = \"admin\" ] && [ \"$pass\" = \"123\" ]; then\n|if [ \"$user\" = admin ] && [ \"$pass\" = \"123\" ]; then\n|if [ \"$user\" = 'admin' ] && [ \"$pass\" = \"123\" ]; then\n|if [ \"$user\" = \"admin\" ] && [ $pass = \"123\" ]; then\n|if [ \"$user\" = \"admin\" ] && [ '$pass' = \"123\" ]; then\n|if [ \"$user\" = \"admin\" ] && [ \"$pass\" = 123 ]; then\n|if [ \"$user\" = \"admin\" ] && [ \"$pass\" = '123' ]; then\n|if [ $user = admin ] && [ $pass = 123 ]; then\n|if [ \"$user\" == \"admin\" ] && [ \"$pass\" == \"123\" ]; then\n|if [ $user == \"admin\" ] && [ \"$pass\" == \"123\" ]; then\n|if [ '$user' == \"admin\" ] && [ \"$pass\" == \"123\" ]; then\n|if [ \"$user\" == admin ] && [ \"$pass\" == \"123\" ]; then\n|if [ \"$user\" == 'admin' ] && [ \"$pass\" == \"123\" ]; then\n|if [ \"$user\" == \"admin\" ] && [ $pass == \"123\" ]; then\n|if [ \"$user\" == \"admin\" ] && [ '$pass' == \"123\" ]; then\n|if [ \"$user\" == \"admin\" ] && [ \"$pass\" == 123 ]; then\n|if [ \"$user\" == \"admin\" ] && [ \"$pass\" == '123' ]; then\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1535,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "practical",
+   "title": "实验 7-8 打印星号三角：内层不换行的输出写法",
+   "difficulty": 3,
+   "total_score": 14,
+   "tags": [
+    "printf",
+    "echo -n",
+    "循环",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 8 题。** 打印 n 行星号，第 i 行 i 个 `*`。\n\n写出内层循环里「输出**一个** `*` 且**不换行**」的那一句。",
+   "input_format": "写**要填进去的那一行**（可以只写条件，也可以带上前面的关键字）",
+   "output_format": "一整条命令",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|printf \"*\"\n|printf *\n|printf '*'\n|echo -n \"*\"\n|echo -n *\n|echo -n '*'\n",
+     "points": 14
+    }
+   ],
+   "case_points": [
+    14
+   ],
+   "points_sum": 14
+  },
+  {
+   "id": 1538,
+   "subject": "linux",
+   "line": "text",
+   "question_type": "fill_blank",
+   "title": "实验 7-11 补全 while 条件，让脚本打印 0~9",
+   "difficulty": 3,
+   "total_score": 12,
+   "tags": [
+    "while",
+    "边界",
+    "填空",
+    "实验7"
+   ],
+   "choices": [],
+   "statement_md": "**实验 7 第 11 题（填空题）。**\n\n```bash\n#!/bin/bash\nnum=0\nwhile ______\ndo\n    echo $num\n    num=$(($num+1))\ndone\n```\n\n要求输出 `0` 到 `9` 共十个数字。下划线处应填什么？\n\n（只写条件，不用写 `while`）",
+   "input_format": "",
+   "output_format": "一行答案（不要写解释、不要写命令提示符）",
+   "constraints_md": "",
+   "time_limit_ms": 1000,
+   "memory_limit_mb": 64,
+   "checker": "oneof",
+   "float_eps": 1e-06,
+   "source_section": "实验 7 · 脚本进阶与 C",
+   "source_anchor": "",
+   "origin": "manual",
+   "status": "published",
+   "is_choice": false,
+   "testcase_count": 1,
+   "samples": [],
+   "hidden_count": 1,
+   "cases": [
+    {
+     "ord": 0,
+     "is_sample": false,
+     "stdin": "",
+     "expected_stdout": "|[ $num -lt 10 ]\n|[ $num -le 9 ]\n|[$num -lt 10]\n",
+     "points": 12
+    }
+   ],
+   "case_points": [
+    12
+   ],
+   "points_sum": 12
   },
   {
    "id": 155,
@@ -86883,7 +90076,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|${v:-fallback}\n|${v:-fallback}\n",
+     "expected_stdout": "|${v:-fallback}\n",
      "points": 12
     }
    ],
@@ -90041,7 +93234,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|grep -c ERROR access.log\n|grep -c 'ERROR' access.log\n|grep -c ERROR access.log\n|grep -c \"ERROR\" access.log\n",
+     "expected_stdout": "|grep -c ERROR access.log\n|grep -c 'ERROR' access.log\n|grep -c \"ERROR\" access.log\n",
      "points": 10
     }
    ],
@@ -92961,7 +96154,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|grep timeout app.log\n|grep 'timeout' app.log\n|grep timeout app.log\n|grep \"timeout\" app.log\n|grep \"timeout\" app.log\n|grep timeout app.log\n|grep 'timeout' app.log\n",
+     "expected_stdout": "|grep timeout app.log\n|grep 'timeout' app.log\n|grep \"timeout\" app.log\n",
      "points": 10
     }
    ],
@@ -93005,7 +96198,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|grep -i error app.log\n|grep -i 'error' app.log\n|grep -i error app.log\n|grep -i \"error\" app.log\n|grep --ignore-case error app.log\n",
+     "expected_stdout": "|grep -i error app.log\n|grep -i 'error' app.log\n|grep -i \"error\" app.log\n|grep --ignore-case error app.log\n",
      "points": 10
     }
    ],
@@ -93049,7 +96242,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|grep -n error app.log\n|grep -n 'error' app.log\n|grep -n error app.log\n|grep -n \"error\" app.log\n|grep --line-number error app.log\n",
+     "expected_stdout": "|grep -n error app.log\n|grep -n 'error' app.log\n|grep -n \"error\" app.log\n|grep --line-number error app.log\n",
      "points": 10
     }
    ],
@@ -93093,7 +96286,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|grep -r TODO src/\n|grep -rn TODO src/\n|grep -r 'TODO' src/\n|grep -r TODO src/\n|grep -r \"TODO\" src/\n",
+     "expected_stdout": "|grep -r TODO src/\n|grep -rn TODO src/\n|grep -r 'TODO' src/\n|grep -r \"TODO\" src/\n",
      "points": 12
     }
    ],
@@ -95799,7 +98992,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|find /etc -name '*.conf'\n|find /etc -name *.conf\n|find /etc -name \"*.conf\"\n|find /etc -name \"*.conf\"\n|find /etc -name *.conf\n|find /etc -name '*.conf'\n|find /etc -name *.conf\n",
+     "expected_stdout": "|find /etc -name '*.conf'\n|find /etc -name *.conf\n|find /etc -name \"*.conf\"\n",
      "points": 10
     }
    ],
@@ -95887,7 +99080,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|find . -iname 'readme*'\n|find . -iname readme*\n|find . -iname \"readme*\"\n|find . -iname \"readme*\"\n|find . -iname readme*\n|find . -iname 'readme*'\n|find . -iname readme*\n",
+     "expected_stdout": "|find . -iname 'readme*'\n|find . -iname readme*\n|find . -iname \"readme*\"\n",
      "points": 12
     }
    ],
@@ -96596,7 +99789,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|history | grep rsync\n|history | grep 'rsync'\n|history | grep rsync\n|history | grep \"rsync\"\n",
+     "expected_stdout": "|history | grep rsync\n|history | grep 'rsync'\n|history | grep \"rsync\"\n",
      "points": 10
     }
    ],
@@ -96729,7 +99922,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|DIR=/var/log && ls $DIR\n|DIR=/var/log; ls \"$DIR\"\n|DIR=/var/log; ls $DIR\n|DIR=/var/log; ls '$DIR'\n|DIR=/var/log ls $DIR\n",
+     "expected_stdout": "|DIR=/var/log && ls $DIR\n|DIR=/var/log; ls \"$DIR\"\n|DIR=/var/log; ls $DIR\n|DIR=/var/log; ls '$DIR'\n",
      "points": 12
     }
    ],
@@ -97219,7 +100412,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|printf 'line1\\nline2\\n' | grep pattern\n|printf line1\\nline2\\n | grep pattern\n|printf \"line1\\nline2\\n\" | grep pattern\n|printf \"line1\\nline2\\n\" | grep pattern\n|printf line1\\nline2\\n | grep pattern\n|printf 'line1\\nline2\\n' | grep pattern\n|echo -e 'line1\\nline2' | grep pattern\n|echo -e line1\\nline2 | grep pattern\n|echo -e \"line1\\nline2\" | grep pattern\n",
+     "expected_stdout": "|printf 'line1\\nline2\\n' | grep pattern\n|printf line1\\nline2\\n | grep pattern\n|printf \"line1\\nline2\\n\" | grep pattern\n|echo -e 'line1\\nline2' | grep pattern\n|echo -e line1\\nline2 | grep pattern\n|echo -e \"line1\\nline2\" | grep pattern\n",
      "points": 18
     }
    ],
@@ -97529,7 +100722,7 @@
      "ord": 0,
      "is_sample": false,
      "stdin": "",
-     "expected_stdout": "|stat -c '%a' secret.key\n|stat -c %a secret.key\n|stat -c \"%a\" secret.key\n|stat -c %a secret.key\n|stat -c '%a %n' secret.key\n",
+     "expected_stdout": "|stat -c '%a' secret.key\n|stat -c %a secret.key\n|stat -c \"%a\" secret.key\n|stat -c '%a %n' secret.key\n",
      "points": 15
     }
    ],

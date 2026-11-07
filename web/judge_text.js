@@ -182,14 +182,56 @@
   /* 同一个答案的「宽容形式」集合（从严格到宽松），对应 compare.answer_forms */
   function answerForms(text) {
     const t = pyStrip(normalizeNewlines(toText(text)));
-    const forms = new Set([squeezeWs(t)]);
-    const core = pyStrip(pyStripChars(t, EDGE_PUNCT));
-    if (core && core !== t) forms.add(squeezeWs(core));
+    /* 多步命令题：学生敲完一条按回车，和答案里写 `;` 完全等价。
+       派生一个「换行 → ; 」的种子，顺便盖住「一半换行一半分号」的混写。
+       ★ 空行要**先滤掉**再拼：`cmd1` 空一行 `cmd2` 会拼出 `cmd1 ; ; cmd2`。
+       ★ 只影响学生交上来的答案 —— oneofAlternatives() 取出的每条答案都是单行。 */
+    const seeds = [t];
+    if (t.indexOf('\n') >= 0) {
+      const lines = t.split('\n').map(function (x) { return pyStrip(x); })
+        .filter(function (x) { return x !== ''; });
+      seeds.push(lines.join(' ; '));
+    }
+
+    const forms = new Set();
+    seeds.forEach(function (s0) {
+      const s = pyStrip(s0);
+      if (!s) return;
+      forms.add(squeezeWs(s));
+      const core = pyStrip(pyStripChars(s, EDGE_PUNCT));
+      if (core && core !== s) forms.add(squeezeWs(core));
+    });
     /* 在已有个形式的基础上，再叠一层命令归一化 */
     Array.from(forms).forEach(function (f) { forms.add(squeezeWs(normCmd(f))); });
     /* 再叠一层「家目录」归一化：/home/<谁> → ~，任意登录名都通吃 */
     Array.from(forms).forEach(function (f) { forms.add(squeezeWs(normHome(f))); });
     return forms;
+  }
+
+  /* shell 里连接多条命令的运算符。`||` `&&` 必须排在 `|` 前面，
+     否则 `a||b` 会先被 `|` 切成两半。 */
+  const OPER_RE = /[ \t\r\n]*(\|\||&&|;|\|)[ \t\r\n]*/g;
+
+  /* 引号包起来的整段（单引号 / 双引号），里面的内容原样不动 —— */
+  /* `grep "a|b" f` 里的 `|` 是字面量，动了它就把「匹配竖线」改成「管道」了。 */
+  const QUOTED_RE = /'[^']*'|"[^"]*"/g;
+
+  /* 引号外的 shell 运算符，两边统一成一个空格。
+     多步命令题答案写成 `cd /tmp; mkdir aa`，学生敲成 `cd /tmp;mkdir aa`
+     或 `cd /tmp ;  mkdir aa`，执行结果一样，按字面比却判成三个答案。 */
+  function normOper(text) {
+    const src = String(text);
+    const out = [];
+    let last = 0;
+    /* 用 replace 的回调按「非引号片段」逐段处理，避免手工切分下标 */
+    src.replace(QUOTED_RE, function (m, off) {
+      out.push(src.slice(last, off).replace(OPER_RE, ' $1 '));
+      out.push(m);
+      last = off + m.length;
+      return m;
+    });
+    out.push(src.slice(last).replace(OPER_RE, ' $1 '));
+    return pyStrip(out.join(''));
   }
 
   /* `/home/<某个名字>` 这一整段（不含其后的路径分隔符） */
@@ -203,10 +245,12 @@
   /* 纯字母的短选项，如 -l / -a / -lah（两个横杠的长选项、带数字的 -9、单独的 - 都不匹配） */
   const SHORT_OPT_RE = /^-[A-Za-z]+$/;
 
-  /* 命令行的宽容归一化：空白折叠 + 相邻短选项合并 + 簇内字母排序去重。
-     `ls -la /etc`、`ls -al /etc`、`ls -l -a /etc` 视为同一件事。 */
+  /* 命令行的宽容归一化：空白折叠 + 运算符对齐 + 相邻短选项合并 + 簇内字母排序去重。
+     `ls -la /etc`、`ls -al /etc`、`ls -l -a /etc` 视为同一件事。
+     ★ 运算符归一化必须排在短选项合并**之前**：`ls -l;ls -a` 先变成
+       `ls -l ; ls -a`，两条命令各自的选项才不会被并成 `-al`。 */
   function normCmd(text) {
-    const toks = String(text).split(PY_WS_RUN_RE).filter(function (x) { return x !== ''; });
+    const toks = normOper(text).split(PY_WS_RUN_RE).filter(function (x) { return x !== ''; });
     const out = [];
     let i = 0;
     while (i < toks.length) {

@@ -55,6 +55,7 @@ sys.path.insert(0, str(ROOT / "tools"))
 
 import _console                                                   # noqa: E402
 import linux_cmd_bank                                            # noqa: E402
+import linux_lab_bank, linux_lab_bank2                          # noqa: E402
 from app.bank_kit import fill, mc, multi, tf                      # noqa: E402
 
 SUBJ = "linux"
@@ -5155,6 +5156,11 @@ def build() -> list[dict]:
     #   而不是填空那几道先把 2/3/4 占了、1 和 5 落到最后。
     PROBLEMS.extend(linux_cmd_bank.build())
     part_experiments()
+    # ★ 实验报告原题（实验 2~7，共 65 题 → 55 道题）：按题号出，
+    #   学生做实验报告第几题就能在题库里找到第几题。
+    #   放在 part_experiments() 之后 —— 那一批是「改编版」，这批是「原题版」。
+    PROBLEMS.extend(linux_lab_bank.build())
+    PROBLEMS.extend(linux_lab_bank2.build())
     part_lectures_a()
     part_lectures_b()
     part_lectures_c()
