@@ -215,9 +215,19 @@
       if (prevSep === '||' && code === 0) return;
       if (!seg.argv.length && seg.redir.out == null && seg.redir.err == null) return;
 
+      /* ★ 这一段要执行的字符串，到这里才把 `$?` / `$PWD` 换成此刻的真值。
+         解析阶段只能落占位符 —— 那时候上一段还没跑，取到的都是旧值。 */
+      seg.argv = seg.argv.map(function (v) { return core.resolveDynamic(fs, v); });
+      ['out', 'err', 'in', 'append'].forEach(function (k) {
+        if (seg.redir && seg.redir[k] != null) seg.redir[k] = core.resolveDynamic(fs, seg.redir[k]);
+      });
+
       var piped = prevSep === '|' || nextSep === '|' || seg.redir.out != null;
       var stdin = prevSep === '|' ? lastOut : '';
       var r = runSegment(seg, stdin, { piped: piped, tty: tty && !piped });
+      /* ★ 退出码要**当场**写回去：下一段的 `$?` 在它执行前才解析，
+         等到循环结束再写就永远是上一行的旧值。 */
+      fs.lastCode = r.code;
       lastOut = r.out;
       if (nextSep !== '|') outs.push(r.out);
       if (r.err) errs.push(r.err);

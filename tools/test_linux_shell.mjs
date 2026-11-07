@@ -173,6 +173,19 @@ eq('$() 命令替换', S.exec('echo $(whoami)').out, 'student');
 eq('export 变量', (S.exec('export FOO=bar'), S.exec('echo $FOO').out), 'bar');
 eq('alias ll', (S.exec('alias ll=\'ls -l\''), S.exec('ll /etc/hostname').out.split('\n')[0].slice(0, 1)), '-');
 
+/* ★ 同一行里的变量必须按**执行到那一刻**的值展开（2026-11-07 修）。
+   以前整行 tokenize 完就展开，于是 `cd /tmp && echo $PWD` 打印旧目录、
+   `ls /nope; echo $?` 永远是 0 —— 学生最常用来「验收」的两招全是错的。 */
+fresh();
+eq('同一行：cd 之后 $PWD 立刻生效', S.exec('cd /tmp && echo $PWD').out, '/tmp');
+eq('同一行：$? 取到前一条的退出码', S.exec('ls /nope 2>/dev/null; echo $?').out, '2');
+eq('同一行：成功的命令 $? 是 0', S.exec('ls /tmp >/dev/null; echo $?').out, '0');
+eq('同一行：export 之后立刻能读到', S.exec('export A=1; echo $A').out, '1');
+eq('同一行：连写两个变量', S.exec('export A=1; export B=2; echo $A$B').out, '12');
+eq('true / false 的退出码', S.exec('true; echo $?; false; echo $?').out, '0\n1');
+eq('$OLDPWD 跟着 cd 走', S.exec('cd /tmp; cd /etc; echo $OLDPWD').out, '/tmp');
+eq('单引号里的 $? 不展开', S.exec("echo '$?'").out, '$?');
+
 /* ---------------- 系统命令 ---------------- */
 fresh();
 has('df -h 表头', S.exec('df -h').out, 'Filesystem');

@@ -44,6 +44,11 @@
     /* =====================================================================
        内建：echo / printf / export / alias / history / set / unset / clear
        ===================================================================== */
+
+    /* 两个最没存在感、但 `$?` 演示离不开的命令。真机里它们是 shell 内建，
+       永远返回 0 / 1 —— 少了它们，学生写 `true; echo $?` 会得到 127。 */
+    CMD.true = function () { return ok(''); };
+    CMD.false = function () { return bad(''); };
     CMD.echo = function (fs, argv) {
       var noNl = false, esc = false, i = 0;
       while (i < argv.length && /^-[neE]+$/.test(argv[i])) {

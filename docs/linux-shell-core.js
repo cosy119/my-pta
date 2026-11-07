@@ -406,6 +406,25 @@
      变量展开与算术求值
      ========================================================================= */
 
+  /* ★ 动态变量：值会随执行过程变化（`$?` 是上一条的退出码，`$PWD` 跟着 cd 走）。
+     展开发生在**解析阶段**（整行 tokenize 完就展开），而命令是**之后**才逐条执行的
+     —— 如果直接取当前值，`cd /tmp && echo $PWD` 打印的还是旧目录，
+     `ls /nope; echo $?` 永远是 0。所以解析阶段先落一个占位符，
+     每段命令执行前再用 resolveDynamic() 换成此刻的真值。
+     `\u0001` 是不可打印字符，正常命令里不会出现，拿它当分隔最省事。 */
+  var DYN = '\u0001';
+  function dynMark(name) { return DYN + name + DYN; }
+
+  function resolveDynamic(fs, s) {
+    if (typeof s !== 'string' || s.indexOf(DYN) < 0) return s;
+    return s.replace(/\u0001([?A-Za-z_][A-Za-z0-9_]*)\u0001/g, function (m, k) {
+      if (k === '?') return String(fs.lastCode);
+      if (k === 'PWD') return fs.cwd;
+      if (k === 'OLDPWD') return fs.prevCwd || fs.env.HOME || '';
+      return fs.env[k] == null ? '' : String(fs.env[k]);
+    });
+  }
+
   /* $VAR ${VAR} $? $$ $((算术)) $(命令) —— $(命令) 只支持最简单的 `$(cmd)` 形式 */
   function expandVars(fs, s, depth) {
     depth = depth || 0;
@@ -431,15 +450,15 @@
         var e3 = s.indexOf('}', i + 2);
         if (e3 < 0) { out += ch; i++; continue; }
         var name = s.slice(i + 2, e3);
-        out += envGet(fs, name);
+        out += dynMark(name);
         i = e3 + 1; continue;
       }
-      if (nx === '?') { out += String(fs.lastCode); i += 2; continue; }
+      if (nx === '?') { out += dynMark('?'); i += 2; continue; }
       if (nx === '$') { out += '1'; i += 2; continue; }
       if (nx === '#') { out += '1'; i += 2; continue; }
       if (nx === '@' || nx === '*' || nx === '0' || nx === '1') { out += ''; i += 2; continue; }
       var m = /^[A-Za-z_][A-Za-z0-9_]*/.exec(s.slice(i + 1));
-      if (m) { out += envGet(fs, m[0]); i += 1 + m[0].length; continue; }
+      if (m) { out += dynMark(m[0]); i += 1 + m[0].length; continue; }
       out += ch; i++;
     }
     return out;
@@ -515,6 +534,7 @@
     modeString: modeString, permitted: permitted, isRoot: isRoot,
     userNameOf: userNameOf, groupNameOf: groupNameOf, inGroup: inGroup,
     tokenize: tokenize, parsePipelines: parsePipelines,
-    expandVars: expandVars, arith: arith, envGet: envGet, isOp: isOp
+    expandVars: expandVars, arith: arith, envGet: envGet, isOp: isOp,
+    resolveDynamic: resolveDynamic
   };
 });
