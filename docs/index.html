@@ -978,6 +978,23 @@ button,input,select,textarea{font-family:inherit}button,a,input,select,summary{t
 .noteLineCard[data-course="ds"] .noteLineName{color:var(--course-ds)}
 :root[data-theme="light"] .notesView{--codeBg:#f0f1ec;--hl-key:#754da2;--hl-str:#326e48;--hl-com:#69757c;--hl-num:#865a24;--hl-fn:#315a9b;--hl-bi:#785517;--hl-var:#9a3f4d}
 :root[data-theme="dark"] .notesView{--codeBg:#202a2e;--hl-key:#d2ade8;--hl-str:#aad3ad;--hl-com:#9aaca7;--hl-num:#e1bd8c;--hl-fn:#a6c5ed;--hl-bi:#e1d19f;--hl-var:#ecb3b8}
+/* Local presentation polish: keep the existing workbench layout. */
+.hero{background:color-mix(in srgb,var(--panel) 88%,var(--primaryWeak));border:1px solid var(--border);border-radius:16px;padding:30px clamp(18px,3vw,38px);margin-bottom:26px}
+.hero-hi{font-size:clamp(27px,3vw,40px);text-wrap:balance}
+.heroAction{max-width:100%;white-space:normal;text-align:left}
+.hero-r{min-width:0}
+.heroStats{flex-wrap:wrap;gap:12px 18px}
+.scoreBig,.heroStats b{font-variant-numeric:tabular-nums}
+.card.course-cpp{--course:var(--primary)}
+.cardIco{background:color-mix(in srgb,var(--panel) 90%,var(--course,var(--primary)));border-color:color-mix(in srgb,var(--border) 65%,var(--course,var(--primary)))}
+.card:hover{background:var(--panel);box-shadow:0 4px 16px #1428320d}
+.pstmt,.pedit{border:1px solid var(--border)}
+.btn:focus-visible,.heroAction:focus-visible,.navlinks a:focus-visible{outline:2px solid var(--primary);outline-offset:3px}
+@media(min-width:1200px){.cards{grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.card{padding:19px;display:flex;flex-direction:column}.cardTop{gap:10px}.cardFoot{margin-top:auto}}
+@media(max-width:760px){.hero{gap:22px}.hero-r{border-top:1px solid var(--border);padding:16px 0 0}}
+.navright .judgeNoticeButton{color:var(--err);border-color:var(--err);background:var(--errWeak);font-weight:600}
+.navright .judgeNoticeButton:hover{border-color:var(--err);background:var(--panel)}
+#judgeNotice .judgeNoticeAlert{margin:0;padding:12px 14px;border-left:3px solid var(--err);border-radius:6px;color:var(--err);background:var(--errWeak)}
 </style>
 <link rel="stylesheet" href="mobile.css?v=20261023-1">
 <link rel="stylesheet" href="snippets.css?v=20261023-1">
@@ -1001,6 +1018,7 @@ button,input,select,textarea{font-family:inherit}button,a,input,select,summary{t
     <span id="offlineTag" style="display:none" class="offlineTag">浏览器判题</span>
     <span class="navscore" id="navScore">—</span>
     <span id="navUser" style="color:var(--muted)"></span>
+    <button type="button" class="iconbtn judgeNoticeButton" aria-haspopup="dialog" onclick="openJudgeNotice()">公告</button>
     <button class="iconbtn" onclick="openSettings()">设置</button>
   </div>
 </header>
@@ -2058,7 +2076,7 @@ function viewHome(){
 
   html += '<div class="hero"><div class="hero-l">'
        +   '<div class="courseEyebrow">YOUR STUDY DESK · 学习工作台</div><div class="hero-hi">' + (totalAtt ? (nickname() ? '欢迎回来，' + esc(nickname()) : '继续你的学习') : '从一页笔记，到一次掌握。') + '</div>'
-       +   '<div class="hero-sub">Python、数据结构与 Linux，三条清晰的学习路径。<br>'
+       +   '<div class="hero-sub">练习 Python、数据结构、C++ 和 Linux。<br>'
        +   '读懂知识，动手练习，再把每一次收获留在这里。</div>'
        + (last ? '<a class="heroAction" href="#/p/' + last.id + '">继续上次：' + esc(SUBJ_SEQ[last.id] || last.id) + ' · ' + esc(last.title) + ' →</a>' : '')
        + '<button class="heroAction" onclick="document.getElementById(\'courseList\').scrollIntoView({block:\'center\'})">浏览题集 →</button>'
@@ -4012,9 +4030,24 @@ function openSettings(){
   document.getElementById('setNick').focus();
 }
 
+const judgeNoticeKey = 'pta.notice.judge-warmup.v1';
+function openJudgeNotice(){
+  modalReturnFocus = document.activeElement;
+  const host = document.getElementById('modalHost');
+  host.innerHTML = '<div class="mask" onclick="if(event.target===this)closeModal()"><div class="modal" id="judgeNotice" role="dialog" aria-modal="true" aria-labelledby="judgeNoticeTitle">'
+    + '<div class="modalHead"><span id="judgeNoticeTitle">首次在线判题，请稍等</span><button type="button" class="x" aria-label="关闭公告" onclick="closeModal()">✕</button></div>'
+    + '<div class="modalBody"><p>首次运行自测或提交时，判题环境需要加载，可能要等一会儿。</p>'
+    + '<p class="judgeNoticeAlert">如果前 3～5 次提交提示<strong>加载失败、环境超时或评测未完成</strong>，请<strong>等本次请求结束，稍等片刻再试</strong>。可以多试几次，不用连续点击。</p>'
+    + '<p class="hintline">如果已经返回答案错误或编译错误，请检查代码和输出格式。</p>'
+    + '<div class="btnrow"><button type="button" class="btn" id="judgeNoticeDismiss" onclick="closeModal()">知道了</button></div></div></div></div>';
+  document.getElementById('judgeNoticeDismiss').focus();
+}
 function closeModal(){
   const host = document.getElementById('modalHost');
   if (!host.firstElementChild) return;
+  if (host.querySelector('#judgeNotice')){
+    try { localStorage.setItem(judgeNoticeKey, '1'); } catch {}
+  }
   host.innerHTML = '';
   if (modalReturnFocus && modalReturnFocus.isConnected) modalReturnFocus.focus();
   modalReturnFocus = null;
@@ -4195,6 +4228,8 @@ document.addEventListener('keydown', e => {
 <script src="lab.js?v=20261023-1"></script>
 <script src="run-check.js?v=20261025-1"></script>
 <script>boot(false);
+try { if (!localStorage.getItem(judgeNoticeKey)) openJudgeNotice(); }
+catch { openJudgeNotice(); }
 </script>
 </body>
 </html>
