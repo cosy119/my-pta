@@ -1037,7 +1037,7 @@ button,input,select,textarea{font-family:inherit}button,a,input,select,summary{t
 <script src="linux-shell.js?v=20261107-s1"></script>
 <script src="judge_text.js?v=20261107-s2"></script>
 <script src="python-local.js"></script>
-<script src="cpp-local.js"></script>
+<script src="cpp-local.js?v=20261109"></script>
 <script>
 let smartEditor = null;
 let smartEditorProblemId = null;
@@ -4037,7 +4037,7 @@ function openJudgeNotice(){
   host.innerHTML = '<div class="mask" onclick="if(event.target===this)closeModal()"><div class="modal" id="judgeNotice" role="dialog" aria-modal="true" aria-labelledby="judgeNoticeTitle">'
     + '<div class="modalHead"><span id="judgeNoticeTitle">首次在线判题，请稍等</span><button type="button" class="x" aria-label="关闭公告" onclick="closeModal()">✕</button></div>'
     + '<div class="modalBody"><p>首次运行自测或提交时，判题环境需要加载，可能要等一会儿。</p>'
-    + '<p class="judgeNoticeAlert">如果前 3～5 次提交提示<strong>加载失败、环境超时或评测未完成</strong>，请<strong>等本次请求结束，稍等片刻再试</strong>。可以多试几次，不用连续点击。</p>'
+    + '<p class="judgeNoticeAlert">如果提交提示<strong>加载失败、环境超时或评测未完成</strong>，请<strong>等本次请求结束，稍等片刻再试</strong>。首次准备 C/C++ 编译器可能需要几分钟，不用连续点击。</p>'
     + '<p class="hintline">如果已经返回答案错误或编译错误，请检查代码和输出格式。</p>'
     + '<div class="btnrow"><button type="button" class="btn" id="judgeNoticeDismiss" onclick="closeModal()">知道了</button></div></div></div></div>';
   document.getElementById('judgeNoticeDismiss').focus();
@@ -4222,11 +4222,11 @@ document.addEventListener('keydown', e => {
 
 </script>
 <script src="learning.js?v=20261023-lab1"></script>
-<script src="learning-tools.js?v=20261025-run1"></script>
+<script src="learning-tools.js?v=20261109"></script>
 <script src="mobile.js?v=20261023-2"></script>
 <script src="snippets.js?v=20261023-1"></script>
 <script src="lab.js?v=20261023-1"></script>
-<script src="run-check.js?v=20261025-1"></script>
+<script src="run-check.js?v=20261109"></script>
 <script>boot(false);
 try { if (!localStorage.getItem(judgeNoticeKey)) openJudgeNotice(); }
 catch { openJudgeNotice(); }

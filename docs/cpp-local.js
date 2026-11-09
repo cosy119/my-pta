@@ -3,19 +3,26 @@
   'use strict';
   let worker = null, nextId = 1, busy = false;
   function reset() { if (worker) worker.terminate(); worker = null; }
-  function ensure() { return worker || (worker = new Worker('cpp-worker.js')); }
+  function ensure() { return worker || (worker = new Worker('cpp-worker.js?v=20261109')); }
   function request(payload, timeoutMs, onLoad) {
     return new Promise((resolve, reject) => {
       const w = ensure(), id = nextId++;
-      const timer = setTimeout(() => {
+      let phase = payload.type === 'compile' ? 'load' : 'run';
+      let timer;
+      function arm(ms) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
         w.removeEventListener('message', onMessage);
         w.removeEventListener('error', onError); reset();
         resolve({ verdict: payload.type === 'compile' ? 'IE' : 'TLE',
-          stdout: '', stderr: '', ms: timeoutMs,
-          detail: payload.type === 'compile' ? '编译器加载或编译超时' : '超过 ' + timeoutMs + ' ms，已中断程序' });
-      }, timeoutMs);
+          stdout: '', stderr: '', ms,
+          detail: payload.type === 'compile' ? (phase === 'load' ? '编译器准备超过 5 分钟，请检查网络后重试' : 'C/C++ 编译超过 90 秒，已中断') : '超过 ' + timeoutMs + ' ms，已中断程序' });
+        }, ms);
+      }
+      arm(phase === 'load' ? 300000 : timeoutMs);
       function onMessage(e) {
         if (e.data.type === 'load') { if (onLoad) onLoad(e.data.value); return; }
+        if (e.data.type === 'compile-start' && e.data.id === id && phase === 'load') { phase = 'compile'; arm(timeoutMs); if (onLoad) onLoad(null); return; }
         if (e.data.type !== 'result' || e.data.id !== id) return;
         clearTimeout(timer); w.removeEventListener('message', onMessage);
         w.removeEventListener('error', onError);
@@ -33,20 +40,15 @@
   }
   async function compile(code, lang, progress) {
     return request({ type: 'compile', code, lang }, 90000,
-      value => { if (progress) progress('load', Math.round(100 * value)); });
+      value => { if (progress) progress(value === null ? 'compile' : 'load', value === null ? 0 : Math.round(100 * value)); });
   }
   function emptyResult(problem, lang, verdict, message, compileOutput) {
     return { verdict, score: 0, max_score: Number(problem.total_score) || 0,
       passed: 0, total: (problem.cases || []).length, time_ms: 0,
       lang, message, compile_output: compileOutput || '', cases: [] };
   }
-  /* 加载阶段失败（下载被掐 / 太慢超时）几乎都是网络问题，且重试就会重新下载 —— 把这条出路告诉用户。 */
   function friendlyLoad(message) {
-    const s = String(message || '');
-    if (/network error|Failed to (decompress|load)|加载失败|超时/.test(s))
-      return s + '\n\n提示：浏览器判题的编译器（约 29 MB）是从本站下载的，刚才下载中断了。'
-        + '检查网络后**再点一次「提交并判题」**就会重新下载；github.io 偶尔不稳，多试一两次通常能成功，不用刷新页面。';
-    return s;
+    return String(message || '编译器未返回结果');
   }
   async function submit(problem, code, lang, progress) {
     if (busy) throw Error('已有 C/C++ 任务正在运行');

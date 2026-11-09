@@ -29,6 +29,7 @@ self.onmessage = async event => {
     const tc = await toolchain();
     phase = m.type;
     if (m.type === 'compile') {
+      self.postMessage({ type: 'compile-start', id: m.id });
       artifact = null;
       const lang = m.lang === 'c' ? 'C' : 'CPP';
       const built = await tc.lock(() => tc.captureCompilerOutput(() =>

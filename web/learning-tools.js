@@ -51,7 +51,7 @@ const LearnTools = (() => {
         if(r?.problem_id&&Number(r.problem_id)!==j.pid)throw Error('回执题目与任务不一致，请检查后端连接');if(!r||['pending','judging'].includes(r.verdict))throw Error('等待评测结果超时，可重试查询');
       }else if(p.line==='text')r=TextJudge.judgeTextProblem(p,j.code);
       else if(p.line==='python')r=await PythonLocal.submit(p,j.code);
-      else r=await CppLocal.submit(p,j.code,j.lang||'cpp');
+      else r=await CppLocal.submit(p,j.code,j.lang||'cpp',(phase,n,total)=>{if(SET.view!=='p'||CUR?.id!==j.pid)return;const box=document.getElementById('resultBox');if(box)box.innerHTML=verdictHtml('judging',phase==='load'?'正在准备 C/C++ 编译器 · '+n+'%':phase==='compile'?'正在编译代码…':'正在评测 '+n+'/'+total,'首次加载请等待本次任务完成。');});
       if(!r?.verdict)throw Error(r?.error||'未返回有效评测结果');if(r.verdict==='IE')throw Error(r.message||'评测环境失败');
       r.lang=j.lang;r._recorded=true;
       saveLocalSubmission(p,r,j.code,j.lang);
