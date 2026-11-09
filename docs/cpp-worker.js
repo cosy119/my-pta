@@ -1,6 +1,36 @@
 /* Isolated browser C/C++ compiler. No source or test data leaves this worker. */
 importScripts('clang/clang-wasm-toolchain.global.js');
 const TOOLCHAIN_URL = new URL('clang/', self.location.href).href;
+// A response can return 200 and still fail halfway through its body.
+const nativeFetch = self.fetch.bind(self);
+self.fetch = async function (input, options) {
+  const url = new URL(typeof input === 'string' || input instanceof URL ? input : input.url, self.location.href);
+  if (!url.href.startsWith(TOOLCHAIN_URL) ||
+      !/\/(?:runtime-manifest\.v1\.json|bin\/(?:clang|lld|memfs)\.wasm\.gz|bin\/sysroot\.tar\.gz)$/.test(url.pathname)) {
+    return nativeFetch(input, options);
+  }
+  const name = url.pathname.split('/').pop();
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    self.postMessage({ type: 'load-status', detail: '正在下载 ' + name + (attempt > 1 ? '（重试 ' + (attempt - 1) + '/2）' : '') });
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 55000);
+    try {
+      const response = await nativeFetch(input, { ...options, signal: controller.signal, ...(attempt > 1 ? { cache: 'reload' } : {}) });
+      if (response.status === 429 || response.status >= 500) {
+        await response.body?.cancel();
+        throw Error('HTTP ' + response.status);
+      }
+      if (!response.ok) return response;
+      const bytes = await response.arrayBuffer();
+      return new Response(bytes, { status: response.status, headers: response.headers });
+    } catch (error) {
+      lastError = controller.signal.aborted ? '单次下载超过 55 秒' : String(error.message || error);
+    } finally { clearTimeout(timer); }
+    if (attempt < 3) await new Promise(resolve => setTimeout(resolve, 700 * attempt));
+  }
+  throw Error('编译器资源 ' + name + ' 下载失败，已自动重试 2 次：' + lastError + '。请换一个网络后再试。');
+};
 let toolchainPromise = null;
 let artifact = null;
 

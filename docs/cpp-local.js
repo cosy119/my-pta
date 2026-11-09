@@ -3,7 +3,7 @@
   'use strict';
   let worker = null, nextId = 1, busy = false;
   function reset() { if (worker) worker.terminate(); worker = null; }
-  function ensure() { return worker || (worker = new Worker('cpp-worker.js?v=20261109')); }
+  function ensure() { return worker || (worker = new Worker('cpp-worker.js?v=20261109b')); }
   function request(payload, timeoutMs, onLoad) {
     return new Promise((resolve, reject) => {
       const w = ensure(), id = nextId++;
@@ -21,6 +21,7 @@
       }
       arm(phase === 'load' ? 300000 : timeoutMs);
       function onMessage(e) {
+        if (e.data.type === 'load-status') { if (onLoad) onLoad(0, e.data.detail); return; }
         if (e.data.type === 'load') { if (onLoad) onLoad(e.data.value); return; }
         if (e.data.type === 'compile-start' && e.data.id === id && phase === 'load') { phase = 'compile'; arm(timeoutMs); if (onLoad) onLoad(null); return; }
         if (e.data.type !== 'result' || e.data.id !== id) return;
@@ -40,7 +41,7 @@
   }
   async function compile(code, lang, progress) {
     return request({ type: 'compile', code, lang }, 90000,
-      value => { if (progress) progress(value === null ? 'compile' : 'load', value === null ? 0 : Math.round(100 * value)); });
+      (value, detail) => { if (progress) progress(value === null ? 'compile' : 'load', value === null ? 0 : Math.round(100 * value), undefined, detail); });
   }
   function emptyResult(problem, lang, verdict, message, compileOutput) {
     return { verdict, score: 0, max_score: Number(problem.total_score) || 0,
