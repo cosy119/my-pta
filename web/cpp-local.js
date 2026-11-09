@@ -3,7 +3,7 @@
   'use strict';
   let worker = null, nextId = 1, busy = false;
   function reset() { if (worker) worker.terminate(); worker = null; }
-  function ensure() { return worker || (worker = new Worker('cpp-worker.js?v=20261109b')); }
+  function ensure() { return worker || (worker = new Worker('cpp-worker.js?v=20261109c')); }
   function request(payload, timeoutMs, onLoad) {
     return new Promise((resolve, reject) => {
       const w = ensure(), id = nextId++;
@@ -16,13 +16,16 @@
         w.removeEventListener('error', onError); reset();
         resolve({ verdict: payload.type === 'compile' ? 'IE' : 'TLE',
           stdout: '', stderr: '', ms,
-          detail: payload.type === 'compile' ? (phase === 'load' ? '编译器准备超过 5 分钟，请检查网络后重试' : 'C/C++ 编译超过 90 秒，已中断') : '超过 ' + timeoutMs + ' ms，已中断程序' });
+          detail: payload.type === 'compile' ? (phase === 'load' ? '编译器准备阶段连续 5 分钟无进展，请重试' : 'C/C++ 编译超过 90 秒，已中断') : '超过 ' + timeoutMs + ' ms，已中断程序' });
         }, ms);
       }
       arm(phase === 'load' ? 300000 : timeoutMs);
       function onMessage(e) {
-        if (e.data.type === 'load-status') { if (onLoad) onLoad(0, e.data.detail); return; }
-        if (e.data.type === 'load') { if (onLoad) onLoad(e.data.value); return; }
+        if (phase === 'load' && (e.data.type === 'load-status' || e.data.type === 'load')) {
+          arm(300000);
+          if (onLoad) onLoad(e.data.value ?? 0, e.data.detail);
+          return;
+        }
         if (e.data.type === 'compile-start' && e.data.id === id && phase === 'load') { phase = 'compile'; arm(timeoutMs); if (onLoad) onLoad(null); return; }
         if (e.data.type !== 'result' || e.data.id !== id) return;
         clearTimeout(timer); w.removeEventListener('message', onMessage);
