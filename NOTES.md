@@ -296,6 +296,80 @@ Dockerfile 和 render.yaml 早就写好了，但**云分支从来没人真跑过
   判断 → 单选 → 多选 → 填空 → 简答 → 实操 → 编程。前端 `QUESTION_TYPES` 必须逐字对齐，
   `tools/check_question_type_order.py` 负责守这条。
 
+### ★★ 静态题库的体积与缓存（2026-11-23 建）
+
+**问题**：用户反馈「每次打开都要重新下载数据」。实测（国内直连 `cosy119.github.io`）：
+
+| 资源 | 原始 | gzip 传输 | 耗时 |
+|---|---|---|---|
+| `index.html` | 236 KB | 70.7 KB | 1.6 s |
+| `bank/index.json` | 534 KB | 62.1 KB | **14.0 s** |
+| 首屏合计 | | ~133 KB | 13.6 ~ 16.3 s |
+
+62 KB 走 14 秒 = **4.4 KB/s**，这是 GitHub Pages 在国内的真实速度。
+
+**根因：`Cache-Control: max-age=600`**
+
+GitHub Pages 对所有静态文件写死 10 分钟，站点侧没有权限改。真浏览器连开两次：
+
+```
+第 1 次：network → 13.6 s
+第 2 次：CACHE   →  1.9 s   ✓
+```
+
+10 分钟内重开是快的 —— 但人不会在 10 分钟内反复刷同一个页面，所以体感就是「每次都要等」。
+
+**解法 A：`docs/sw.js`（Service Worker）**
+
+| 资源 | 策略 | 理由 |
+|---|---|---|
+| `index.html` / js / css | network-first，2.5 s 超时回退缓存 | 版本要能更新，但不能让人对白屏等 |
+| `bank/index.json` | stale-while-revalidate | 秒开 + 后台校验，下次打开即最新 |
+| `bank/<科目>.json?v=` | cache-first | 版本号在 URL 里，题库一变 URL 就变，天然失效 |
+| `bank/cases/<id>.json?v=` | cache-first | 同上 |
+| `/api/*` | **放行不插手** | 后端在线时它有自己的缓存语义；离线本来就要降级 |
+
+SW 缓存不受 HTTP TTL 约束，等于绕开那 600 秒。**首访仍是十几秒，之后永久秒开。**
+
+**解法 B：超大测试点单独拆（`bank/cases/<id>.json`）**
+
+第一次拆分（2026-11-07）之后还是「进一科下一整包」，但重活全压在某几道压测题上：
+DS 一科 5.76 MB 里**9 道题占 88.7%**，其中 #409「差分：区间加与单点查」**单题 3.44 MB**
+（4 个测试点，每个 800 KB 输入）。按 4.4 KB/s 算，点进数据结构要等 **22 分钟**。
+
+`tools/export_static.py` 里 `CASE_SPLIT_LIMIT = 50 * 1024`：超过 50 KB 的题，科目包里只留
+`cases: []` + `cases_split: true` + `cases_bytes`，内容进题时再由 `ensureCases()` 去拉。
+
+实测（1524 题）：
+
+| 科目 | 拆前 | 拆后 |
+|---|---|---|
+| ds | 5.76 MB | **0.65 MB**（-88.7%） |
+| python | 1.48 MB | **0.42 MB**（-71.8%） |
+| cpp | 0.91 MB | 0.91 MB |
+| linux | 0.42 MB | 0.42 MB |
+
+共拆出 10 道题 / 6.2 MB，最大的 #409 单独 3.44 MB。
+
+**★★ 两条踩过的坑**
+
+1. **`network-first` 里的 `fetch(req)` 必须带 `cache:'no-cache'`**。
+   不带的话浏览器自己的 HTTP 缓存（Pages 的 `max-age=600`）先答话，SW 的「拿最新」拿到
+   的还是十分钟前那份 → **改完 index.html 部署，用户刷新永远看不到新版本**。
+   实测：不加 → 「刷新是否看到新版本」判失败；加了 → 通过。
+   `no-cache` 的语义是「可以用缓存但必须先验证」，能走 304 省流量，这点比 `no-store` 好。
+2. **前端不能直接砍掉 `cases`**：DS 的 157 道编程题 `line='cpp'`，走 Clang/WASI 本地判题，
+   真需要测试点内容。拆可以，删不行。
+
+**校验**：`tools/check_bank_split.py`（11 项）
+—— 把主包 + `cases/` 拼回来跟 `testcases` 表逐条对账（计数守恒、逐题内容一致、
+`index.has_cases` 不被拆空、无孤儿文件、`sw.js` 已产出并被注册）。
+**这条必须过**：拆错的失败方式是静默的 —— 题面照常打开，只有真去判题才发现「这题没有测试点」。
+
+**已知无效方案（实测排除，别再试）**
+- index.json 删 `status`/`points_sum`/`line`：gzip 60.0 KB → 57.5 KB，**只省 4%**。gzip 早把重复字段压完了。
+- 换 CDN：jsDelivr 与 raw.githack 国内直连均无响应。
+
 ### ★★ 题目排序：按难易程度（2026-10-21 晚建）
 
 **排序键（前后端一致）**：`科目 → 分节教学路径 → 难度 → 录入序(id)`
@@ -976,6 +1050,9 @@ C/C++ 编译器 `clang.wasm.gz` 有 **15.7 MB**，真实用户下载中途被掐
 | `ui_test_sort_order.mjs` | **18/18 × 2 模式** | ★ **真 Chrome 测排序**：分组顺序 = 教学路径序号、编程册排在讲次之后、组内难度升序、题号随新顺序重编且严格递增、分组标题带「均难」、题型下拉按难度序、四条线都验。**离/在线各跑一遍**（在线用 `PTA_API_PORT` 把 `/api/` 反代到 uvicorn = 真实部署形态） |
 | `ui_test_sort_modes.mjs` | **23/23 × 2 模式** | ★ **真 Chrome 测排序方式切换**：默认按章节、切难度后单分组且难度单调、组名标方向、**题号在任何排序下恒定**（稳定标识）、切回章节顺序复原、**刷新后记住选择**、难度 + 题型筛选可叠加 |
 | `ui_live_sort.mjs` | **4/4 科目** | ★ **真 Chrome 验线上部署结果**（直打 `cosy119.github.io/my-pta/`）：四科分组序号递增 / 组内难度升序 / 题号递增 / 均难标签齐全 / 零真 JS 异常。静态站 `/api/*` 的 404 属预期，已与真异常分开统计 |
+| `check_bank_split.py` | **11/11** | ★★ **题库分片完整性**：主包 + `bank/cases/` 拼回来跟 `testcases` 表**逐条对账**（计数守恒 / 逐题内容一致 / `index.has_cases` 不被拆空 / 无孤儿文件 / 拆过的题主包确实没留 / `sw.js` 已产出并被注册）。**拆错是静默失败**——题面照常打开，只有真判题才发现没测试点，所以这条必须过。库空时只做结构检查 |
+| `ui_test_sw_cache.mjs` | **14/14** | ★★ **真 Chrome 验 SW 缓存 + 测试点按需拉**：注册接管 / 二次访问 `bank/index.json` 由 SW 供给 / 拆分题进题才拉 `bank/cases/<id>.json` 且按钮从「加载中」变可判题 / 普通题不受影响 / **改完 HTML 刷新必须拿到新版**（守 `cache:'no-cache'`，少了它用户永远看不到新版本）。前置：`python tools/serve_docs.py 8802 docs` |
+| `serve_docs.py` | — | 本地伺服 `docs/`，**把 `.mjs` 的 MIME 修成 `text/javascript`**。`python -m http.server` 在 Windows 上会给 `text/plain` → module worker 的 `import` 被拒 → 页面报「Python Worker 加载失败」（线上 Pages 正常，纯本机坑） |
 | `httptest_split.py` | **18/18** | Pages + 后端跨源（OPTIONS 预检 / 允许 x-user-token） |
 | `httptest.py` | **18/18** | HTTP 层（需服务已在跑） |
 | `verify_bank.py` | **333 题 / 791 点全过** | 三线双实现；`--py` / `--ds` / `--linux` 可单跑 |

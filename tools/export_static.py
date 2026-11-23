@@ -52,6 +52,11 @@ _LIGHT_FIELDS = (
     "status", "is_choice",
 )
 
+# 单题测试点超过这个体积就单独成文件（见 write_split 的说明）。
+# 50 KB 的由来：实测全库只有 10 道题超线，拆走后 DS 包 5.76 MB → 0.65 MB；
+# 而阈值再往下调（比如 20 KB）受益很小，反而多出几十个小文件、多几十次请求。
+CASE_SPLIT_LIMIT = 50 * 1024
+
 
 def build_bank(with_cases: bool = False) -> dict:
     """把库里的题目拼成前端能直接吃的结构。
@@ -159,44 +164,95 @@ def write_split(bank: dict, out_dir: Path) -> dict:
     的 JSON 要两三分钟，中途一断（fetch 没有重试）页面就只剩空白。
     列表页真正需要的只有 id/标题/分节/题型/难度/分值这些轻字段。
 
+    ★ 二次拆分：单题测试点超 50 KB 的，自己单独成 `bank/cases/<id>.json`
+    ----------------------------------------------------------------------
+    第一次拆分之后仍然是「进一科下一整包」，而重活全压在某几道压测题上：
+    DS 一科 5.76 MB 里，9 道题就占 88.7%，其中 #409「差分：区间加与单点查」
+    **单题 3.44 MB**（4 个测试点，每个 800 KB 输入）。按国内 4.4 KB/s 算，
+    点进数据结构要等 22 分钟 —— 而这些数据只有真去做那 9 道题时才用得上。
+
+    所以：超阈值的题，科目包里只留 `cases: []` + `cases_split: true`
+    （外加 `cases_bytes` 好让前端报进度），内容进题时再单独拉。
+    实测 DS 包 5.76 MB → 0.65 MB。
+
     产物
     ----
     - `bank/index.json`  轻索引：列表、统计、进度、错题本、收藏全靠它（约 0.5 MB）
-    - `bank/<科目>.json` 该科目的**完整**条目（题面 + 样例 + 测试点），进题时才拉。
+    - `bank/<科目>.json` 该科目的条目（题面 + 样例 + **小**测试点），进题时才拉。
       带 `?v=<asset_version>` 可以长期缓存 —— 题库不变就不用重下。
+    - `bank/cases/<id>.json` 超大测试点，只在真做那道题时拉。
 
     兼容
     ----
-    `problems.json` 照旧导出（老前端 / 兜底），新前端优先读 `bank/index.json`。
+    `problems.json` 照旧导出（老前端 / 兜底，**不拆**），新前端优先读 `bank/index.json`。
     """
     ver = datetime.now().strftime("%Y%m%d%H%M%S")
     subjects = sorted({str(p.get("subject") or "python") for p in bank["items"]})
+
+    # separators 用最紧凑的写法：这些文件是给机器读的，缩进纯粹浪费流量
+    dump = lambda obj: json.dumps(obj, ensure_ascii=False, separators=(",", ":"))  # noqa: E731
+
+    # 先量一遍谁超重（量完就不用再量第二次）
+    heavy: dict[int, int] = {}
+    for p in bank["items"]:
+        cs = p.get("cases")
+        if not cs:
+            continue
+        n = len(dump(cs).encode("utf-8"))
+        if n > CASE_SPLIT_LIMIT:
+            heavy[p["id"]] = n
 
     index = {k: v for k, v in bank.items() if k != "items"}
     index["asset_version"] = ver
     index["split"] = True
     index["subjects"] = subjects
+    index["cases_split"] = sorted(heavy)
     index["items"] = []
     for p in bank["items"]:
         q = {k: p[k] for k in _LIGHT_FIELDS if k in p}
         # 前端要知道「这题有没有测试点」（决定能不能本地判题），但不该为此
         # 把测试点本身也拉下来 —— 给个布尔就行。
+        # ★ 这里必须按**拆之前**的 p 算：拆过的题 cases 已经是空的。
         q["has_cases"] = bool(p.get("cases"))
         index["items"].append(q)
 
     bank_dir = out_dir / "bank"
     bank_dir.mkdir(parents=True, exist_ok=True)
-    # separators 用最紧凑的写法：这些文件是给机器读的，缩进纯粹浪费流量
-    dump = lambda obj: json.dumps(obj, ensure_ascii=False, separators=(",", ":"))  # noqa: E731
     (bank_dir / "index.json").write_text(dump(index), encoding="utf-8")
 
+    case_dir = bank_dir / "cases"
+    # 上一版拆出来的文件先清掉，否则重新导出后题库变了会留下孤儿文件
+    if case_dir.is_dir():
+        shutil.rmtree(case_dir)
+    if heavy:
+        case_dir.mkdir(parents=True, exist_ok=True)
+
+    small_cases = 0
     for sub in subjects:
-        part = {"subject": sub, "asset_version": ver,
-                "items": [p for p in bank["items"] if str(p.get("subject") or "python") == sub]}
+        items = []
+        for p in bank["items"]:
+            if str(p.get("subject") or "python") != sub:
+                continue
+            pid = p["id"]
+            if pid in heavy:
+                (case_dir / ("%s.json" % pid)).write_text(
+                    dump({"id": pid, "asset_version": ver,
+                          "cases": p.get("cases") or []}), encoding="utf-8")
+                q = dict(p)
+                q["cases"] = []
+                q["cases_split"] = True
+                q["cases_bytes"] = heavy[pid]
+                items.append(q)
+                continue
+            small_cases += len(p.get("cases") or [])
+            items.append(p)
+        part = {"subject": sub, "asset_version": ver, "items": items}
         (bank_dir / ("%s.json" % sub)).write_text(dump(part), encoding="utf-8")
 
     return {"version": ver, "subjects": subjects,
             "index_bytes": (bank_dir / "index.json").stat().st_size,
+            "cases_split": len(heavy),
+            "cases_bytes": sum(heavy.values()),
             "parts": {sub: (bank_dir / ("%s.json" % sub)).stat().st_size for sub in subjects}}
 
 
@@ -222,6 +278,9 @@ def export(out_dir: Path, with_cases: bool = False) -> None:
     print("分片 → %s  （索引 %.0f KB / %s）"
           % (out_dir / "bank", sp["index_bytes"] / 1024,
              "  ".join("%s %.0f KB" % (k, v / 1024) for k, v in sp["parts"].items())))
+    if sp["cases_split"]:
+        print("      超大测试点单独拆出 %d 道 / %.1f MB → %s/cases/"
+              % (sp["cases_split"], sp["cases_bytes"] / 1048576, out_dir / "bank"))
 
     # 2) 前端
     if WEB.exists():

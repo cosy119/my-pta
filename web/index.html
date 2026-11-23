@@ -1911,6 +1911,40 @@ async function ensureSubject(sub){
   return PART_LOADING[sub];
 }
 
+/* 超大测试点按需拉取
+   ---------------------------------------------------------------------------
+   导出时把「单题测试点超 50 KB」的题单独拆成 `bank/cases/<id>.json`
+   （见 tools/export_static.py）。科目包里这些题的 `cases` 因此是空数组、
+   只留 `cases_split` 与 `cases_bytes`。真打开这道题时再取 ——
+   数据结构一科正因此从 5.76 MB 降到 0.65 MB，其中 #409 单题就 3.44 MB。
+
+   ★ 拉取失败**不能**连带题面打不开：题面早在科目包里了，失败只是
+     「这道题暂时没法在浏览器里判」，按钮会退化成手动标记。
+   ★ 成功之后 Promise 留在 CASES_LOADING 里不删，重复进同一题不会再拉。 */
+const CASES_LOADING = {};    // { id: Promise }
+async function ensureCases(p){
+  if (!OFFLINE || !BANK_SPLIT || !p || !p.cases_split) return p;
+  if ((p.cases || []).length) return p;
+  const id = p.id;
+  if (CASES_LOADING[id]) return CASES_LOADING[id];
+  CASES_LOADING[id] = (async () => {
+    const url = 'bank/cases/' + encodeURIComponent(id) + '.json'
+              + (BANK_VERSION ? '?v=' + BANK_VERSION : '');
+    const d = await fetchJson(url, '测试点');
+    const cs = (d && d.cases) || [];
+    p.cases = cs;
+    /* 同步回全局与科目包缓存：判题引擎读的是 PROBLEMS 里那条；
+       PART_ITEMS 里那份是重载轻索引之后再合并用的 */
+    const g = PROBLEMS.find(x => x.id === id);
+    if (g) g.cases = cs;
+    const m = PART_ITEMS[p.subject || 'python'];
+    if (m && m.has(id)){ const e = m.get(id); if (e) e.cases = cs; }
+    return p;
+  })();
+  CASES_LOADING[id].catch(() => { delete CASES_LOADING[id]; });
+  return CASES_LOADING[id];
+}
+
 async function loadProblems(){
   try {
     const r = await api('/api/problems?status=published');
@@ -2510,6 +2544,12 @@ async function viewProblem(id){
   CUR = p; RESULT = null;
   try { localStorage.setItem(LS.seen, String(id)); } catch(e){}
   renderProblem();
+  /* 超大测试点：题面先渲染，测试点后台补 —— 3.4 MB 的输入不该挡着人看题。
+     拉完只重画按钮区（renderButtons），不动题面与草稿。 */
+  if (BANK_SPLIT && p.cases_split && !(p.cases || []).length){
+    ensureCases(p).then(() => { if (CUR && CUR.id === id) renderButtons(); })
+                  .catch(() => { if (CUR && CUR.id === id) renderButtons(); });
+  }
 }
 
 /* Linux 命令沙箱在题目里的挂载
@@ -2824,6 +2864,8 @@ function renderButtons(){
   const local = !canJudge && theory && !!(window.TextJudge && TextJudge.canJudgeLocally(p));
   const localPython = !canJudge && p.line === 'python' && !!(window.PythonLocal && p.cases && p.cases.length);
   const localCpp = !canJudge && p.line === 'cpp' && !!(window.CppLocal && p.cases && p.cases.length);
+  /* 测试点被拆出去了、还没拉回来 → 别急着说「这题没有测试点」，给个进度 */
+  const casesPending = !canJudge && !theory && !!p.cases_split && !(p.cases || []).length;
   let h = '';
   if (canJudge){
     h += '<button class="btn" id="btnSubmit" onclick="doSubmit()">提交评测</button>';
@@ -2837,6 +2879,8 @@ function renderButtons(){
   } else if (local){
     h += '<button class="btn" id="btnSubmit" onclick="doSubmitLocal()">提交并判题</button>'
       +  '<button class="btn ghost" onclick="markSolved(' + (p.total_score||0) + ')">直接标记为已掌握</button>';
+  } else if (casesPending){
+    h += '<button class="btn" disabled>测试点加载中…</button>';
   } else {
     h += '<button class="btn" onclick="markSolved(' + (p.total_score||0) + ')">标记为已掌握</button>'
       +  '<button class="btn ghost" onclick="markPartial()">标记为部分掌握</button>';
@@ -2846,6 +2890,8 @@ function renderButtons(){
   else if (localPython) hint = '浏览器内运行 Python；首次加载引擎需要网络，成绩保存在这个浏览器里';
   else if (localCpp) hint = '浏览器内用 Clang/WASI 编译运行；首次加载约 29 MB，成绩保存在此浏览器。与后端 GCC 环境可能略有差异';
   else if (local)    hint = '本地判题：就在这个浏览器里判，口径与后端一致';
+  else if (casesPending) hint = '这道题的测试点有 '
+      + ((Number(p.cases_bytes || 0) / 1048576).toFixed(1)) + ' MB，正在单独加载，完成后即可在本机判题';
   else if (theory)   hint = '离线模式：这道题在题库里没有测试点，只能手动标记';
   else               hint = '离线模式：代码要真跑一遍，需要后端（本机 run.bat 也行）';
   h += '<span class="hintline">' + hint + '</span>';
@@ -4230,6 +4276,27 @@ document.addEventListener('keydown', e => {
 <script>boot(false);
 try { if (!localStorage.getItem(judgeNoticeKey)) openJudgeNotice(); }
 catch { openJudgeNotice(); }
+</script>
+<script>
+/* Service Worker：把题库真正缓存在本地，绕开 GitHub Pages 的 max-age=600。
+ *
+ * 背景：Pages 对所有静态文件一律 `Cache-Control: max-age=600`，站点侧改不了。
+ * 实测 `bank/index.json` gzip 后 62 KB 要 14 秒，10 分钟内重开能命中浏览器缓存
+ * （1.9 秒），超过 10 分钟就得重下 —— 所以体感就是「每次打开都要等十几秒」。
+ * SW 的缓存不受 HTTP TTL 约束，首访仍是十几秒，之后永久秒开。
+ *
+ * ★ 不等待、不阻塞：装好之前页面照常走网络，首访体验不变。
+ * ★ 本地调试可加 `?nosw=1` 关掉，免得改了代码被缓存挡住。 */
+(function registerServiceWorker(){
+  if (!('serviceWorker' in navigator)) return;
+  if (location.protocol !== 'https:' && !/^(127\.0\.0\.1|localhost)$/.test(location.hostname)) return;
+  if (/[?&]nosw=1/.test(location.search)) return;
+  try {
+    navigator.serviceWorker.register('sw.js').catch(e => {
+      console.warn('Service Worker 注册失败（不影响正常使用）', e);
+    });
+  } catch (e) { /* 老浏览器直接跳过 */ }
+})();
 </script>
 </body>
 </html>

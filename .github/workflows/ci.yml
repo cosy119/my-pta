@@ -55,6 +55,12 @@ jobs:
           python tools/check_question_type_order.py
           python tools/check_sort_modes.py
 
+      # ★ 校验 docs/bank 的分片产物：超大测试点拆出去之后，
+      #   把主包 + cases/ 拼回来必须和库里逐条一致（少一个点就是静默丢题）。
+      #   库空时只做结构检查（sw.js 是否产出、有无孤儿文件）。
+      - name: 题库分片完整性自检（测试点零丢失 / sw.js）
+        run: python tools/check_bank_split.py
+
       - name: 理论题判题自检（对答案判过、错答案判错、全库扫）
         run: python tools/selftest_theory.py
 
