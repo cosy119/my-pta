@@ -8,7 +8,7 @@
 
 ## 直接在网页使用（无需安装）
 
-打开 <https://cosy119.github.io/my-pta/>，即可在浏览器中完成已发布题目（Linux 理论、Python 编程和数据结构 C/C++）的提交判题。首次做 Python 题时会加载约 14 MB 的运行时；首次做 C/C++ 题时会加载约 29 MB 的 Clang/WASI 编译器。浏览器内的 C/C++ 环境与后端 GCC 有差异，成绩保存在当前浏览器；换设备前请在「设置」中导出进度。**不需要注册、不需要安装任何东西**，一个现代浏览器就够了（进度存在各人自己的浏览器里）。引擎下载偶尔会被网络掐断 —— 报「评测机内部错误」时**再点一次「提交并判题」**就会重新下载，不用刷新页面。
+打开 <https://cosy119.github.io/my-pta/>，即可在浏览器中完成已发布题目（C++ 基础、Python 编程、数据结构 C/C++、Linux 理论与实操）的提交判题。首次做 Python 题时会加载约 14 MB 的运行时；首次做 C/C++ 题时会加载约 29 MB 的 Clang/WASI 编译器。浏览器内的 C/C++ 环境与后端 GCC 有差异，成绩保存在当前浏览器；换设备前请在「设置」中导出进度。**不需要注册、不需要安装任何东西**，一个现代浏览器就够了（进度存在各人自己的浏览器里）。引擎下载偶尔会被网络掐断 —— 报「评测机内部错误」时**再点一次「提交并判题」**就会重新下载，不用刷新页面。
 
 ## 也可以在本机运行
 
@@ -96,19 +96,19 @@ run.bat
 | Python 判题（AC / WA / PE / TLE / MLE / RE / CE / OLE） | ✅ |
 | **C 与 C++ 判题（同一道题任选一种交）** | ✅ |
 | **Linux 理论题（单选 / 判断 / 命令填空）** | ✅ |
-| **三科目分类（Python / 数据结构 / Linux）+ PTA 风格界面** | ✅ |
+| **四科目分类（C++ 基础 / Python / 数据结构 / Linux）+ PTA 风格界面** | ✅ |
 | 双解释器可选（3.13.14 讲义环境 / 3.14.4 Thonny 环境） | ✅ |
 | 限时（看门狗 + 杀整棵进程树） | ✅ |
 | 限内存（Job Object，峰值可见） | ✅ |
-| 5 种输出比对口径（standard / ignore_trailing / token / float / **oneof**） | ✅ |
+| 6 种输出比对口径（standard / ignore_trailing / token / float / **oneof** / oneof_strict） | ✅ |
 | 运行自测（不判题，直接看输出） | ✅ |
 | **每个测试点独立分值 · 部分正确** | ✅ |
 | **每题进度（最高分 / 最后一次 / 首次满分时间）** | ✅ |
 | **提交历史 + 一键回填某次代码** | ✅ |
 | **打开题目自动回填上次提交的代码** | ✅ |
 | **智能编辑器（自托管 CodeMirror：缩进 / 括号配对 / 本地关键词与片段提示）** | ✅ |
-| **Python、数据结构、Linux 三科目题库（题数以页面统计为准）** | ✅ |
-| **笔记区：Obsidian 讲义搬上网页（480 篇 / 248 万字 · 目录树 · 全文搜索 · 双链跳转）** | ✅ |
+| **四科目 1524 道题（C++ 基础 563 / Linux 453 / Python 262 / 数据结构 246）· 4267 个测试点** | ✅ |
+| **笔记区：Obsidian 讲义搬上网页（639 篇 / 283 万字 · 目录树 · 全文搜索 · 双链跳转）** | ✅ |
 | **题目 ↔ 笔记双向互跳（题目页「看本讲笔记」／笔记页「本讲配了 N 道题」）** | ✅ |
 | **数据备份 / 导出 JSON / 恢复** | ✅ |
 | AI 按讲义出题 | ⏳ P3 |
@@ -173,14 +173,14 @@ D:\Pythontools\Python\python.exe -X utf8 tools\export_static.py --with-cases   &
 
 ## 笔记区（Obsidian 讲义搬上网页）
 
-顶栏第二个入口「笔记」是**三本教材的完整讲义**：480 篇、约 248 万字。
+顶栏第二个入口「笔记」是**三本教材的完整讲义**：639 篇、约 283 万字。
 构建期从 Obsidian vault 转成静态数据，跟题库一样「打开网页就能看」——
 不登录、不连后端、也不需要装 Obsidian。
 
 | 里面有什么 | 说明 |
 |---|---|
 | 目录树 | 三条学习线（Linux 16 讲 / Python 14 讲 / 数据结构 8 讲）→ 讲 → 分节，左侧常驻 |
-| 全文搜索 | 480 篇正文建索引（构建期生成，约 3 MB），标题命中优先，命中词高亮 |
+| 全文搜索 | 639 篇正文建索引（构建期生成，约 3 MB），标题命中优先，命中词高亮 |
 | 双向链接 | Obsidian 的 `[[…]]` 全转成站内跳转；**重名的按「同一条学习线」消歧** |
 | 折叠答案 | 笔记里 1200+ 处「答案收起」原样保留（`<details>`），点标题展开 |
 | 代码高亮 | 1500+ 个带语言的代码块真高亮（highlight.js，只打包用到的语法） |
@@ -193,7 +193,7 @@ D:\Pythontools\Python\python.exe -X utf8 tools\export_static.py --with-cases   &
 
 ```bat
 set PYTHONUTF8=1
-D:\Pythontools\Python\python.exe tools\export_notes.py    &rem 480 篇 → docs/notes/
+D:\Pythontools\Python\python.exe tools\export_notes.py    &rem 639 篇 → docs/notes/
 ```
 
 产出三样：`index.json`（目录树）、`p/<slug>.json`（单篇正文）、`search.json`（全文索引）。
@@ -239,13 +239,14 @@ node tools\ui_e2e_notes.mjs          &rem 29 项真浏览器验收
 
 ## 题库与题型
 
-主页是**题集广场**（三张科目卡片 + 进度条），点进去是**题集内页**（按讲次 / 实验分组，
+主页是**题集广场**（四张科目卡片 + 进度条），点进去是**题集内页**（按讲次 / 实验分组，
 带状态筛选与搜索），再点题目进**答题页**（左题面右编辑区）。三层都比较贴近 PTA。
 
 | 科目 | 主要作答方式 | 题库文件 |
 |---|---|---|
-| **Python 快乐编程基础入门** | Python 编程 | `problems_bank.py` + `problems_bank_ext.py` |
-| **数据结构（C 语言版）** | C/C++ 编程与理论题 | `problems_bank_ds.py` |
+| **C++ 基础** | C++ 编程与理论题 | `problems_bank_cpp_basic1~8.py` + `cpp_prog` / `cpp_theory` / `cpp_theory2` / `cpp_tricks` |
+| **Python 快乐编程基础入门** | Python 编程 | `problems_bank.py`（含 ext / ext2 / py_bits）+ `py_prog` / `py_theory` / `py_theory2` / `py_tricks` |
+| **数据结构（C 语言版）** | C/C++ 编程与理论题 | `problems_bank_ds.py`（含 ds_list / ds_prog / ds_theory / ds_tricks） |
 | **Linux 系统应用与开发** | 单选、多选、判断、命令填空、**实验实操** | `problems_bank_linux.py` |
 
 每道题现在有独立的 `question_type`，与科目 `subject`、提交方式 `line` 分开。题集页可按题型筛选，列表和题目页显示同一标签；API 与静态导出的 `problems.json` 也带此字段。
@@ -258,7 +259,7 @@ node tools\ui_e2e_notes.mjs          &rem 29 项真浏览器验收
 | 填空题 | `fill_blank` | 输入短文本；现有 Linux 命令题是**命令填空**，没有实际执行 Shell |
 | 简答题 | `short_answer` | 题型预留；尚无自动语义评分器 |
 | 编程题 | `programming` | Python/C/C++ 代码运行与测试点评测 |
-| 实操题 | `practical` | **课程实验 1~5 共 15 道**：题目给多步任务 + 一条验收命令，你做完把命令的**真实输出**贴回来，按测试点判分 |
+| 实操题 | `practical` | **Linux 实验与命令特训共 269 道**：题目给多步任务 + 一条验收命令，你做完把命令的**真实输出**贴回来，按测试点判分 |
 
 旧题会按提交方式与选项自动补标，也支持出题时显式填写 `question_type`。分类不修改原有答案、分值或提交记录。**多选题**的标准答案用升序字母组合（如 `AC`）；**实操题**不搞人工自评，靠「验收命令的输出」做机器可判的证据（离线、连线行为一致）。
 
@@ -357,7 +358,7 @@ pta/
 │  ├─ index.html           前端副本
 │  ├─ problems.json        题库快照（含 subject / choices，**不含参考答案**）
 │  ├─ editor/editor.js     ★ 编辑器副本
-│  ├─ notes/               ★ 笔记区：index.json（目录树）+ p/<slug>.json（480 篇）
+│  ├─ notes/               ★ 笔记区：index.json（目录树）+ p/<slug>.json（639 篇）
 │  │                            + search.json（全文索引）+ notes.js（渲染器）
 │  └─ .nojekyll            别让 Jekyll 处理
 ├─ tools/
@@ -375,7 +376,7 @@ pta/
 │  ├─ verify_bank.py       题库校验（三线双实现撞独立算出的期望输出）
 │  ├─ ui_e2e_editor.mjs    ★ 智能编辑器真浏览器测试（63 项：缩进/配对/补全/Tab/切题/回退/语言切换）
 │  ├─ ui_e2e_notes.mjs     ★ 笔记区真浏览器测试（29 项：目录树/双链重名消歧/锚点/搜索/题目互跳）
-│  ├─ export_notes.py      ★ 把 Obsidian vault 导成笔记区数据（480 篇，Obsidian 语法 → 前端 markdown）
+│  ├─ export_notes.py      ★ 把 Obsidian vault 导成笔记区数据（639 篇，Obsidian 语法 → 前端 markdown）
 │  ├─ _console.py          ★ 把控制台切成 UTF-8（被上面这些脚本 import）
 │  ├─ _testdb.py           ★ 把自检脚本的库钉到测试库（导入即生效，别写进真实库）
 │  ├─ export_static.py     ★ 导出静态题库 + 生成 docs/ 站点
